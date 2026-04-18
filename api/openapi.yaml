@@ -1,0 +1,1214 @@
+openapi: "3.1.0"
+info:
+  title: Riksdagskollen API
+  description: Tracks Swedish politicians' stated promises and party goals against their actual voting records in Riksdagen.
+  version: "1.0.0"
+  contact:
+    name: Riksdagskollen
+
+servers:
+  - url: /api
+    description: API base path
+
+tags:
+  - name: health
+    description: Health checks
+  - name: parties
+    description: Party goals and scorecards
+  - name: politicians
+    description: Individual politician profiles and voting records
+  - name: votes
+    description: Vote details with proposal origin context
+  - name: budget
+    description: National budget (statsbudgeten) tracking and comparison
+  - name: context
+    description: Topic-level budget context for voters
+  - name: regions
+    description: Swedish regional (läns) election results and governing coalitions
+  - name: municipalities
+    description: Swedish municipal (kommunal) election results and governing coalitions
+
+paths:
+  /healthz:
+    get:
+      operationId: getHealth
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /parties:
+    get:
+      operationId: listParties
+      tags: [parties]
+      summary: List all parties with summary scorecard data
+      responses:
+        "200":
+          description: List of parties with aggregate alignment scores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PartySummary"
+
+  /parties/{party}/goals:
+    get:
+      operationId: listPartyGoals
+      tags: [parties]
+      summary: List all goals for a party with alignment percentages
+      parameters:
+        - $ref: "#/components/parameters/PartyParam"
+        - name: topic
+          in: query
+          schema:
+            $ref: "#/components/schemas/Topic"
+      responses:
+        "200":
+          description: Party goals with vote alignment data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GoalWithAlignment"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /parties/{party}/goals/{goalId}/votes:
+    get:
+      operationId: listGoalVotes
+      tags: [parties]
+      summary: Detailed vote breakdown for a specific party goal
+      parameters:
+        - $ref: "#/components/parameters/PartyParam"
+        - name: goalId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Votes relevant to this goal with context notes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GoalVoteBreakdown"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /politicians:
+    get:
+      operationId: listPoliticians
+      tags: [politicians]
+      summary: List politicians with summary statistics
+      parameters:
+        - name: party
+          in: query
+          schema:
+            $ref: "#/components/schemas/PartyCode"
+        - name: active
+          in: query
+          schema:
+            type: boolean
+            default: true
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        "200":
+          description: Paginated list of politicians
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PoliticianListResponse"
+
+  /politicians/{id}:
+    get:
+      operationId: getPolitician
+      tags: [politicians]
+      summary: Full politician profile
+      parameters:
+        - $ref: "#/components/parameters/PoliticianIdParam"
+      responses:
+        "200":
+          description: Politician profile with statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PoliticianProfile"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /politicians/{id}/promises:
+    get:
+      operationId: listPoliticianPromises
+      tags: [politicians]
+      summary: Promises extracted from speeches with vote match results
+      parameters:
+        - $ref: "#/components/parameters/PoliticianIdParam"
+        - name: topic
+          in: query
+          schema:
+            $ref: "#/components/schemas/Topic"
+      responses:
+        "200":
+          description: Promises with vote alignment
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PromiseWithMatches"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /politicians/{id}/votes:
+    get:
+      operationId: listPoliticianVotes
+      tags: [politicians]
+      summary: Voting record with proposal origin context
+      parameters:
+        - $ref: "#/components/parameters/PoliticianIdParam"
+        - name: session
+          in: query
+          schema:
+            type: string
+            example: "2024/25"
+        - name: topic
+          in: query
+          schema:
+            $ref: "#/components/schemas/Topic"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+      responses:
+        "200":
+          description: Voting record with proposal origin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteListResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /votes/{beteckning}/{punkt}:
+    get:
+      operationId: getVoteDetail
+      tags: [votes]
+      summary: Full vote detail with proposal origin and all party positions
+      parameters:
+        - name: beteckning
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "SoU12"
+        - name: punkt
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Full vote detail with party breakdown
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /budget/years:
+    get:
+      operationId: listBudgetYears
+      tags: [budget]
+      summary: List all available budget years with totals
+      responses:
+        "200":
+          description: Budget years with total amounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BudgetYear"
+
+  /budget/years/{year}:
+    get:
+      operationId: getBudgetYear
+      tags: [budget]
+      summary: Full budget breakdown for a specific year
+      parameters:
+        - $ref: "#/components/parameters/BudgetYearParam"
+      responses:
+        "200":
+          description: Budget year with all expenditure area allocations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BudgetYearDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /budget/years/{year}/compare/{compareYear}:
+    get:
+      operationId: compareBudgetYears
+      tags: [budget]
+      summary: Side-by-side comparison of two budget years with deltas
+      parameters:
+        - $ref: "#/components/parameters/BudgetYearParam"
+        - name: compareYear
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 2024
+      responses:
+        "200":
+          description: Comparison with delta amounts and percentages per area
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BudgetComparison"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /budget/areas:
+    get:
+      operationId: listExpenditureAreas
+      tags: [budget]
+      summary: List all 27 expenditure areas
+      responses:
+        "200":
+          description: Expenditure areas ordered by sort_order
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExpenditureArea"
+
+  /context/topic/{topic}:
+    get:
+      operationId: getTopicContext
+      tags: [context]
+      summary: Budget and economic context for a political topic
+      parameters:
+        - name: topic
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/Topic"
+      responses:
+        "200":
+          description: Topic context with budget trend and funding analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopicContext"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /budget/areas/{code}:
+    get:
+      operationId: getAreaTimeSeries
+      tags: [budget]
+      summary: Time series of budget amounts for one expenditure area
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "UO6"
+      responses:
+        "200":
+          description: Yearly amounts for the expenditure area
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AreaTimeSeries"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /regions:
+    get:
+      operationId: listRegions
+      tags: [regions]
+      summary: List all 21 Swedish regions with election results and governing parties
+      responses:
+        "200":
+          description: All regions with 2022 election summary
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegionSummary"
+
+  /regions/{code}:
+    get:
+      operationId: getRegion
+      tags: [regions]
+      summary: Full region detail including election results per party
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "01"
+            description: Two-digit region code (SCB/Valmyndigheten)
+      responses:
+        "200":
+          description: Region with full election result breakdown
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /municipalities:
+    get:
+      operationId: listMunicipalities
+      tags: [municipalities]
+      summary: List Swedish municipalities, optionally filtered by region
+      parameters:
+        - name: regionCode
+          in: query
+          schema:
+            type: string
+            example: "01"
+            description: Filter by two-digit region code
+      responses:
+        "200":
+          description: Municipalities with election summary
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MunicipalitySummary"
+
+  /municipalities/{code}:
+    get:
+      operationId: getMunicipality
+      tags: [municipalities]
+      summary: Full municipality detail including election results per party
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "0180"
+            description: Four-digit municipality code (SCB/Valmyndigheten)
+      responses:
+        "200":
+          description: Municipality with full election result breakdown
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MunicipalityDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  parameters:
+    PartyParam:
+      name: party
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/PartyCode"
+    PoliticianIdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        description: Riksdagen intressent_id
+    BudgetYearParam:
+      name: year
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 2025
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        version:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+        detail:
+          type: string
+
+    PartyCode:
+      type: string
+      enum: [S, M, SD, C, V, KD, L, MP, unknown]
+      description: Swedish party abbreviation
+
+    Topic:
+      type: string
+      enum:
+        - sjukvard
+        - forsvar
+        - invandring
+        - skatt
+        - skola
+        - klimat
+        - brott
+        - bostad
+        - arbete
+        - energi
+        - other
+
+    VoteResult:
+      type: string
+      enum: [Ja, Nej, Avstår, Frånvarande]
+
+    ProposalType:
+      type: string
+      enum: [prop, mot, bet]
+      description: "prop=government bill, mot=party motion, bet=committee report"
+
+    Specificity:
+      type: string
+      enum: [concrete, directional, rhetorical]
+
+    Politician:
+      type: object
+      required: [intressentId, firstName, lastName, party, isActive]
+      properties:
+        intressentId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        party:
+          $ref: "#/components/schemas/PartyCode"
+        constituency:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+        isActive:
+          type: boolean
+
+    PoliticianSummary:
+      allOf:
+        - $ref: "#/components/schemas/Politician"
+        - type: object
+          properties:
+            totalVotes:
+              type: integer
+            promiseCount:
+              type: integer
+            alignmentPct:
+              type: number
+              format: float
+              description: Overall promise-to-vote alignment percentage
+
+    PoliticianProfile:
+      allOf:
+        - $ref: "#/components/schemas/PoliticianSummary"
+        - type: object
+          properties:
+            recentSpeeches:
+              type: array
+              items:
+                $ref: "#/components/schemas/SpeechSummary"
+
+    PoliticianListResponse:
+      type: object
+      required: [data, total, page, pageSize]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/PoliticianSummary"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+
+    SpeechSummary:
+      type: object
+      required: [id, date, topicHeading]
+      properties:
+        id:
+          type: integer
+        dokId:
+          type: string
+        date:
+          type: string
+          format: date
+        topicHeading:
+          type: string
+
+    Vote:
+      type: object
+      required: [id, voteringId, politicianId, party, voteResult, beteckning, forslagspunkt, session]
+      properties:
+        id:
+          type: integer
+        voteringId:
+          type: string
+        politicianId:
+          type: string
+        party:
+          $ref: "#/components/schemas/PartyCode"
+        voteResult:
+          $ref: "#/components/schemas/VoteResult"
+        beteckning:
+          type: string
+          description: Committee report ID e.g. SoU12
+        forslagspunkt:
+          type: string
+        session:
+          type: string
+          example: "2024/25"
+        dokId:
+          type: string
+        proposedByParty:
+          $ref: "#/components/schemas/PartyCode"
+        proposalType:
+          $ref: "#/components/schemas/ProposalType"
+        documentTitle:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    VoteListResponse:
+      type: object
+      required: [data, total, page, pageSize]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Vote"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+
+    VoteDetail:
+      type: object
+      required: [beteckning, forslagspunkt, documentTitle, partyBreakdown]
+      properties:
+        beteckning:
+          type: string
+        forslagspunkt:
+          type: string
+        dokId:
+          type: string
+        documentTitle:
+          type: string
+        proposedByParty:
+          $ref: "#/components/schemas/PartyCode"
+        proposalType:
+          $ref: "#/components/schemas/ProposalType"
+        session:
+          type: string
+        partyBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/PartyVotePosition"
+        contextNote:
+          type: string
+          description: AI-generated explanation of political context
+
+    PartyVotePosition:
+      type: object
+      required: [party, jaCount, nejCount, avstarCount, franvarandeCount]
+      properties:
+        party:
+          $ref: "#/components/schemas/PartyCode"
+        jaCount:
+          type: integer
+        nejCount:
+          type: integer
+        avstarCount:
+          type: integer
+        franvarandeCount:
+          type: integer
+        dominantVote:
+          $ref: "#/components/schemas/VoteResult"
+
+    Goal:
+      type: object
+      required: [id, party, goalText, topic, specificity, sourceDocument]
+      properties:
+        id:
+          type: integer
+        party:
+          $ref: "#/components/schemas/PartyCode"
+        goalText:
+          type: string
+        topic:
+          $ref: "#/components/schemas/Topic"
+        specificity:
+          $ref: "#/components/schemas/Specificity"
+        sourceDocument:
+          type: string
+          example: "Valmanifest 2022"
+        keywords:
+          type: array
+          items:
+            type: string
+        relevantCommittees:
+          type: array
+          items:
+            type: string
+
+    GoalWithAlignment:
+      allOf:
+        - $ref: "#/components/schemas/Goal"
+        - type: object
+          properties:
+            relevantVotes:
+              type: integer
+            alignmentPct:
+              type: number
+              format: float
+              description: Percentage of relevant votes aligned with goal direction
+
+    GoalVoteBreakdown:
+      type: object
+      required: [goal, matches]
+      properties:
+        goal:
+          $ref: "#/components/schemas/GoalWithAlignment"
+        matches:
+          type: array
+          items:
+            $ref: "#/components/schemas/GoalVoteMatch"
+
+    GoalVoteMatch:
+      type: object
+      required: [beteckning, forslagspunkt, relevanceScore, alignedDirection]
+      properties:
+        beteckning:
+          type: string
+        forslagspunkt:
+          type: string
+        relevanceScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        alignedDirection:
+          $ref: "#/components/schemas/VoteResult"
+        explanation:
+          type: string
+        proposedByParty:
+          $ref: "#/components/schemas/PartyCode"
+        proposalType:
+          $ref: "#/components/schemas/ProposalType"
+        contextNote:
+          type: string
+        documentTitle:
+          type: string
+        partyAlignmentPct:
+          type: number
+          format: float
+          description: What % of party members voted in the aligned direction
+
+    PartySummary:
+      type: object
+      required: [party, totalGoals, avgAlignmentPct]
+      properties:
+        party:
+          $ref: "#/components/schemas/PartyCode"
+        totalGoals:
+          type: integer
+        avgAlignmentPct:
+          type: number
+          format: float
+        topicBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopicAlignment"
+
+    TopicAlignment:
+      type: object
+      required: [topic, goalCount, alignmentPct]
+      properties:
+        topic:
+          $ref: "#/components/schemas/Topic"
+        goalCount:
+          type: integer
+        alignmentPct:
+          type: number
+          format: float
+
+    Promise:
+      type: object
+      required: [id, politicianId, promiseText, topic, specificity]
+      properties:
+        id:
+          type: integer
+        politicianId:
+          type: string
+        speechId:
+          type: integer
+        speechDate:
+          type: string
+          format: date
+        speechTopic:
+          type: string
+        promiseText:
+          type: string
+        topic:
+          $ref: "#/components/schemas/Topic"
+        specificity:
+          $ref: "#/components/schemas/Specificity"
+        keywords:
+          type: array
+          items:
+            type: string
+
+    PromiseWithMatches:
+      allOf:
+        - $ref: "#/components/schemas/Promise"
+        - type: object
+          properties:
+            voteMatches:
+              type: array
+              items:
+                $ref: "#/components/schemas/PromiseVoteMatch"
+
+    PromiseVoteMatch:
+      type: object
+      required: [voteId, relevanceScore, alignment]
+      properties:
+        voteId:
+          type: integer
+        beteckning:
+          type: string
+        forslagspunkt:
+          type: string
+        documentTitle:
+          type: string
+        voteResult:
+          $ref: "#/components/schemas/VoteResult"
+        relevanceScore:
+          type: number
+          format: float
+        alignment:
+          type: string
+          enum: [supports, contradicts, unclear]
+        explanation:
+          type: string
+        proposedByParty:
+          $ref: "#/components/schemas/PartyCode"
+        proposalType:
+          $ref: "#/components/schemas/ProposalType"
+
+    ExpenditureArea:
+      type: object
+      required: [code, name, sortOrder]
+      properties:
+        code:
+          type: string
+          example: "UO6"
+        name:
+          type: string
+          example: "Försvar och samhällets krisberedskap"
+        description:
+          type: string
+        sortOrder:
+          type: integer
+
+    BudgetYear:
+      type: object
+      required: [year, status, totalKsek]
+      properties:
+        year:
+          type: integer
+          example: 2025
+        status:
+          type: string
+          enum: [decided, proposed]
+        totalKsek:
+          type: integer
+          format: int64
+          description: Total budget in thousands of kronor
+
+    BudgetAllocation:
+      type: object
+      required: [area, amountKsek]
+      properties:
+        area:
+          $ref: "#/components/schemas/ExpenditureArea"
+        amountKsek:
+          type: integer
+          format: int64
+        amountFormatted:
+          type: string
+          description: "Human-readable amount, e.g. '145,2 mdkr'"
+
+    BudgetDocumentRef:
+      type: object
+      required: [type, title, url, description]
+      properties:
+        type:
+          type: string
+          enum: [proposition, committee_report]
+          description: Document type
+        title:
+          type: string
+          example: "Prop. 2024/25:1"
+        url:
+          type: string
+          format: uri
+          description: Link to the document on riksdagen.se
+        description:
+          type: string
+          example: "Budgetpropositionen för 2025"
+
+    BudgetYearDetail:
+      type: object
+      required: [year, status, totalKsek, allocations]
+      properties:
+        year:
+          type: integer
+        status:
+          type: string
+          enum: [decided, proposed]
+        totalKsek:
+          type: integer
+          format: int64
+        allocations:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetAllocation"
+        documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetDocumentRef"
+          description: Links to relevant budget proposition and committee reports
+
+    BudgetComparisonRow:
+      type: object
+      required: [area, baseAmountKsek, compareAmountKsek, deltaKsek, deltaPct]
+      properties:
+        area:
+          $ref: "#/components/schemas/ExpenditureArea"
+        baseAmountKsek:
+          type: integer
+          format: int64
+        compareAmountKsek:
+          type: integer
+          format: int64
+        deltaKsek:
+          type: integer
+          format: int64
+          description: compareAmount - baseAmount
+        deltaPct:
+          type: number
+          format: float
+          description: Percentage change from base to compare year
+
+    BudgetComparison:
+      type: object
+      required: [baseYear, compareYear, rows, baseTotalKsek, compareTotalKsek]
+      properties:
+        baseYear:
+          type: integer
+        compareYear:
+          type: integer
+        baseTotalKsek:
+          type: integer
+          format: int64
+        compareTotalKsek:
+          type: integer
+          format: int64
+        totalDeltaKsek:
+          type: integer
+          format: int64
+        totalDeltaPct:
+          type: number
+          format: float
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetComparisonRow"
+
+    AreaTimeSeries:
+      type: object
+      required: [area, entries]
+      properties:
+        area:
+          $ref: "#/components/schemas/ExpenditureArea"
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/AreaTimeSeriesEntry"
+
+    AreaTimeSeriesEntry:
+      type: object
+      required: [year, amountKsek]
+      properties:
+        year:
+          type: integer
+        amountKsek:
+          type: integer
+          format: int64
+        documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetDocumentRef"
+          description: Links to the area-specific budget proposition volume
+
+    BudgetTrendEntry:
+      type: object
+      required: [year, amountKsek, amountFormatted]
+      properties:
+        year:
+          type: integer
+        amountKsek:
+          type: integer
+          format: int64
+        amountFormatted:
+          type: string
+          description: "Human-readable amount, e.g. '87,3 mdkr'"
+
+    RelatedBudgetArea:
+      type: object
+      required: [code, name, trend, latestDeltaPct, shareOfBudgetPct]
+      properties:
+        code:
+          type: string
+          example: "UO9"
+        name:
+          type: string
+        trend:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetTrendEntry"
+        latestDeltaPct:
+          type: number
+          format: float
+          description: Year-over-year change in percent
+        shareOfBudgetPct:
+          type: number
+          format: float
+          description: Area's share of total national budget in the latest year
+
+    FundingRow:
+      type: object
+      required: [code, name, deltaKsek, deltaPct]
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        deltaKsek:
+          type: integer
+          format: int64
+        deltaPct:
+          type: number
+          format: float
+
+    FundingContext:
+      type: object
+      required: [year, topIncreases, topDecreases]
+      properties:
+        year:
+          type: integer
+        topIncreases:
+          type: array
+          items:
+            $ref: "#/components/schemas/FundingRow"
+        topDecreases:
+          type: array
+          items:
+            $ref: "#/components/schemas/FundingRow"
+        totalBudgetDeltaKsek:
+          type: integer
+          format: int64
+        totalBudgetDeltaPct:
+          type: number
+          format: float
+
+    TopicContext:
+      type: object
+      required: [topic, description, committees, relatedAreas]
+      properties:
+        topic:
+          $ref: "#/components/schemas/Topic"
+        description:
+          type: string
+        committees:
+          type: array
+          items:
+            type: string
+        relatedAreas:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelatedBudgetArea"
+        fundingContext:
+          $ref: "#/components/schemas/FundingContext"
+
+    ElectionResult:
+      type: object
+      required: [party, mandates, votePct, totalMandates]
+      properties:
+        party:
+          type: string
+          description: Party abbreviation (e.g. S, M, SD) or "OTHER" for small parties
+        mandates:
+          type: integer
+          description: Number of seats won
+        votePct:
+          type: number
+          format: float
+          description: Share of votes in percent
+        totalMandates:
+          type: integer
+          description: Total seats in the assembly
+
+    RegionSummary:
+      type: object
+      required: [code, name, capital, population, electionYear, governingParties, totalMandates]
+      properties:
+        code:
+          type: string
+          example: "01"
+          description: Two-digit SCB region code
+        name:
+          type: string
+          example: "Region Stockholm"
+        capital:
+          type: string
+          example: "Stockholm"
+        population:
+          type: integer
+          example: 2400000
+        electionYear:
+          type: integer
+          example: 2022
+        governingParties:
+          type: array
+          items:
+            type: string
+          description: Parties in the governing coalition
+        totalMandates:
+          type: integer
+          description: Total seats in regionfullmäktige
+
+    RegionDetail:
+      allOf:
+        - $ref: "#/components/schemas/RegionSummary"
+        - type: object
+          required: [electionResults]
+          properties:
+            electionResults:
+              type: array
+              items:
+                $ref: "#/components/schemas/ElectionResult"
+
+    MunicipalitySummary:
+      type: object
+      required: [code, name, regionCode, regionName, population, electionYear, governingParties, totalMandates]
+      properties:
+        code:
+          type: string
+          example: "0180"
+          description: Four-digit SCB municipality code
+        name:
+          type: string
+          example: "Stockholms kommun"
+        regionCode:
+          type: string
+          example: "01"
+        regionName:
+          type: string
+          example: "Region Stockholm"
+        population:
+          type: integer
+          example: 980000
+        electionYear:
+          type: integer
+          example: 2022
+        governingParties:
+          type: array
+          items:
+            type: string
+          description: Parties in the governing coalition
+        totalMandates:
+          type: integer
+          description: Total seats in kommunfullmäktige
+
+    MunicipalityDetail:
+      allOf:
+        - $ref: "#/components/schemas/MunicipalitySummary"
+        - type: object
+          required: [electionResults]
+          properties:
+            electionResults:
+              type: array
+              items:
+                $ref: "#/components/schemas/ElectionResult"

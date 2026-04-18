@@ -1,0 +1,12 @@
+apiVersion: v2
+name: riksdagskollen
+description: Civic tech tool tracking Swedish politicians' promises vs voting records
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: postgresql
+    version: "16.x.x"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled

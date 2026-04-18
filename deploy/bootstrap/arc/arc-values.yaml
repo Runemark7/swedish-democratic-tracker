@@ -1,0 +1,2 @@
+# ARC controller — no overrides needed for single-cluster setup
+# The controller watches for AutoscalingRunnerSet resources across namespaces

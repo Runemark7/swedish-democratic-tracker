@@ -1,0 +1,51 @@
+server {
+    listen 8080;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Security headers
+    add_header X-Content-Type-Options   "nosniff"                            always;
+    add_header X-Frame-Options          "DENY"                               always;
+    add_header X-XSS-Protection         "1; mode=block"                      always;
+    add_header Referrer-Policy          "strict-origin-when-cross-origin"    always;
+    add_header Permissions-Policy       "geolocation=(), microphone=(), camera=()" always;
+    add_header Content-Security-Policy  "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'" always;
+
+    # ── API proxy ───────────────────────────────────────────────────────────
+    # In docker-compose BACKEND_URL=http://backend:8080.
+    # In k8s the Ingress routes /api directly to the backend Service, so
+    # these location blocks are never reached — but they must be syntactically
+    # valid, so BACKEND_URL must always be set.
+    location /api/ {
+        proxy_pass         ${BACKEND_URL}/api/;
+        proxy_http_version 1.1;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+
+    location = /healthz {
+        proxy_pass         ${BACKEND_URL}/healthz;
+        proxy_http_version 1.1;
+        proxy_set_header   Host $host;
+    }
+    # ────────────────────────────────────────────────────────────────────────
+
+    # SPA routing: forward all non-file requests to index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets aggressively
+    location ~* \.(js|css|png|svg|ico|woff2?)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # No caching for the SPA entry point
+    location = /index.html {
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+}

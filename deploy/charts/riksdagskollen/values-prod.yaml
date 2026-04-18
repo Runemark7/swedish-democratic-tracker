@@ -1,0 +1,28 @@
+## Production overrides — merge on top of values.yaml
+backend:
+  replicas: 3
+  image:
+    repository: ghcr.io/runemark7/riksdagskollen-api
+    pullPolicy: Always
+  imagePullSecrets:
+    - name: ghcr-pull-secret
+  env:
+    CORS_ALLOWED_ORIGIN: "https://sdt.runevibe.se"
+
+frontend:
+  replicas: 3
+  image:
+    repository: ghcr.io/runemark7/riksdagskollen-frontend
+    pullPolicy: Always
+  imagePullSecrets:
+    - name: ghcr-pull-secret
+
+postgresql:
+  enabled: false
+
+ingress:
+  host: sdt.runevibe.se
+  tlsSecretName: sdt-runevibe-tls
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod

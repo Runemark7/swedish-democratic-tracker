@@ -1,0 +1,21 @@
+# Go
+backend/vendor/
+backend/*.out
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Environment
+.env
+.env.local
+*.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Helm
+deploy/charts/riksdagskollen/charts/
+deploy/charts/riksdagskollen/Chart.lock

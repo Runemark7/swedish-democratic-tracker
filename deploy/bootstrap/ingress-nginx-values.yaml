@@ -1,0 +1,10 @@
+controller:
+  service:
+    type: LoadBalancer
+  config:
+    use-forwarded-headers: "true"
+    proxy-real-ip-cidr: "0.0.0.0/0"
+    # Allow large request bodies for potential file uploads
+    proxy-body-size: "10m"
+  # Single replica is fine for single-node k3s
+  replicaCount: 1

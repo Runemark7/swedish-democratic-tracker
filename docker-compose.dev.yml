@@ -1,0 +1,64 @@
+# Standalone dev compose — hot-reload for backend and frontend
+# Usage: docker compose -f docker-compose.dev.yml up --build
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: riksdagskollen
+      POSTGRES_USER: riksdagskollen
+      POSTGRES_PASSWORD: localdev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U riksdagskollen"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: builder
+    command: ["go", "run", "./cmd/api"]
+    volumes:
+      - ./backend:/build
+    working_dir: /build
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    environment:
+      DATABASE_URL: postgres://riksdagskollen:localdev@postgres:5432/riksdagskollen?sslmode=disable
+      PORT: "8080"
+      MIGRATIONS_PATH: "file://migrations"
+      CORS_ALLOWED_ORIGIN: "http://localhost:5173"
+      INITIAL_SYNC: "true"
+
+  frontend:
+    image: node:25.9.0-alpine
+    working_dir: /app
+    command: ["sh", "-c", "npm install && npm run dev -- --host 0.0.0.0"]
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      BACKEND_URL: "http://backend:8080"
+
+volumes:
+  postgres_data:

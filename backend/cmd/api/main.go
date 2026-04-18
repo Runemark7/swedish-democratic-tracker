@@ -1,0 +1,280 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log/slog"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	// Feature: politicians
+	politiciansHTTP "riksdagskollen/internal/politicians/adapters/http"
+	politiciansPG "riksdagskollen/internal/politicians/adapters/postgres"
+	politiciansRD "riksdagskollen/internal/politicians/adapters/riksdagen"
+	"riksdagskollen/internal/politicians"
+
+	// Feature: speeches
+	speechesPG "riksdagskollen/internal/speeches/adapters/postgres"
+	speechesRD "riksdagskollen/internal/speeches/adapters/riksdagen"
+	"riksdagskollen/internal/speeches"
+
+	// Feature: votes
+	votesHTTP "riksdagskollen/internal/votes/adapters/http"
+	votesPG "riksdagskollen/internal/votes/adapters/postgres"
+	votesRD "riksdagskollen/internal/votes/adapters/riksdagen"
+	"riksdagskollen/internal/votes"
+
+	// Feature: goals + matching
+	goalsHTTP "riksdagskollen/internal/goals/adapters/http"
+	goalsPG "riksdagskollen/internal/goals/adapters/postgres"
+	"riksdagskollen/internal/goals"
+	matchingPG "riksdagskollen/internal/matching/adapters/postgres"
+	matchingStub "riksdagskollen/internal/matching/adapters/stub"
+	"riksdagskollen/internal/matching"
+
+	// Feature: promises
+	promisesHTTP "riksdagskollen/internal/promises/adapters/http"
+	promisesPG "riksdagskollen/internal/promises/adapters/postgres"
+	"riksdagskollen/internal/promises"
+
+	// Feature: budget
+	budgetHTTP "riksdagskollen/internal/budget/adapters/http"
+	budgetPG "riksdagskollen/internal/budget/adapters/postgres"
+	"riksdagskollen/internal/budget"
+
+	// Feature: context
+	contextHTTP "riksdagskollen/internal/context/adapters/http"
+	contextPG "riksdagskollen/internal/context/adapters/postgres"
+	topiccontext "riksdagskollen/internal/context"
+
+	// Feature: regions + municipalities
+	regionsHTTP "riksdagskollen/internal/regions/adapters/http"
+	regionsPG "riksdagskollen/internal/regions/adapters/postgres"
+	"riksdagskollen/internal/regions"
+
+	// Ingestion
+	"riksdagskollen/internal/ingestion"
+	ingestionPG "riksdagskollen/internal/ingestion/adapters/postgres"
+	"riksdagskollen/internal/ingestion/workers"
+)
+
+func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
+	dbURL := mustEnv("DATABASE_URL")
+	port := envOr("PORT", "8080")
+	allowedOrigin := envOr("CORS_ALLOWED_ORIGIN", "http://localhost:5173")
+	migrationsPath := envOr("MIGRATIONS_PATH", "file://migrations")
+
+	// -- Database --
+	db, err := connectDB(context.Background(), dbURL)
+	if err != nil {
+		slog.Error("database unavailable after retries", "error", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	// -- Migrations --
+	m, err := migrate.New(migrationsPath, dbURL)
+	if err != nil {
+		slog.Error("failed to create migrator", "error", err)
+		os.Exit(1)
+	}
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		slog.Error("migration failed", "error", err)
+		os.Exit(1)
+	}
+	slog.Info("migrations applied")
+
+	// -- Wire features --
+	polRepo := politiciansPG.NewRepository(db)
+	polRD := politiciansRD.NewClient()
+	polSvc := politicians.NewService(polRepo, polRD)
+	polHandler := politiciansHTTP.NewHandler(polSvc)
+
+	speechRepo := speechesPG.NewRepository(db)
+	speechRD := speechesRD.NewClient()
+	speechSvc := speeches.NewService(speechRepo, speechRD)
+
+	voteRepo := votesPG.NewRepository(db)
+	voteRD := votesRD.NewClient()
+	voteSvc := votes.NewService(voteRepo, voteRD)
+	voteHandler := votesHTTP.NewHandler(voteSvc)
+
+	goalRepo := goalsPG.NewRepository(db)
+	goalSvc := goals.NewService(goalRepo)
+
+	matchRepo := matchingPG.NewRepository(db)
+	aiStub := matchingStub.NewAIService()
+	matchSvc := matching.NewService(matchRepo, aiStub)
+
+	goalsHandler := goalsHTTP.NewHandler(goalSvc, matchSvc)
+
+	promiseRepo := promisesPG.NewRepository(db)
+	promiseSvc := promises.NewService(promiseRepo)
+	promisesHandler := promisesHTTP.NewHandler(promiseSvc, matchSvc)
+
+	budgetRepo := budgetPG.NewRepository(db)
+	budgetSvc := budget.NewService(budgetRepo)
+	budgetHandler := budgetHTTP.NewHandler(budgetSvc)
+
+	contextRepo := contextPG.NewRepository(db)
+	contextSvc := topiccontext.NewService(contextRepo)
+	contextHandler := contextHTTP.NewHandler(contextSvc)
+
+	regionsRepo := regionsPG.NewRepository(db)
+	regionsSvc := regions.NewService(regionsRepo)
+	regionsHandler := regionsHTTP.NewHandler(regionsSvc)
+
+	// -- Router --
+	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(httprate.LimitByIP(100, time.Minute))
+	r.Use(corsMiddleware(allowedOrigin))
+
+	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":"ok"}`)
+	})
+
+	r.Route("/api", func(r chi.Router) {
+		polHandler.Routes(r)
+		voteHandler.Routes(r)
+		goalsHandler.Routes(r)
+		promisesHandler.Routes(r)
+		budgetHandler.Routes(r)
+		contextHandler.Routes(r)
+		regionsHandler.Routes(r)
+	})
+
+	// -- Ingestion scheduler --
+	cursorRepo := ingestionPG.NewCursorRepository(db)
+	pollWorker := workers.NewPoliticiansWorker(polSvc)
+	speechWorker := workers.NewSpeechesWorker(speechSvc, cursorRepo)
+	voteWorker := workers.NewVotesWorker(voteSvc, cursorRepo)
+	enrichWorker := workers.NewEnrichOriginsWorker(voteSvc)
+	keywordWorker := workers.NewKeywordMatcherWorker(goalSvc, voteSvc, matchSvc)
+	refreshWorker := workers.NewRefreshScorecardsWorker(matchSvc)
+
+	sched := ingestion.NewScheduler()
+	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker); err != nil {
+		slog.Error("failed to register ingestion workers", "error", err)
+		os.Exit(1)
+	}
+	sched.Start()
+	defer sched.Stop()
+
+	// -- Initial data sync (background) --
+	if envOr("INITIAL_SYNC", "true") == "true" {
+		go func() {
+			syncCtx, syncCancel := context.WithTimeout(context.Background(), 20*time.Minute)
+			defer syncCancel()
+			if err := sched.RunInitialSync(syncCtx); err != nil {
+				slog.Error("initial sync failed", "error", err)
+			}
+		}()
+	}
+
+	// -- HTTP server --
+	srv := &http.Server{
+		Addr:         ":" + port,
+		Handler:      r,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+
+	go func() {
+		slog.Info("server listening", "port", port)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			slog.Error("server error", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	slog.Info("shutting down")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		slog.Error("shutdown error", "error", err)
+	}
+}
+
+// connectDB retries the pgxpool connection with exponential backoff.
+// Needed because Docker's internal DNS may not resolve service names
+// immediately even after the healthcheck passes.
+func connectDB(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
+	const maxAttempts = 10
+	backoff := 1 * time.Second
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		db, err := pgxpool.New(ctx, dsn)
+		if err == nil {
+			if pingErr := db.Ping(ctx); pingErr == nil {
+				slog.Info("database connected", "attempt", attempt)
+				return db, nil
+			} else {
+				db.Close()
+				err = pingErr
+			}
+		}
+		if attempt == maxAttempts {
+			return nil, err
+		}
+		slog.Warn("database not ready, retrying", "attempt", attempt, "backoff", backoff, "error", err)
+		time.Sleep(backoff)
+		if backoff < 16*time.Second {
+			backoff *= 2
+		}
+	}
+	return nil, fmt.Errorf("database unreachable after %d attempts", maxAttempts)
+}
+
+func corsMiddleware(origin string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func mustEnv(key string) string {
+	v := os.Getenv(key)
+	if v == "" {
+		slog.Error("required environment variable missing", "key", key)
+		os.Exit(1)
+	}
+	return v
+}
+
+func envOr(key, def string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return def
+}

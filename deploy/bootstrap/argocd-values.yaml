@@ -1,0 +1,20 @@
+server:
+  service:
+    type: NodePort
+  extraArgs:
+    - --insecure
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hostname: argocd.runevibe.se
+    tls: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+
+configs:
+  params:
+    server.insecure: true
+
+# Disable dex (SSO) for simplicity — use admin password
+dex:
+  enabled: false
