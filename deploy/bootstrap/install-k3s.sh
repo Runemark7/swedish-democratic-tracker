@@ -11,7 +11,7 @@ curl -sfL https://get.k3s.io | sh -s - \
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 echo "==> Waiting for node to be Ready"
-kubectl wait --for=condition=Ready node --all --timeout=120s
+until kubectl get nodes 2>/dev/null | grep -q " Ready"; do sleep 2; done
 
 echo "==> Installing Helm"
 curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
