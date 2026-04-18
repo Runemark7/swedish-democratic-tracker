@@ -13,7 +13,7 @@ var defaultKPIs = []string{
 	// Budget & ekonomi
 	"N03007", "N03102", "N03106", "N03040", "N03132",
 }
-var defaultKPIYears = []int{2022, 2023}
+var defaultKPIYears = []int{2019, 2020, 2021, 2022, 2023}
 var defaultPopYears = []int{2019, 2020, 2021, 2022, 2023}
 
 var spendingKPIs  = []string{"N11004", "N15028", "N17014", "N20014", "N30005", "N07037", "N09022", "N05011"}

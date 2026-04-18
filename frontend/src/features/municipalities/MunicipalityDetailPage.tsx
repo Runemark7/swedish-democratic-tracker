@@ -83,11 +83,13 @@ function KPISkeleton({ rows = 5 }: { rows?: number }) {
 }
 
 function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: string[] }) {
-  const latest = new Map<string, MunicipalityKPIItem>();
+  // Build sorted-by-year map per KPI code
+  const byCode = new Map<string, MunicipalityKPIItem[]>();
   for (const item of kpis) {
-    const existing = latest.get(item.kpi);
-    if (!existing || item.year > existing.year) latest.set(item.kpi, item);
+    if (!byCode.has(item.kpi)) byCode.set(item.kpi, []);
+    byCode.get(item.kpi)!.push(item);
   }
+  for (const arr of byCode.values()) arr.sort((a, b) => a.year - b.year);
 
   return (
     <div className="rounded-xl overflow-hidden border" style={{ borderColor: "var(--color-surface-high)" }}>
@@ -95,15 +97,23 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
         <thead>
           <tr className="text-[10px] uppercase tracking-widest text-on-surface-variant" style={{ background: "var(--color-surface-low)" }}>
             <th className="px-4 py-2.5 text-left font-semibold">Nyckeltal</th>
-            <th className="px-4 py-2.5 text-right font-semibold">Värde</th>
+            <th className="px-4 py-2.5 text-right font-semibold">Senaste värde</th>
+            <th className="px-4 py-2.5 text-right font-semibold">Förändring</th>
             <th className="px-4 py-2.5 text-right font-semibold pr-4">År</th>
           </tr>
         </thead>
         <tbody>
           {kpiOrder.map((code, i) => {
-            const item = latest.get(code);
+            const years = byCode.get(code) ?? [];
+            const item = years[years.length - 1];
+            const prev = years.length >= 2 ? years[years.length - 2] : null;
             const label = KPI_LABELS[code] ?? code;
             const unit = KPI_UNITS[code] ?? "";
+            const hasValue = item && item.status !== "M";
+            const hasPrev = prev && prev.status !== "M";
+            const deltaPct = hasValue && hasPrev && prev!.value !== 0
+              ? ((item!.value - prev!.value) / Math.abs(prev!.value)) * 100
+              : null;
             return (
               <tr
                 key={code}
@@ -114,10 +124,22 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
                 }}
               >
                 <td className="px-4 py-2.5 text-on-surface-variant text-xs">{label}</td>
-                <td className="px-4 py-2.5 text-right font-mono text-on-surface font-semibold">
-                  {item && item.status !== "M"
-                    ? `${item.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} ${unit}`
-                    : <span className="text-on-surface-variant text-xs">–</span>}
+                <td className="px-4 py-2.5 text-right font-mono text-on-surface font-semibold text-xs">
+                  {hasValue
+                    ? `${item!.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} ${unit}`
+                    : <span className="text-on-surface-variant">–</span>}
+                </td>
+                <td className="px-4 py-2.5 text-right font-mono text-xs">
+                  {deltaPct != null ? (
+                    <span style={{ color: deltaPct > 0 ? "#ef4444" : "#22c55e", fontWeight: 600 }}>
+                      {deltaPct > 0 ? "↑" : "↓"}{Math.abs(deltaPct).toFixed(1)}%
+                    </span>
+                  ) : <span className="text-on-surface-variant">–</span>}
+                  {hasPrev && (
+                    <span className="text-on-surface-variant text-[10px] ml-1">
+                      vs {prev!.year}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-2.5 text-right pr-4 text-xs text-on-surface-variant font-mono">
                   {item ? item.year : ""}
