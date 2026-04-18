@@ -102,3 +102,6 @@ postgresql:
       limits:
         cpu: 1000m
         memory: 512Mi
+
+migrations:
+  enabled: false
