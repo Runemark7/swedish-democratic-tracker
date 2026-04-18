@@ -3,7 +3,23 @@ import { useQuery } from "@tanstack/react-query";
 import { PartyBadge, StatBlock } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
 import { municipalitiesApi } from "./api";
-import type { ElectionResult } from "@/shared/types";
+import type { ElectionResult, MunicipalityKPIItem } from "@/shared/types";
+
+const KPI_LABELS: Record<string, string> = {
+  N00902: "Kostnad kommunal verksamhet per invånare",
+  N03005: "Kommunalskatt",
+  N00941: "Kostnad förskola per barn",
+  N15033: "Kostnad grundskola per elev",
+  N07402: "Kostnad vård och omsorg om äldre per brukare",
+};
+const KPI_UNITS: Record<string, string> = {
+  N00902: "kr/inv",
+  N03005: "%",
+  N00941: "kr",
+  N15033: "kr",
+  N07402: "kr",
+};
+const KPI_ORDER = ["N00902", "N03005", "N00941", "N15033", "N07402"];
 
 function MandateBar({ results }: { results: ElectionResult[] }) {
   if (!results.length) return null;
@@ -41,6 +57,96 @@ function MandateBar({ results }: { results: ElectionResult[] }) {
   );
 }
 
+function KPISkeleton() {
+  return (
+    <div className="space-y-2">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="flex justify-between items-center py-2 border-b animate-pulse" style={{ borderColor: "var(--color-surface-high)" }}>
+          <div className="h-3 rounded bg-surface-high w-48" />
+          <div className="h-3 rounded bg-surface-high w-20" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function KPITable({ kpis }: { kpis: MunicipalityKPIItem[] }) {
+  // Build map: kpiCode → latest year entry
+  const latest = new Map<string, MunicipalityKPIItem>();
+  for (const item of kpis) {
+    const existing = latest.get(item.kpi);
+    if (!existing || item.year > existing.year) latest.set(item.kpi, item);
+  }
+
+  return (
+    <div className="rounded-xl overflow-hidden border" style={{ borderColor: "var(--color-surface-high)" }}>
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-[10px] uppercase tracking-widest text-on-surface-variant" style={{ background: "var(--color-surface-low)" }}>
+            <th className="px-4 py-2.5 text-left font-semibold">Nyckeltal</th>
+            <th className="px-4 py-2.5 text-right font-semibold">Värde</th>
+            <th className="px-4 py-2.5 text-right font-semibold pr-4">År</th>
+          </tr>
+        </thead>
+        <tbody>
+          {KPI_ORDER.map((code, i) => {
+            const item = latest.get(code);
+            const label = KPI_LABELS[code] ?? code;
+            const unit = KPI_UNITS[code] ?? "";
+            return (
+              <tr
+                key={code}
+                className="border-t"
+                style={{
+                  borderColor: "var(--color-surface-high)",
+                  background: i % 2 === 0 ? "var(--color-surface-lowest)" : "var(--color-surface-low)",
+                }}
+              >
+                <td className="px-4 py-2.5 text-on-surface-variant text-xs">{label}</td>
+                <td className="px-4 py-2.5 text-right font-mono text-on-surface font-semibold">
+                  {item && item.status !== "M"
+                    ? `${item.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} ${unit}`
+                    : <span className="text-on-surface-variant text-xs">–</span>}
+                </td>
+                <td className="px-4 py-2.5 text-right pr-4 text-xs text-on-surface-variant font-mono">
+                  {item ? item.year : ""}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function PopulationChart({ entries }: { entries: { year: number; population: number }[] }) {
+  if (!entries.length) return null;
+  const sorted = [...entries].sort((a, b) => a.year - b.year);
+  const max = Math.max(...sorted.map((e) => e.population));
+  return (
+    <div className="flex items-end gap-2 h-24">
+      {sorted.map((e) => {
+        const pct = (e.population / max) * 100;
+        return (
+          <div key={e.year} className="flex flex-col items-center gap-1 flex-1">
+            <span className="text-[10px] font-mono text-on-surface-variant">
+              {e.population >= 1000
+                ? `${(e.population / 1000).toFixed(0)}k`
+                : e.population}
+            </span>
+            <div
+              className="w-full rounded-t"
+              style={{ height: `${Math.max(4, pct * 0.7)}px`, background: "var(--color-primary)" }}
+            />
+            <span className="text-[10px] text-on-surface-variant">{e.year}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function MunicipalityDetailPage() {
   const { code } = useParams<{ code: string }>();
 
@@ -49,6 +155,20 @@ export function MunicipalityDetailPage() {
     queryFn: () => municipalitiesApi.getMunicipality(code!),
     enabled: !!code,
     staleTime: 60 * 60 * 1000,
+  });
+
+  const { data: kpis, isLoading: kpisLoading } = useQuery({
+    queryKey: ["municipality-kpi", code],
+    queryFn: () => municipalitiesApi.getMunicipalityKPIs(code!),
+    enabled: !!code,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const { data: popTrend, isLoading: popLoading } = useQuery({
+    queryKey: ["municipality-pop-trend", code],
+    queryFn: () => municipalitiesApi.getPopulationTrend(code!),
+    enabled: !!code,
+    staleTime: 10 * 60 * 1000,
   });
 
   if (isLoading) {
@@ -65,7 +185,9 @@ export function MunicipalityDetailPage() {
     );
   }
 
-  const totalVotePct = mun.electionResults.reduce((s, r) => s + r.votePct, 0);
+  const electionResults = mun.electionResults ?? [];
+  const governingParties = mun.governingParties ?? [];
+  const totalVotePct = electionResults.reduce((s, r) => s + r.votePct, 0);
 
   return (
     <div className="space-y-6">
@@ -101,31 +223,33 @@ export function MunicipalityDetailPage() {
           <StatBlock value={mun.population.toLocaleString("sv-SE")} label="Invånare" small />
           <StatBlock value={mun.totalMandates} label="Mandat" small />
           <StatBlock value={mun.electionYear} label="Senaste val" small />
-          <StatBlock value={mun.governingParties.join("+")} label="Styre" small />
+          <StatBlock value={governingParties.join("+")} label="Styre" small />
         </div>
       </div>
 
       {/* Governing coalition */}
-      <div>
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
-          Styrande koalition
-        </p>
-        <div className="flex gap-2 flex-wrap">
-          {mun.governingParties.map((p) => (
-            <PartyBadge key={p} party={p} size="lg" />
-          ))}
+      {governingParties.length > 0 && (
+        <div>
+          <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
+            Styrande koalition
+          </p>
+          <div className="flex gap-2 flex-wrap">
+            {governingParties.map((p) => (
+              <PartyBadge key={p} party={p} size="lg" />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Election results */}
-      {mun.electionResults.length > 0 ? (
+      {electionResults.length > 0 ? (
         <>
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-3">
               Kommunalval {mun.electionYear} — mandatfördelning
             </p>
             <div className="rounded-xl p-4 border" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
-              <MandateBar results={mun.electionResults} />
+              <MandateBar results={electionResults} />
             </div>
           </div>
 
@@ -144,9 +268,9 @@ export function MunicipalityDetailPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {mun.electionResults.map((r, i) => {
+                  {electionResults.map((r, i) => {
                     const color = PARTY_COLORS[r.party]?.bg ?? "#9ca3af";
-                    const isGov = mun.governingParties.includes(r.party);
+                    const isGov = governingParties.includes(r.party);
                     const mandatePct = ((r.mandates / r.totalMandates) * 100).toFixed(1);
                     return (
                       <tr
@@ -197,6 +321,54 @@ export function MunicipalityDetailPage() {
           Valdata saknas för denna kommun i nuläget.
         </p>
       )}
+
+      {/* Kolada KPI section */}
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
+          Ekonomiska nyckeltal (Kolada)
+        </p>
+        {kpisLoading ? (
+          <KPISkeleton />
+        ) : kpis && kpis.length > 0 ? (
+          <KPITable kpis={kpis} />
+        ) : (
+          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
+        )}
+      </div>
+
+      {/* Population trend section */}
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-3">
+          Befolkningsutveckling (SCB)
+        </p>
+        {popLoading ? (
+          <div className="h-24 rounded animate-pulse bg-surface-high" />
+        ) : popTrend && popTrend.length > 0 ? (
+          <div className="rounded-xl p-4 border" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
+            <PopulationChart entries={popTrend} />
+          </div>
+        ) : (
+          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
+        )}
+      </div>
+
+      {/* Offentligabeslut section */}
+      <div className="rounded-xl p-5 border" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
+          Kommunfullmäktiges beslut
+        </p>
+        <p className="text-sm text-on-surface-variant mb-4 leading-relaxed">
+          Offentligabeslut.se samlar protokoll från kommunfullmäktige sedan 2018.
+        </p>
+        <a
+          href={`https://offentligabeslut.se/?q=${encodeURIComponent(mun.name)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-surface-low text-on-surface hover:bg-surface transition-colors"
+        >
+          Se beslut för {mun.name} →
+        </a>
+      </div>
     </div>
   );
 }

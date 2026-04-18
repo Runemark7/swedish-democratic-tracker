@@ -441,6 +441,54 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /municipalities/{code}/kpi:
+    get:
+      operationId: getMunicipalityKPIs
+      tags: [municipalities]
+      summary: Kolada KPI spending metrics for a municipality
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "0180"
+      responses:
+        "200":
+          description: Array of KPI values (up to 2 years per indicator)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MunicipalityKPIItem"
+        "502":
+          description: Upstream Kolada API error
+
+  /municipalities/{code}/population-trend:
+    get:
+      operationId: getMunicipalityPopulationTrend
+      tags: [municipalities]
+      summary: SCB population trend for a municipality (2019–2023)
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "0180"
+      responses:
+        "200":
+          description: Year-by-year population entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PopulationTrendEntry"
+        "502":
+          description: Upstream SCB API error
+
 components:
   parameters:
     PartyParam:
@@ -1212,3 +1260,34 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/ElectionResult"
+
+    MunicipalityKPIItem:
+      type: object
+      required: [kpi, year, value, status]
+      properties:
+        kpi:
+          type: string
+          example: "N00902"
+          description: Kolada KPI code
+        year:
+          type: integer
+          example: 2023
+        value:
+          type: number
+          format: float
+          example: 85432.0
+        status:
+          type: string
+          example: ""
+          description: Empty string means normal; "M" means missing data
+
+    PopulationTrendEntry:
+      type: object
+      required: [year, population]
+      properties:
+        year:
+          type: integer
+          example: 2023
+        population:
+          type: integer
+          example: 978770
