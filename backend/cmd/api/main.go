@@ -64,6 +64,7 @@ import (
 	regionsPG "riksdagskollen/internal/regions/adapters/postgres"
 	scbAdapter "riksdagskollen/internal/regions/adapters/scb"
 	"riksdagskollen/internal/regions"
+	"riksdagskollen/internal/regions/seeder"
 
 	// Ingestion
 	"riksdagskollen/internal/ingestion"
@@ -99,6 +100,25 @@ func main() {
 		os.Exit(1)
 	}
 	slog.Info("migrations applied")
+
+	// -- Election seeder (runs in background if SEED_ELECTIONS=true and DB has <100 municipalities) --
+	if envOr("SEED_ELECTIONS", "false") == "true" {
+		go func() {
+			var count int
+			if err := db.QueryRow(context.Background(), "SELECT COUNT(*) FROM municipalities").Scan(&count); err != nil {
+				slog.Error("seeder count check failed", "error", err)
+				return
+			}
+			if count >= 100 {
+				slog.Info("municipalities already seeded, skipping seeder", "count", count)
+				return
+			}
+			slog.Info("running election seeder", "existing_count", count)
+			if err := seeder.Run(context.Background(), db); err != nil {
+				slog.Error("election seeder failed", "error", err)
+			}
+		}()
+	}
 
 	// -- Wire features --
 	polRepo := politiciansPG.NewRepository(db)
