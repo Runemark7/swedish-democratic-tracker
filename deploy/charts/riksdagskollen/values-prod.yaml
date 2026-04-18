@@ -9,6 +9,7 @@ backend:
     - name: ghcr-pull-secret
   env:
     CORS_ALLOWED_ORIGIN: "https://sdt.runevibe.se"
+    SEED_ELECTIONS: "true"
 frontend:
   replicas: 1
   image:

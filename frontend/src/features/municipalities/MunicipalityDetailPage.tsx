@@ -111,9 +111,12 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
             const unit = KPI_UNITS[code] ?? "";
             const hasValue = item && item.status !== "M";
             const hasPrev = prev && prev.status !== "M";
-            const deltaPct = hasValue && hasPrev && prev!.value !== 0
+            const signsCross = !!(hasValue && hasPrev &&
+              ((item!.value > 0 && prev!.value < 0) || (item!.value < 0 && prev!.value > 0)));
+            const deltaPct = hasValue && hasPrev && prev!.value !== 0 && !signsCross
               ? ((item!.value - prev!.value) / Math.abs(prev!.value)) * 100
               : null;
+            const deltaAbs = signsCross ? item!.value - prev!.value : null;
             return (
               <tr
                 key={code}
@@ -133,6 +136,10 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
                   {deltaPct != null ? (
                     <span style={{ color: deltaPct > 0 ? "#ef4444" : "#22c55e", fontWeight: 600 }}>
                       {deltaPct > 0 ? "↑" : "↓"}{Math.abs(deltaPct).toFixed(1)}%
+                    </span>
+                  ) : deltaAbs != null ? (
+                    <span style={{ color: deltaAbs > 0 ? "#ef4444" : "#22c55e", fontWeight: 600 }}>
+                      {deltaAbs > 0 ? "+" : ""}{deltaAbs.toLocaleString("sv-SE", { maximumFractionDigits: 2 })} {unit === "%" ? "pp" : unit}
                     </span>
                   ) : <span className="text-on-surface-variant">–</span>}
                   {hasPrev && (
