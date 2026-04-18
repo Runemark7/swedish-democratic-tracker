@@ -1,0 +1,45 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "riksdagskollen.fullname" . }}
+  labels:
+    {{- include "riksdagskollen.labels" . | nindent 4 }}
+  annotations:
+    {{- range $k, $v := .Values.ingress.annotations }}
+    {{ $k }}: {{ $v | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tlsSecretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "riksdagskollen.fullname" . }}-backend
+                port:
+                  number: 80
+          - path: /healthz
+            pathType: Exact
+            backend:
+              service:
+                name: {{ include "riksdagskollen.fullname" . }}-backend
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "riksdagskollen.fullname" . }}-frontend
+                port:
+                  number: 80
+{{- end }}

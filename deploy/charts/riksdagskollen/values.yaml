@@ -1,0 +1,104 @@
+## Backend API
+backend:
+  image:
+    repository: ghcr.io/your-org/riksdagskollen-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 8080
+  env:
+    PORT: "8080"
+    MIGRATIONS_PATH: "file:///migrations"
+    CORS_ALLOWED_ORIGIN: "https://riksdagskollen.example.com"
+  # DATABASE_URL injected from secret
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532     # distroless nonroot uid
+    runAsGroup: 65532
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 15
+  readinessProbe:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+## Frontend
+frontend:
+  image:
+    repository: ghcr.io/your-org/riksdagskollen-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 8080
+  # In k8s the Ingress routes /api to the backend Service directly, so nginx
+  # never proxies it. Still must be a valid URL for nginx template parsing.
+  backendUrl: http://riksdagskollen-backend
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 101       # nginx user
+    runAsGroup: 101
+    readOnlyRootFilesystem: false  # nginx writes temp files; use tmpfs volumes
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
+
+## Ingress
+ingress:
+  enabled: true
+  className: nginx
+  tls: true
+  tlsSecretName: riksdagskollen-tls
+  host: riksdagskollen.example.com
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+## Secret name for database credentials
+## Must be pre-created with key: DATABASE_URL
+dbSecretName: riksdagskollen-db-secret
+
+## bitnami/postgresql subchart — used when you want postgres in-cluster
+postgresql:
+  enabled: true
+  auth:
+    existingSecret: riksdagskollen-db-secret
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
+    username: riksdagskollen
+    database: riksdagskollen
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 512Mi

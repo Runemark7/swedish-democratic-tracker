@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
+@theme {
+  /* ── Surface Hierarchy (DESIGN.md §2) ─────────────────────────────── */
+  --color-surface: #f8f9fb;
+  --color-surface-low: #f2f4f6;
+  --color-surface-lowest: #ffffff;
+  --color-surface-high: #e6e8ea;
+  --color-surface-highest: #dddfe1;
+  --color-surface-variant: #dee3eb;
+  --color-surface-tint: #003461;
+
+  /* ── Primary (Midnight Navy) ──────────────────────────────────────── */
+  --color-primary: #003461;
+  --color-primary-container: #004b87;
+  --color-primary-fixed: #d1e4ff;
+  --color-on-primary: #ffffff;
+  --color-on-primary-fixed: #001d36;
+
+  /* ── Secondary (Metallic Gold) ────────────────────────────────────── */
+  --color-secondary: #735c00;
+  --color-secondary-container: #fecc00;
+
+  /* ── Tertiary ─────────────────────────────────────────────────────── */
+  --color-tertiary: #4a6546;
+  --color-on-tertiary-fixed-variant: #324e2f;
+
+  /* ── On Surface ───────────────────────────────────────────────────── */
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #424750;
+
+  /* ── Outline ──────────────────────────────────────────────────────── */
+  --color-outline-variant: #c2c7cf;
+
+  /* ── Status Colors ────────────────────────────────────────────────── */
+  --color-aligned: #16a34a;
+  --color-aligned-bg: #f0fdf4;
+  --color-contradiction: #dc2626;
+  --color-contradiction-bg: #fef2f2;
+  --color-partial: #d97706;
+  --color-partial-bg: #fffbeb;
+  --color-neutral: #9ca3af;
+
+  /* ── Party Colors ─────────────────────────────────────────────────── */
+  --color-party-s: #E8192C;
+  --color-party-m: #52BDEC;
+  --color-party-sd: #DDDD00;
+  --color-party-c: #009933;
+  --color-party-v: #DA291C;
+  --color-party-kd: #005EA1;
+  --color-party-l: #006AB3;
+  --color-party-mp: #83CF39;
+
+  /* ── Fonts (DESIGN.md §3) ─────────────────────────────────────────── */
+  --font-display: 'Manrope', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Base Styles ────────────────────────────────────────────────────── */
+html {
+  font-family: var(--font-body);
+  color: var(--color-on-surface);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Glassmorphism (DESIGN.md §2) ───────────────────────────────────── */
+.glass {
+  background: rgba(248, 249, 251, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ── Primary gradient (DESIGN.md §2) ─────────────────────────────────── */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+}
+
+/* ── Ambient shadow (DESIGN.md §4) ───────────────────────────────────── */
+.shadow-ambient {
+  box-shadow: 0px 20px 40px color-mix(in srgb, var(--color-on-surface) 6%, transparent);
+}
+
+/* ── Ghost border (DESIGN.md §4) ──────────────────────────────────────── */
+.ghost-border {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-outline-variant) 20%, transparent);
+}

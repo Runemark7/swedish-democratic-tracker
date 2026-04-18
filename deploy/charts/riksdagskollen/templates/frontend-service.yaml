@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "riksdagskollen.fullname" . }}-frontend
+  labels:
+    {{- include "riksdagskollen.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "riksdagskollen.frontend.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: 80
+      targetPort: {{ .Values.frontend.port }}
+      protocol: TCP
