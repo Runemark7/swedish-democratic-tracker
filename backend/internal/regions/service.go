@@ -9,7 +9,7 @@ import (
 
 var defaultKPIs = []string{
 	// Verksamhet
-	"N00901", "N11037", "N15027", "N20043", "N03010",
+	"N00900", "N11037", "N15027", "N20043", "N03010",
 	// Budget & ekonomi
 	"N03007", "N03102", "N03106", "N03040", "N03132",
 }
