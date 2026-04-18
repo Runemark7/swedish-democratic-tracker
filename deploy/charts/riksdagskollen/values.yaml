@@ -4,7 +4,7 @@ backend:
     repository: ghcr.io/your-org/riksdagskollen-api
     tag: latest
     pullPolicy: IfNotPresent
-  replicas: 2
+  replicas: 1
   port: 8080
   env:
     PORT: "8080"
@@ -45,7 +45,7 @@ frontend:
     repository: ghcr.io/your-org/riksdagskollen-frontend
     tag: latest
     pullPolicy: IfNotPresent
-  replicas: 2
+  replicas: 1
   port: 8080
   # In k8s the Ingress routes /api to the backend Service directly, so nginx
   # never proxies it. Still must be a valid URL for nginx template parsing.

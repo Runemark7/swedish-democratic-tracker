@@ -1,6 +1,6 @@
 ## Production overrides — merge on top of values.yaml
 backend:
-  replicas: 3
+  replicas: 1
   image:
     repository: ghcr.io/runemark7/riksdagskollen-api
     pullPolicy: Always
@@ -10,7 +10,7 @@ backend:
   env:
     CORS_ALLOWED_ORIGIN: "https://sdt.runevibe.se"
 frontend:
-  replicas: 3
+  replicas: 1
   image:
     repository: ghcr.io/runemark7/riksdagskollen-frontend
     pullPolicy: Always
