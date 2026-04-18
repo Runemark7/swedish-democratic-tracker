@@ -465,6 +465,30 @@ paths:
         "502":
           description: Upstream Kolada API error
 
+  /municipalities/{code}/spending:
+    get:
+      operationId: getMunicipalitySpending
+      tags: [municipalities]
+      summary: Sector spending breakdown from Kolada (2019–2023)
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "0180"
+      responses:
+        "200":
+          description: Array of spending KPI values (8 sectors × up to 5 years)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MunicipalityKPIItem"
+        "502":
+          description: Upstream Kolada API error
+
   /municipalities/{code}/population-trend:
     get:
       operationId: getMunicipalityPopulationTrend

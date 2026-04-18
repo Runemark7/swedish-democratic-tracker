@@ -13,6 +13,7 @@ import { RegionLandingPage } from "./features/regions/RegionLandingPage";
 import { RegionDetailPage } from "./features/regions/RegionDetailPage";
 import { MunicipalityLandingPage } from "./features/municipalities/MunicipalityLandingPage";
 import { MunicipalityDetailPage } from "./features/municipalities/MunicipalityDetailPage";
+import { MunicipalityComparePage } from "./features/municipalities/MunicipalityComparePage";
 
 const CATEGORIES = [
   {
@@ -123,6 +124,35 @@ export default function App() {
         style={{ borderBottom: "1px solid color-mix(in srgb, var(--color-outline-variant) 30%, transparent)" }}
       >
         <div className="mx-auto max-w-[960px]">
+          {/* Feature tabs (Kommun) */}
+          {section === "kommun" && (
+            <div className="flex">
+              {[
+                { to: "/kommun", label: "Kommuner" },
+                { to: "/kommun/jämför", label: "Jämför" },
+              ].map((tab) => {
+                const isActive = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/") && tab.to !== "/kommun";
+                const isKommunerActive = tab.to === "/kommun" && !location.pathname.startsWith("/kommun/jämför");
+                const isJämförActive = tab.to === "/kommun/jämför" && location.pathname.startsWith("/kommun/jämför");
+                const active = tab.to === "/kommun" ? isKommunerActive : isJämförActive || isActive;
+                return (
+                  <NavLink
+                    key={tab.to}
+                    to={tab.to}
+                    className="block px-5 py-3 text-[13px] font-medium transition-colors"
+                    style={{
+                      borderBottom: active ? "2px solid var(--color-on-surface)" : "2px solid transparent",
+                      color: active ? "var(--color-on-surface)" : "var(--color-on-surface-variant)",
+                      fontWeight: active ? 700 : 500,
+                    }}
+                  >
+                    {tab.label}
+                  </NavLink>
+                );
+              })}
+            </div>
+          )}
+
           {/* Feature tabs (Riksdag only) */}
           {section === "riksdag" && (
             <div className="flex">
@@ -177,6 +207,7 @@ export default function App() {
           <Route path="/region" element={<RegionLandingPage />} />
           <Route path="/region/:code" element={<RegionDetailPage />} />
           <Route path="/kommun" element={<MunicipalityLandingPage />} />
+          <Route path="/kommun/jämför" element={<MunicipalityComparePage />} />
           <Route path="/kommun/:code" element={<MunicipalityDetailPage />} />
         </Routes>
 

@@ -16,6 +16,9 @@ var defaultKPIs = []string{
 var defaultKPIYears = []int{2022, 2023}
 var defaultPopYears = []int{2019, 2020, 2021, 2022, 2023}
 
+var spendingKPIs  = []string{"N11004", "N15028", "N17014", "N20014", "N30005", "N07037", "N09022", "N05011"}
+var spendingYears = []int{2019, 2020, 2021, 2022, 2023}
+
 type Service struct {
 	repo   ports.RegionRepository
 	kolada ports.KoladaClient
@@ -48,4 +51,8 @@ func (s *Service) GetMunicipalityKPIs(ctx context.Context, munCode string) ([]po
 
 func (s *Service) GetPopulationTrend(ctx context.Context, munCode string) ([]ports.PopulationEntry, error) {
 	return s.scb.FetchPopulationTrend(ctx, munCode, defaultPopYears)
+}
+
+func (s *Service) GetMunicipalitySpending(ctx context.Context, munCode string) ([]ports.KPIValue, error) {
+	return s.kolada.FetchKPIs(ctx, munCode, spendingKPIs, spendingYears)
 }
