@@ -321,3 +321,15 @@ export interface MunicipalityDetail extends MunicipalitySummary {
   electionResults: ElectionResult[];
 }
 
+export interface MunicipalityKPIItem {
+  kpi: string;
+  year: number;
+  value: number;
+  status: string;
+}
+
+export interface PopulationTrendEntry {
+  year: number;
+  population: number;
+}
+

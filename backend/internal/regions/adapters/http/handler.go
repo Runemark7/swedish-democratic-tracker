@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"riksdagskollen/internal/regions"
+	"riksdagskollen/internal/regions/ports"
 )
 
 type Handler struct {
@@ -24,6 +25,8 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/regions/{code}", h.getRegion)
 	r.Get("/municipalities", h.listMunicipalities)
 	r.Get("/municipalities/{code}", h.getMunicipality)
+	r.Get("/municipalities/{code}/kpi", h.getMunicipalityKPI)
+	r.Get("/municipalities/{code}/population-trend", h.getPopulationTrend)
 }
 
 func (h *Handler) listRegions(w http.ResponseWriter, r *http.Request) {
@@ -79,6 +82,32 @@ func (h *Handler) getMunicipality(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonOK(w, detail)
+}
+
+func (h *Handler) getMunicipalityKPI(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	values, err := h.svc.GetMunicipalityKPIs(r.Context(), code)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if values == nil {
+		values = []ports.KPIValue{}
+	}
+	jsonOK(w, values)
+}
+
+func (h *Handler) getPopulationTrend(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	entries, err := h.svc.GetPopulationTrend(r.Context(), code)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if entries == nil {
+		entries = []ports.PopulationEntry{}
+	}
+	jsonOK(w, entries)
 }
 
 func jsonOK(w http.ResponseWriter, v any) {

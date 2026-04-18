@@ -1,5 +1,5 @@
 import { api } from "@/shared/api-client";
-import type { MunicipalityDetail, MunicipalitySummary } from "@/shared/types";
+import type { MunicipalityDetail, MunicipalitySummary, MunicipalityKPIItem, PopulationTrendEntry } from "@/shared/types";
 
 export const municipalitiesApi = {
   listMunicipalities: (regionCode?: string) =>
@@ -8,4 +8,8 @@ export const municipalitiesApi = {
     ),
   getMunicipality: (code: string) =>
     api.get<MunicipalityDetail>(`/municipalities/${code}`),
+  getMunicipalityKPIs: (code: string) =>
+    api.get<MunicipalityKPIItem[]>(`/municipalities/${code}/kpi`),
+  getPopulationTrend: (code: string) =>
+    api.get<PopulationTrendEntry[]>(`/municipalities/${code}/population-trend`),
 };

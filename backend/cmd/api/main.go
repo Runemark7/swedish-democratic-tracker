@@ -60,7 +60,9 @@ import (
 
 	// Feature: regions + municipalities
 	regionsHTTP "riksdagskollen/internal/regions/adapters/http"
+	koladaAdapter "riksdagskollen/internal/regions/adapters/kolada"
 	regionsPG "riksdagskollen/internal/regions/adapters/postgres"
+	scbAdapter "riksdagskollen/internal/regions/adapters/scb"
 	"riksdagskollen/internal/regions"
 
 	// Ingestion
@@ -135,7 +137,9 @@ func main() {
 	contextHandler := contextHTTP.NewHandler(contextSvc)
 
 	regionsRepo := regionsPG.NewRepository(db)
-	regionsSvc := regions.NewService(regionsRepo)
+	koladaCl := koladaAdapter.NewClient()
+	scbCl := scbAdapter.NewClient()
+	regionsSvc := regions.NewService(regionsRepo, koladaCl, scbCl)
 	regionsHandler := regionsHTTP.NewHandler(regionsSvc)
 
 	// -- Router --

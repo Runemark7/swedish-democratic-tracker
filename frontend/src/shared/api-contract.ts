@@ -327,6 +327,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/municipalities/{code}/kpi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kolada KPI spending metrics for a municipality */
+        get: operations["getMunicipalityKPIs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/municipalities/{code}/population-trend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** SCB population trend for a municipality (2019–2023) */
+        get: operations["getMunicipalityPopulationTrend"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -715,6 +749,31 @@ export interface components {
         };
         MunicipalityDetail: components["schemas"]["MunicipalitySummary"] & {
             electionResults: components["schemas"]["ElectionResult"][];
+        };
+        MunicipalityKPIItem: {
+            /**
+             * @description Kolada KPI code
+             * @example N00902
+             */
+            kpi: string;
+            /** @example 2023 */
+            year: number;
+            /**
+             * Format: float
+             * @example 85432
+             */
+            value: number;
+            /**
+             * @description Empty string means normal; "M" means missing data
+             * @example
+             */
+            status: string;
+        };
+        PopulationTrendEntry: {
+            /** @example 2023 */
+            year: number;
+            /** @example 978770 */
+            population: number;
         };
     };
     responses: {
@@ -1181,6 +1240,64 @@ export interface operations {
                 };
             };
             404: components["responses"]["NotFound"];
+        };
+    };
+    getMunicipalityKPIs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of KPI values (up to 2 years per indicator) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MunicipalityKPIItem"][];
+                };
+            };
+            /** @description Upstream Kolada API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMunicipalityPopulationTrend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Year-by-year population entries */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PopulationTrendEntry"][];
+                };
+            };
+            /** @description Upstream SCB API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
 }

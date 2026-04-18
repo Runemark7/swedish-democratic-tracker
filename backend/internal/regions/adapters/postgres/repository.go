@@ -44,6 +44,8 @@ func (r *Repository) ListRegions(ctx context.Context) ([]*domain.Region, error) 
 
 func (r *Repository) GetRegion(ctx context.Context, code string) (*domain.RegionDetail, error) {
 	detail := &domain.RegionDetail{}
+	detail.Region.GoverningParties = []string{}
+	detail.ElectionResults = []domain.ElectionResult{}
 	err := r.db.QueryRow(ctx, `
 		SELECT code, name, capital, population, governing_parties, election_year, total_mandates
 		FROM regions WHERE code = $1
@@ -133,6 +135,8 @@ func scanMunicipalities(rows pgx.Rows) ([]*domain.Municipality, error) {
 
 func (r *Repository) GetMunicipality(ctx context.Context, code string) (*domain.MunicipalityDetail, error) {
 	detail := &domain.MunicipalityDetail{}
+	detail.Municipality.GoverningParties = []string{}
+	detail.ElectionResults = []domain.ElectionResult{}
 	err := r.db.QueryRow(ctx, `
 		SELECT m.code, m.name, m.region_code, reg.name, m.population,
 		       m.governing_parties, m.election_year, m.total_mandates
