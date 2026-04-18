@@ -7,7 +7,7 @@ import (
 	"riksdagskollen/internal/regions/ports"
 )
 
-var defaultKPIs = []string{"N00902", "N03005", "N00941", "N15033", "N07402"}
+var defaultKPIs = []string{"N00901", "N11037", "N15027", "N20043", "N03010"}
 var defaultKPIYears = []int{2022, 2023}
 var defaultPopYears = []int{2019, 2020, 2021, 2022, 2023}
 

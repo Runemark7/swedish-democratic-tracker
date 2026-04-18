@@ -6,20 +6,20 @@ import { municipalitiesApi } from "./api";
 import type { ElectionResult, MunicipalityKPIItem } from "@/shared/types";
 
 const KPI_LABELS: Record<string, string> = {
-  N00902: "Kostnad kommunal verksamhet per invånare",
-  N03005: "Kommunalskatt",
-  N00941: "Kostnad förskola per barn",
-  N15033: "Kostnad grundskola per elev",
-  N07402: "Kostnad vård och omsorg om äldre per brukare",
+  N00901: "Kommunalskatt",
+  N11037: "Nettokostnad förskola per inskrivet barn",
+  N15027: "Kostnad grundskola per elev",
+  N20043: "Kostnad äldreomsorg per invånare",
+  N03010: "Skatteintäkter per invånare",
 };
 const KPI_UNITS: Record<string, string> = {
-  N00902: "kr/inv",
-  N03005: "%",
-  N00941: "kr",
-  N15033: "kr",
-  N07402: "kr",
+  N00901: "%",
+  N11037: "kr",
+  N15027: "kr",
+  N20043: "kr/inv",
+  N03010: "kr/inv",
 };
-const KPI_ORDER = ["N00902", "N03005", "N00941", "N15033", "N07402"];
+const KPI_ORDER = ["N00901", "N11037", "N15027", "N20043", "N03010"];
 
 function MandateBar({ results }: { results: ElectionResult[] }) {
   if (!results.length) return null;
