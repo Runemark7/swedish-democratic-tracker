@@ -11,6 +11,11 @@ const KPI_LABELS: Record<string, string> = {
   N15027: "Kostnad grundskola per elev",
   N20043: "Kostnad äldreomsorg per invånare",
   N03010: "Skatteintäkter per invånare",
+  N03007: "Årets resultat",
+  N03102: "Årets resultat som andel av skatt & statsbidrag",
+  N03106: "Soliditet",
+  N03040: "Skulder totalt",
+  N03132: "Nettoinvesteringar totalt",
 };
 const KPI_UNITS: Record<string, string> = {
   N00901: "%",
@@ -18,8 +23,14 @@ const KPI_UNITS: Record<string, string> = {
   N15027: "kr",
   N20043: "kr/inv",
   N03010: "kr/inv",
+  N03007: "kr/inv",
+  N03102: "%",
+  N03106: "%",
+  N03040: "kr/inv",
+  N03132: "kr/inv",
 };
-const KPI_ORDER = ["N00901", "N11037", "N15027", "N20043", "N03010"];
+const VERKSAMHET_KPI_ORDER = ["N00901", "N11037", "N15027", "N20043", "N03010"];
+const BUDGET_KPI_ORDER = ["N03007", "N03102", "N03106", "N03040", "N03132"];
 
 function MandateBar({ results }: { results: ElectionResult[] }) {
   if (!results.length) return null;
@@ -57,10 +68,10 @@ function MandateBar({ results }: { results: ElectionResult[] }) {
   );
 }
 
-function KPISkeleton() {
+function KPISkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="space-y-2">
-      {Array.from({ length: 5 }).map((_, i) => (
+      {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex justify-between items-center py-2 border-b animate-pulse" style={{ borderColor: "var(--color-surface-high)" }}>
           <div className="h-3 rounded bg-surface-high w-48" />
           <div className="h-3 rounded bg-surface-high w-20" />
@@ -70,8 +81,7 @@ function KPISkeleton() {
   );
 }
 
-function KPITable({ kpis }: { kpis: MunicipalityKPIItem[] }) {
-  // Build map: kpiCode → latest year entry
+function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: string[] }) {
   const latest = new Map<string, MunicipalityKPIItem>();
   for (const item of kpis) {
     const existing = latest.get(item.kpi);
@@ -89,7 +99,7 @@ function KPITable({ kpis }: { kpis: MunicipalityKPIItem[] }) {
           </tr>
         </thead>
         <tbody>
-          {KPI_ORDER.map((code, i) => {
+          {kpiOrder.map((code, i) => {
             const item = latest.get(code);
             const label = KPI_LABELS[code] ?? code;
             const unit = KPI_UNITS[code] ?? "";
@@ -322,15 +332,29 @@ export function MunicipalityDetailPage() {
         </p>
       )}
 
-      {/* Kolada KPI section */}
+      {/* Verksamhetsnyckeltal */}
       <div>
         <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
-          Ekonomiska nyckeltal (Kolada)
+          Verksamhetsnyckeltal (Kolada)
         </p>
         {kpisLoading ? (
-          <KPISkeleton />
+          <KPISkeleton rows={5} />
         ) : kpis && kpis.length > 0 ? (
-          <KPITable kpis={kpis} />
+          <KPITable kpis={kpis} kpiOrder={VERKSAMHET_KPI_ORDER} />
+        ) : (
+          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
+        )}
+      </div>
+
+      {/* Budget & Ekonomi */}
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
+          Budget & Ekonomi (Kolada)
+        </p>
+        {kpisLoading ? (
+          <KPISkeleton rows={5} />
+        ) : kpis && kpis.length > 0 ? (
+          <KPITable kpis={kpis} kpiOrder={BUDGET_KPI_ORDER} />
         ) : (
           <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
         )}
