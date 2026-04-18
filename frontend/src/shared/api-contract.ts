@@ -344,6 +344,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/municipalities/{code}/spending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sector spending breakdown from Kolada (2019–2023) */
+        get: operations["getMunicipalitySpending"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/municipalities/{code}/population-trend": {
         parameters: {
             query?: never;
@@ -1254,6 +1271,36 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Array of KPI values (up to 2 years per indicator) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MunicipalityKPIItem"][];
+                };
+            };
+            /** @description Upstream Kolada API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMunicipalitySpending: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 0180 */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of spending KPI values (8 sectors × up to 5 years) */
             200: {
                 headers: {
                     [name: string]: unknown;

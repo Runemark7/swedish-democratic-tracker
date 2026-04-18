@@ -1,4 +1,5 @@
 import { useParams, NavLink } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PartyBadge, StatBlock } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
@@ -130,6 +131,69 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
   );
 }
 
+const SPENDING_LABELS: Record<string, string> = {
+  N11004: "Förskola",
+  N15028: "Grundskola",
+  N17014: "Gymnasieskola",
+  N20014: "Äldreomsorg",
+  N30005: "Individ- & familjeomsorg",
+  N07037: "Infrastruktur & skydd",
+  N09022: "Kultur & fritid",
+  N05011: "Nämnd & administration",
+};
+const SPENDING_ORDER = ["N20014", "N15028", "N30005", "N11004", "N17014", "N07037", "N09022", "N05011"];
+const SPENDING_COLORS: Record<string, string> = {
+  N11004: "#6366f1",
+  N15028: "#0ea5e9",
+  N17014: "#14b8a6",
+  N20014: "#f59e0b",
+  N30005: "#ef4444",
+  N07037: "#8b5cf6",
+  N09022: "#10b981",
+  N05011: "#94a3b8",
+};
+const SPENDING_YEARS = [2019, 2020, 2021, 2022, 2023];
+
+function SpendingChart({ items, year }: { items: MunicipalityKPIItem[]; year: number }) {
+  const byCode: Record<string, number> = {};
+  for (const item of items) {
+    if (item.year === year && item.value > 0) byCode[item.kpi] = item.value;
+  }
+  const total = SPENDING_ORDER.reduce((s, c) => s + (byCode[c] ?? 0), 0);
+  if (total === 0) return <p className="text-sm text-on-surface-variant py-2">Data saknas för {year}.</p>;
+
+  return (
+    <div className="space-y-2">
+      {SPENDING_ORDER.map((code) => {
+        const val = byCode[code] ?? 0;
+        const pct = total > 0 ? (val / total) * 100 : 0;
+        const color = SPENDING_COLORS[code];
+        const label = SPENDING_LABELS[code];
+        return (
+          <div key={code} className="flex items-center gap-3">
+            <span className="text-xs text-on-surface-variant w-44 shrink-0 text-right">{label}</span>
+            <div className="flex-1 h-5 rounded-sm overflow-hidden" style={{ background: "var(--color-surface-high)" }}>
+              <div
+                className="h-full rounded-sm transition-all duration-300"
+                style={{ width: `${pct}%`, background: color }}
+              />
+            </div>
+            <span className="text-xs font-mono text-on-surface w-28 shrink-0">
+              {val > 0 ? `${val.toLocaleString("sv-SE", { maximumFractionDigits: 0 })} kr/inv` : "–"}
+            </span>
+            <span className="text-[11px] text-on-surface-variant w-10 shrink-0 text-right">
+              {pct > 0 ? `${pct.toFixed(0)}%` : ""}
+            </span>
+          </div>
+        );
+      })}
+      <p className="text-[10px] text-on-surface-variant pt-1">
+        Summa redovisade sektorer: {total.toLocaleString("sv-SE", { maximumFractionDigits: 0 })} kr/inv
+      </p>
+    </div>
+  );
+}
+
 function PopulationChart({ entries }: { entries: { year: number; population: number }[] }) {
   if (!entries.length) return null;
   const sorted = [...entries].sort((a, b) => a.year - b.year);
@@ -180,6 +244,19 @@ export function MunicipalityDetailPage() {
     enabled: !!code,
     staleTime: 10 * 60 * 1000,
   });
+
+  const { data: spending, isLoading: spendingLoading } = useQuery({
+    queryKey: ["municipality-spending", code],
+    queryFn: () => municipalitiesApi.getMunicipalitySpending(code!),
+    enabled: !!code,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const availableSpendingYears = spending
+    ? [...new Set(spending.map((s) => s.year))].sort((a, b) => b - a)
+    : [];
+  const [selectedSpendingYear, setSelectedSpendingYear] = useState<number | null>(null);
+  const activeSpendingYear = selectedSpendingYear ?? availableSpendingYears[0] ?? 2023;
 
   if (isLoading) {
     return <p className="text-sm text-on-surface-variant py-16 text-center">Laddar kommundata…</p>;
@@ -370,6 +447,45 @@ export function MunicipalityDetailPage() {
         ) : popTrend && popTrend.length > 0 ? (
           <div className="rounded-xl p-4 border" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
             <PopulationChart entries={popTrend} />
+          </div>
+        ) : (
+          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
+        )}
+      </div>
+
+      {/* Var går pengarna? */}
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-3">
+          Var går pengarna? (Kolada)
+        </p>
+        {spendingLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3 animate-pulse">
+                <div className="h-3 rounded bg-surface-high w-44 shrink-0" />
+                <div className="flex-1 h-5 rounded bg-surface-high" />
+                <div className="h-3 rounded bg-surface-high w-24 shrink-0" />
+              </div>
+            ))}
+          </div>
+        ) : spending && spending.length > 0 ? (
+          <div className="rounded-xl p-4 border space-y-3" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
+            <div className="flex gap-1 flex-wrap">
+              {SPENDING_YEARS.map((y) => (
+                <button
+                  key={y}
+                  onClick={() => setSelectedSpendingYear(y)}
+                  className="text-[11px] font-mono px-2.5 py-1 rounded transition-colors"
+                  style={{
+                    background: activeSpendingYear === y ? "var(--color-primary)" : "var(--color-surface-high)",
+                    color: activeSpendingYear === y ? "var(--color-on-primary, #fff)" : "var(--color-on-surface-variant)",
+                  }}
+                >
+                  {y}
+                </button>
+              ))}
+            </div>
+            <SpendingChart items={spending} year={activeSpendingYear} />
           </div>
         ) : (
           <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>

@@ -26,6 +26,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/municipalities", h.listMunicipalities)
 	r.Get("/municipalities/{code}", h.getMunicipality)
 	r.Get("/municipalities/{code}/kpi", h.getMunicipalityKPI)
+	r.Get("/municipalities/{code}/spending", h.getMunicipalitySpending)
 	r.Get("/municipalities/{code}/population-trend", h.getPopulationTrend)
 }
 
@@ -87,6 +88,19 @@ func (h *Handler) getMunicipality(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getMunicipalityKPI(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
 	values, err := h.svc.GetMunicipalityKPIs(r.Context(), code)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if values == nil {
+		values = []ports.KPIValue{}
+	}
+	jsonOK(w, values)
+}
+
+func (h *Handler) getMunicipalitySpending(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	values, err := h.svc.GetMunicipalitySpending(r.Context(), code)
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusBadGateway)
 		return

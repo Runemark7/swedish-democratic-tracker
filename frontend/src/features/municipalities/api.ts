@@ -12,4 +12,6 @@ export const municipalitiesApi = {
     api.get<MunicipalityKPIItem[]>(`/municipalities/${code}/kpi`),
   getPopulationTrend: (code: string) =>
     api.get<PopulationTrendEntry[]>(`/municipalities/${code}/population-trend`),
+  getMunicipalitySpending: (code: string) =>
+    api.get<MunicipalityKPIItem[]>(`/municipalities/${code}/spending`),
 };
