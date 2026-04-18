@@ -80,10 +80,10 @@ func (c *Client) FetchPopulationTrend(ctx context.Context, munCode string, years
 	result := []ports.PopulationEntry{}
 	for _, d := range payload.Data {
 		// key layout: [region, contentsCode, year]
-		if len(d.Key) < 3 || len(d.Values) == 0 {
+		if len(d.Key) < 2 || len(d.Values) == 0 {
 			continue
 		}
-		year, err := strconv.Atoi(d.Key[2])
+		year, err := strconv.Atoi(d.Key[1])
 		if err != nil {
 			continue
 		}
