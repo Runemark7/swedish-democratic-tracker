@@ -4,22 +4,21 @@ backend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-api
     pullPolicy: Always
+    tag: 80404ba6d4a9aaf3550ba60b5caf420428424b06
   imagePullSecrets:
     - name: ghcr-pull-secret
   env:
     CORS_ALLOWED_ORIGIN: "https://sdt.runevibe.se"
-
 frontend:
   replicas: 3
   image:
     repository: ghcr.io/runemark7/riksdagskollen-frontend
     pullPolicy: Always
+    tag: 80404ba6d4a9aaf3550ba60b5caf420428424b06
   imagePullSecrets:
     - name: ghcr-pull-secret
-
 postgresql:
   enabled: false
-
 ingress:
   host: sdt.runevibe.se
   tlsSecretName: sdt-runevibe-tls
