@@ -87,8 +87,8 @@ func (s *Scheduler) RunInitialSync(ctx context.Context) error {
 		slog.Info("initial sync: running worker", "worker", w.Name())
 
 		// EnrichOrigins needs to loop until all votes are processed
-		if w.Name() == "enrich-vote-origins" {
-			if err := s.runEnrichLoop(ctx, w); err != nil {
+		if ew, ok := w.(*workers.EnrichOriginsWorker); ok {
+			if err := s.runEnrichLoop(ctx, ew); err != nil {
 				slog.Error("initial sync: enrich loop failed", "error", err)
 			}
 		} else {
@@ -105,25 +105,21 @@ func (s *Scheduler) RunInitialSync(ctx context.Context) error {
 	return nil
 }
 
-// runEnrichLoop runs the enrich worker repeatedly with increasing batch sizes
-// until no more unenriched votes remain.
-func (s *Scheduler) runEnrichLoop(ctx context.Context, w Worker) error {
-	for round := 1; ; round++ {
+// runEnrichLoop runs the enrich worker in batches until no votes remain unenriched.
+func (s *Scheduler) runEnrichLoop(ctx context.Context, w *workers.EnrichOriginsWorker) error {
+	for round := 1; round <= 50; round++ {
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
-		slog.Info("initial sync: enrich round", "round", round)
-		if err := w.Run(ctx); err != nil {
+		n, err := w.RunBatch(ctx)
+		if err != nil {
 			return err
 		}
-		// The enrich worker processes a fixed batch (100). If it ran without
-		// error, we check if there might be more. We run up to 50 rounds
-		// (5000 votes) to avoid infinite loops.
-		if round >= 50 {
-			slog.Info("initial sync: enrich reached max rounds", "rounds", round)
+		slog.Info("initial sync: enrich round", "round", round, "enriched", n)
+		if n == 0 {
+			slog.Info("initial sync: enrich complete, no more unenriched votes", "rounds", round)
 			break
 		}
-		// Small delay between rounds to be gentle on the Riksdagen API
 		time.Sleep(500 * time.Millisecond)
 	}
 	return nil
