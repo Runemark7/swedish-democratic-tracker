@@ -21,3 +21,22 @@ type PopulationEntry struct {
 	Year       int `json:"year"`
 	Population int `json:"population"`
 }
+
+type TEDClient interface {
+	FetchProcurement(ctx context.Context, buyerName string) ([]ProcurementNotice, error)
+}
+
+type ProcurementNotice struct {
+	CPVDivision string
+	Value       float64
+	Currency    string
+	Year        int
+}
+
+type ProcurementCategorySummary struct {
+	CPVDivision string  `json:"cpv_division"`
+	Label       string  `json:"label"`
+	TotalValueSEK float64 `json:"total_value_sek"`
+	Pct         float64 `json:"pct"`
+	Count       int     `json:"count"`
+}

@@ -489,6 +489,30 @@ paths:
         "502":
           description: Upstream Kolada API error
 
+  /municipalities/{code}/procurement:
+    get:
+      operationId: getMunicipalityProcurement
+      tags: [municipalities]
+      summary: Public procurement breakdown by CPV category from TED (2021–2024)
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "1480"
+      responses:
+        "200":
+          description: Top CPV procurement categories by contracted value
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcurementCategorySummary"
+        "502":
+          description: Upstream TED API error
+
   /municipalities/{code}/population-trend:
     get:
       operationId: getMunicipalityPopulationTrend
@@ -1315,3 +1339,30 @@ components:
         population:
           type: integer
           example: 978770
+
+    ProcurementCategorySummary:
+      type: object
+      required: [cpv_division, label, total_value_sek, pct, count]
+      properties:
+        cpv_division:
+          type: string
+          example: "45"
+          description: First two digits of the CPV code (main division)
+        label:
+          type: string
+          example: "Bygg & anläggning"
+          description: Swedish label for the CPV division
+        total_value_sek:
+          type: number
+          format: float
+          example: 1105500000
+          description: Total contracted value in SEK for this category
+        pct:
+          type: number
+          format: float
+          example: 27.1
+          description: Percentage of total procurement spend
+        count:
+          type: integer
+          example: 12
+          description: Number of contract award notices in this category

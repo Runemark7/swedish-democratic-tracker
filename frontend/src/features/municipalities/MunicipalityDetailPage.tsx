@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PartyBadge, StatBlock } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
 import { municipalitiesApi } from "./api";
-import type { ElectionResult, MunicipalityKPIItem } from "@/shared/types";
+import type { ElectionResult, MunicipalityKPIItem, ProcurementCategorySummary } from "@/shared/types";
 
 const KPI_LABELS: Record<string, string> = {
   N00900: "Kommunalskatt (total, inkl. landsting)",
@@ -341,6 +341,44 @@ function PopulationChart({ entries }: { entries: { year: number; population: num
   );
 }
 
+const PROCUREMENT_PALETTE = [
+  "#6366f1", "#0ea5e9", "#14b8a6", "#f59e0b", "#ef4444",
+  "#8b5cf6", "#10b981", "#f97316", "#e879f9", "#64748b",
+];
+
+function ProcurementChart({ items }: { items: ProcurementCategorySummary[] }) {
+  const sorted = [...items].sort((a, b) => b.pct - a.pct);
+  const maxPct = sorted[0]?.pct ?? 1;
+  return (
+    <div className="space-y-2">
+      {sorted.map((item, i) => {
+        const color = PROCUREMENT_PALETTE[i % PROCUREMENT_PALETTE.length];
+        const barWidth = (item.pct / maxPct) * 100;
+        const msek = (item.total_value_sek / 1_000_000).toFixed(0);
+        return (
+          <div key={item.cpv_division} className="flex items-center gap-3">
+            <span className="text-xs text-on-surface-variant w-36 shrink-0 truncate" title={item.label}>
+              {item.label}
+            </span>
+            <div className="flex-1 h-4 rounded overflow-hidden" style={{ background: "var(--color-surface-high)" }}>
+              <div
+                className="h-full rounded transition-all"
+                style={{ width: `${barWidth}%`, background: color }}
+              />
+            </div>
+            <span className="text-xs font-mono text-on-surface w-10 text-right shrink-0">
+              {item.pct.toFixed(1)}%
+            </span>
+            <span className="text-[11px] font-mono text-on-surface-variant w-20 text-right shrink-0">
+              {parseInt(msek).toLocaleString("sv-SE")} MSEK
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function MunicipalityDetailPage() {
   const { code } = useParams<{ code: string }>();
 
@@ -370,6 +408,13 @@ export function MunicipalityDetailPage() {
     queryFn: () => municipalitiesApi.getMunicipalitySpending(code!),
     enabled: !!code,
     staleTime: 10 * 60 * 1000,
+  });
+
+  const { data: procurement, isLoading: procurementLoading } = useQuery({
+    queryKey: ["municipality-procurement", code],
+    queryFn: () => municipalitiesApi.getMunicipalityProcurement(code!),
+    enabled: !!code,
+    staleTime: 30 * 60 * 1000,
   });
 
   const availableSpendingYears = spending
@@ -567,6 +612,43 @@ export function MunicipalityDetailPage() {
         ) : (
           <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
         )}
+      </div>
+
+      {/* Offentlig upphandling */}
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
+          Offentlig upphandling (TED)
+        </p>
+        {procurementLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3 animate-pulse">
+                <div className="h-3 rounded bg-surface-high w-40 shrink-0" />
+                <div className="flex-1 h-4 rounded bg-surface-high" />
+                <div className="h-3 rounded bg-surface-high w-14 shrink-0" />
+              </div>
+            ))}
+          </div>
+        ) : procurement && procurement.length > 0 ? (
+          <div className="rounded-xl p-4 border space-y-2" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
+            <ProcurementChart items={procurement} />
+            <p className="text-[10px] text-on-surface-variant pt-2 border-t" style={{ borderColor: "var(--color-surface-high)" }}>
+              Annonserade upphandlingar över EU:s tröskelvärde 2021–2024 · Värden i SEK ·{" "}
+              <a
+                href="https://ted.europa.eu"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-on-surface"
+              >
+                Källa: TED (ted.europa.eu)
+              </a>
+            </p>
+          </div>
+        ) : !procurementLoading ? (
+          <p className="text-sm text-on-surface-variant py-2">
+            Inga upphandlingar registrerade i TED för denna period.
+          </p>
+        ) : null}
       </div>
 
       {/* Verksamhetsnyckeltal */}

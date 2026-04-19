@@ -333,3 +333,11 @@ export interface PopulationTrendEntry {
   population: number;
 }
 
+export interface ProcurementCategorySummary {
+  cpv_division: string;
+  label: string;
+  total_value_sek: number;
+  pct: number;
+  count: number;
+}
+

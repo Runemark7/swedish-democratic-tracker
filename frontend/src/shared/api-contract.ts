@@ -361,6 +361,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/municipalities/{code}/procurement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public procurement breakdown by CPV category from TED (2021–2024) */
+        get: operations["getMunicipalityProcurement"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/municipalities/{code}/population-trend": {
         parameters: {
             query?: never;
@@ -791,6 +808,35 @@ export interface components {
             year: number;
             /** @example 978770 */
             population: number;
+        };
+        ProcurementCategorySummary: {
+            /**
+             * @description First two digits of the CPV code (main division)
+             * @example 45
+             */
+            cpv_division: string;
+            /**
+             * @description Swedish label for the CPV division
+             * @example Bygg & anläggning
+             */
+            label: string;
+            /**
+             * Format: float
+             * @description Total contracted value in SEK for this category
+             * @example 1105500000
+             */
+            total_value_sek: number;
+            /**
+             * Format: float
+             * @description Percentage of total procurement spend
+             * @example 27.1
+             */
+            pct: number;
+            /**
+             * @description Number of contract award notices in this category
+             * @example 12
+             */
+            count: number;
         };
     };
     responses: {
@@ -1310,6 +1356,36 @@ export interface operations {
                 };
             };
             /** @description Upstream Kolada API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMunicipalityProcurement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example 1480 */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Top CPV procurement categories by contracted value */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProcurementCategorySummary"][];
+                };
+            };
+            /** @description Upstream TED API error */
             502: {
                 headers: {
                     [name: string]: unknown;
