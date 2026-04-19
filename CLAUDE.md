@@ -89,6 +89,66 @@ make migrate
 
 ---
 
+## Architecture Diagram (keep up to date)
+
+> **Rule**: Whenever an external service is added, removed, or changed in the hexagonal architecture, update this diagram before closing the task.
+
+```mermaid
+graph TD
+    subgraph fe["Frontend (React 19 + Vite)"]
+        FE["Browser SPA"]
+    end
+
+    subgraph be["Backend (Go, chi)"]
+        API["HTTP API :8080"]
+
+        subgraph features["Feature services"]
+            PS["politicians"]
+            VS["votes"]
+            GS["goals / matching"]
+            BS["budget"]
+            RS["regions / municipalities"]
+        end
+
+        subgraph ingestion["Ingestion scheduler (cron)"]
+            W1["① politicians @daily"]
+            W2["② speeches @daily"]
+            W3["③ votes @daily"]
+            W4["④ enrich-vote-origins @daily\n⟳ stops when enriched=0"]
+            W5["⑤ keyword-matcher @daily"]
+            W6["⑥ refresh-scorecards @weekly"]
+        end
+
+        subgraph seeder["Election seeder"]
+            SD["Runs on startup if municipalities < 100\n(SEED_ELECTIONS=true)"]
+        end
+    end
+
+    subgraph ext["External APIs"]
+        RD["Riksdagen Open Data\ndata.riksdagen.se"]
+        KO["Kolada API v3\napi.kolada.se"]
+        SC["SCB PxWeb API\napi.scb.se"]
+    end
+
+    DB[(PostgreSQL 17)]
+
+    FE -->|REST /api/*| API
+    API --> features
+    features --> DB
+
+    W1 & W2 & W3 & W4 -->|HTTP| RD
+    W5 & W6 --> DB
+
+    RS -->|KPIs + spending| KO
+    RS -->|population trend| SC
+    SD -->|2022 mandates + population| SC
+    SD --> DB
+
+    ingestion --> DB
+```
+
+---
+
 ## Architecture: Hexagonal (Ports & Adapters)
 
 Each backend feature under `backend/internal/{feature}/` follows this layout:
