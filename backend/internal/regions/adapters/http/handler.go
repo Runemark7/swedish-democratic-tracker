@@ -28,6 +28,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/municipalities/{code}/kpi", h.getMunicipalityKPI)
 	r.Get("/municipalities/{code}/spending", h.getMunicipalitySpending)
 	r.Get("/municipalities/{code}/population-trend", h.getPopulationTrend)
+	r.Get("/municipalities/{code}/procurement", h.getMunicipalityProcurement)
 }
 
 func (h *Handler) listRegions(w http.ResponseWriter, r *http.Request) {
@@ -122,6 +123,19 @@ func (h *Handler) getPopulationTrend(w http.ResponseWriter, r *http.Request) {
 		entries = []ports.PopulationEntry{}
 	}
 	jsonOK(w, entries)
+}
+
+func (h *Handler) getMunicipalityProcurement(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	result, err := h.svc.GetMunicipalityProcurement(r.Context(), code)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if result == nil {
+		result = []ports.ProcurementCategorySummary{}
+	}
+	jsonOK(w, result)
 }
 
 func jsonOK(w http.ResponseWriter, v any) {

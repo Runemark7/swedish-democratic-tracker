@@ -63,6 +63,7 @@ import (
 	koladaAdapter "riksdagskollen/internal/regions/adapters/kolada"
 	regionsPG "riksdagskollen/internal/regions/adapters/postgres"
 	scbAdapter "riksdagskollen/internal/regions/adapters/scb"
+	tedAdapter "riksdagskollen/internal/regions/adapters/ted"
 	"riksdagskollen/internal/regions"
 	"riksdagskollen/internal/regions/seeder"
 
@@ -159,7 +160,8 @@ func main() {
 	regionsRepo := regionsPG.NewRepository(db)
 	koladaCl := koladaAdapter.NewClient()
 	scbCl := scbAdapter.NewClient()
-	regionsSvc := regions.NewService(regionsRepo, koladaCl, scbCl)
+	tedCl := tedAdapter.NewClient()
+	regionsSvc := regions.NewService(regionsRepo, koladaCl, scbCl, tedCl)
 	regionsHandler := regionsHTTP.NewHandler(regionsSvc)
 
 	// -- Router --

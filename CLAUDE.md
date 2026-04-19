@@ -128,6 +128,7 @@ graph TD
         RD["Riksdagen Open Data\ndata.riksdagen.se"]
         KO["Kolada API v3\napi.kolada.se"]
         SC["SCB PxWeb API\napi.scb.se"]
+        TED["TED API\nted.europa.eu"]
     end
 
     DB[(PostgreSQL 17)]
@@ -141,6 +142,7 @@ graph TD
 
     RS -->|KPIs + spending| KO
     RS -->|population trend| SC
+    RS -->|procurement| TED
     SD -->|2022 mandates + population| SC
     SD --> DB
 
