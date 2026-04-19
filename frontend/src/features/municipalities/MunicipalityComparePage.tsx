@@ -22,6 +22,18 @@ const ALL_KPI_UNITS: Record<string, string> = {
 };
 const KPI_ORDER = ["N00900", "N11037", "N15027", "N20043", "N03010", "N03007", "N03102", "N03106", "N03040", "N03132"];
 
+function UncertainMark({ status }: { status?: string }) {
+  if (status !== "U") return null;
+  return (
+    <span
+      className="ml-1 text-amber-500 font-bold cursor-help"
+      title="Kolada flaggar detta värde som osäkert"
+    >
+      *
+    </span>
+  );
+}
+
 function latestByKPI(items: MunicipalityKPIItem[]): Map<string, MunicipalityKPIItem> {
   const map = new Map<string, MunicipalityKPIItem>();
   for (const item of items) {
@@ -152,11 +164,15 @@ export function MunicipalityComparePage() {
                 const label = ALL_KPI_LABELS[code] ?? code;
                 const hasA = a && a.status !== "M";
                 const hasB = b && b.status !== "M";
-                const diffPct =
-                  hasA && hasB && a!.value !== 0
-                    ? ((b!.value - a!.value) / Math.abs(a!.value)) * 100
-                    : null;
-                const rowBg = diffPct != null ? diffColor(diffPct) : "transparent";
+                const signsCross = !!(hasA && hasB &&
+                  ((a!.value > 0 && b!.value < 0) || (a!.value < 0 && b!.value > 0)));
+                const rawDiffPct = hasA && hasB && a!.value !== 0 && !signsCross
+                  ? ((b!.value - a!.value) / Math.abs(a!.value)) * 100
+                  : null;
+                const useAbsDiff = signsCross || (rawDiffPct != null && Math.abs(rawDiffPct) > 100);
+                const diffPct = useAbsDiff ? null : rawDiffPct;
+                const diffAbs = useAbsDiff && hasA && hasB ? b!.value - a!.value : null;
+                const rowBg = diffPct != null ? diffColor(diffPct) : diffAbs != null ? diffColor(diffAbs) : "transparent";
                 return (
                   <tr
                     key={code}
@@ -173,20 +189,33 @@ export function MunicipalityComparePage() {
                   >
                     <td className="px-4 py-2.5 text-on-surface-variant text-xs">{label}</td>
                     <td className="px-4 py-2.5 text-right font-mono text-on-surface text-xs">
-                      {hasA
-                        ? `${a!.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} ${unit}`
-                        : <span className="text-on-surface-variant">–</span>}
+                      {hasA ? (
+                        <>
+                          {a!.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} {unit}
+                          <UncertainMark status={a!.status} />
+                        </>
+                      ) : (
+                        <span className="text-on-surface-variant">–</span>
+                      )}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-on-surface text-xs">
-                      {hasB
-                        ? `${b!.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} ${unit}`
-                        : <span className="text-on-surface-variant">–</span>}
+                      {hasB ? (
+                        <>
+                          {b!.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} {unit}
+                          <UncertainMark status={b!.status} />
+                        </>
+                      ) : (
+                        <span className="text-on-surface-variant">–</span>
+                      )}
                     </td>
                     <td className="px-4 py-2.5 text-right pr-4 font-mono text-xs">
                       {diffPct != null ? (
                         <span style={diffBadgeStyle(diffPct)}>
-                          {diffPct >= 0 ? "+" : ""}
-                          {diffPct.toFixed(1)}%
+                          {diffPct >= 0 ? "+" : ""}{diffPct.toFixed(1)}%
+                        </span>
+                      ) : diffAbs != null ? (
+                        <span style={diffBadgeStyle(diffAbs)}>
+                          {diffAbs >= 0 ? "+" : ""}{diffAbs.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} {unit === "%" ? "pp" : unit}
                         </span>
                       ) : (
                         <span className="text-on-surface-variant">–</span>
@@ -197,6 +226,19 @@ export function MunicipalityComparePage() {
               })}
             </tbody>
           </table>
+          <p className="text-[10px] text-on-surface-variant mt-2 px-1">
+            Källa: Kolada · hämtas live ·{" "}
+            <a
+              href="https://www.kolada.se/verktyg/fri-sokning/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-on-surface"
+            >
+              verifiera på kolada.se
+            </a>
+            {" · osäkra värden markeras med "}
+            <span className="text-amber-500 font-bold">*</span>
+          </p>
         </div>
       )}
 

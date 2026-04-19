@@ -79,7 +79,9 @@ func (c *Client) FetchPopulationTrend(ctx context.Context, munCode string, years
 
 	result := []ports.PopulationEntry{}
 	for _, d := range payload.Data {
-		// key layout: [region, contentsCode, year]
+		// SCB key layout is [region, year] — verified against live API 2026-04-19.
+		// ContentsCode is declared via the query but does not appear in the key;
+		// it is returned as the (only) entry in values[].
 		if len(d.Key) < 2 || len(d.Values) == 0 {
 			continue
 		}

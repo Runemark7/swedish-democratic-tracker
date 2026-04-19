@@ -69,6 +69,36 @@ function MandateBar({ results }: { results: ElectionResult[] }) {
   );
 }
 
+function UncertainMark({ status }: { status?: string }) {
+  if (status !== "U") return null;
+  return (
+    <span
+      className="ml-1 text-amber-500 font-bold cursor-help"
+      title="Kolada flaggar detta värde som osäkert"
+    >
+      *
+    </span>
+  );
+}
+
+function KoladaSource({ munCode }: { munCode: string }) {
+  return (
+    <p className="text-[10px] text-on-surface-variant mt-2">
+      Källa: Kolada · hämtas live ·{" "}
+      <a
+        href={`https://www.kolada.se/verktyg/fri-sokning/?kpis=&municipalityId=${munCode}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline hover:text-on-surface"
+      >
+        verifiera på kolada.se
+      </a>
+      {" · osäkra värden markeras med "}
+      <span className="text-amber-500 font-bold">*</span>
+    </p>
+  );
+}
+
 function KPISkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="space-y-2">
@@ -130,9 +160,14 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
               >
                 <td className="px-4 py-2.5 text-on-surface-variant text-xs">{label}</td>
                 <td className="px-4 py-2.5 text-right font-mono text-on-surface font-semibold text-xs">
-                  {hasValue
-                    ? `${item!.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} ${unit}`
-                    : <span className="text-on-surface-variant">–</span>}
+                  {hasValue ? (
+                    <>
+                      {item!.value.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} {unit}
+                      <UncertainMark status={item!.status} />
+                    </>
+                  ) : (
+                    <span className="text-on-surface-variant">–</span>
+                  )}
                 </td>
                 <td className="px-4 py-2.5 text-right font-mono text-xs">
                   {deltaPct != null ? (
@@ -196,24 +231,27 @@ function donutSlicePath(cx: number, cy: number, R: number, r: number, startDeg: 
 }
 
 function SpendingChart({ items, year }: { items: MunicipalityKPIItem[]; year: number }) {
-  const byCode: Record<string, number> = {};
+  const byCode: Record<string, { value: number; status?: string }> = {};
   for (const item of items) {
-    if (item.year === year && item.value > 0) byCode[item.kpi] = item.value;
+    if (item.year === year && item.status !== "M" && item.value > 0) {
+      byCode[item.kpi] = { value: item.value, status: item.status };
+    }
   }
-  const total = SPENDING_ORDER.reduce((s, c) => s + (byCode[c] ?? 0), 0);
+  const total = SPENDING_ORDER.reduce((s, c) => s + (byCode[c]?.value ?? 0), 0);
   if (total === 0) return <p className="text-sm text-on-surface-variant py-2">Data saknas för {year}.</p>;
 
   const cx = 100, cy = 100, R = 88, r = 58;
   const GAP = 1.5;
   let cursor = 0;
   const slices = SPENDING_ORDER.map((code) => {
-    const val = byCode[code] ?? 0;
+    const entry = byCode[code];
+    const val = entry?.value ?? 0;
     const pct = val / total;
     const deg = pct * 360;
     const start = cursor + GAP / 2;
     const end = cursor + deg - GAP / 2;
     cursor += deg;
-    return { code, val, pct, start, end };
+    return { code, val, pct, start, end, status: entry?.status };
   }).filter((s) => s.val > 0);
 
   return (
@@ -236,7 +274,10 @@ function SpendingChart({ items, year }: { items: MunicipalityKPIItem[]; year: nu
         {slices.map((s) => (
           <div key={s.code} className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: SPENDING_COLORS[s.code] }} />
-            <span className="text-xs text-on-surface-variant truncate flex-1">{SPENDING_LABELS[s.code]}</span>
+            <span className="text-xs text-on-surface-variant truncate flex-1">
+              {SPENDING_LABELS[s.code]}
+              <UncertainMark status={s.status} />
+            </span>
             <span className="text-xs font-mono text-on-surface shrink-0">{s.val.toLocaleString("sv-SE", { maximumFractionDigits: 0 })}</span>
             <span className="text-[11px] text-on-surface-variant shrink-0 w-8 text-right">{(s.pct * 100).toFixed(0)}%</span>
           </div>
@@ -521,6 +562,7 @@ export function MunicipalityDetailPage() {
               ))}
             </div>
             <SpendingChart items={spending} year={activeSpendingYear} />
+            <KoladaSource munCode={mun.code} />
           </div>
         ) : (
           <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
@@ -535,7 +577,10 @@ export function MunicipalityDetailPage() {
         {kpisLoading ? (
           <KPISkeleton rows={5} />
         ) : kpis && kpis.length > 0 ? (
-          <KPITable kpis={kpis} kpiOrder={VERKSAMHET_KPI_ORDER} />
+          <>
+            <KPITable kpis={kpis} kpiOrder={VERKSAMHET_KPI_ORDER} />
+            <KoladaSource munCode={mun.code} />
+          </>
         ) : (
           <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
         )}
@@ -549,7 +594,10 @@ export function MunicipalityDetailPage() {
         {kpisLoading ? (
           <KPISkeleton rows={5} />
         ) : kpis && kpis.length > 0 ? (
-          <KPITable kpis={kpis} kpiOrder={BUDGET_KPI_ORDER} />
+          <>
+            <KPITable kpis={kpis} kpiOrder={BUDGET_KPI_ORDER} />
+            <KoladaSource munCode={mun.code} />
+          </>
         ) : (
           <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
         )}
@@ -565,6 +613,17 @@ export function MunicipalityDetailPage() {
         ) : popTrend && popTrend.length > 0 ? (
           <div className="rounded-xl p-4 border" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
             <PopulationChart entries={popTrend} />
+            <p className="text-[10px] text-on-surface-variant mt-2">
+              Källa: SCB BefolkningNy ·{" "}
+              <a
+                href="https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__BE__BE0101__BE0101A/BefolkningNy/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-on-surface"
+              >
+                api.scb.se
+              </a>
+            </p>
           </div>
         ) : (
           <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
