@@ -69,3 +69,8 @@ func (w *EnrichOriginsWorker) Run(ctx context.Context) error {
 	_, err := w.svc.EnrichOrigins(ctx, 100)
 	return err
 }
+
+// RunBatch returns the number of votes enriched so the loop can stop early.
+func (w *EnrichOriginsWorker) RunBatch(ctx context.Context) (int, error) {
+	return w.svc.EnrichOrigins(ctx, 100)
+}
