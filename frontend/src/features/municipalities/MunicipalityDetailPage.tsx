@@ -113,10 +113,12 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
             const hasPrev = prev && prev.status !== "M";
             const signsCross = !!(hasValue && hasPrev &&
               ((item!.value > 0 && prev!.value < 0) || (item!.value < 0 && prev!.value > 0)));
-            const deltaPct = hasValue && hasPrev && prev!.value !== 0 && !signsCross
+            const rawDeltaPct = hasValue && hasPrev && prev!.value !== 0 && !signsCross
               ? ((item!.value - prev!.value) / Math.abs(prev!.value)) * 100
               : null;
-            const deltaAbs = signsCross ? item!.value - prev!.value : null;
+            const useAbsDelta = signsCross || (rawDeltaPct != null && Math.abs(rawDeltaPct) > 100);
+            const deltaPct = useAbsDelta ? null : rawDeltaPct;
+            const deltaAbs = useAbsDelta && hasValue && hasPrev ? item!.value - prev!.value : null;
             return (
               <tr
                 key={code}
@@ -134,11 +136,11 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
                 </td>
                 <td className="px-4 py-2.5 text-right font-mono text-xs">
                   {deltaPct != null ? (
-                    <span style={{ color: deltaPct > 0 ? "#ef4444" : "#22c55e", fontWeight: 600 }}>
+                    <span style={{ color: deltaPct > 0 ? "#22c55e" : "#ef4444", fontWeight: 600 }}>
                       {deltaPct > 0 ? "↑" : "↓"}{Math.abs(deltaPct).toFixed(1)}%
                     </span>
                   ) : deltaAbs != null ? (
-                    <span style={{ color: deltaAbs > 0 ? "#ef4444" : "#22c55e", fontWeight: 600 }}>
+                    <span style={{ color: deltaAbs > 0 ? "#22c55e" : "#ef4444", fontWeight: 600 }}>
                       {deltaAbs > 0 ? "+" : ""}{deltaAbs.toLocaleString("sv-SE", { maximumFractionDigits: 2 })} {unit === "%" ? "pp" : unit}
                     </span>
                   ) : <span className="text-on-surface-variant">–</span>}
