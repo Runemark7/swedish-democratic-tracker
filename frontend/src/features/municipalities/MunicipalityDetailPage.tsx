@@ -185,6 +185,16 @@ const SPENDING_COLORS: Record<string, string> = {
 };
 const SPENDING_YEARS = [2019, 2020, 2021, 2022, 2023];
 
+function donutSlicePath(cx: number, cy: number, R: number, r: number, startDeg: number, endDeg: number): string {
+  const toRad = (d: number) => (d - 90) * (Math.PI / 180);
+  const [sx, sy] = [cx + R * Math.cos(toRad(startDeg)), cy + R * Math.sin(toRad(startDeg))];
+  const [ex, ey] = [cx + R * Math.cos(toRad(endDeg)), cy + R * Math.sin(toRad(endDeg))];
+  const [iex, iey] = [cx + r * Math.cos(toRad(endDeg)), cy + r * Math.sin(toRad(endDeg))];
+  const [isx, isy] = [cx + r * Math.cos(toRad(startDeg)), cy + r * Math.sin(toRad(startDeg))];
+  const large = endDeg - startDeg > 180 ? 1 : 0;
+  return `M ${sx} ${sy} A ${R} ${R} 0 ${large} 1 ${ex} ${ey} L ${iex} ${iey} A ${r} ${r} 0 ${large} 0 ${isx} ${isy} Z`;
+}
+
 function SpendingChart({ items, year }: { items: MunicipalityKPIItem[]; year: number }) {
   const byCode: Record<string, number> = {};
   for (const item of items) {
@@ -193,34 +203,48 @@ function SpendingChart({ items, year }: { items: MunicipalityKPIItem[]; year: nu
   const total = SPENDING_ORDER.reduce((s, c) => s + (byCode[c] ?? 0), 0);
   if (total === 0) return <p className="text-sm text-on-surface-variant py-2">Data saknas för {year}.</p>;
 
+  const cx = 100, cy = 100, R = 88, r = 58;
+  const GAP = 1.5;
+  let cursor = 0;
+  const slices = SPENDING_ORDER.map((code) => {
+    const val = byCode[code] ?? 0;
+    const pct = val / total;
+    const deg = pct * 360;
+    const start = cursor + GAP / 2;
+    const end = cursor + deg - GAP / 2;
+    cursor += deg;
+    return { code, val, pct, start, end };
+  }).filter((s) => s.val > 0);
+
   return (
-    <div className="space-y-2">
-      {SPENDING_ORDER.map((code) => {
-        const val = byCode[code] ?? 0;
-        const pct = total > 0 ? (val / total) * 100 : 0;
-        const color = SPENDING_COLORS[code];
-        const label = SPENDING_LABELS[code];
-        return (
-          <div key={code} className="flex items-center gap-3">
-            <span className="text-xs text-on-surface-variant w-44 shrink-0 text-right">{label}</span>
-            <div className="flex-1 h-5 rounded-sm overflow-hidden" style={{ background: "var(--color-surface-high)" }}>
-              <div
-                className="h-full rounded-sm transition-all duration-300"
-                style={{ width: `${pct}%`, background: color }}
-              />
-            </div>
-            <span className="text-xs font-mono text-on-surface w-28 shrink-0">
-              {val > 0 ? `${val.toLocaleString("sv-SE", { maximumFractionDigits: 0 })} kr/inv` : "–"}
-            </span>
-            <span className="text-[11px] text-on-surface-variant w-10 shrink-0 text-right">
-              {pct > 0 ? `${pct.toFixed(0)}%` : ""}
-            </span>
+    <div className="flex gap-6 items-center">
+      <svg viewBox="0 0 200 200" className="shrink-0" style={{ width: 180, height: 180 }}>
+        {slices.map((s) => (
+          <path
+            key={s.code}
+            d={donutSlicePath(cx, cy, R, r, s.start, s.end)}
+            fill={SPENDING_COLORS[s.code]}
+          />
+        ))}
+        <text x={cx} y={cy - 7} textAnchor="middle" fontSize="11" fill="currentColor" opacity="0.5">totalt</text>
+        <text x={cx} y={cy + 8} textAnchor="middle" fontSize="13" fontWeight="700" fill="currentColor">
+          {(total / 1000).toFixed(0)}k
+        </text>
+        <text x={cx} y={cy + 22} textAnchor="middle" fontSize="9" fill="currentColor" opacity="0.4">kr/inv</text>
+      </svg>
+      <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+        {slices.map((s) => (
+          <div key={s.code} className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: SPENDING_COLORS[s.code] }} />
+            <span className="text-xs text-on-surface-variant truncate flex-1">{SPENDING_LABELS[s.code]}</span>
+            <span className="text-xs font-mono text-on-surface shrink-0">{s.val.toLocaleString("sv-SE", { maximumFractionDigits: 0 })}</span>
+            <span className="text-[11px] text-on-surface-variant shrink-0 w-8 text-right">{(s.pct * 100).toFixed(0)}%</span>
           </div>
-        );
-      })}
-      <p className="text-[10px] text-on-surface-variant pt-1">
-        Summa redovisade sektorer: {total.toLocaleString("sv-SE", { maximumFractionDigits: 0 })} kr/inv
-      </p>
+        ))}
+        <p className="text-[10px] text-on-surface-variant pt-1 border-t" style={{ borderColor: "var(--color-surface-high)" }}>
+          kr/inv · {year}
+        </p>
+      </div>
     </div>
   );
 }
@@ -228,27 +252,51 @@ function SpendingChart({ items, year }: { items: MunicipalityKPIItem[]; year: nu
 function PopulationChart({ entries }: { entries: { year: number; population: number }[] }) {
   if (!entries.length) return null;
   const sorted = [...entries].sort((a, b) => a.year - b.year);
+  const W = 600, H = 100, padX = 10, padY = 12, bottom = 20;
+  const plotH = H - padY - bottom;
+  const min = Math.min(...sorted.map((e) => e.population));
   const max = Math.max(...sorted.map((e) => e.population));
+  const range = max - min || 1;
+  const xs = sorted.map((_, i) => padX + (i / (sorted.length - 1 || 1)) * (W - padX * 2));
+  const ys = sorted.map((e) => padY + plotH - ((e.population - min) / range) * plotH);
+  const points = xs.map((x, i) => `${x},${ys[i]}`).join(" ");
+
   return (
-    <div className="flex items-end gap-2 h-24">
-      {sorted.map((e) => {
-        const pct = (e.population / max) * 100;
-        return (
-          <div key={e.year} className="flex flex-col items-center gap-1 flex-1">
-            <span className="text-[10px] font-mono text-on-surface-variant">
-              {e.population >= 1000
-                ? `${(e.population / 1000).toFixed(0)}k`
-                : e.population}
-            </span>
-            <div
-              className="w-full rounded-t"
-              style={{ height: `${Math.max(4, pct * 0.7)}px`, background: "var(--color-primary)" }}
-            />
-            <span className="text-[10px] text-on-surface-variant">{e.year}</span>
-          </div>
-        );
-      })}
-    </div>
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ overflow: "visible" }}>
+      <polyline
+        points={points}
+        fill="none"
+        stroke="var(--color-primary)"
+        strokeWidth="2"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+      {sorted.map((e, i) => (
+        <g key={e.year}>
+          <circle cx={xs[i]} cy={ys[i]} r="3.5" fill="var(--color-primary)" />
+          <text
+            x={xs[i]}
+            y={ys[i] - 7}
+            textAnchor="middle"
+            fontSize="9"
+            fill="currentColor"
+            opacity="0.6"
+          >
+            {e.population >= 1000 ? `${(e.population / 1000).toFixed(1)}k` : e.population}
+          </text>
+          <text
+            x={xs[i]}
+            y={H - 4}
+            textAnchor="middle"
+            fontSize="9"
+            fill="currentColor"
+            opacity="0.5"
+          >
+            {e.year}
+          </text>
+        </g>
+      ))}
+    </svg>
   );
 }
 
