@@ -488,50 +488,6 @@ export function MunicipalityDetailPage() {
         </p>
       )}
 
-      {/* Verksamhetsnyckeltal */}
-      <div>
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
-          Verksamhetsnyckeltal (Kolada)
-        </p>
-        {kpisLoading ? (
-          <KPISkeleton rows={5} />
-        ) : kpis && kpis.length > 0 ? (
-          <KPITable kpis={kpis} kpiOrder={VERKSAMHET_KPI_ORDER} />
-        ) : (
-          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
-        )}
-      </div>
-
-      {/* Budget & Ekonomi */}
-      <div>
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
-          Budget & Ekonomi (Kolada)
-        </p>
-        {kpisLoading ? (
-          <KPISkeleton rows={5} />
-        ) : kpis && kpis.length > 0 ? (
-          <KPITable kpis={kpis} kpiOrder={BUDGET_KPI_ORDER} />
-        ) : (
-          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
-        )}
-      </div>
-
-      {/* Population trend section */}
-      <div>
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-3">
-          Befolkningsutveckling (SCB)
-        </p>
-        {popLoading ? (
-          <div className="h-24 rounded animate-pulse bg-surface-high" />
-        ) : popTrend && popTrend.length > 0 ? (
-          <div className="rounded-xl p-4 border" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
-            <PopulationChart entries={popTrend} />
-          </div>
-        ) : (
-          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
-        )}
-      </div>
-
       {/* Var går pengarna? */}
       <div>
         <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-3">
@@ -565,6 +521,50 @@ export function MunicipalityDetailPage() {
               ))}
             </div>
             <SpendingChart items={spending} year={activeSpendingYear} />
+          </div>
+        ) : (
+          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
+        )}
+      </div>
+
+      {/* Verksamhetsnyckeltal */}
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
+          Verksamhetsnyckeltal (Kolada)
+        </p>
+        {kpisLoading ? (
+          <KPISkeleton rows={5} />
+        ) : kpis && kpis.length > 0 ? (
+          <KPITable kpis={kpis} kpiOrder={VERKSAMHET_KPI_ORDER} />
+        ) : (
+          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
+        )}
+      </div>
+
+      {/* Budget & Ekonomi */}
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
+          Budget & Ekonomi (Kolada)
+        </p>
+        {kpisLoading ? (
+          <KPISkeleton rows={5} />
+        ) : kpis && kpis.length > 0 ? (
+          <KPITable kpis={kpis} kpiOrder={BUDGET_KPI_ORDER} />
+        ) : (
+          <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
+        )}
+      </div>
+
+      {/* Population trend */}
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-3">
+          Befolkningsutveckling (SCB)
+        </p>
+        {popLoading ? (
+          <div className="h-24 rounded animate-pulse bg-surface-high" />
+        ) : popTrend && popTrend.length > 0 ? (
+          <div className="rounded-xl p-4 border" style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}>
+            <PopulationChart entries={popTrend} />
           </div>
         ) : (
           <p className="text-sm text-on-surface-variant py-2">Data ej tillgänglig.</p>
