@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { PartyBadge, StatBlock } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
 import { regionsApi } from "./api";
+import { municipalitiesApi } from "@/features/municipalities/api";
+import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import type { ElectionResult } from "@/shared/types";
 
 function MandateBar({ results }: { results: ElectionResult[] }) {
@@ -48,6 +50,13 @@ export function RegionDetailPage() {
   const { data: region, isLoading, error } = useQuery({
     queryKey: ["region", code],
     queryFn: () => regionsApi.getRegion(code!),
+    enabled: !!code,
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const { data: kommuner } = useQuery({
+    queryKey: ["municipalities", code],
+    queryFn: () => municipalitiesApi.listMunicipalities(code),
     enabled: !!code,
     staleTime: 60 * 60 * 1000,
   });
@@ -116,6 +125,33 @@ export function RegionDetailPage() {
           ))}
         </div>
       </div>
+
+      {/* Kommuner mini-map */}
+      {kommuner && kommuner.length > 0 && (
+        <div>
+          <p className="text-[10px] uppercase tracking-widest font-semibold text-on-surface-variant mb-2">
+            Kommuner i regionen ({kommuner.length})
+          </p>
+          <div
+            className="rounded-xl p-4 border"
+            style={{
+              background: "var(--color-surface-lowest)",
+              borderColor: "var(--color-surface-high)",
+            }}
+          >
+            <div className="max-w-xs mx-auto">
+              <SwedenKommunMap
+                municipalities={kommuner}
+                regionCode={region.code}
+              />
+            </div>
+            <p className="mt-2 text-[10px] text-on-surface-variant text-center leading-snug">
+              Klicka på en kommun för detaljer. Karta: Lokal_Profil /
+              Wikimedia Commons (CC BY-SA 2.5).
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Election results */}
       <div>
