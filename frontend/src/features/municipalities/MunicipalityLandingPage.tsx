@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { PartyBadge } from "@/shared/components";
 import { municipalitiesApi } from "./api";
+import { SwedenKommunMap } from "./components/SwedenKommunMap";
 import type { MunicipalitySummary } from "@/shared/types";
 
 function MunicipalityCard({ mun }: { mun: MunicipalitySummary }) {
@@ -100,16 +101,29 @@ export function MunicipalityLandingPage() {
         <p className="text-sm text-red-500 py-8 text-center">Kunde inte hämta kommundata.</p>
       )}
 
-      {filtered && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filtered.map((mun) => (
-            <MunicipalityCard key={mun.code} mun={mun} />
-          ))}
-          {filtered.length === 0 && (
-            <p className="col-span-3 text-sm text-on-surface-variant text-center py-8">
-              Inga kommuner matchade sökningen.
+      {filtered && municipalities && (
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="shrink-0 lg:w-[260px]">
+            <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold mb-3 text-center lg:text-left">
+              Klicka på en kommun
             </p>
-          )}
+            <SwedenKommunMap municipalities={municipalities} />
+            <p className="mt-3 text-[10px] text-on-surface-variant text-center lg:text-left leading-snug">
+              Karta: Lokal_Profil / Wikimedia Commons (CC BY-SA 2.5),
+              grunddata från SCB.
+            </p>
+          </div>
+
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3">
+            {filtered.map((mun) => (
+              <MunicipalityCard key={mun.code} mun={mun} />
+            ))}
+            {filtered.length === 0 && (
+              <p className="col-span-3 text-sm text-on-surface-variant text-center py-8">
+                Inga kommuner matchade sökningen.
+              </p>
+            )}
+          </div>
         </div>
       )}
     </div>
