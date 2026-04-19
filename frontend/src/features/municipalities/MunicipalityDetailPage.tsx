@@ -136,11 +136,11 @@ function KPITable({ kpis, kpiOrder }: { kpis: MunicipalityKPIItem[]; kpiOrder: s
                 </td>
                 <td className="px-4 py-2.5 text-right font-mono text-xs">
                   {deltaPct != null ? (
-                    <span style={{ color: deltaPct > 0 ? "#22c55e" : "#ef4444", fontWeight: 600 }}>
+                    <span className="text-on-surface-variant">
                       {deltaPct > 0 ? "↑" : "↓"}{Math.abs(deltaPct).toFixed(1)}%
                     </span>
                   ) : deltaAbs != null ? (
-                    <span style={{ color: deltaAbs > 0 ? "#22c55e" : "#ef4444", fontWeight: 600 }}>
+                    <span className="text-on-surface-variant">
                       {deltaAbs > 0 ? "+" : ""}{deltaAbs.toLocaleString("sv-SE", { maximumFractionDigits: 2 })} {unit === "%" ? "pp" : unit}
                     </span>
                   ) : <span className="text-on-surface-variant">–</span>}
