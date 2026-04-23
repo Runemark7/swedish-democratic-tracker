@@ -186,6 +186,13 @@ func main() {
 		budgetHandler.Routes(r)
 		contextHandler.Routes(r)
 		regionsHandler.Routes(r)
+
+		// TODO: return aggregate 24h decision counts per level for the homepage pulse strip.
+		// Shape: { riksdag: number, region: number, kommun: number, total: number, buckets: number[] }
+		r.Get("/summary", func(w http.ResponseWriter, _ *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprint(w, `{"ok":true}`)
+		})
 	})
 
 	// -- Ingestion scheduler --
