@@ -14,212 +14,304 @@ import { RegionDetailPage } from "./features/regions/RegionDetailPage";
 import { MunicipalityLandingPage } from "./features/municipalities/MunicipalityLandingPage";
 import { MunicipalityDetailPage } from "./features/municipalities/MunicipalityDetailPage";
 import { MunicipalityComparePage } from "./features/municipalities/MunicipalityComparePage";
+import { HomePage } from "./features/home/HomePage";
+import { RiksdagPage } from "./features/riksdag/RiksdagPage";
+import { SearchPage } from "./features/search/SearchPage";
+import { useTheme } from "./contexts/ThemeContext";
 
-const CATEGORIES = [
-  {
-    key: "riksdag" as const,
-    to: "/",
-    label: "Riksdag",
-    sub: "Nationell nivå",
-    description: "Partimål, voteringar och statsbudget",
-  },
-  {
-    key: "region" as const,
-    to: "/region",
-    label: "Region",
-    sub: "21 regioner",
-    description: "Mandatfördelning och styrande koalitioner",
-  },
-  {
-    key: "kommun" as const,
-    to: "/kommun",
-    label: "Kommun",
-    sub: "290 kommuner",
-    description: "Valresultat och styrande partier",
-  },
-] as const;
+// ── Section detection ─────────────────────────────────────────────────────
+type NavSection = "start" | "riksdag" | "region" | "kommun" | "sok";
 
-function HeroCategoryCards({ section }: { section: Section }) {
+function sectionFromPath(pathname: string): NavSection {
+  if (
+    pathname.startsWith("/riksdag") ||
+    pathname.startsWith("/parties") ||
+    pathname.startsWith("/votes") ||
+    pathname.startsWith("/budget") ||
+    pathname.startsWith("/politicians") ||
+    pathname.startsWith("/manifestos") ||
+    pathname === "/"
+  ) {
+    // "/" alone maps to riksdag tabs, but the active pill is START when literally "/"
+    if (pathname === "/") return "start";
+    return "riksdag";
+  }
+  if (pathname.startsWith("/region")) return "region";
+  if (pathname.startsWith("/kommun")) return "kommun";
+  if (pathname.startsWith("/sok")) return "sok";
+  return "start";
+}
+
+function isRiksdagSection(pathname: string): boolean {
   return (
-    <div className="grid grid-cols-3 gap-3 mt-5">
-      {CATEGORIES.map((cat) => {
-        const isActive = section === cat.key;
-        return (
-          <NavLink
-            key={cat.key}
-            to={cat.to}
-            className="rounded-xl px-5 py-4 transition-all"
-            style={{
-              background: isActive ? "#1e1e1e" : "#151515",
-              border: isActive ? "1px solid #444" : "1px solid #262626",
-              boxShadow: isActive ? "0 0 0 1px rgba(255,255,255,0.06)" : "none",
-            }}
-          >
-            <div className="flex items-start justify-between mb-2">
-              <span
-                className="text-xl font-extrabold tracking-tight"
-                style={{ color: isActive ? "#fff" : "#888" }}
-              >
-                {cat.label}
-              </span>
-              {isActive && (
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-neutral-500 bg-neutral-800 rounded px-1.5 py-0.5">
-                  Aktiv
-                </span>
-              )}
-            </div>
-            <div
-              className="text-[11px] font-semibold uppercase tracking-wider mb-1"
-              style={{ color: isActive ? "#666" : "#444" }}
-            >
-              {cat.sub}
-            </div>
-            <div
-              className="text-[13px] leading-snug"
-              style={{ color: isActive ? "#aaa" : "#555" }}
-            >
-              {cat.description}
-            </div>
-          </NavLink>
-        );
-      })}
-    </div>
+    pathname.startsWith("/riksdag") ||
+    pathname.startsWith("/parties") ||
+    pathname.startsWith("/votes") ||
+    pathname.startsWith("/budget") ||
+    pathname.startsWith("/politicians") ||
+    pathname.startsWith("/manifestos")
   );
 }
 
-type Section = "riksdag" | "region" | "kommun";
-
-function sectionFromPath(pathname: string): Section {
-  if (pathname.startsWith("/region")) return "region";
-  if (pathname.startsWith("/kommun")) return "kommun";
-  return "riksdag";
+// ── Live date string ───────────────────────────────────────────────────────
+function liveDateStr(): string {
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${dd}.${mm}.${yyyy}`;
 }
 
+// ── Three-bar logo icon ────────────────────────────────────────────────────
+function TreKammareLogo() {
+  return (
+    <NavLink
+      to="/"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        textDecoration: "none",
+        flexShrink: 0,
+      }}
+    >
+      <svg
+        width="20"
+        height="16"
+        viewBox="0 0 20 16"
+        fill="none"
+        aria-hidden="true"
+      >
+        <rect x="0" y="0"  width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="0.45" />
+        <rect x="0" y="6.5" width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="0.70" />
+        <rect x="0" y="13" width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="1"    />
+      </svg>
+      <span
+        style={{
+          fontFamily: "var(--font-serif)",
+          fontSize: 17,
+          fontWeight: 700,
+          color: "var(--color-fg)",
+          letterSpacing: "0.01em",
+        }}
+      >
+        Tre{" "}
+        <em
+          style={{
+            fontStyle: "italic",
+            color: "var(--color-accent-2)",
+          }}
+        >
+          Kammare
+        </em>
+      </span>
+    </NavLink>
+  );
+}
+
+// ── Nav pill ───────────────────────────────────────────────────────────────
+interface PillNavProps {
+  to: string;
+  label: string;
+  active: boolean;
+}
+
+function PillNav({ to, label, active }: PillNavProps) {
+  return (
+    <NavLink
+      to={to}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "6px 14px",
+        borderRadius: 999,
+        border: active ? "none" : "1px solid var(--color-border)",
+        background: active ? "var(--color-fg)" : "transparent",
+        color: active ? "var(--color-bg)" : "var(--color-fg-muted)",
+        fontFamily: "var(--font-mono)",
+        fontSize: 11,
+        letterSpacing: "1px",
+        textTransform: "uppercase",
+        textDecoration: "none",
+        whiteSpace: "nowrap",
+        cursor: "pointer",
+        transition: "background 0.15s, color 0.15s",
+      }}
+    >
+      {label}
+    </NavLink>
+  );
+}
+
+// ── Main App ───────────────────────────────────────────────────────────────
 export default function App() {
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
   const section = sectionFromPath(location.pathname);
+  const showRiksdagTabs = isRiksdagSection(location.pathname);
+
+  const navPills = [
+    { key: "start",   to: "/",        label: "◆ START"     },
+    { key: "riksdag", to: "/riksdag",  label: "I RIKSDAG"   },
+    { key: "region",  to: "/region",  label: "II REGION"   },
+    { key: "kommun",  to: "/kommun",  label: "III KOMMUN"  },
+    { key: "sok",     to: "/sok",     label: "⌕ SÖK"       },
+  ] as const;
 
   return (
-    <div className="min-h-screen bg-surface font-body">
-      {/* ── Hero (dark) ─────────────────────────────────────────────── */}
-      <div className="bg-[#0f0f0f] text-white pb-8 pt-9 px-8">
-        <div className="mx-auto max-w-[960px]">
-          <div className="flex items-baseline gap-3 mb-1">
-            <NavLink to="/" className="hover:opacity-80 transition-opacity">
-              <h1 className="font-display text-[28px] font-extrabold tracking-tight m-0">
-                RIKSDAGSKOLLEN
-              </h1>
-            </NavLink>
-          </div>
-          <p className="text-sm text-neutral-500 mb-0">
-            Följ demokratin på alla nivåer — från riksdag till din hemkommun.
-          </p>
-          <HeroCategoryCards section={section} />
-        </div>
-      </div>
-
-      {/* ── Sticky Nav ──────────────────────────────────────────────── */}
-      <div
-        className="glass sticky top-0 z-10 px-8"
-        style={{ borderBottom: "1px solid color-mix(in srgb, var(--color-outline-variant) 30%, transparent)" }}
+    <div className="sdt-page">
+      {/* ── Top nav ───────────────────────────────────────────────────── */}
+      <nav
+        style={{
+          background: "var(--color-bg)",
+          borderBottom: "1px solid var(--color-border)",
+          padding: "0 32px",
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+        }}
       >
-        <div className="mx-auto max-w-[960px]">
-          {/* Feature tabs (Kommun) */}
-          {section === "kommun" && (
-            <div className="flex">
-              {[
-                { to: "/kommun", label: "Kommuner" },
-                { to: "/kommun/jämför", label: "Jämför" },
-              ].map((tab) => {
-                const isActive = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/") && tab.to !== "/kommun";
-                const isKommunerActive = tab.to === "/kommun" && !location.pathname.startsWith("/kommun/jämför");
-                const isJämförActive = tab.to === "/kommun/jämför" && location.pathname.startsWith("/kommun/jämför");
-                const active = tab.to === "/kommun" ? isKommunerActive : isJämförActive || isActive;
-                return (
-                  <NavLink
-                    key={tab.to}
-                    to={tab.to}
-                    className="block px-5 py-3 text-[13px] font-medium transition-colors"
-                    style={{
-                      borderBottom: active ? "2px solid var(--color-on-surface)" : "2px solid transparent",
-                      color: active ? "var(--color-on-surface)" : "var(--color-on-surface-variant)",
-                      fontWeight: active ? 700 : 500,
-                    }}
-                  >
-                    {tab.label}
-                  </NavLink>
-                );
-              })}
-            </div>
-          )}
+        {/* Pill row */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 16,
+            height: 60,
+          }}
+        >
+          <TreKammareLogo />
 
-          {/* Feature tabs (Riksdag only) */}
-          {section === "riksdag" && (
-            <div className="flex">
-              {[
-                { to: "/", label: "Partimål & röstning", match: ["/", "/parties"] },
-                { to: "/votes", label: "Omröstningar", match: [] },
-                { to: "/budget", label: "Statsbudget", match: ["/budget"] },
-                { to: "/politicians", label: "Enskilda politiker", match: ["/politicians"] },
-                { to: "/manifestos", label: "Manifest", match: ["/manifestos"] },
-              ].map((tab) => {
-                const active = tab.match.some(
-                  (m) => location.pathname === m || (m !== "/" && location.pathname.startsWith(m))
-                );
-                const isPartiesTab = tab.to === "/" && location.pathname.startsWith("/parties");
-                const isVotesTab = tab.to === "/votes" && location.pathname === "/votes";
-                const isVoteDetailOnParties = tab.to === "/" && location.pathname.startsWith("/votes/");
-                const isActive = active || isPartiesTab || isVotesTab || isVoteDetailOnParties;
-                return (
-                  <NavLink
-                    key={tab.to}
-                    to={tab.to}
-                    className="block px-5 py-3 text-[13px] font-medium transition-colors"
-                    style={{
-                      borderBottom: isActive ? "2px solid var(--color-on-surface)" : "2px solid transparent",
-                      color: isActive ? "var(--color-on-surface)" : "var(--color-on-surface-variant)",
-                      fontWeight: isActive ? 700 : 500,
-                    }}
-                  >
-                    {tab.label}
-                  </NavLink>
-                );
-              })}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {navPills.map((pill) => (
+              <PillNav
+                key={pill.key}
+                to={pill.to}
+                label={pill.label}
+                active={section === pill.key}
+              />
+            ))}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
+            {/* Live indicator */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "var(--color-fg-muted)",
+              }}
+            >
+              <span
+                className="animate-pulse-dot"
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: "50%",
+                  background: "var(--color-pulse)",
+                  display: "inline-block",
+                  flexShrink: 0,
+                }}
+              />
+              LIVE · {liveDateStr()}
             </div>
-          )}
+
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Byt till ljust läge" : "Byt till mörkt läge"}
+              style={{
+                background: "transparent",
+                border: "1px solid var(--color-border)",
+                borderRadius: 999,
+                width: 32,
+                height: 32,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: "var(--color-fg-muted)",
+                fontSize: 16,
+                flexShrink: 0,
+              }}
+            >
+              {theme === "dark" ? "☀" : "☽"}
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* ── Content ─────────────────────────────────────────────────── */}
-      <main className="mx-auto max-w-[960px] px-8 py-6">
+        {/* ── Riksdag feature sub-tabs ────────────────────────────────── */}
+        {showRiksdagTabs && (
+          <div style={{ display: "flex", borderTop: "1px solid var(--color-border)" }}>
+            {[
+              { to: "/",          label: "Partimål & röstning", match: ["/", "/parties"] },
+              { to: "/votes",     label: "Omröstningar",        match: []                },
+              { to: "/budget",    label: "Statsbudget",         match: ["/budget"]       },
+              { to: "/politicians", label: "Enskilda politiker",match: ["/politicians"]  },
+              { to: "/manifestos",  label: "Manifest",          match: ["/manifestos"]  },
+            ].map((tab) => {
+              const active = tab.match.some(
+                (m) => location.pathname === m || (m !== "/" && location.pathname.startsWith(m))
+              );
+              const isPartiesTab  = tab.to === "/" && location.pathname.startsWith("/parties");
+              const isVotesTab    = tab.to === "/votes" && location.pathname === "/votes";
+              const isVoteDetailOnParties = tab.to === "/" && location.pathname.startsWith("/votes/");
+              const isActive = active || isPartiesTab || isVotesTab || isVoteDetailOnParties;
+
+              return (
+                <NavLink
+                  key={tab.to}
+                  to={tab.to}
+                  style={{
+                    display: "block",
+                    padding: "10px 20px",
+                    fontSize: 13,
+                    fontWeight: isActive ? 700 : 500,
+                    textDecoration: "none",
+                    borderBottom: isActive
+                      ? "2px solid var(--color-fg)"
+                      : "2px solid transparent",
+                    color: isActive ? "var(--color-fg)" : "var(--color-fg-muted)",
+                    transition: "color 0.15s",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {tab.label}
+                </NavLink>
+              );
+            })}
+          </div>
+        )}
+      </nav>
+
+      {/* ── Page content ──────────────────────────────────────────────── */}
+      <main style={{ maxWidth: 1280, margin: "0 auto", padding: "32px" }}>
         <Routes>
-          <Route path="/" element={<PartiesPage />} />
-          <Route path="/parties" element={<PartiesPage />} />
-          <Route path="/parties/:party/goals" element={<PartyGoalsPage />} />
-          <Route path="/parties/:party/goals/:goalId/votes" element={<GoalVotesPage />} />
-          <Route path="/politicians" element={<PoliticiansPage />} />
-          <Route path="/politicians/:id" element={<PoliticianPage />} />
-          <Route path="/votes" element={<VotesPage />} />
-          <Route path="/votes/:beteckning/:punkt" element={<VoteDetailPage />} />
-          <Route path="/budget" element={<BudgetPage />} />
-          <Route path="/budget/areas/:code" element={<AreaHistoryPage />} />
-          <Route path="/manifestos" element={<ManifestosPage />} />
-          <Route path="/region" element={<RegionLandingPage />} />
-          <Route path="/region/:code" element={<RegionDetailPage />} />
-          <Route path="/kommun" element={<MunicipalityLandingPage />} />
-          <Route path="/kommun/jämför" element={<MunicipalityComparePage />} />
-          <Route path="/kommun/:code" element={<MunicipalityDetailPage />} />
+          <Route path="/"                                      element={<HomePage />} />
+          <Route path="/riksdag"                               element={<RiksdagPage />} />
+          <Route path="/parties"                               element={<PartiesPage />} />
+          <Route path="/parties/:party/goals"                  element={<PartyGoalsPage />} />
+          <Route path="/parties/:party/goals/:goalId/votes"    element={<GoalVotesPage />} />
+          <Route path="/politicians"                           element={<PoliticiansPage />} />
+          <Route path="/politicians/:id"                       element={<PoliticianPage />} />
+          <Route path="/votes"                                 element={<VotesPage />} />
+          <Route path="/votes/:beteckning/:punkt"              element={<VoteDetailPage />} />
+          <Route path="/budget"                                element={<BudgetPage />} />
+          <Route path="/budget/areas/:code"                    element={<AreaHistoryPage />} />
+          <Route path="/manifestos"                            element={<ManifestosPage />} />
+          <Route path="/region"                                element={<RegionLandingPage />} />
+          <Route path="/region/:code"                          element={<RegionDetailPage />} />
+          <Route path="/kommun"                                element={<MunicipalityLandingPage />} />
+          <Route path="/kommun/jämför"                         element={<MunicipalityComparePage />} />
+          <Route path="/kommun/:code"                          element={<MunicipalityDetailPage />} />
+          <Route path="/sok"                                   element={<SearchPage />} />
         </Routes>
-
-        {/* Source disclaimer */}
-        <div className="mt-8 p-4 bg-surface-low rounded-lg">
-          <p className="text-xs text-on-surface-variant leading-relaxed m-0">
-            <strong>Datakälla:</strong>{" "}
-            {section === "riksdag"
-              ? "Sveriges riksdag (data.riksdagen.se). Partimål extraheras från valmanifest och partiprogram. Matchning mot voteringar sker automatiskt med manuell verifiering."
-              : "Valmyndigheten (val.se) — val 2022."}
-          </p>
-        </div>
       </main>
     </div>
   );
