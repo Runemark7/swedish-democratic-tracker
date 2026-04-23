@@ -1,8 +1,55 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useRegion, useRegionList } from "@/hooks/useDemocracy";
-import { Hemicycle, Donut, HBars, Pill, Trend, TargetBar } from "@/components/charts";
+import { useLocation, NavLink } from "react-router-dom";
+import { useRiksdag } from "@/hooks/useDemocracy";
+import { Hemicycle, Donut, HBars, Pill } from "@/components/charts";
 import type { Party } from "@/types/democracy";
+
+// ── Sub-nav ───────────────────────────────────────────────────────────────────
+
+const SUB_NAV = [
+  { to: "/parties",    label: "Partimål & röstning" },
+  { to: "/votes",      label: "Omröstningar" },
+  { to: "/budget",     label: "Statsbudget" },
+  { to: "/politicians",label: "Enskilda politiker" },
+  { to: "/manifestos", label: "Manifest" },
+] as const;
+
+function SubNav() {
+  const { pathname } = useLocation();
+  return (
+    <div
+      style={{
+        display: "flex",
+        borderBottom: "1px solid var(--color-border)",
+        padding: "0 32px",
+      }}
+    >
+      {SUB_NAV.map((item) => {
+        const active = pathname === item.to || pathname.startsWith(item.to + "/");
+        return (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            style={{
+              display: "block",
+              padding: "10px 16px",
+              fontFamily: "var(--font-mono)",
+              fontSize: 11,
+              letterSpacing: "0.12em",
+              textDecoration: "none",
+              color: active ? "var(--color-fg)" : "var(--color-fg-muted)",
+              borderBottom: active
+                ? "2px solid var(--color-accent)"
+                : "2px solid transparent",
+              marginBottom: -1,
+            }}
+          >
+            {item.label}
+          </NavLink>
+        );
+      })}
+    </div>
+  );
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -44,21 +91,16 @@ function Skeleton() {
   );
 }
 
-// ── RegionDetailPage ──────────────────────────────────────────────────────────
+// ── RiksdagPage ───────────────────────────────────────────────────────────────
 
-export function RegionDetailPage() {
-  const { code } = useParams<{ code: string }>();
-  const navigate = useNavigate();
-  const [selectOpen, setSelectOpen] = useState(false);
-
-  const { data, isLoading } = useRegion(code ?? "");
-  const { data: regionList } = useRegionList();
+export function RiksdagPage() {
+  const { data, isLoading } = useRiksdag();
 
   if (isLoading || !data) return <Skeleton />;
 
-  const { title, subtitle, ruling, liveVotes, budget, agenda, kpis } = data;
+  const { ruling, liveVotes, budget, agenda } = data;
 
-  // Build hemicycle groups: opposition left → support → governing right
+  // Build hemicycle groups: opposition left → support → ruling right
   const hemicycleGroups = [
     ...ruling.opposition.map((p: Party) => ({ color: p.color, count: p.seats })),
     ...(ruling.support ?? []).map((p: Party) => ({ color: p.color, count: p.seats })),
@@ -80,19 +122,17 @@ export function RegionDetailPage() {
     pct: a.pct,
   }));
 
-  // Donut label: first word + rest split
-  const totalParts = budget.total.split(" ");
-  const donutLabel = totalParts[0];
-  const donutSublabel = totalParts.slice(1).join(" ");
-
   return (
     <div className="sdt-page">
+      {/* ── Sub-nav ──────────────────────────────────────────────────── */}
+      <SubNav />
+
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <div
         style={{
           display: "flex",
           alignItems: "flex-end",
-          gap: 20,
+          gap: 28,
           padding: "40px 32px 0",
         }}
       >
@@ -108,7 +148,7 @@ export function RegionDetailPage() {
             flexShrink: 0,
           }}
         >
-          II
+          I
         </span>
         <div>
           <div
@@ -120,7 +160,7 @@ export function RegionDetailPage() {
               marginBottom: 6,
             }}
           >
-            KAMMARE TVÅ
+            KAMMARE ETT
           </div>
           <div
             style={{
@@ -133,124 +173,18 @@ export function RegionDetailPage() {
               marginBottom: 8,
             }}
           >
-            {title}
+            Riksdagen
           </div>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
               fontSize: 14,
               color: "var(--color-fg-muted)",
             }}
           >
-            <span>{subtitle}</span>
-            <button
-              onClick={() => setSelectOpen((v) => !v)}
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                color: "var(--color-accent)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                letterSpacing: "0.08em",
-              }}
-            >
-              ↓ BYT REGION
-            </button>
-            {selectOpen && regionList && (
-              <select
-                defaultValue={code}
-                onChange={(e) => {
-                  setSelectOpen(false);
-                  navigate(`/region/${e.target.value}`);
-                }}
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 11,
-                  background: "var(--color-sdt-surface)",
-                  color: "var(--color-fg)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: 3,
-                  padding: "3px 6px",
-                  cursor: "pointer",
-                }}
-              >
-                {regionList.map((r) => (
-                  <option key={r.code} value={r.code}>
-                    {r.name}
-                  </option>
-                ))}
-              </select>
-            )}
+            Sveriges nationella parlament — 349 ledamöter · Mandatperiod 2022–2026
           </div>
         </div>
       </div>
-
-      {/* ── KPI strip ────────────────────────────────────────────────── */}
-      {kpis && kpis.length > 0 && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 1,
-            border: "1px solid var(--color-border)",
-            background: "var(--color-border)",
-            margin: "22px 32px 0",
-          }}
-        >
-          {kpis.map((k) => (
-            <div
-              key={k.label}
-              style={{
-                background: "var(--color-bg)",
-                padding: "16px 20px",
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  letterSpacing: "1.5px",
-                  color: "var(--color-fg-muted)",
-                  marginBottom: 8,
-                }}
-              >
-                {k.label}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  marginBottom: 12,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontSize: 30,
-                    fontVariantNumeric: "tabular-nums",
-                    color: "var(--color-fg)",
-                    lineHeight: 1,
-                  }}
-                >
-                  {k.value}
-                </span>
-                <Trend trend={k.trend} delta={k.delta} />
-              </div>
-              <TargetBar
-                value={k.raw}
-                target={k.target}
-                worseHigher={k.worseHigher}
-                unit={k.unit}
-              />
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* ── Main grid ────────────────────────────────────────────────── */}
       <div
@@ -259,12 +193,17 @@ export function RegionDetailPage() {
           gridTemplateColumns: "1fr 1fr",
           gap: 1,
           border: "1px solid var(--color-border)",
-          background: "var(--color-border)",
           margin: "22px 32px 0",
+          background: "var(--color-border)",
         }}
       >
         {/* Left card — MANDAT */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: 24 }}>
+        <div
+          style={{
+            background: "var(--color-sdt-surface)",
+            padding: 24,
+          }}
+        >
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -302,8 +241,8 @@ export function RegionDetailPage() {
               >
                 <span
                   style={{
-                    width: 9,
-                    height: 9,
+                    width: 8,
+                    height: 8,
                     borderRadius: "50%",
                     background: p.color,
                     display: "inline-block",
@@ -349,7 +288,12 @@ export function RegionDetailPage() {
         </div>
 
         {/* Right card — BUDGET */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: 24 }}>
+        <div
+          style={{
+            background: "var(--color-sdt-surface)",
+            padding: 24,
+          }}
+        >
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -366,15 +310,19 @@ export function RegionDetailPage() {
               segments={budgetSegments}
               size={150}
               thickness={18}
-              label={donutLabel}
-              sublabel={donutSublabel}
+              label={budget.total}
+              sublabel={budget.year}
             />
             <div style={{ flex: 1, minWidth: 0, paddingTop: 4 }}>
               <HBars
-                items={budgetSegments.slice(0, 5)}
+                items={budget.areas.map((a, i) => ({
+                  name: a.name,
+                  value: a.value,
+                  color: BUDGET_COLORS[i % BUDGET_COLORS.length],
+                  pct: a.pct,
+                }))}
                 height={6}
                 gap={10}
-                unit=" mdkr"
               />
             </div>
           </div>
@@ -394,7 +342,12 @@ export function RegionDetailPage() {
         }}
       >
         {/* Left card — PULS */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: 24 }}>
+        <div
+          style={{
+            background: "var(--color-sdt-surface)",
+            padding: 24,
+          }}
+        >
           <div
             style={{
               display: "flex",
@@ -432,7 +385,7 @@ export function RegionDetailPage() {
                 key={i}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "18px 70px 1fr auto",
+                  gridTemplateColumns: "18px 70px 1fr auto 90px",
                   gap: 12,
                   alignItems: "center",
                 }}
@@ -485,13 +438,29 @@ export function RegionDetailPage() {
                 </span>
                 {/* pill */}
                 <Pill tone={pillTone(v.status)}>{v.status}</Pill>
+                {/* margin */}
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    color: "var(--color-fg-muted)",
+                    textAlign: "right",
+                  }}
+                >
+                  {v.margin ?? ""}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Right card — AGENDA */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: 24 }}>
+        <div
+          style={{
+            background: "var(--color-sdt-surface)",
+            padding: 24,
+          }}
+        >
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -503,20 +472,15 @@ export function RegionDetailPage() {
           >
             AGENDA · STYRETS PRIORITERINGAR
           </div>
-          <ol
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-            }}
-          >
+          <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
             {agenda.map((item, i) => (
               <li
                 key={i}
-                style={{ display: "flex", alignItems: "baseline", gap: 12 }}
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 12,
+                }}
               >
                 <span
                   style={{

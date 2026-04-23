@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { PartyBadge } from "@/shared/components";
 import { municipalitiesApi } from "./api";
 import { SwedenKommunMap } from "./components/SwedenKommunMap";
 import type { MunicipalitySummary } from "@/shared/types";
@@ -10,39 +9,136 @@ function MunicipalityCard({ mun }: { mun: MunicipalitySummary }) {
   return (
     <NavLink
       to={`/kommun/${mun.code}`}
-      className="block rounded-xl p-4 border transition-all hover:shadow-ambient"
-      style={{ background: "var(--color-surface-lowest)", borderColor: "var(--color-surface-high)" }}
+      style={({ isActive }) => ({
+        display: "block",
+        padding: "14px 16px",
+        border: "1px solid var(--color-border)",
+        background: isActive ? "var(--color-track)" : "var(--color-sdt-surface)",
+        color: "var(--color-fg)",
+        textDecoration: "none",
+        transition: "background 0.15s",
+      })}
     >
-      <div className="flex items-start justify-between mb-2">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          marginBottom: 6,
+        }}
+      >
         <div>
-          <h3 className="font-display text-sm font-extrabold text-on-surface leading-tight">
+          <div
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: 15,
+              fontWeight: 400,
+              color: "var(--color-fg)",
+              lineHeight: 1.2,
+            }}
+          >
             {mun.name}
-          </h3>
-          <p className="text-[11px] text-on-surface-variant mt-0.5">{mun.regionName}</p>
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              color: "var(--color-fg-muted)",
+              marginTop: 2,
+            }}
+          >
+            {mun.regionName}
+          </div>
         </div>
-        <span className="text-[10px] text-on-surface-variant font-mono bg-surface-high rounded px-1.5 py-0.5">
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 10,
+            color: "var(--color-fg-muted)",
+            background: "var(--color-track)",
+            borderRadius: 2,
+            padding: "2px 6px",
+          }}
+        >
           {mun.code}
         </span>
       </div>
 
-      <div className="flex gap-1 flex-wrap mb-3">
-        {mun.governingParties.map((p) => (
-          <PartyBadge key={p} party={p} />
-        ))}
-      </div>
+      {/* Governing parties */}
+      {mun.governingParties.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            gap: 4,
+            flexWrap: "wrap",
+            marginBottom: 8,
+          }}
+        >
+          {mun.governingParties.map((p) => (
+            <span
+              key={p}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                letterSpacing: "0.5px",
+                color: "var(--color-accent)",
+                background: "color-mix(in oklch, var(--color-accent) 12%, transparent)",
+                borderRadius: 2,
+                padding: "1px 6px",
+              }}
+            >
+              {p}
+            </span>
+          ))}
+        </div>
+      )}
 
-      <div className="flex gap-4">
+      <div style={{ display: "flex", gap: 16 }}>
         <div>
-          <div className="text-[11px] font-mono font-bold text-on-surface">
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 12,
+              fontWeight: 700,
+              color: "var(--color-fg)",
+            }}
+          >
             {mun.population.toLocaleString("sv-SE")}
           </div>
-          <div className="text-[9px] text-on-surface-variant uppercase tracking-widest">inv.</div>
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 9,
+              color: "var(--color-fg-muted)",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
+          >
+            inv.
+          </div>
         </div>
         <div>
-          <div className="text-[11px] font-mono font-bold text-on-surface">
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 12,
+              fontWeight: 700,
+              color: "var(--color-fg)",
+            }}
+          >
             {mun.totalMandates}
           </div>
-          <div className="text-[9px] text-on-surface-variant uppercase tracking-widest">mandat</div>
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 9,
+              color: "var(--color-fg-muted)",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+            }}
+          >
+            mandat
+          </div>
         </div>
       </div>
     </NavLink>
@@ -66,62 +162,182 @@ export function MunicipalityLandingPage() {
   );
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-on-surface mb-1">
-          Kommunalkollen
-        </h2>
-        <p className="text-sm text-on-surface-variant">
+    <div
+      style={{
+        background: "var(--color-bg)",
+        color: "var(--color-fg)",
+        minHeight: "100vh",
+        fontFamily: "var(--font-body)",
+      }}
+    >
+      {/* Header */}
+      <div style={{ padding: "40px 32px 0" }}>
+        <div
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 10,
+            letterSpacing: "2px",
+            color: "var(--color-fg-muted)",
+            textTransform: "uppercase",
+            marginBottom: 8,
+          }}
+        >
+          KAMMARE TRE
+        </div>
+        <h1
+          style={{
+            fontFamily: "var(--font-serif)",
+            fontSize: 44,
+            fontWeight: 400,
+            letterSpacing: "-1.5px",
+            lineHeight: 1,
+            margin: "0 0 8px",
+            color: "var(--color-fg)",
+          }}
+        >
+          Välj kommun
+        </h1>
+        <p
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 11,
+            color: "var(--color-fg-muted)",
+            margin: "0 0 24px",
+          }}
+        >
           Utforska valresultat och styrande partier i Sveriges kommuner.
           Data: Valmyndigheten, val 2022.
         </p>
+
+        {/* Search */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
+          <input
+            type="search"
+            placeholder="Sök kommun eller region…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              background: "var(--color-sdt-surface)",
+              border: "1px solid var(--color-border)",
+              color: "var(--color-fg)",
+              fontFamily: "var(--font-body)",
+              fontSize: 13,
+              padding: "8px 12px",
+              borderRadius: 4,
+              outline: "none",
+              width: 280,
+            }}
+          />
+          {municipalities && (
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                color: "var(--color-fg-muted)",
+              }}
+            >
+              {filtered?.length ?? 0} av {municipalities.length} kommuner
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Search */}
-      <div className="mb-5">
-        <input
-          type="search"
-          placeholder="Sök kommun eller region…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-sm px-3 py-2 text-sm rounded-lg border bg-surface-lowest text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-1"
-          style={{ borderColor: "var(--color-surface-high)" }}
-        />
-        {municipalities && (
-          <span className="ml-3 text-xs text-on-surface-variant">
-            {filtered?.length ?? 0} av {municipalities.length} kommuner
-          </span>
-        )}
-      </div>
-
+      {/* Loading / error */}
       {isLoading && (
-        <p className="text-sm text-on-surface-variant py-16 text-center">Laddar kommuner…</p>
+        <div
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 12,
+            color: "var(--color-fg-muted)",
+            padding: "64px 32px",
+            textAlign: "center",
+          }}
+        >
+          Laddar kommuner…
+        </div>
       )}
       {error && (
-        <p className="text-sm text-red-500 py-8 text-center">Kunde inte hämta kommundata.</p>
+        <div
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 12,
+            color: "var(--color-pulse)",
+            padding: "32px 32px",
+            textAlign: "center",
+          }}
+        >
+          Kunde inte hämta kommundata.
+        </div>
       )}
 
+      {/* Map + list */}
       {filtered && municipalities && (
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="shrink-0 lg:w-[260px]">
-            <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold mb-3 text-center lg:text-left">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 32,
+            padding: "0 32px 40px",
+            alignItems: "flex-start",
+          }}
+        >
+          {/* Map column */}
+          <div style={{ flexShrink: 0, width: 260 }}>
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                color: "var(--color-fg-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "1.5px",
+                marginBottom: 10,
+              }}
+            >
               Klicka på en kommun
-            </p>
+            </div>
             <SwedenKommunMap municipalities={municipalities} />
-            <p className="mt-3 text-[10px] text-on-surface-variant text-center lg:text-left leading-snug">
+            <p
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 9,
+                color: "var(--color-fg-muted)",
+                marginTop: 8,
+                lineHeight: 1.5,
+              }}
+            >
               Karta: Lokal_Profil / Wikimedia Commons (CC BY-SA 2.5),
               grunddata från SCB.
             </p>
           </div>
 
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3">
+          {/* List grid */}
+          <div
+            style={{
+              flex: 1,
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gap: 1,
+              background: "var(--color-border)",
+              border: "1px solid var(--color-border)",
+              alignContent: "start",
+            }}
+          >
             {filtered.map((mun) => (
               <MunicipalityCard key={mun.code} mun={mun} />
             ))}
             {filtered.length === 0 && (
-              <p className="col-span-3 text-sm text-on-surface-variant text-center py-8">
+              <div
+                style={{
+                  gridColumn: "1 / -1",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 12,
+                  color: "var(--color-fg-muted)",
+                  padding: "32px",
+                  textAlign: "center",
+                }}
+              >
                 Inga kommuner matchade sökningen.
-              </p>
+              </div>
             )}
           </div>
         </div>
