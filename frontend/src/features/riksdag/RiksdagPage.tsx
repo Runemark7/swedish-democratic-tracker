@@ -1,55 +1,6 @@
-import { useLocation, NavLink } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
 import { Hemicycle, Donut, HBars, Pill } from "@/components/charts";
 import type { Party } from "@/types/democracy";
-
-// ── Sub-nav ───────────────────────────────────────────────────────────────────
-
-const SUB_NAV = [
-  { to: "/parties",    label: "Partimål & röstning" },
-  { to: "/votes",      label: "Omröstningar" },
-  { to: "/budget",     label: "Statsbudget" },
-  { to: "/politicians",label: "Enskilda politiker" },
-  { to: "/manifestos", label: "Manifest" },
-] as const;
-
-function SubNav() {
-  const { pathname } = useLocation();
-  return (
-    <div
-      style={{
-        display: "flex",
-        borderBottom: "1px solid var(--color-border)",
-        padding: "0 32px",
-      }}
-    >
-      {SUB_NAV.map((item) => {
-        const active = pathname === item.to || pathname.startsWith(item.to + "/");
-        return (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            style={{
-              display: "block",
-              padding: "10px 16px",
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              letterSpacing: "0.12em",
-              textDecoration: "none",
-              color: active ? "var(--color-fg)" : "var(--color-fg-muted)",
-              borderBottom: active
-                ? "2px solid var(--color-accent)"
-                : "2px solid transparent",
-              marginBottom: -1,
-            }}
-          >
-            {item.label}
-          </NavLink>
-        );
-      })}
-    </div>
-  );
-}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -124,9 +75,6 @@ export function RiksdagPage() {
 
   return (
     <div className="sdt-page">
-      {/* ── Sub-nav ──────────────────────────────────────────────────── */}
-      <SubNav />
-
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <div
         style={{
@@ -385,7 +333,7 @@ export function RiksdagPage() {
                 key={i}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "18px 70px 1fr auto 90px",
+                  gridTemplateColumns: "18px 70px minmax(0,1fr) auto auto",
                   gap: 12,
                   alignItems: "center",
                 }}
