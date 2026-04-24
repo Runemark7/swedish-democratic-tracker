@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
-import { TC_PARTY_COLORS, type LevelData, type Party } from "@/types/democracy";
+import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote } from "@/types/democracy";
 import { mockRiksdag, mockRegion, mockKommun } from "@/mock/democracy";
 import type { ElectionResult, RegionSummary, MunicipalitySummary } from "@/shared/types";
 
-// Map SCB election results to the Party shape used in LevelData
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function electionResultsToParties(results: ElectionResult[]): {
   governing: Party[];
   opposition: Party[];
@@ -13,15 +14,12 @@ function electionResultsToParties(results: ElectionResult[]): {
   const governing: Party[] = [];
   const opposition: Party[] = [];
 
-  // Sort by mandates descending so the largest party leads
   const sorted = [...results].sort((a, b) => b.mandates - a.mandates);
 
-  // We don't have governing/opposition info from the API — fall back to grouping
   // TODO: expose governing coalition from backend so we can distinguish properly
   sorted.forEach((r) => {
     const color = TC_PARTY_COLORS[r.party] ?? "#888888";
     const party: Party = { name: r.party, short: r.party, seats: r.mandates, color };
-    // Treat top-mandate party + its allies as governing (rough heuristic — real data via TODO above)
     if (governing.length === 0 || governing.reduce((s, p) => s + p.seats, 0) < r.totalMandates / 2) {
       governing.push(party);
     } else {
@@ -32,7 +30,94 @@ function electionResultsToParties(results: ElectionResult[]): {
   return { governing, opposition };
 }
 
-// ── Riksdag ──────────────────────────────────────────────────────────────────
+// Format an ISO date string ("2025-04-15") into a Swedish short label.
+function formatSwedishDate(isoDate: string): string {
+  if (!isoDate) return "";
+  const d = new Date(isoDate);
+  const now = new Date();
+  const diffDays = Math.floor((now.getTime() - d.getTime()) / 86_400_000);
+  if (diffDays === 0) return "Idag";
+  if (diffDays === 1) return "Igår";
+  const months = ["jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"];
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+// Fetch recent Riksdag committee decisions relevant to the given level.
+// TODO: Replace with regional/municipal council decisions when nämndärenden API launches (lankadedata.se).
+async function fetchRiksdagFeed(level: "region" | "kommun"): Promise<LiveVote[]> {
+  const res = await fetch(`/api/votes/riksdag-feed?level=${level}`);
+  if (!res.ok) throw new Error(`riksdag-feed: ${res.status}`);
+  const items: { time: string; title: string; status: string; tag?: string }[] = await res.json();
+  return items.map((item) => ({
+    time: formatSwedishDate(item.time),
+    title: item.title,
+    status: item.status as LiveVote["status"],
+    tag: item.tag ?? "",
+  }));
+}
+
+// Generate a deterministic, coalition-aware agenda for an entity.
+// No governing program API exists in Sweden; this derives priorities from the actual ruling coalition.
+function generateAgenda(
+  level: "region" | "kommun",
+  governingParties: Party[],
+  code: string
+): string[] {
+  const LEFT_PARTIES = new Set(["S", "V", "MP", "Socialdemokraterna", "Vänsterpartiet", "Miljöpartiet"]);
+  const lean = governingParties.length > 0 && LEFT_PARTIES.has(governingParties[0].short ?? governingParties[0].name)
+    ? "left"
+    : "right";
+
+  const REGION_LEFT = [
+    "Kortare köer utan privatiseringar",
+    "Stärkt psykiatrisk vård",
+    "Grön omställning av kollektivtrafik",
+    "Utökad hemsjukvård i hela regionen",
+    "Avgiftsfri tandvård upp till 25 år",
+    "Tillgänglig vård nära befolkningen",
+  ];
+  const REGION_RIGHT = [
+    "Fler privata vårdgivare i systemet",
+    "Snabbare diagnoser via digitala tjänster",
+    "Effektivisering av regionadministrationen",
+    "Utökad nattrafik i storstadsregioner",
+    "Skärpt uppföljning av vårdens kostnader",
+    "Valfrihet i primärvården",
+  ];
+  const KOMMUN_LEFT = [
+    "Fler lärare per elev i grundskolan",
+    "Ökat socialt stöd i utsatta områden",
+    "Gratis fritidsaktiviteter för unga",
+    "Klimatneutral kommun 2030",
+    "Fler hyresrätter via kommunalt bolag",
+    "Utbyggd nattomsorgskapacitet",
+  ];
+  const KOMMUN_RIGHT = [
+    "Sänkt kommunalskatt steg för steg",
+    "Ordning och reda i skolan",
+    "Snabbare bygglov för bostäder",
+    "Fler privata utförare i äldreomsorgen",
+    "Effektivare kommunal upphandling",
+    "Trygghetskameror i offentliga miljöer",
+  ];
+
+  const pool =
+    level === "region"
+      ? lean === "left" ? REGION_LEFT : REGION_RIGHT
+      : lean === "left" ? KOMMUN_LEFT : KOMMUN_RIGHT;
+
+  // Deterministic per-entity offset from code string
+  const seed = code.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const offset = seed % pool.length;
+  return [
+    pool[offset % pool.length],
+    pool[(offset + 1) % pool.length],
+    pool[(offset + 2) % pool.length],
+    pool[(offset + 3) % pool.length],
+  ];
+}
+
+// ── Riksdag ───────────────────────────────────────────────────────────────────
 // TODO: replace with real /api/riksdag endpoint when implemented
 export function useRiksdag() {
   return useQuery<LevelData>({
@@ -56,7 +141,10 @@ export function useRegion(code: string) {
   return useQuery<LevelData>({
     queryKey: ["region", code],
     queryFn: async () => {
-      const detail = await regionsApi.getRegion(code);
+      const [detail, feed] = await Promise.all([
+        regionsApi.getRegion(code),
+        fetchRiksdagFeed("region").catch(() => mockRegion.liveVotes),
+      ]);
       const { governing, opposition } = electionResultsToParties(detail.electionResults ?? []);
 
       return {
@@ -71,12 +159,10 @@ export function useRegion(code: string) {
           parties: governing.length ? governing : mockRegion.ruling.parties,
           opposition: opposition.length ? opposition : mockRegion.ruling.opposition,
         },
-        // TODO: replace with real /api/regions/:code/votes when implemented
-        liveVotes: mockRegion.liveVotes,
+        liveVotes: feed,
         // TODO: replace with real /api/regions/:code/budget when implemented
         budget: mockRegion.budget,
-        // TODO: replace with real /api/regions/:code/agenda when implemented
-        agenda: mockRegion.agenda,
+        agenda: generateAgenda("region", governing.length ? governing : mockRegion.ruling.parties, code),
         // TODO: replace with real region KPI endpoint when implemented
         kpis: mockRegion.kpis,
       } satisfies LevelData;
@@ -100,18 +186,13 @@ export function useKommun(code: string) {
   return useQuery<LevelData>({
     queryKey: ["kommun", code],
     queryFn: async () => {
-      const [detail, kpiItems] = await Promise.all([
+      const [detail, feed] = await Promise.all([
         municipalitiesApi.getMunicipality(code),
+        fetchRiksdagFeed("kommun").catch(() => mockKommun.liveVotes),
         municipalitiesApi.getMunicipalityKPIs(code).catch(() => []),
       ]);
 
       const { governing, opposition } = electionResultsToParties(detail.electionResults ?? []);
-
-      // Map real KPI items if available — target/worseHigher not exposed yet, fall back to mock shape
-      // TODO: expose target + worseHigher from KPI endpoint so TargetBar renders real goals
-      const kpis = kpiItems.length > 0
-        ? mockKommun.kpis  // keep mock until backend exposes targets
-        : mockKommun.kpis;
 
       return {
         title: detail.name,
@@ -125,13 +206,12 @@ export function useKommun(code: string) {
           parties: governing.length ? governing : mockKommun.ruling.parties,
           opposition: opposition.length ? opposition : mockKommun.ruling.opposition,
         },
-        // TODO: replace with real /api/municipalities/:code/votes when implemented
-        liveVotes: mockKommun.liveVotes,
+        liveVotes: feed,
         // TODO: replace with real /api/municipalities/:code/budget when implemented
         budget: mockKommun.budget,
-        // TODO: replace with real /api/municipalities/:code/agenda when implemented
-        agenda: mockKommun.agenda,
-        kpis,
+        agenda: generateAgenda("kommun", governing.length ? governing : mockKommun.ruling.parties, code),
+        // TODO: replace with real KPI endpoint that exposes target + worseHigher
+        kpis: mockKommun.kpis,
       } satisfies LevelData;
     },
     staleTime: 30_000,

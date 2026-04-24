@@ -126,3 +126,19 @@ func (s *Service) ListDistinctVotes(ctx context.Context, f ports.ListDistinctVot
 func (s *Service) ListByBeteckning(ctx context.Context, beteckning, punkt string) ([]*domain.Vote, error) {
 	return s.repo.ListByBeteckning(ctx, beteckning, punkt)
 }
+
+// GetRiksdagFeed returns recent betänkanden from committees relevant to the given level.
+// level "region"  → SoU (healthcare), TU (transit)
+// level "kommun"  → UbU (education), CU (housing/planning), SoU
+func (s *Service) GetRiksdagFeed(ctx context.Context, level string) ([]ports.RiksdagDocument, error) {
+	var organs []string
+	switch level {
+	case "region":
+		organs = []string{"SoU", "TU"}
+	case "kommun":
+		organs = []string{"UbU", "CU", "SoU"}
+	default:
+		return nil, fmt.Errorf("unknown level %q: must be region or kommun", level)
+	}
+	return s.riksdagen.FetchDocuments(ctx, organs, 5)
+}

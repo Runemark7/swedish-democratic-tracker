@@ -460,9 +460,23 @@ export function MunicipalityDetailPage() {
                 borderRadius: "50%",
                 background: "var(--color-pulse)",
                 display: "inline-block",
+                flexShrink: 0,
               }}
             />
-            PULS · SENASTE BESLUT
+            <div>
+              <div>RIKSDAG · RELEVANTA BESLUT</div>
+              <div
+                style={{
+                  fontSize: 9,
+                  letterSpacing: "0.08em",
+                  opacity: 0.6,
+                  marginTop: 2,
+                  textTransform: "none",
+                }}
+              >
+                Riksdagsbeslut som berör kommunal nivå
+              </div>
+            </div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
