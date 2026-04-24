@@ -7,6 +7,16 @@ import type { ElectionResult, RegionSummary, MunicipalitySummary } from "@/share
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+// Swedish left-bloc parties. Used to infer governing coalition from election results.
+// TODO: expose actual governing coalition from backend — this heuristic assigns the
+// entire winning bloc (left or right) to governing, which is correct in most cases
+// but misses cross-bloc coalitions (e.g. Blågrön = M+MP in some regions).
+const LEFT_BLOC = new Set([
+  "Socialdemokraterna", "S",
+  "Vänsterpartiet", "V",
+  "Miljöpartiet", "MP",
+]);
+
 function electionResultsToParties(results: ElectionResult[]): {
   governing: Party[];
   opposition: Party[];
@@ -15,12 +25,16 @@ function electionResultsToParties(results: ElectionResult[]): {
   const opposition: Party[] = [];
 
   const sorted = [...results].sort((a, b) => b.mandates - a.mandates);
+  if (sorted.length === 0) return { governing, opposition };
 
-  // TODO: expose governing coalition from backend so we can distinguish properly
+  // Determine bloc from the largest party
+  const largestIsLeft = LEFT_BLOC.has(sorted[0].party);
+
   sorted.forEach((r) => {
     const color = TC_PARTY_COLORS[r.party] ?? "#888888";
     const party: Party = { name: r.party, short: r.party, seats: r.mandates, color };
-    if (governing.length === 0 || governing.reduce((s, p) => s + p.seats, 0) < r.totalMandates / 2) {
+    const isLeft = LEFT_BLOC.has(r.party);
+    if (isLeft === largestIsLeft) {
       governing.push(party);
     } else {
       opposition.push(party);
