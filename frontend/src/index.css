@@ -77,7 +77,7 @@
 html {
   font-family: var(--font-body);
   color: var(--color-on-surface);
-  background: var(--color-surface);
+  background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

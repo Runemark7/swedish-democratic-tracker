@@ -20,6 +20,8 @@ export function TargetBar({
   const lo = min != null ? min : Math.min(value, target) * 0.85;
   const hi = max != null ? max : Math.max(value, target) * 1.15;
 
+  const fmt = (n: number) => (n % 1 === 0 ? String(n) : n.toFixed(1));
+
   const pct = (v: number) =>
     Math.max(0, Math.min(1, (v - lo) / (hi - lo))) * 100;
 
@@ -43,7 +45,7 @@ export function TargetBar({
       aria-valuemin={lo}
       aria-valuemax={hi}
       aria-label={descriptiveText}
-      style={{ position: 'relative', width: '100%', height }}
+      style={{ position: 'relative', width: '100%', paddingBottom: 22 }}
     >
       {/* Visually hidden descriptive text */}
       <span
@@ -123,7 +125,7 @@ export function TargetBar({
       <div
         style={{
           position: 'absolute',
-          top: height,
+          bottom: 0,
           left: 0,
           right: 0,
           display: 'flex',
@@ -131,15 +133,15 @@ export function TargetBar({
           fontSize: 10,
           fontVariantNumeric: 'tabular-nums',
           color: 'var(--color-fg-muted)',
-          paddingTop: 2,
+          letterSpacing: '0.03em',
           pointerEvents: 'none',
         }}
       >
-        <span>{lo}{unit}</span>
-        <span style={{ color: 'var(--color-fg)', fontWeight: 'bold' }}>
-          {target}{unit}
+        <span>{fmt(lo)}{unit}</span>
+        <span style={{ color: 'var(--color-fg)', fontWeight: 600 }}>
+          Mål {fmt(target)}{unit}
         </span>
-        <span>{hi}{unit}</span>
+        <span>{fmt(hi)}{unit}</span>
       </div>
     </div>
   );
