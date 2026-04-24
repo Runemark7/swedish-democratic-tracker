@@ -1,6 +1,14 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { mockRiksdag, mockKommun } from "@/mock/democracy";
 import { Pill } from "@/components/charts";
+import type { LiveVote } from "@/types/democracy";
+
+function beslutHref(v: LiveVote): string | null {
+  if (!v.beteckning) return null;
+  const p = new URLSearchParams({ title: v.title, status: v.status, tag: v.tag, time: v.time });
+  return `/beslut/${encodeURIComponent(v.beteckning)}?${p}`;
+}
 
 const TOPICS = [
   { t: "Skola & utbildning",  n: 24, lvl: ["I", "III"], tag: "Skola"    },
@@ -344,19 +352,17 @@ export function SearchPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 {(query ? visibleVotes : allVotes.slice(0, 4)).map((v, i) => {
                   const list = query ? visibleVotes : allVotes.slice(0, 4);
-                  return (
+                  const href = beslutHref(v);
+                  const row = (
                     <div
-                      key={i}
                       style={{
                         display: "flex",
                         alignItems: "flex-start",
                         justifyContent: "space-between",
                         gap: 12,
                         padding: "10px 0",
-                        borderBottom:
-                          i < list.length - 1
-                            ? "1px solid var(--color-border)"
-                            : "none",
+                        borderBottom: i < list.length - 1 ? "1px solid var(--color-border)" : "none",
+                        cursor: href ? "pointer" : "default",
                       }}
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -388,6 +394,13 @@ export function SearchPage() {
                       </div>
                       <Pill tone={statusTone(v.status ?? "")}>{v.status}</Pill>
                     </div>
+                  );
+                  return href ? (
+                    <Link key={i} to={href} style={{ textDecoration: "none", color: "inherit" }}>
+                      {row}
+                    </Link>
+                  ) : (
+                    <div key={i}>{row}</div>
                   );
                 })}
                 {query && visibleVotes.length === 0 && (

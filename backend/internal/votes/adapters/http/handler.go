@@ -182,19 +182,21 @@ func (h *Handler) riksdagFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type feedItem struct {
-		Time   string `json:"time"`
-		Title  string `json:"title"`
-		Status string `json:"status"`
-		Tag    string `json:"tag,omitempty"`
+		Time       string `json:"time"`
+		Title      string `json:"title"`
+		Status     string `json:"status"`
+		Tag        string `json:"tag,omitempty"`
+		Beteckning string `json:"beteckning,omitempty"`
 	}
 	items := make([]feedItem, 0, len(docs))
 	for _, d := range docs {
 		tag := organTag[d.Organ]
 		items = append(items, feedItem{
-			Time:   d.Date,
-			Title:  d.Title,
-			Status: "Bifall", // >90% of betänkanden pass; real votering lookup is future work
-			Tag:    tag,
+			Time:       d.Date,
+			Title:      d.Title,
+			Status:     "Bifall", // >90% of betänkanden pass; real votering lookup is future work
+			Tag:        tag,
+			Beteckning: d.Beteckning,
 		})
 	}
 	jsonOK(w, items)

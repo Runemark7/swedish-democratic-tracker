@@ -21,11 +21,11 @@ export const mockRiksdag: LevelData = {
     ],
   },
   liveVotes: [
-    { time: "Idag 14:20",  title: "Ändring i socialförsäkringsbalken", status: "Bifall",  margin: "196–149", tag: "Välfärd"   },
-    { time: "Idag 11:05",  title: "Höjda pensioner 2026",              status: "Bifall",  margin: "245–98",  tag: "Pension"   },
-    { time: "Igår 16:40",  title: "Skärpt straff för narkotikabrott",  status: "Bifall",  margin: "203–142", tag: "Rättsväsen"},
-    { time: "Igår 10:15",  title: "Sänkt bensinskatt",                 status: "Avslag",  margin: "149–196", tag: "Skatt"     },
-    { time: "17 apr",      title: "Utökad försvarsbudget",             status: "Bifall",  margin: "289–54",  tag: "Försvar"   },
+    { time: "Idag 14:20",  title: "Ändring i socialförsäkringsbalken", status: "Bifall",  margin: "196–149", tag: "Välfärd",    beteckning: "SfU2425:18" },
+    { time: "Idag 11:05",  title: "Höjda pensioner 2026",              status: "Bifall",  margin: "245–98",  tag: "Pension",    beteckning: "SfU2425:21" },
+    { time: "Igår 16:40",  title: "Skärpt straff för narkotikabrott",  status: "Bifall",  margin: "203–142", tag: "Rättsväsen", beteckning: "JuU2425:14" },
+    { time: "Igår 10:15",  title: "Sänkt bensinskatt",                 status: "Avslag",  margin: "149–196", tag: "Skatt",      beteckning: "SkU2425:9"  },
+    { time: "17 apr",      title: "Utökad försvarsbudget",             status: "Bifall",  margin: "289–54",  tag: "Försvar",    beteckning: "FöU2425:6"  },
   ],
   budget: {
     total: "1 389 mdkr",
@@ -77,10 +77,10 @@ export const mockRegion: LevelData = {
     ],
   },
   liveVotes: [
-    { time: "Idag 09:30", title: "Ny vårdcentral i Norrtälje",  status: "Bifall", tag: "Vård"   },
-    { time: "Igår 15:00", title: "Biljettprishöjning SL 2026",  status: "Bifall", tag: "Trafik" },
-    { time: "16 apr",     title: "Utökade BVC-tider",           status: "Bifall", tag: "Vård"   },
-    { time: "14 apr",     title: "Extra medel akutvård",        status: "Bifall", tag: "Vård"   },
+    { time: "Idag 09:30", title: "Ny vårdcentral i Norrtälje",  status: "Bifall", tag: "Vård",   beteckning: "SoU2425:12" },
+    { time: "Igår 15:00", title: "Biljettprishöjning SL 2026",  status: "Bifall", tag: "Trafik", beteckning: "TU2425:8"   },
+    { time: "16 apr",     title: "Utökade BVC-tider",           status: "Bifall", tag: "Vård",   beteckning: "SoU2425:15" },
+    { time: "14 apr",     title: "Extra medel akutvård",        status: "Bifall", tag: "Vård",   beteckning: "SoU2425:11" },
   ],
   budget: {
     total: "118 mdkr",
@@ -125,11 +125,11 @@ export const mockKommun: LevelData = {
     ],
   },
   liveVotes: [
-    { time: "Idag 13:15", title: "Ny förskola i Sofielund",         status: "Bifall",     tag: "Skola"     },
-    { time: "Idag 10:40", title: "Parkeringsavgifter innerstaden",   status: "Bifall",     tag: "Trafik"    },
-    { time: "Igår 14:00", title: "Upprustning Folkets park",         status: "Bifall",     tag: "Stadsmiljö"},
-    { time: "16 apr",     title: "Sommarjobb till unga, budget",     status: "Bifall",     tag: "Arbete"    },
-    { time: "15 apr",     title: "Ny detaljplan Västra hamnen",      status: "Återremiss", tag: "Plan"      },
+    { time: "Idag 13:15", title: "Ny förskola i Sofielund",         status: "Bifall",     tag: "Skola",      beteckning: "UbU2425:17" },
+    { time: "Idag 10:40", title: "Parkeringsavgifter innerstaden",   status: "Bifall",     tag: "Trafik",     beteckning: "TU2425:10"  },
+    { time: "Igår 14:00", title: "Upprustning Folkets park",         status: "Bifall",     tag: "Stadsmiljö", beteckning: "CU2425:5"   },
+    { time: "16 apr",     title: "Sommarjobb till unga, budget",     status: "Bifall",     tag: "Arbete",     beteckning: "AU2425:13"  },
+    { time: "15 apr",     title: "Ny detaljplan Västra hamnen",      status: "Återremiss", tag: "Plan",       beteckning: "CU2425:8"   },
   ],
   budget: {
     total: "24,8 mdkr",

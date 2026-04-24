@@ -18,6 +18,7 @@ export interface LiveVote {
   status: "Bifall" | "Avslag" | "Återremiss" | "Bordlagd";
   margin?: string;
   tag: string;
+  beteckning?: string;
 }
 
 export interface BudgetArea {

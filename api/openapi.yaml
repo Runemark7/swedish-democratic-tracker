@@ -217,6 +217,28 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /votes/riksdag-feed:
+    get:
+      operationId: getRiksdagFeed
+      tags: [votes]
+      summary: Recent Riksdag betänkanden relevant to a given governance level
+      parameters:
+        - name: level
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [region, kommun]
+      responses:
+        "200":
+          description: Recent betänkanden with beteckning for deep-linking
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RiksdagFeedItem"
+
   /votes/{beteckning}/{punkt}:
     get:
       operationId: getVoteDetail
@@ -1290,6 +1312,26 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/ElectionResult"
+
+    RiksdagFeedItem:
+      type: object
+      required: [time, title, status]
+      properties:
+        time:
+          type: string
+          example: "2025-04-15"
+        title:
+          type: string
+          example: "Betänkande om sjukvårdsreform"
+        status:
+          type: string
+          example: "Bifall"
+        tag:
+          type: string
+          example: "Vård"
+        beteckning:
+          type: string
+          example: "SoU2425:12"
 
     RegionBudgetArea:
       type: object
