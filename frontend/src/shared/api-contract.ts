@@ -140,6 +140,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/votes/riksdag-feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Recent Riksdag betänkanden relevant to a given governance level */
+        get: operations["getRiksdagFeed"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/votes/{beteckning}/{punkt}": {
         parameters: {
             query?: never;
@@ -777,6 +794,18 @@ export interface components {
         RegionDetail: components["schemas"]["RegionSummary"] & {
             electionResults: components["schemas"]["ElectionResult"][];
         };
+        RiksdagFeedItem: {
+            /** @example 2025-04-15 */
+            time: string;
+            /** @example Betänkande om sjukvårdsreform */
+            title: string;
+            /** @example Bifall */
+            status: string;
+            /** @example Vård */
+            tag?: string;
+            /** @example SoU2425:12 */
+            beteckning?: string;
+        };
         RegionBudgetArea: {
             /** @example Primärvård */
             name: string;
@@ -1091,6 +1120,28 @@ export interface operations {
                 };
             };
             404: components["responses"]["NotFound"];
+        };
+    };
+    getRiksdagFeed: {
+        parameters: {
+            query: {
+                level: "region" | "kommun";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recent betänkanden with beteckning for deep-linking */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiksdagFeedItem"][];
+                };
+            };
         };
     };
     getVoteDetail: {

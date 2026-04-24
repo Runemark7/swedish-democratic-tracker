@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Hemicycle, Donut, HBars, Pill, Trend, TargetBar } from "@/components/charts";
 import { useKommun, useKommunList } from "@/hooks/useDemocracy";
 import type { LiveVote } from "@/types/democracy";
@@ -13,6 +13,12 @@ const BUDGET_COLORS = [
   "#7a8390",
   "#b3bcc5",
 ];
+
+function beslutHref(v: LiveVote): string | null {
+  if (!v.beteckning) return null;
+  const p = new URLSearchParams({ title: v.title, status: v.status, tag: v.tag, time: v.time });
+  return `/beslut/${encodeURIComponent(v.beteckning)}?${p}`;
+}
 
 function pillTone(status: LiveVote["status"]): "pass" | "fail" | "pending" | "neutral" {
   if (status === "Bifall") return "pass";
@@ -490,72 +496,66 @@ export function MunicipalityDetailPage() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {data.liveVotes.map((vote, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 12,
-                  padding: "10px 0",
-                  borderBottom:
-                    i < data.liveVotes.length - 1
-                      ? "1px solid var(--color-border)"
-                      : "none",
-                }}
-              >
-                <span
+            {data.liveVotes.map((vote, i) => {
+              const href = beslutHref(vote);
+              const row = (
+                <div
                   style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10,
-                    color: "var(--color-fg-muted)",
-                    whiteSpace: "nowrap",
-                    paddingTop: 2,
-                    minWidth: 64,
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 12,
+                    padding: "10px 0",
+                    borderBottom: i < data.liveVotes.length - 1 ? "1px solid var(--color-border)" : "none",
+                    cursor: href ? "pointer" : "default",
                   }}
                 >
-                  {vote.time}
-                </span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
+                  <span
                     style={{
-                      fontSize: 13,
-                      color: "var(--color-fg)",
-                      marginBottom: 4,
-                      lineHeight: 1.35,
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 10,
+                      color: "var(--color-fg-muted)",
+                      whiteSpace: "nowrap",
+                      paddingTop: 2,
+                      minWidth: 64,
                     }}
                   >
-                    {vote.title}
-                  </div>
-                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <span
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: 10,
-                        color: "var(--color-fg-muted)",
-                        background: "var(--color-track)",
-                        borderRadius: 2,
-                        padding: "1px 6px",
-                      }}
-                    >
-                      {vote.tag}
-                    </span>
-                    <Pill tone={pillTone(vote.status)}>{vote.status}</Pill>
-                    {vote.margin && (
+                    {vote.time}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, color: "var(--color-fg)", marginBottom: 4, lineHeight: 1.35 }}>
+                      {vote.title}
+                    </div>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                       <span
                         style={{
                           fontFamily: "var(--font-mono)",
                           fontSize: 10,
                           color: "var(--color-fg-muted)",
+                          background: "var(--color-track)",
+                          borderRadius: 2,
+                          padding: "1px 6px",
                         }}
                       >
-                        {vote.margin}
+                        {vote.tag}
                       </span>
-                    )}
+                      <Pill tone={pillTone(vote.status)}>{vote.status}</Pill>
+                      {vote.margin && (
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
+                          {vote.margin}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+              return href ? (
+                <Link key={i} to={href} style={{ textDecoration: "none", color: "inherit" }}>
+                  {row}
+                </Link>
+              ) : (
+                <div key={i}>{row}</div>
+              );
+            })}
           </div>
         </div>
 

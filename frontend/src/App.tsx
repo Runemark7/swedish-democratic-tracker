@@ -6,6 +6,7 @@ import { PoliticiansPage } from "./features/politicians/PoliticiansPage";
 import { PoliticianPage } from "./features/politicians/PoliticianPage";
 import { VotesPage } from "./features/votes/VotesPage";
 import { VoteDetailPage } from "./features/votes/VoteDetailPage";
+import { BeslutDetailPage } from "./features/votes/BeslutDetailPage";
 import { BudgetPage } from "./features/budget/BudgetPage";
 import { AreaHistoryPage } from "./features/budget/AreaHistoryPage";
 import { ManifestosPage } from "./features/manifestos/ManifestosPage";
@@ -302,6 +303,7 @@ export default function App() {
           <Route path="/politicians/:id"                       element={<PoliticianPage />} />
           <Route path="/votes"                                 element={<VotesPage />} />
           <Route path="/votes/:beteckning/:punkt"              element={<VoteDetailPage />} />
+          <Route path="/beslut/:beteckning"                    element={<BeslutDetailPage />} />
           <Route path="/budget"                                element={<BudgetPage />} />
           <Route path="/budget/areas/:code"                    element={<AreaHistoryPage />} />
           <Route path="/manifestos"                            element={<ManifestosPage />} />

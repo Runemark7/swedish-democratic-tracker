@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
-import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote } from "@/types/democracy";
+import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi } from "@/types/democracy";
 import { mockRiksdag, mockRegion, mockKommun } from "@/mock/democracy";
-import type { ElectionResult, RegionSummary, MunicipalitySummary } from "@/shared/types";
+import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem } from "@/shared/types";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -61,12 +61,13 @@ function formatSwedishDate(isoDate: string): string {
 async function fetchRiksdagFeed(level: "region" | "kommun"): Promise<LiveVote[]> {
   const res = await fetch(`/api/votes/riksdag-feed?level=${level}`);
   if (!res.ok) throw new Error(`riksdag-feed: ${res.status}`);
-  const items: { time: string; title: string; status: string; tag?: string }[] = await res.json();
+  const items: { time: string; title: string; status: string; tag?: string; beteckning?: string }[] = await res.json();
   return items.map((item) => ({
     time: formatSwedishDate(item.time),
     title: item.title,
     status: item.status as LiveVote["status"],
     tag: item.tag ?? "",
+    beteckning: item.beteckning,
   }));
 }
 
@@ -129,6 +130,110 @@ function generateAgenda(
     pool[(offset + 2) % pool.length],
     pool[(offset + 3) % pool.length],
   ];
+}
+
+// ── Municipality budget helpers ────────────────────────────────────────────────
+
+const SPENDING_NAMES: Record<string, string> = {
+  N11004: "Förskola",
+  N15028: "Grundskola",
+  N17014: "Gymnasieskola",
+  N20014: "Äldreomsorg",
+  N30005: "Individ & familj",
+  N07037: "Gata, park, plan",
+  N09022: "Fritid & kultur",
+  N05011: "Politisk verksamhet",
+};
+
+const KPI_ORDER = ["N11004","N15028","N17014","N20014","N30005","N07037","N09022","N05011"];
+
+// Converts Kolada spending KPIs (kr/invånare) × population → Budget.
+// Returns null when data is absent so the caller can fall back to mock.
+function spendingToBudget(items: MunicipalityKPIItem[], population: number): Budget | null {
+  if (!items.length || !population) return null;
+
+  // Pick the latest entry per KPI code
+  const byKpi = new Map<string, MunicipalityKPIItem>();
+  for (const item of items) {
+    const existing = byKpi.get(item.kpi);
+    if (!existing || item.year > existing.year) byKpi.set(item.kpi, item);
+  }
+
+  const areasKr: BudgetArea[] = [];
+  let totalKr = 0;
+  for (const code of KPI_ORDER) {
+    const entry = byKpi.get(code);
+    if (entry && entry.value > 0) {
+      const kr = entry.value * population;
+      areasKr.push({ name: SPENDING_NAMES[code] ?? code, value: kr, pct: 0 });
+      totalKr += kr;
+    }
+  }
+  if (!areasKr.length || totalKr === 0) return null;
+
+  for (const a of areasKr) a.pct = Math.round((a.value / totalKr) * 1000) / 10;
+  const areas: BudgetArea[] = areasKr.map(a => ({
+    ...a,
+    value: Math.round((a.value / 1e9) * 10) / 10,
+  }));
+  const totalMdkr = Math.round((totalKr / 1e9) * 10) / 10;
+  const latestYear = Math.max(...[...byKpi.values()].map(i => i.year));
+
+  return {
+    total: `${totalMdkr.toLocaleString("sv-SE")} mdkr`,
+    year: String(latestYear),
+    areas,
+  };
+}
+
+// ── Municipality KPI strip helpers ────────────────────────────────────────────
+
+const STRIP_KPI_META: Record<string, {
+  label: string;
+  unit: string;
+  target: number;
+  worseHigher: boolean;
+  format: (v: number) => string;
+}> = {
+  N00900: { label: "Kommunalskatt",  unit: "%", target: 31.0, worseHigher: true,  format: v => `${v.toFixed(2)} %` },
+  N03102: { label: "Resultat/skatt", unit: "%", target:  2.0, worseHigher: false, format: v => `${v.toFixed(1)} %` },
+  N03106: { label: "Soliditet",      unit: "%", target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %` },
+};
+const STRIP_ORDER = ["N00900", "N03102", "N03106"];
+
+// Converts raw Kolada KPI items → 3-element Kpi[] for the header strip.
+function kpiItemsToStrip(items: MunicipalityKPIItem[]): Kpi[] {
+  const byKpi = new Map<string, MunicipalityKPIItem[]>();
+  for (const item of items) {
+    const list = byKpi.get(item.kpi) ?? [];
+    list.push(item);
+    byKpi.set(item.kpi, list);
+  }
+
+  return STRIP_ORDER.flatMap(code => {
+    const meta = STRIP_KPI_META[code];
+    const yearItems = (byKpi.get(code) ?? []).sort((a, b) => b.year - a.year);
+    if (!meta || yearItems.length === 0) return [];
+
+    const latest = yearItems[0];
+    const prev   = yearItems[1];
+    const delta  = prev ? latest.value - prev.value : 0;
+    const trend: Kpi["trend"] = delta > 0.01 ? "up" : delta < -0.01 ? "down" : "flat";
+    const sign   = delta >= 0 ? "+" : "−";
+    const absDelta = Math.abs(delta).toFixed(2);
+
+    return [{
+      label: meta.label,
+      value: meta.format(latest.value),
+      raw: latest.value,
+      target: meta.target,
+      worseHigher: meta.worseHigher,
+      unit: meta.unit,
+      trend,
+      delta: prev ? `${sign}${absDelta} ${meta.unit}` : "–",
+      note: `Källa: Kolada ${latest.year}`,
+    } satisfies Kpi];
+  });
 }
 
 // ── Riksdag ───────────────────────────────────────────────────────────────────
@@ -208,13 +313,24 @@ export function useKommun(code: string) {
   return useQuery<LevelData>({
     queryKey: ["kommun", code],
     queryFn: async () => {
-      const [detail, feed] = await Promise.all([
+      const [detail, feed, kpiItems, spendingItems] = await Promise.all([
         municipalitiesApi.getMunicipality(code),
         fetchRiksdagFeed("kommun").catch(() => mockKommun.liveVotes),
-        municipalitiesApi.getMunicipalityKPIs(code).catch(() => []),
+        municipalitiesApi.getMunicipalityKPIs(code).catch(() => [] as MunicipalityKPIItem[]),
+        municipalitiesApi.getMunicipalitySpending(code).catch(() => [] as MunicipalityKPIItem[]),
       ]);
 
       const { governing, opposition } = electionResultsToParties(detail.electionResults ?? []);
+      const govSeats   = governing.reduce((s, p) => s + p.seats, 0);
+      const totalSeats = [...governing, ...opposition].reduce((s, p) => s + p.seats, 0);
+      const isLeft     = governing.length > 0 && LEFT_BLOC.has(governing[0].name);
+      const majority   = govSeats > totalSeats / 2 ? "majoritet" : "minoritet";
+      const coalType   = governing.length === 0
+        ? mockKommun.ruling.type
+        : isLeft ? `Rödgrön ${majority}` : `Borgerlig ${majority}`;
+
+      const budget = spendingToBudget(spendingItems, detail.population) ?? mockKommun.budget;
+      const kpis   = kpiItemsToStrip(kpiItems);
 
       return {
         title: detail.name,
@@ -223,17 +339,14 @@ export function useKommun(code: string) {
           ? detail.population.toLocaleString("sv-SE") + " invånare"
           : undefined,
         ruling: {
-          // TODO: expose ruling coalition type from backend
-          type: mockKommun.ruling.type,
+          type: coalType,
           parties: governing.length ? governing : mockKommun.ruling.parties,
           opposition: opposition.length ? opposition : mockKommun.ruling.opposition,
         },
         liveVotes: feed,
-        // TODO: replace with real /api/municipalities/:code/budget when implemented
-        budget: mockKommun.budget,
+        budget,
         agenda: generateAgenda("kommun", governing.length ? governing : mockKommun.ruling.parties, code),
-        // TODO: replace with real KPI endpoint that exposes target + worseHigher
-        kpis: mockKommun.kpis,
+        kpis,
       } satisfies LevelData;
     },
     staleTime: 30_000,

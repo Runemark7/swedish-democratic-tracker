@@ -1,6 +1,13 @@
+import { Link } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
 import { Hemicycle, Donut, HBars, Pill } from "@/components/charts";
-import type { Party } from "@/types/democracy";
+import type { LiveVote, Party } from "@/types/democracy";
+
+function beslutHref(v: LiveVote): string | null {
+  if (!v.beteckning) return null;
+  const p = new URLSearchParams({ title: v.title, status: v.status, tag: v.tag, time: v.time });
+  return `/beslut/${encodeURIComponent(v.beteckning)}?${p}`;
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -328,77 +335,88 @@ export function RiksdagPage() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {liveVotes.map((v, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "18px 70px minmax(0,1fr) auto auto",
-                  gap: 12,
-                  alignItems: "center",
-                }}
-              >
-                {/* dot */}
-                <span
+            {liveVotes.map((v, i) => {
+              const href = beslutHref(v);
+              const row = (
+                <div
                   style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    background: i < 2 ? "var(--color-pulse)" : "var(--color-accent)",
-                    display: "inline-block",
-                  }}
-                />
-                {/* time */}
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10,
-                    color: "var(--color-fg-muted)",
+                    display: "grid",
+                    gridTemplateColumns: "18px 70px minmax(0,1fr) auto auto",
+                    gap: 12,
+                    alignItems: "center",
+                    cursor: href ? "pointer" : "default",
                   }}
                 >
-                  {v.time}
-                </span>
-                {/* title + tag */}
-                <span
-                  style={{
-                    fontSize: 13,
-                    color: "var(--color-fg)",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                  title={v.title}
-                >
-                  {v.title}
-                  {v.tag && (
-                    <span
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: 9,
-                        color: "var(--color-fg-muted)",
-                        marginLeft: 6,
-                        verticalAlign: "middle",
-                      }}
-                    >
-                      [{v.tag}]
-                    </span>
-                  )}
-                </span>
-                {/* pill */}
-                <Pill tone={pillTone(v.status)}>{v.status}</Pill>
-                {/* margin */}
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10,
-                    color: "var(--color-fg-muted)",
-                    textAlign: "right",
-                  }}
-                >
-                  {v.margin ?? ""}
-                </span>
-              </div>
-            ))}
+                  {/* dot */}
+                  <span
+                    style={{
+                      width: 7,
+                      height: 7,
+                      borderRadius: "50%",
+                      background: i < 2 ? "var(--color-pulse)" : "var(--color-accent)",
+                      display: "inline-block",
+                      flexShrink: 0,
+                    }}
+                  />
+                  {/* time */}
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 10,
+                      color: "var(--color-fg-muted)",
+                    }}
+                  >
+                    {v.time}
+                  </span>
+                  {/* title + tag */}
+                  <span
+                    style={{
+                      fontSize: 13,
+                      color: "var(--color-fg)",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                    title={v.title}
+                  >
+                    {v.title}
+                    {v.tag && (
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: 9,
+                          color: "var(--color-fg-muted)",
+                          marginLeft: 6,
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        [{v.tag}]
+                      </span>
+                    )}
+                  </span>
+                  {/* pill */}
+                  <Pill tone={pillTone(v.status)}>{v.status}</Pill>
+                  {/* margin */}
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 10,
+                      color: "var(--color-fg-muted)",
+                      textAlign: "right",
+                    }}
+                  >
+                    {v.margin ?? ""}
+                  </span>
+                </div>
+              );
+              return href ? (
+                <Link key={i} to={href} style={{ textDecoration: "none", color: "inherit" }}>
+                  {row}
+                </Link>
+              ) : (
+                <div key={i}>{row}</div>
+              );
+            })}
           </div>
         </div>
 
