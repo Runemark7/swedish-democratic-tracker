@@ -86,6 +86,53 @@ func (c *Client) FetchVotes(ctx context.Context, f ports.FetchVotesFilter) ([]*d
 	return vv, nil
 }
 
+// FetchDocuments returns recent betänkanden from the given committee organs.
+// status defaults to "Bifall" — >90% of betänkanden pass; full votering lookup is future work.
+// TODO: integrate nämndärenden API (lankadedata.se) for regional/municipal council decisions when available.
+func (c *Client) FetchDocuments(ctx context.Context, organs []string, count int) ([]ports.RiksdagDocument, error) {
+	url := fmt.Sprintf("%s/dokumentlista/?organ=%s&typ=bet&utformat=json&sz=%d&sort=datum&sortorder=desc",
+		baseURL, strings.Join(organs, ","), count)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("riksdagen dokumentlista API returned %d", resp.StatusCode)
+	}
+
+	var payload struct {
+		Dokumentlista struct {
+			Dokument []struct {
+				Titel      string `json:"titel"`
+				Organ      string `json:"organ"`
+				Datum      string `json:"datum"`
+				Beteckning string `json:"beteckning"`
+			} `json:"dokument"`
+		} `json:"dokumentlista"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+		return nil, fmt.Errorf("decode dokumentlista: %w", err)
+	}
+
+	docs := make([]ports.RiksdagDocument, 0, len(payload.Dokumentlista.Dokument))
+	for _, d := range payload.Dokumentlista.Dokument {
+		docs = append(docs, ports.RiksdagDocument{
+			Title:      d.Titel,
+			Organ:      d.Organ,
+			Date:       d.Datum,
+			Beteckning: d.Beteckning,
+		})
+	}
+	return docs, nil
+}
+
 // FetchDocumentStatus fetches /dokumentstatus/{dok_id}.json and parses proposal origin.
 func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain.DocumentStatus, error) {
 	url := fmt.Sprintf("%s/dokumentstatus/%s.json", baseURL, dokID)

@@ -22,6 +22,7 @@ func NewHandler(svc *votes.Service) *Handler {
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/politicians/{id}/votes", h.listByPolitician)
 	r.Get("/votes", h.listAll)
+	r.Get("/votes/riksdag-feed", h.riksdagFeed)
 	r.Get("/votes/{beteckning}/{punkt}", h.getDetail)
 }
 
@@ -157,6 +158,46 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		"session":         meta.Session,
 		"partyBreakdown":  breakdown,
 	})
+}
+
+// organTag maps a Riksdag committee abbreviation to a readable Swedish topic tag.
+var organTag = map[string]string{
+	"SoU": "Vård",
+	"TU":  "Trafik",
+	"UbU": "Skola",
+	"CU":  "Plan",
+}
+
+func (h *Handler) riksdagFeed(w http.ResponseWriter, r *http.Request) {
+	level := r.URL.Query().Get("level")
+	if level != "region" && level != "kommun" {
+		jsonError(w, `level must be "region" or "kommun"`, http.StatusBadRequest)
+		return
+	}
+
+	docs, err := h.svc.GetRiksdagFeed(r.Context(), level)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	type feedItem struct {
+		Time   string `json:"time"`
+		Title  string `json:"title"`
+		Status string `json:"status"`
+		Tag    string `json:"tag,omitempty"`
+	}
+	items := make([]feedItem, 0, len(docs))
+	for _, d := range docs {
+		tag := organTag[d.Organ]
+		items = append(items, feedItem{
+			Time:   d.Date,
+			Title:  d.Title,
+			Status: "Bifall", // >90% of betänkanden pass; real votering lookup is future work
+			Tag:    tag,
+		})
+	}
+	jsonOK(w, items)
 }
 
 func jsonOK(w http.ResponseWriter, v any) {

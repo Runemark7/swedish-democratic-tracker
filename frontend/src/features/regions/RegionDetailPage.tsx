@@ -414,16 +414,30 @@ export function RegionDetailPage() {
                 flexShrink: 0,
               }}
             />
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                letterSpacing: "0.15em",
-                color: "var(--color-fg-muted)",
-              }}
-            >
-              PULS · AKTUELLA BESLUT
-            </span>
+            <div>
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  letterSpacing: "0.15em",
+                  color: "var(--color-fg-muted)",
+                }}
+              >
+                RIKSDAG · RELEVANTA BESLUT
+              </div>
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 9,
+                  letterSpacing: "0.08em",
+                  color: "var(--color-fg-muted)",
+                  opacity: 0.6,
+                  marginTop: 2,
+                }}
+              >
+                Riksdagsbeslut som berör regional nivå
+              </div>
+            </div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
