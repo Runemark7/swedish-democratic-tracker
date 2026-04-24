@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -119,7 +120,7 @@ func (c *Client) FetchRegionBudget(ctx context.Context, regionCode string, year 
 		result = append(result, ports.RegionBudgetArea{
 			Name:  a.label,
 			Value: val,
-			Pct:   (val / total) * 100,
+			Pct:   math.Round((val/total)*1000) / 10,
 		})
 	}
 	return result, nil
