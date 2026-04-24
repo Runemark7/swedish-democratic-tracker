@@ -1,15 +1,16 @@
+import { useState } from "react";
 import { mockRiksdag, mockKommun } from "@/mock/democracy";
 import { Pill } from "@/components/charts";
 
 const TOPICS = [
-  { t: "Skola & utbildning",  n: 24, lvl: ["I", "III"] },
-  { t: "Vård & omsorg",       n: 31, lvl: ["I", "II"]  },
-  { t: "Kollektivtrafik",     n: 12, lvl: ["II", "III"] },
-  { t: "Bostad & planering",  n: 18, lvl: ["I", "III"] },
-  { t: "Skatt & ekonomi",     n: 22, lvl: ["I"]        },
-  { t: "Miljö & klimat",      n: 15, lvl: ["I", "II", "III"] },
-  { t: "Arbetsmarknad",       n: 9,  lvl: ["I"]        },
-  { t: "Trygghet & brott",    n: 14, lvl: ["I", "III"] },
+  { t: "Skola & utbildning",  n: 24, lvl: ["I", "III"], tag: "Skola"    },
+  { t: "Vård & omsorg",       n: 31, lvl: ["I", "II"],  tag: "Vård"     },
+  { t: "Kollektivtrafik",     n: 12, lvl: ["II", "III"], tag: "Trafik"  },
+  { t: "Bostad & planering",  n: 18, lvl: ["I", "III"], tag: "Plan"     },
+  { t: "Skatt & ekonomi",     n: 22, lvl: ["I"],        tag: "Skatt"    },
+  { t: "Miljö & klimat",      n: 15, lvl: ["I", "II", "III"], tag: "Miljö" },
+  { t: "Arbetsmarknad",       n: 9,  lvl: ["I"],        tag: "Arbete"   },
+  { t: "Trygghet & brott",    n: 14, lvl: ["I", "III"], tag: "Trygghet" },
 ];
 
 const allParties = [
@@ -18,7 +19,10 @@ const allParties = [
   ...mockRiksdag.ruling.opposition,
 ];
 
-const recentVotes = mockKommun.liveVotes.slice(0, 3);
+const allVotes = [
+  ...mockKommun.liveVotes,
+  ...mockRiksdag.liveVotes,
+];
 
 function statusTone(status: string): "pass" | "fail" | "pending" | "neutral" {
   if (status === "Bifall") return "pass";
@@ -28,6 +32,45 @@ function statusTone(status: string): "pass" | "fail" | "pending" | "neutral" {
 }
 
 export function SearchPage() {
+  const [query, setQuery] = useState("");
+  const [activeTopic, setActiveTopic] = useState<string | null>(null);
+  const [activeParty, setActiveParty] = useState<string | null>(null);
+
+  function selectTopic(topic: typeof TOPICS[number]) {
+    if (activeTopic === topic.t) {
+      setActiveTopic(null);
+      setQuery("");
+    } else {
+      setActiveTopic(topic.t);
+      setActiveParty(null);
+      setQuery(topic.t);
+    }
+  }
+
+  function selectParty(short: string) {
+    if (activeParty === short) {
+      setActiveParty(null);
+      setQuery("");
+    } else {
+      setActiveParty(short);
+      setActiveTopic(null);
+      setQuery(short);
+    }
+  }
+
+  const activeTag = activeTopic
+    ? TOPICS.find((t) => t.t === activeTopic)?.tag
+    : null;
+
+  const visibleVotes = allVotes.filter((v) => {
+    if (!query) return true;
+    const q = query.toLowerCase();
+    const matchesTag = activeTag ? v.tag?.toLowerCase() === activeTag.toLowerCase() : false;
+    const matchesParty = activeParty ? v.tag?.toLowerCase().includes(q) || v.title.toLowerCase().includes(q) : false;
+    const matchesText = v.title.toLowerCase().includes(q) || (v.tag ?? "").toLowerCase().includes(q);
+    return matchesTag || matchesParty || matchesText;
+  });
+
   return (
     <div
       style={{
@@ -64,26 +107,24 @@ export function SearchPage() {
           }}
         >
           Vad{" "}
-          <em
-            style={{
-              fontStyle: "italic",
-              color: "var(--color-accent-2)",
-            }}
-          >
+          <em style={{ fontStyle: "italic", color: "var(--color-accent-2)" }}>
             händer
           </em>{" "}
           om…
         </h1>
 
         {/* ── Search input ─────────────────────────────────────── */}
-        <div
-          style={{
-            position: "relative",
-            marginBottom: 48,
-          }}
-        >
+        <div style={{ position: "relative", marginBottom: 48 }}>
           <input
             type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              if (!e.target.value) {
+                setActiveTopic(null);
+                setActiveParty(null);
+              }
+            }}
             placeholder="Sök parti, politiker, ämne eller fråga…"
             style={{
               width: "100%",
@@ -127,12 +168,7 @@ export function SearchPage() {
           }}
         >
           {/* LEFT: ÄMNEN */}
-          <div
-            style={{
-              background: "var(--color-sdt-surface)",
-              padding: 24,
-            }}
-          >
+          <div style={{ background: "var(--color-sdt-surface)", padding: 24 }}>
             <p
               style={{
                 fontFamily: "var(--font-mono)",
@@ -153,68 +189,67 @@ export function SearchPage() {
                 gap: 8,
               }}
             >
-              {TOPICS.map((topic) => (
-                <button
-                  key={topic.t}
-                  style={{
-                    background: "var(--color-plane)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: 4,
-                    padding: "10px 12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                    color: "var(--color-fg)",
-                  }}
-                >
-                  <div
+              {TOPICS.map((topic) => {
+                const isActive = activeTopic === topic.t;
+                return (
+                  <button
+                    key={topic.t}
+                    onClick={() => selectTopic(topic)}
                     style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      marginBottom: 4,
-                      fontFamily: "var(--font-body)",
+                      background: isActive ? "var(--color-accent)" : "var(--color-plane)",
+                      border: `1px solid ${isActive ? "var(--color-accent)" : "var(--color-border)"}`,
+                      borderRadius: 4,
+                      padding: "10px 12px",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      color: isActive ? "#fff" : "var(--color-fg)",
+                      transition: "background 0.15s, border-color 0.15s",
                     }}
                   >
-                    {topic.t}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                    }}
-                  >
-                    <span
+                    <div
                       style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: 10,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        color: "var(--color-fg-muted)",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        marginBottom: 4,
+                        fontFamily: "var(--font-body)",
                       }}
                     >
-                      {topic.n} frågor
-                    </span>
-                    <span style={{ color: "var(--color-border)" }}>·</span>
-                    {topic.lvl.map((l) => (
-                      <em
-                        key={l}
+                      {topic.t}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span
                         style={{
-                          fontStyle: "italic",
-                          color: "var(--color-accent-2)",
-                          fontSize: 11,
-                          fontFamily: "var(--font-serif)",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: 10,
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          color: isActive ? "rgba(255,255,255,0.7)" : "var(--color-fg-muted)",
                         }}
                       >
-                        {l}
-                      </em>
-                    ))}
-                  </div>
-                </button>
-              ))}
+                        {topic.n} frågor
+                      </span>
+                      <span style={{ color: isActive ? "rgba(255,255,255,0.4)" : "var(--color-border)" }}>·</span>
+                      {topic.lvl.map((l) => (
+                        <em
+                          key={l}
+                          style={{
+                            fontStyle: "italic",
+                            color: isActive ? "rgba(255,255,255,0.85)" : "var(--color-accent-2)",
+                            fontSize: 11,
+                            fontFamily: "var(--font-serif)",
+                          }}
+                        >
+                          {l}
+                        </em>
+                      ))}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* RIGHT: PARTIER + SENASTE */}
+          {/* RIGHT: PARTIER + RESULTAT */}
           <div
             style={{
               background: "var(--color-sdt-surface)",
@@ -239,55 +274,60 @@ export function SearchPage() {
                 Partier
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {allParties.map((p) => (
-                  <button
-                    key={p.short}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                      background: "var(--color-plane)",
-                      border: "1px solid var(--color-border)",
-                      borderRadius: 999,
-                      padding: "5px 12px",
-                      cursor: "pointer",
-                      color: "var(--color-fg)",
-                    }}
-                  >
-                    <span
+                {allParties.map((p) => {
+                  const isActive = activeParty === p.short;
+                  return (
+                    <button
+                      key={p.short}
+                      onClick={() => selectParty(p.short)}
                       style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        background: p.color,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: 11,
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        background: isActive ? p.color : "var(--color-plane)",
+                        border: `1px solid ${isActive ? p.color : "var(--color-border)"}`,
+                        borderRadius: 999,
+                        padding: "5px 12px",
+                        cursor: "pointer",
+                        color: isActive ? "#fff" : "var(--color-fg)",
+                        transition: "background 0.15s, border-color 0.15s",
                       }}
                     >
-                      {p.short}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: 10,
-                        color: "var(--color-fg-muted)",
-                      }}
-                    >
-                      {p.seats}
-                    </span>
-                  </button>
-                ))}
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: isActive ? "rgba(255,255,255,0.8)" : p.color,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: 11,
+                          letterSpacing: "0.08em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {p.short}
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: 10,
+                          color: isActive ? "rgba(255,255,255,0.7)" : "var(--color-fg-muted)",
+                        }}
+                      >
+                        {p.seats}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Recent votes from municipality */}
+            {/* Results / recent votes */}
             <div>
               <p
                 style={{
@@ -299,54 +339,70 @@ export function SearchPage() {
                   margin: "0 0 16px",
                 }}
               >
-                Senaste från din kommun
+                {query ? `Resultat för "${query}"` : "Senaste beslut"}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                {recentVotes.map((v, i) => (
-                  <div
-                    key={i}
+                {(query ? visibleVotes : allVotes.slice(0, 4)).map((v, i) => {
+                  const list = query ? visibleVotes : allVotes.slice(0, 4);
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        justifyContent: "space-between",
+                        gap: 12,
+                        padding: "10px 0",
+                        borderBottom:
+                          i < list.length - 1
+                            ? "1px solid var(--color-border)"
+                            : "none",
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 500,
+                            color: "var(--color-fg)",
+                            marginBottom: 2,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {v.title}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: "var(--font-mono)",
+                            fontSize: 10,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            color: "var(--color-fg-muted)",
+                          }}
+                        >
+                          {v.time}
+                          {v.tag ? ` · ${v.tag}` : ""}
+                        </div>
+                      </div>
+                      <Pill tone={statusTone(v.status ?? "")}>{v.status}</Pill>
+                    </div>
+                  );
+                })}
+                {query && visibleVotes.length === 0 && (
+                  <p
                     style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      justifyContent: "space-between",
-                      gap: 12,
-                      padding: "10px 0",
-                      borderBottom:
-                        i < recentVotes.length - 1
-                          ? "1px solid var(--color-border)"
-                          : "none",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 12,
+                      color: "var(--color-fg-muted)",
+                      margin: 0,
+                      padding: "12px 0",
                     }}
                   >
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 500,
-                          color: "var(--color-fg)",
-                          marginBottom: 2,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {v.title}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: 10,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          color: "var(--color-fg-muted)",
-                        }}
-                      >
-                        {v.time}
-                        {v.tag ? ` · ${v.tag}` : ""}
-                      </div>
-                    </div>
-                    <Pill tone={statusTone(v.status ?? "")}>{v.status}</Pill>
-                  </div>
-                ))}
+                    Inga resultat för "{query}"
+                  </p>
+                )}
               </div>
             </div>
           </div>
