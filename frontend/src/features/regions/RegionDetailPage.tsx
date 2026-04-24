@@ -279,40 +279,55 @@ export function RegionDetailPage() {
 
           <Hemicycle groups={hemicycleGroups} width={440} height={150} />
 
-          {/* Party legend */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "6px 14px",
-              marginTop: 12,
-            }}
-          >
-            {allParties.map((p) => (
-              <span
-                key={p.short}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 5,
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  color: "var(--color-fg-muted)",
-                }}
-              >
+          {/* Party legend — split by governing / opposition */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>
+            {[
+              { label: "STYRE", parties: [...ruling.parties, ...(ruling.support ?? [])] },
+              { label: "OPPOSITION", parties: ruling.opposition },
+            ].map(({ label, parties }) => (
+              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <span
                   style={{
-                    width: 9,
-                    height: 9,
-                    borderRadius: "50%",
-                    background: p.color,
-                    display: "inline-block",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 8,
+                    letterSpacing: "0.15em",
+                    color: label === "STYRE" ? "var(--color-accent)" : "var(--color-fg-muted)",
+                    opacity: label === "STYRE" ? 1 : 0.7,
+                    minWidth: 64,
                     flexShrink: 0,
                   }}
-                />
-                {p.short}{" "}
-                <span style={{ color: "var(--color-fg)" }}>{p.seats}</span>
-              </span>
+                >
+                  {label}
+                </span>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 12px" }}>
+                  {parties.map((p) => (
+                    <span
+                      key={p.short}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 10,
+                        color: "var(--color-fg-muted)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: p.color,
+                          display: "inline-block",
+                          flexShrink: 0,
+                        }}
+                      />
+                      {p.short}{" "}
+                      <span style={{ color: "var(--color-fg)" }}>{p.seats}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
 
