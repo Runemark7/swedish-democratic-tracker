@@ -306,6 +306,12 @@ export interface RegionDetail extends RegionSummary {
   electionResults: ElectionResult[];
 }
 
+export interface RegionBudgetArea {
+  name: string;
+  value: number;
+  pct: number;
+}
+
 export interface MunicipalitySummary {
   code: string;
   name: string;

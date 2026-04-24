@@ -47,6 +47,10 @@ func (s *Service) GetMunicipality(ctx context.Context, code string) (*domain.Mun
 	return s.repo.GetMunicipality(ctx, code)
 }
 
+func (s *Service) GetRegionBudget(ctx context.Context, regionCode string, year int) ([]ports.RegionBudgetArea, error) {
+	return s.scb.FetchRegionBudget(ctx, regionCode, year)
+}
+
 func (s *Service) GetMunicipalityKPIs(ctx context.Context, munCode string) ([]ports.KPIValue, error) {
 	return s.kolada.FetchKPIs(ctx, munCode, defaultKPIs, defaultKPIYears)
 }
