@@ -396,6 +396,31 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /regions/{code}/budget:
+    get:
+      operationId: getRegionBudget
+      tags: [regions]
+      summary: Real budget breakdown for a region from SCB (nettokostnader by verksamhetsområde)
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "06"
+            description: Two-digit region code
+      responses:
+        "200":
+          description: Budget areas with value in mnkr and percentage of total
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegionBudgetArea"
+        "502":
+          description: Upstream SCB API error
+
   /municipalities:
     get:
       operationId: listMunicipalities
@@ -1265,6 +1290,24 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/ElectionResult"
+
+    RegionBudgetArea:
+      type: object
+      required: [name, value, pct]
+      properties:
+        name:
+          type: string
+          example: "Primärvård"
+        value:
+          type: number
+          format: float
+          description: Net cost in mnkr (miljoner kronor)
+          example: 2654
+        pct:
+          type: number
+          format: float
+          description: Share of total regional nettokostnad
+          example: 18.9
 
     MunicipalitySummary:
       type: object

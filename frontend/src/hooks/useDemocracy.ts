@@ -155,11 +155,21 @@ export function useRegion(code: string) {
   return useQuery<LevelData>({
     queryKey: ["region", code],
     queryFn: async () => {
-      const [detail, feed] = await Promise.all([
+      const [detail, feed, budgetAreas] = await Promise.all([
         regionsApi.getRegion(code),
         fetchRiksdagFeed("region").catch(() => mockRegion.liveVotes),
+        regionsApi.getRegionBudget(code).catch(() => [] as typeof mockRegion.budget.areas),
       ]);
       const { governing, opposition } = electionResultsToParties(detail.electionResults ?? []);
+
+      const totalMnkr = budgetAreas.reduce((s, a) => s + a.value, 0);
+      const budget = budgetAreas.length > 0
+        ? {
+            total: `${Math.round(totalMnkr / 1000)} mdkr`,
+            year: "2023",
+            areas: budgetAreas,
+          }
+        : mockRegion.budget;
 
       return {
         title: detail.name,
@@ -168,14 +178,12 @@ export function useRegion(code: string) {
           ? detail.population.toLocaleString("sv-SE") + " invånare"
           : undefined,
         ruling: {
-          // TODO: expose ruling coalition type from backend
           type: mockRegion.ruling.type,
           parties: governing.length ? governing : mockRegion.ruling.parties,
           opposition: opposition.length ? opposition : mockRegion.ruling.opposition,
         },
         liveVotes: feed,
-        // TODO: replace with real /api/regions/:code/budget when implemented
-        budget: mockRegion.budget,
+        budget,
         agenda: generateAgenda("region", governing.length ? governing : mockRegion.ruling.parties, code),
         // TODO: replace with real region KPI endpoint when implemented
         kpis: mockRegion.kpis,

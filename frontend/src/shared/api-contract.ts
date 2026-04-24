@@ -293,6 +293,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/regions/{code}/budget": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Real budget breakdown for a region from SCB (nettokostnader by verksamhetsområde) */
+        get: operations["getRegionBudget"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/municipalities": {
         parameters: {
             query?: never;
@@ -759,6 +776,22 @@ export interface components {
         };
         RegionDetail: components["schemas"]["RegionSummary"] & {
             electionResults: components["schemas"]["ElectionResult"][];
+        };
+        RegionBudgetArea: {
+            /** @example Primärvård */
+            name: string;
+            /**
+             * Format: float
+             * @description Net cost in mnkr (miljoner kronor)
+             * @example 2654
+             */
+            value: number;
+            /**
+             * Format: float
+             * @description Share of total regional nettokostnad
+             * @example 18.9
+             */
+            pct: number;
         };
         MunicipalitySummary: {
             /**
@@ -1258,6 +1291,35 @@ export interface operations {
                 };
             };
             404: components["responses"]["NotFound"];
+        };
+    };
+    getRegionBudget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Budget areas with value in mnkr and percentage of total */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionBudgetArea"][];
+                };
+            };
+            /** @description Upstream SCB API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     listMunicipalities: {

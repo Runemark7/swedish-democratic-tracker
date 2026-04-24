@@ -15,11 +15,18 @@ type KPIValue struct {
 
 type SCBClient interface {
 	FetchPopulationTrend(ctx context.Context, munCode string, years []int) ([]PopulationEntry, error)
+	FetchRegionBudget(ctx context.Context, regionCode string, year int) ([]RegionBudgetArea, error)
 }
 
 type PopulationEntry struct {
 	Year       int `json:"year"`
 	Population int `json:"population"`
+}
+
+type RegionBudgetArea struct {
+	Name  string  `json:"name"`
+	Value float64 `json:"value"`
+	Pct   float64 `json:"pct"`
 }
 
 type TEDClient interface {
