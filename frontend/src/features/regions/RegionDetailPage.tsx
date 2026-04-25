@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useRegion, useRegionList } from "@/hooks/useDemocracy";
 import { Hemicycle, Donut, HBars, Pill, Trend, TargetBar } from "@/components/charts";
+import { AgendaList } from "@/components/AgendaList";
 import type { LiveVote, Party } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -525,46 +526,7 @@ export function RegionDetailPage() {
           >
             AGENDA · STYRETS PRIORITERINGAR
           </div>
-          <ol
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-            }}
-          >
-            {agenda.map((item, i) => (
-              <li
-                key={i}
-                style={{ display: "flex", alignItems: "baseline", gap: 12 }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    color: "var(--color-accent-2)",
-                    fontSize: 22,
-                    lineHeight: 1,
-                    minWidth: 20,
-                    flexShrink: 0,
-                  }}
-                >
-                  {i + 1}
-                </span>
-                <span
-                  style={{
-                    fontSize: 14,
-                    color: "var(--color-fg)",
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {item}
-                </span>
-              </li>
-            ))}
-          </ol>
+          <AgendaList items={agenda} />
         </div>
       </div>
     </div>

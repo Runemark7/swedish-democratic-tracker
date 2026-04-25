@@ -35,6 +35,7 @@ export interface Budget {
 
 export interface Kpi {
   label: string;
+  description: string;
   value: string;
   raw: number;
   target: number;
@@ -52,6 +53,13 @@ export interface Authority {
   budget: string;
 }
 
+export interface AgendaItem {
+  title: string;
+  description: string;
+  source: string;
+  status: "active" | "in_progress" | "completed";
+}
+
 export interface LevelData {
   title: string;
   subtitle: string;
@@ -59,7 +67,7 @@ export interface LevelData {
   ruling: Ruling;
   liveVotes: LiveVote[];
   budget: Budget;
-  agenda: string[];
+  agenda: AgendaItem[];
   kpis?: Kpi[];
   authorities?: Authority[];
 }

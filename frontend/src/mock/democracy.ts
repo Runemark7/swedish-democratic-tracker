@@ -42,11 +42,11 @@ export const mockRiksdag: LevelData = {
     ],
   },
   agenda: [
-    "Reformerad arbetslöshetsförsäkring",
-    "Ny migrationslagstiftning",
-    "Skattesänkningar för arbete",
-    "Höjd pensionsålder utreds",
-    "Stärkt försvar mot 2030",
+    { title: "Reformerad arbetslöshetsförsäkring", description: "Skärpta krav på aktivitet och tydligare matchning mot lediga tjänster. Ersättningsnivåer kopplas till tidigare inkomst med ett nytt trappstegssystem.", source: "Tidöavtalet 2022", status: "in_progress" },
+    { title: "Ny migrationslagstiftning", description: "Permanenta uppehållstillstånd ersätts av tidsbegränsade med krav på självförsörjning. Asylreglerna anpassas till EU:s miniminivå.", source: "Tidöavtalet 2022", status: "active" },
+    { title: "Skattesänkningar för arbete", description: "Jobbskatteavdraget utökas i tre steg under mandatperioden med fokus på låg- och medelinkomsttagare för att öka sysselsättningsgraden.", source: "Budgetpropositionen 2024", status: "in_progress" },
+    { title: "Höjd pensionsålder utreds", description: "En parlamentarisk kommission ska senast 2025 lägga fram förslag om gradvis höjd riktålder för pension i linje med ökad medellivslängd.", source: "Pensionsgruppens direktiv 2023", status: "active" },
+    { title: "Stärkt försvar mot 2030", description: "Försvarsanslaget når 2,5 % av BNP 2030. Värnplikt utökas och tre nya regementen återaktiveras för att möta förändrat säkerhetsläge.", source: "Försvarspropositionen 2024–2030", status: "in_progress" },
   ],
   authorities: [
     { name: "Försäkringskassan",  role: "Utbetalar socialförsäkring",          headcount: "14 200", budget: "259 mdkr" },
@@ -94,10 +94,10 @@ export const mockRegion: LevelData = {
     ],
   },
   agenda: [
-    "Korta vårdköer till akutsjukvård",
-    "Förbättra psykiatrisk vård",
-    "Utbyggd tunnelbana mot 2030",
-    "Digital vårdplattform",
+    { title: "Korta vårdköer till akutsjukvård", description: "Garantera att alla akutpatienter tas om hand inom 4 timmar. Extra resurser tillförs akutmottagningarna vid Karolinska, Södersjukhuset och Danderyds sjukhus.", source: "Regionalt mandatprogram M+MP+L+KD+C 2022–2026", status: "in_progress" },
+    { title: "Förbättra psykiatrisk vård", description: "Tillföra 150 nya vårdplatser inom psykiatrin och korta väntetiden till BUP från 90 till 30 dagar under mandatperioden.", source: "Regionalt mandatprogram M+MP+L+KD+C 2022–2026", status: "active" },
+    { title: "Utbyggd tunnelbana mot 2030", description: "Förlänga tunnelbanan till Nacka, Barkarby och Älvsjö enligt Stockholmsöverenskommelsen. Byggnation pågår och beräknas klar 2030.", source: "Stockholmsöverenskommelsen + regionalt mandatprogram", status: "in_progress" },
+    { title: "Digital vårdplattform", description: "Samla journalsystem, remisshantering och patientkommunikation i en gemensam regional plattform för att minska dubbelarbete och förbättra informationsflödet.", source: "Regionalt mandatprogram M+MP+L+KD+C 2022–2026", status: "active" },
   ],
   kpis: [
     { label: "Väntetid akut",       value: "3 h 12 min", raw: 3.2, target: 3.0, worseHigher: true,  unit: "h",  trend: "up",   delta: "+8 min",    note: "Mål: under 3 h" },
@@ -145,10 +145,10 @@ export const mockKommun: LevelData = {
     ],
   },
   agenda: [
-    "Fler lärare per elev",
-    "Trygghetsskapande belysning",
-    "Snabbare bygglov",
-    "Fossilfritt Malmö 2030",
+    { title: "Fler lärare per elev", description: "Rekrytera 80 nya lärartjänster och minska klasstorleken från 26 till 22 elever per klass. Fokus på skolor med lägst meritvärden i Malmö.", source: "Mandatprogrammet S+MP+V 2022–2026", status: "in_progress" },
+    { title: "Trygghetsskapande belysning", description: "Uppgradera gatubelysningen i Rosengård, Herrgården och Husie under 2024–2025 med LED-armaturer och rörelsestyrning för att förbättra den upplevda tryggheten.", source: "Mandatprogrammet S+MP+V 2022–2026", status: "in_progress" },
+    { title: "Snabbare bygglov", description: "Korta handläggningstiden för standardärenden från 11 till 6 veckor genom digitalt system och ökad bemanning på stadsbyggnadskontoret.", source: "Mandatprogrammet S+MP+V 2022–2026", status: "active" },
+    { title: "Fossilfritt Malmö 2030", description: "Kommunens fordonsflotta ska vara 100 % fossilfri 2026. Solceller på alla kommunala tak 2028. Nettopositiv koldioxidbalans 2030 enligt antagen klimatplan.", source: "Malmö stads klimatplan 2022–2030", status: "in_progress" },
   ],
   kpis: [
     { label: "Lärare per 100 elever",  value: "8,1",  raw: 8.1, target: 8.5, worseHigher: false, unit: "",  trend: "flat", delta: "±0",    note: "Mål: 8,5"        },
