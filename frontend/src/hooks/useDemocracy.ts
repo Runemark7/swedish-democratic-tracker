@@ -174,7 +174,7 @@ function spendingToBudget(items: MunicipalityKPIItem[], population: number): Bud
   for (const a of areasKr) a.pct = Math.round((a.value / totalKr) * 1000) / 10;
   const areas: BudgetArea[] = areasKr.map(a => ({
     ...a,
-    value: Math.round((a.value / 1e9) * 10) / 10,
+    value: Math.round((a.value / 1e9) * 100) / 100,
   }));
   const totalMdkr = Math.round((totalKr / 1e9) * 10) / 10;
   const latestYear = Math.max(...[...byKpi.values()].map(i => i.year));
