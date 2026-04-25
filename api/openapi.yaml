@@ -27,8 +27,27 @@ tags:
     description: Swedish regional (läns) election results and governing coalitions
   - name: municipalities
     description: Swedish municipal (kommunal) election results and governing coalitions
+  - name: riksdag
+    description: National level — state agency expenditure data
 
 paths:
+  /riksdag/authorities:
+    get:
+      operationId: getRiksdagAuthorities
+      tags: [riksdag]
+      summary: State agencies with actual annual expenditure (driftkostnader)
+      responses:
+        "200":
+          description: List of state agencies sorted by expenditure descending
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RiksdagAuthority"
+        "502":
+          description: Upstream data source unavailable
+
   /healthz:
     get:
       operationId: getHealth
@@ -1462,3 +1481,25 @@ components:
           type: integer
           example: 12
           description: Number of contract award notices in this category
+
+    RiksdagAuthority:
+      type: object
+      required: [name, role, headcount, expenditureMdkr, year]
+      properties:
+        name:
+          type: string
+          example: Polismyndigheten
+        role:
+          type: string
+          example: Ordning & utredning
+        headcount:
+          type: string
+          example: "35 500"
+        expenditureMdkr:
+          type: number
+          format: float
+          example: 41.4
+          description: Actual annual driftkostnad in mdkr (excl. transfer payments)
+        year:
+          type: integer
+          example: 2024

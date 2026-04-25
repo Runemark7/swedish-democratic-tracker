@@ -49,11 +49,16 @@ export const mockRiksdag: LevelData = {
     { title: "Stärkt försvar mot 2030", description: "Försvarsanslaget når 2,5 % av BNP 2030. Värnplikt utökas och tre nya regementen återaktiveras för att möta förändrat säkerhetsläge.", source: "Försvarspropositionen 2024–2030", status: "in_progress" },
   ],
   authorities: [
-    { name: "Försäkringskassan",  role: "Utbetalar socialförsäkring",          headcount: "14 200", budget: "259 mdkr" },
-    { name: "Arbetsförmedlingen", role: "Matchning & arbetsmarknadspolitik",    headcount: "9 400",  budget: "71 mdkr"  },
-    { name: "Skatteverket",       role: "Skatt & folkbokföring",                headcount: "11 100", budget: "8,4 mdkr" },
-    { name: "Migrationsverket",   role: "Uppehållstillstånd & asyl",            headcount: "5 800",  budget: "5,9 mdkr" },
-    { name: "Polismyndigheten",   role: "Ordning & utredning",                  headcount: "35 500", budget: "42 mdkr"  },
+    { name: "Polismyndigheten",   role: "Ordning & utredning",                  headcount: "35 500", expenditureMdkr: 41.4, year: 2024 },
+    { name: "Kriminalvården",     role: "Kriminalvård & häkte",                 headcount: "14 200", expenditureMdkr: 17.6, year: 2024 },
+    { name: "Försäkringskassan",  role: "Administration socialförsäkring",      headcount: "14 200", expenditureMdkr: 9.6,  year: 2024 },
+    { name: "Skatteverket",       role: "Skatt & folkbokföring",                headcount: "11 100", expenditureMdkr: 8.6,  year: 2024 },
+    { name: "Sveriges Domstolar", role: "Domstolar & nämnder",                  headcount: "7 200",  expenditureMdkr: 7.7,  year: 2024 },
+    { name: "Arbetsförmedlingen", role: "Matchning & arbetsmarknadspolitik",    headcount: "9 400",  expenditureMdkr: 7.5,  year: 2024 },
+    { name: "Migrationsverket",   role: "Uppehållstillstånd & asyl",            headcount: "5 800",  expenditureMdkr: 4.8,  year: 2024 },
+    { name: "Tullverket",         role: "Tull & gränskontroll",                 headcount: "2 700",  expenditureMdkr: 2.9,  year: 2024 },
+    { name: "Åklagarmyndigheten", role: "Åklagare",                             headcount: "1 900",  expenditureMdkr: 2.6,  year: 2024 },
+    { name: "Säkerhetspolisen",   role: "Nationell säkerhet",                   headcount: "2 100",  expenditureMdkr: 2.4,  year: 2024 },
   ],
   kpis: [
     {
