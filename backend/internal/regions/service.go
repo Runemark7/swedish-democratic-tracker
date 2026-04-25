@@ -17,9 +17,19 @@ var defaultKPIs = []string{
 var defaultKPIYears = []int{2019, 2020, 2021, 2022, 2023}
 
 // regionStripKPIs are the three KPIs shown in the region header strip.
-// N00900 = regionskatt (%), N03102 = resultat/skatt (%), N03106 = soliditet (%).
-var regionStripKPIs = []string{"N00900", "N03102", "N03106"}
+// N63007 = Soliditet region (%), N63016 = Resultat/skatt region (%), N60008 = Nettokostnad/inv (kr).
+// Region KPIs use the N6xxxx namespace (mun_type "L" in Kolada), not N0xxxx (which is municipality-only).
+var regionStripKPIs = []string{"N60008", "N63016", "N63007"}
 var regionKPIYears  = []int{2020, 2021, 2022, 2023}
+
+// koladaRegionCode converts a Swedish 2-digit county code (e.g. "09") to the
+// 4-digit zero-prefixed code Kolada expects (e.g. "0009").
+func koladaRegionCode(code string) string {
+	if len(code) >= 4 {
+		return code
+	}
+	return "00" + code
+}
 var defaultPopYears = []int{2019, 2020, 2021, 2022, 2023}
 
 var spendingKPIs  = []string{"N11004", "N15028", "N17014", "N20014", "N30005", "N07037", "N09022", "N05011"}
@@ -61,7 +71,7 @@ func (s *Service) GetMunicipalityKPIs(ctx context.Context, munCode string) ([]po
 }
 
 func (s *Service) GetRegionKPIs(ctx context.Context, regionCode string) ([]ports.KPIValue, error) {
-	return s.kolada.FetchKPIs(ctx, regionCode, regionStripKPIs, regionKPIYears)
+	return s.kolada.FetchKPIs(ctx, koladaRegionCode(regionCode), regionStripKPIs, regionKPIYears)
 }
 
 func (s *Service) GetPopulationTrend(ctx context.Context, munCode string) ([]ports.PopulationEntry, error) {
