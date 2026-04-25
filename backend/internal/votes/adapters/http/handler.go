@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"riksdagskollen/internal/votes"
+	"riksdagskollen/internal/votes/domain"
 	"riksdagskollen/internal/votes/ports"
 )
 
@@ -75,12 +76,8 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if len(vv) == 0 {
-		jsonError(w, "vote not found", http.StatusNotFound)
-		return
-	}
 
-	// Build party breakdown
+	// Build party breakdown helper
 	type partyPos struct {
 		Party        string `json:"party"`
 		Ja           int    `json:"jaCount"`
@@ -89,58 +86,103 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		Franvarande  int    `json:"franvarandeCount"`
 		DominantVote string `json:"dominantVote,omitempty"`
 	}
-	tally := map[string]*partyPos{}
-	for _, v := range vv {
-		pos, ok := tally[v.Party]
-		if !ok {
-			pos = &partyPos{Party: v.Party}
-			tally[v.Party] = pos
-		}
-		switch v.VoteResult {
-		case "Ja":
-			pos.Ja++
-		case "Nej":
-			pos.Nej++
-		case "Avstår":
-			pos.Avstar++
-		case "Frånvarande":
-			pos.Franvarande++
-		}
-	}
-	breakdown := make([]*partyPos, 0, len(tally))
-	for _, p := range tally {
-		// Compute dominant vote (exclude Frånvarande)
-		max := p.Ja
-		if p.Nej > max {
-			max = p.Nej
-		}
-		if p.Avstar > max {
-			max = p.Avstar
-		}
-		ties := 0
-		if p.Ja == max {
-			ties++
-		}
-		if p.Nej == max {
-			ties++
-		}
-		if p.Avstar == max {
-			ties++
-		}
-		if ties == 1 && max > 0 {
-			switch {
-			case p.Ja == max:
-				p.DominantVote = "Ja"
-			case p.Nej == max:
-				p.DominantVote = "Nej"
-			case p.Avstar == max:
-				p.DominantVote = "Avstår"
+
+	buildBreakdown := func(votes []*domain.Vote) []*partyPos {
+		tally := map[string]*partyPos{}
+		for _, v := range votes {
+			pos, ok := tally[v.Party]
+			if !ok {
+				pos = &partyPos{Party: v.Party}
+				tally[v.Party] = pos
+			}
+			switch v.VoteResult {
+			case "Ja":
+				pos.Ja++
+			case "Nej":
+				pos.Nej++
+			case "Avstår":
+				pos.Avstar++
+			case "Frånvarande":
+				pos.Franvarande++
 			}
 		}
-		breakdown = append(breakdown, p)
+		breakdown := make([]*partyPos, 0, len(tally))
+		for _, p := range tally {
+			max := p.Ja
+			if p.Nej > max {
+				max = p.Nej
+			}
+			if p.Avstar > max {
+				max = p.Avstar
+			}
+			ties := 0
+			if p.Ja == max {
+				ties++
+			}
+			if p.Nej == max {
+				ties++
+			}
+			if p.Avstar == max {
+				ties++
+			}
+			if ties == 1 && max > 0 {
+				switch {
+				case p.Ja == max:
+					p.DominantVote = "Ja"
+				case p.Nej == max:
+					p.DominantVote = "Nej"
+				case p.Avstar == max:
+					p.DominantVote = "Avstår"
+				}
+			}
+			breakdown = append(breakdown, p)
+		}
+		return breakdown
 	}
 
-	// Pick the first enriched vote for metadata (title, origin, etc.)
+	computeStatus := func(breakdown []*partyPos) string {
+		var totalJa, totalNej int
+		for _, p := range breakdown {
+			totalJa += p.Ja
+			totalNej += p.Nej
+		}
+		if totalJa >= totalNej {
+			return "Bifall"
+		}
+		return "Avslag"
+	}
+
+	if len(vv) == 0 {
+		// No votes in DB — fetch metadata directly from Riksdagen
+		info, err := h.svc.GetBetankandeInfo(r.Context(), bet)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if info == nil {
+			jsonError(w, "vote not found", http.StatusNotFound)
+			return
+		}
+		resp := map[string]any{
+			"beteckning":     bet,
+			"forslagspunkt":  punkt,
+			"dokId":          info.DokID,
+			"documentTitle":  info.Title,
+			"session":        info.Session,
+			"date":           info.Date,
+			"status":         info.Status,
+			"partyBreakdown": []any{},
+		}
+		if ds, err := h.svc.GetDocumentStatus(r.Context(), info.DokID); err == nil && ds != nil {
+			resp["subtitle"] = ds.Subtitle
+			resp["summary"] = ds.Summary
+		}
+		jsonOK(w, resp)
+		return
+	}
+
+	// Has votes in DB
+	breakdown := buildBreakdown(vv)
 	meta := vv[0]
 	for _, v := range vv {
 		if v.ProposalOrigin.DocumentTitle != "" {
@@ -148,7 +190,8 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	jsonOK(w, map[string]any{
+
+	resp := map[string]any{
 		"beteckning":      bet,
 		"forslagspunkt":   punkt,
 		"dokId":           meta.DokID,
@@ -157,7 +200,14 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		"proposalType":    string(meta.ProposalOrigin.ProposalType),
 		"session":         meta.Session,
 		"partyBreakdown":  breakdown,
-	})
+		"status":          computeStatus(breakdown),
+	}
+	if ds, err := h.svc.GetDocumentStatus(r.Context(), meta.DokID); err == nil && ds != nil {
+		resp["date"] = ds.Date
+		resp["subtitle"] = ds.Subtitle
+		resp["summary"] = ds.Summary
+	}
+	jsonOK(w, resp)
 }
 
 // organTag maps a Riksdag committee abbreviation to a readable Swedish topic tag.
