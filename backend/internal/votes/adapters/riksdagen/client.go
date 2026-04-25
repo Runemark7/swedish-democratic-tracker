@@ -157,9 +157,12 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 	var payload struct {
 		Dokumentstatus struct {
 			Dokument struct {
-				DokID string `json:"dok_id"`
-				Titel string `json:"titel"`
-				Typ   string `json:"typ"`
+				DokID      string `json:"dok_id"`
+				Titel      string `json:"titel"`
+				Typ        string `json:"typ"`
+				Datum      string `json:"datum"`
+				Undertitel string `json:"undertitel"`
+				Summary    string `json:"summary"`
 			} `json:"dokument"`
 			Dokreferens struct {
 				Referens []struct {
@@ -180,9 +183,12 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 
 	ds := payload.Dokumentstatus
 	status := &domain.DocumentStatus{
-		DokID: ds.Dokument.DokID,
-		Title: ds.Dokument.Titel,
-		Type:  ds.Dokument.Typ,
+		DokID:    ds.Dokument.DokID,
+		Title:    ds.Dokument.Titel,
+		Type:     ds.Dokument.Typ,
+		Date:     ds.Dokument.Datum,
+		Subtitle: ds.Dokument.Undertitel,
+		Summary:  stripHTML(ds.Dokument.Summary),
 	}
 	for _, ref := range ds.Dokreferens.Referens {
 		r := domain.DocumentReference{
@@ -201,4 +207,68 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 		})
 	}
 	return status, nil
+}
+
+func (c *Client) FetchBetankandeByBeteckning(ctx context.Context, beteckning string) (*ports.BetankandeInfo, error) {
+	url := fmt.Sprintf("%s/dokumentlista/?bet=%s&typ=bet&utformat=json&sz=1", baseURL, beteckning)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("riksdagen dokumentlista API returned %d", resp.StatusCode)
+	}
+
+	var payload struct {
+		Dokumentlista struct {
+			Dokument []struct {
+				DokID  string `json:"id"`
+				Titel  string `json:"titel"`
+				Datum  string `json:"datum"`
+				Status string `json:"status"`
+				Rm     string `json:"rm"`
+				Organ  string `json:"organ"`
+			} `json:"dokument"`
+		} `json:"dokumentlista"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+		return nil, fmt.Errorf("decode dokumentlista: %w", err)
+	}
+
+	docs := payload.Dokumentlista.Dokument
+	if len(docs) == 0 {
+		return nil, nil
+	}
+	d := docs[0]
+	return &ports.BetankandeInfo{
+		DokID:   d.DokID,
+		Title:   d.Titel,
+		Date:    d.Datum,
+		Status:  d.Status,
+		Session: d.Rm,
+		Organ:   d.Organ,
+	}, nil
+}
+
+func stripHTML(s string) string {
+	var b strings.Builder
+	inTag := false
+	for _, r := range s {
+		switch {
+		case r == '<':
+			inTag = true
+		case r == '>':
+			inTag = false
+		case !inTag:
+			b.WriteRune(r)
+		}
+	}
+	return strings.TrimSpace(b.String())
 }

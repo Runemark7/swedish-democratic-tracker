@@ -24,9 +24,20 @@ type RiksdagDocument struct {
 	Beteckning string // e.g. "SoU12"
 }
 
+// BetankandeInfo is the metadata for a single betänkande from the dokumentlista API.
+type BetankandeInfo struct {
+	DokID   string
+	Title   string
+	Date    string
+	Status  string
+	Session string
+	Organ   string
+}
+
 type RiksdagenVoteClient interface {
 	FetchVotes(ctx context.Context, f FetchVotesFilter) ([]*domain.Vote, error)
 	FetchDocumentStatus(ctx context.Context, dokID string) (*domain.DocumentStatus, error)
 	// FetchDocuments returns the most recent betänkanden from the given committee organs.
 	FetchDocuments(ctx context.Context, organs []string, count int) ([]RiksdagDocument, error)
+	FetchBetankandeByBeteckning(ctx context.Context, beteckning string) (*BetankandeInfo, error)
 }
