@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
-import { Hemicycle, Donut, HBars, Pill } from "@/components/charts";
+import { Hemicycle, Donut, HBars, Pill, TargetBar, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import type { LiveVote, Party } from "@/types/democracy";
 
@@ -57,7 +57,7 @@ export function RiksdagPage() {
 
   if (isLoading || !data) return <Skeleton />;
 
-  const { ruling, liveVotes, budget, agenda } = data;
+  const { ruling, liveVotes, budget, agenda, kpis } = data;
 
   // Build hemicycle groups: opposition left → support → ruling right
   const hemicycleGroups = [
@@ -141,6 +141,77 @@ export function RiksdagPage() {
           </div>
         </div>
       </div>
+
+      {/* ── KPI strip ────────────────────────────────────────────────── */}
+      {kpis && kpis.length > 0 && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 1,
+            border: "1px solid var(--color-border)",
+            background: "var(--color-border)",
+            margin: "22px 32px 0",
+          }}
+        >
+          {kpis.map((k) => (
+            <div
+              key={k.label}
+              style={{ background: "var(--color-sdt-surface)", padding: "20px 24px" }}
+            >
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  letterSpacing: "1.5px",
+                  color: "var(--color-fg-muted)",
+                  textTransform: "uppercase",
+                  marginBottom: 6,
+                }}
+              >
+                {k.label}
+              </div>
+              <div
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: 30,
+                  fontWeight: 400,
+                  color: "var(--color-fg)",
+                  lineHeight: 1,
+                  marginBottom: 8,
+                }}
+              >
+                {k.value}
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <Trend trend={k.trend} delta={k.delta} />
+              </div>
+              <TargetBar
+                value={k.raw}
+                target={k.target}
+                worseHigher={k.worseHigher}
+                unit={k.unit}
+                height={28}
+              />
+              {k.description && (
+                <div
+                  style={{
+                    marginTop: 12,
+                    fontFamily: "var(--font-sans)",
+                    fontSize: 11,
+                    lineHeight: 1.5,
+                    color: "var(--color-fg-muted)",
+                    borderTop: "1px solid var(--color-border)",
+                    paddingTop: 10,
+                  }}
+                >
+                  {k.description}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Main grid ────────────────────────────────────────────────── */}
       <div
