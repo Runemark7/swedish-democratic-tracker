@@ -191,26 +191,33 @@ function spendingToBudget(items: MunicipalityKPIItem[], population: number): Bud
 
 // ── Municipality KPI strip helpers ────────────────────────────────────────────
 
-const STRIP_KPI_META: Record<string, {
-  label: string;
-  unit: string;
-  target: number;
-  worseHigher: boolean;
-  format: (v: number) => string;
-}> = {
-  N00900: { label: "Kommunalskatt",  unit: "%", target: 31.0, worseHigher: true,  format: v => `${v.toFixed(2)} %` },
-  N03102: { label: "Resultat/skatt", unit: "%", target:  2.0, worseHigher: false, format: v => `${v.toFixed(1)} %` },
-  N03106: { label: "Soliditet",      unit: "%", target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %` },
-};
-const STRIP_ORDER = ["N00900", "N03102", "N03106"];
-
 type KpiMeta = {
   label: string;
+  description: string;
   unit: string;
   target: number;
   worseHigher: boolean;
   format: (v: number) => string;
 };
+
+const STRIP_KPI_META: Record<string, KpiMeta> = {
+  N00900: {
+    label: "Kommunalskatt",
+    description: "Din inkomstskatt till kommunen. Lägre skatt ger mer kvar i plånboken — men kan också innebära sämre service.",
+    unit: "%", target: 31.0, worseHigher: true, format: v => `${v.toFixed(2)} %`,
+  },
+  N03102: {
+    label: "Resultat/skatt",
+    description: "Kommunens överskott i förhållande till skatteintäkterna. Under 2 % riskerar kommunen att tvingas skära i välfärden.",
+    unit: "%", target: 2.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
+  },
+  N03106: {
+    label: "Soliditet",
+    description: "Hur stor del av kommunens tillgångar som är skuldfria. Låg soliditet ökar sårbarheten vid ekonomiska kriser.",
+    unit: "%", target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %`,
+  },
+};
+const STRIP_ORDER = ["N00900", "N03102", "N03106"];
 
 // Converts raw Kolada KPI items → Kpi[] for the header strip.
 function kpiItemsToStrip(
@@ -239,6 +246,7 @@ function kpiItemsToStrip(
 
     return [{
       label: m.label,
+      description: m.description,
       value: m.format(latest.value),
       raw: latest.value,
       target: m.target,
@@ -253,9 +261,21 @@ function kpiItemsToStrip(
 
 // Region-level strip KPIs: financial health metrics from Kolada's region (N6xxxx) namespace.
 const REGION_STRIP_KPI_META: Record<string, KpiMeta> = {
-  N60008: { label: "Nettokostnad/inv", unit: "kr", target: 40000, worseHigher: true,  format: v => `${Math.round(v).toLocaleString("sv-SE")} kr` },
-  N63016: { label: "Resultat/skatt",   unit: "%",  target:   2.0, worseHigher: false, format: v => `${v.toFixed(1)} %` },
-  N63007: { label: "Soliditet",        unit: "%",  target:  25.0, worseHigher: false, format: v => `${v.toFixed(0)} %` },
+  N60008: {
+    label: "Nettokostnad/inv",
+    description: "Regionens driftkostnad per invånare. Speglar servicenivå och effektivitet inom vård och kollektivtrafik.",
+    unit: "kr", target: 40000, worseHigher: true, format: v => `${Math.round(v).toLocaleString("sv-SE")} kr`,
+  },
+  N63016: {
+    label: "Resultat/skatt",
+    description: "Regionens överskott i förhållande till skatteintäkterna. Under 2 % riskerar regionen att tvingas skära i vården.",
+    unit: "%", target: 2.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
+  },
+  N63007: {
+    label: "Soliditet",
+    description: "Hur stor del av regionens tillgångar som är skuldfria. Låg soliditet ökar sårbarheten vid ekonomiska kriser.",
+    unit: "%", target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %`,
+  },
 };
 const REGION_STRIP_ORDER = ["N60008", "N63016", "N63007"];
 
