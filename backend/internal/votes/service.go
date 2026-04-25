@@ -127,6 +127,14 @@ func (s *Service) ListByBeteckning(ctx context.Context, beteckning, punkt string
 	return s.repo.ListByBeteckning(ctx, beteckning, punkt)
 }
 
+func (s *Service) GetBetankandeInfo(ctx context.Context, beteckning string) (*ports.BetankandeInfo, error) {
+	return s.riksdagen.FetchBetankandeByBeteckning(ctx, beteckning)
+}
+
+func (s *Service) GetDocumentStatus(ctx context.Context, dokID string) (*domain.DocumentStatus, error) {
+	return s.riksdagen.FetchDocumentStatus(ctx, dokID)
+}
+
 // GetRiksdagFeed returns recent betänkanden from committees relevant to the given level.
 // level "region"  → SoU (healthcare), TU (transit)
 // level "kommun"  → UbU (education), CU (housing/planning), SoU
