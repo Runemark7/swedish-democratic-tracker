@@ -114,13 +114,14 @@ export function MunicipalityDetailPage() {
   const budgetAreas = data.budget.areas;
   const donutSegments = budgetAreas.map((a, i) => ({
     color: BUDGET_COLORS[i % BUDGET_COLORS.length],
-    value: a.value,
+    value: a.pct,
     name: a.name,
   }));
   const hbarsItems = budgetAreas.map((a, i) => ({
     name: a.name,
-    value: a.value,
+    value: a.pct,
     pct: a.pct,
+    amount: `${a.value.toFixed(2)} mdkr`,
     color: BUDGET_COLORS[i % BUDGET_COLORS.length],
   }));
 
