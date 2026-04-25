@@ -24,6 +24,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/regions", h.listRegions)
 	r.Get("/regions/{code}", h.getRegion)
 	r.Get("/regions/{code}/budget", h.getRegionBudget)
+	r.Get("/regions/{code}/kpi", h.getRegionKPI)
 	r.Get("/municipalities", h.listMunicipalities)
 	r.Get("/municipalities/{code}", h.getMunicipality)
 	r.Get("/municipalities/{code}/kpi", h.getMunicipalityKPI)
@@ -57,6 +58,19 @@ func (h *Handler) getRegion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonOK(w, detail)
+}
+
+func (h *Handler) getRegionKPI(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	values, err := h.svc.GetRegionKPIs(r.Context(), code)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if values == nil {
+		values = []ports.KPIValue{}
+	}
+	jsonOK(w, values)
 }
 
 func (h *Handler) getRegionBudget(w http.ResponseWriter, r *http.Request) {

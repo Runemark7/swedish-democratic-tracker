@@ -15,6 +15,11 @@ var defaultKPIs = []string{
 	"N03007", "N03102", "N03106", "N03040", "N03132",
 }
 var defaultKPIYears = []int{2019, 2020, 2021, 2022, 2023}
+
+// regionStripKPIs are the three KPIs shown in the region header strip.
+// N00900 = regionskatt (%), N03102 = resultat/skatt (%), N03106 = soliditet (%).
+var regionStripKPIs = []string{"N00900", "N03102", "N03106"}
+var regionKPIYears  = []int{2020, 2021, 2022, 2023}
 var defaultPopYears = []int{2019, 2020, 2021, 2022, 2023}
 
 var spendingKPIs  = []string{"N11004", "N15028", "N17014", "N20014", "N30005", "N07037", "N09022", "N05011"}
@@ -53,6 +58,10 @@ func (s *Service) GetRegionBudget(ctx context.Context, regionCode string, year i
 
 func (s *Service) GetMunicipalityKPIs(ctx context.Context, munCode string) ([]ports.KPIValue, error) {
 	return s.kolada.FetchKPIs(ctx, munCode, defaultKPIs, defaultKPIYears)
+}
+
+func (s *Service) GetRegionKPIs(ctx context.Context, regionCode string) ([]ports.KPIValue, error) {
+	return s.kolada.FetchKPIs(ctx, regionCode, regionStripKPIs, regionKPIYears)
 }
 
 func (s *Service) GetPopulationTrend(ctx context.Context, munCode string) ([]ports.PopulationEntry, error) {
