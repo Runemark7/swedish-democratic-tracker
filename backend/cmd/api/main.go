@@ -67,6 +67,12 @@ import (
 	"riksdagskollen/internal/regions"
 	"riksdagskollen/internal/regions/seeder"
 
+	// Feature: riksdag
+	riksdagHTTP "riksdagskollen/internal/riksdag/adapters/http"
+	riksdagStatic "riksdagskollen/internal/riksdag/adapters/static"
+	riksdagSK "riksdagskollen/internal/riksdag/adapters/statskontoret"
+	"riksdagskollen/internal/riksdag"
+
 	// Ingestion
 	"riksdagskollen/internal/ingestion"
 	ingestionPG "riksdagskollen/internal/ingestion/adapters/postgres"
@@ -164,6 +170,9 @@ func main() {
 	regionsSvc := regions.NewService(regionsRepo, koladaCl, scbCl, tedCl)
 	regionsHandler := regionsHTTP.NewHandler(regionsSvc)
 
+	riksdagSvc := riksdag.NewService(riksdagSK.NewClient(), riksdagStatic.NewClient())
+	riksdagHandler := riksdagHTTP.NewHandler(riksdagSvc)
+
 	// -- Router --
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -186,6 +195,7 @@ func main() {
 		budgetHandler.Routes(r)
 		contextHandler.Routes(r)
 		regionsHandler.Routes(r)
+		riksdagHandler.Routes(r)
 
 		// TODO: return aggregate 24h decision counts per level for the homepage pulse strip.
 		// Shape: { riksdag: number, region: number, kommun: number, total: number, buckets: number[] }

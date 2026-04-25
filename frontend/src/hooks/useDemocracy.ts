@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
+import { riksdagApi } from "@/features/riksdag/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem } from "@/types/democracy";
 import { mockRiksdag, mockRegion, mockKommun } from "@/mock/democracy";
 import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem } from "@/shared/types";
@@ -300,12 +301,15 @@ const REGION_STRIP_KPI_META: Record<string, KpiMeta> = {
 const REGION_STRIP_ORDER = ["N60008", "N63016", "N63007", "N79173", "N79179"];
 
 // ── Riksdag ───────────────────────────────────────────────────────────────────
-// TODO: replace with real /api/riksdag endpoint when implemented
 export function useRiksdag() {
   return useQuery<LevelData>({
     queryKey: ["riksdag"],
-    queryFn: async () => mockRiksdag,
-    staleTime: 30_000,
+    queryFn: async () => {
+      const authorities = await riksdagApi.getAuthorities()
+        .catch(() => mockRiksdag.authorities ?? []);
+      return { ...mockRiksdag, authorities };
+    },
+    staleTime: 60_000,
   });
 }
 

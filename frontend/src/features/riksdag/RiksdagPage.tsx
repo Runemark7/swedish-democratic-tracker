@@ -57,7 +57,7 @@ export function RiksdagPage() {
 
   if (isLoading || !data) return <Skeleton />;
 
-  const { ruling, liveVotes, budget, agenda, kpis } = data;
+  const { ruling, liveVotes, budget, agenda, kpis, authorities } = data;
 
   // Build hemicycle groups: opposition left → support → ruling right
   const hemicycleGroups = [
@@ -513,6 +513,52 @@ export function RiksdagPage() {
           <AgendaList items={agenda} />
         </div>
       </div>
+
+      {/* ── MYNDIGHETER ──────────────────────────────────────────────── */}
+      {authorities && authorities.length > 0 && (
+        <div
+          style={{
+            border: "1px solid var(--color-border)",
+            borderTop: "none",
+            margin: "0 32px 32px",
+            background: "var(--color-sdt-surface)",
+            padding: "24px 28px",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              letterSpacing: "0.15em",
+              color: "var(--color-fg-muted)",
+              marginBottom: 20,
+            }}
+          >
+            MYNDIGHETER · STATLIGA DRIFTKOSTNADER {authorities[0].year}
+          </div>
+          <HBars
+            items={authorities.map((a, i) => ({
+              name: a.name,
+              value: Math.round(a.expenditureMdkr * 10) / 10,
+              color: BUDGET_COLORS[i % BUDGET_COLORS.length],
+            }))}
+            unit=" mdkr"
+            height={6}
+            gap={14}
+          />
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 9,
+              color: "var(--color-fg-muted)",
+              marginTop: 18,
+              opacity: 0.6,
+            }}
+          >
+            Källa: Statskontoret årsutfall · driftkostnader exkl. transfereringar
+          </div>
+        </div>
+      )}
     </div>
   );
 }

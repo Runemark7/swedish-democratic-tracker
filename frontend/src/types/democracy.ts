@@ -50,7 +50,8 @@ export interface Authority {
   name: string;
   role: string;
   headcount: string;
-  budget: string;
+  expenditureMdkr: number;
+  year: number;
 }
 
 export interface AgendaItem {
