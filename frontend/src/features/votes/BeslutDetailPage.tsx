@@ -132,7 +132,8 @@ export function BeslutDetailPage() {
   const committee = committeeLabel(beteckning ?? "");
   const dokId    = data?.dokId;
 
-  const statusText = fallbackStatus || "Bifall";
+  const statusText = data?.status ?? fallbackStatus ?? "Bifall";
+  const beslutDate = data?.date ?? fallbackTime;
   const statusColor =
     statusText === "Bifall"    ? "#16a34a" :
     statusText === "Avslag"    ? "#dc2626" :
@@ -250,11 +251,17 @@ export function BeslutDetailPage() {
             fontFamily: "var(--font-mono)",
             fontSize: 12,
             color: "var(--color-fg-muted)",
-            marginBottom: 32,
+            marginBottom: data?.subtitle ? 8 : 32,
           }}
         >
-          {committee}{fallbackTime ? ` · ${fallbackTime}` : ""}
+          {committee}{beslutDate ? ` · ${beslutDate}` : ""}
         </div>
+
+        {data?.subtitle && (
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-fg-muted)", marginBottom: 32, letterSpacing: "0.05em" }}>
+            {data.subtitle}
+          </div>
+        )}
 
         {/* ── Outcome strip ────────────────────────────────────────── */}
         <div
@@ -291,6 +298,22 @@ export function BeslutDetailPage() {
             {statusText}
           </span>
         </div>
+
+        {data?.summary && (
+          <div style={{
+            background: "var(--color-sdt-surface)",
+            border: "1px solid var(--color-border)",
+            borderRadius: 4,
+            padding: "16px 20px",
+            marginBottom: 16,
+            fontFamily: "var(--font-body)",
+            fontSize: 14,
+            lineHeight: 1.6,
+            color: "var(--color-fg-muted)",
+          }}>
+            {data.summary}
+          </div>
+        )}
 
         {/* ── Party breakdown ──────────────────────────────────────── */}
         <div
@@ -341,11 +364,25 @@ export function BeslutDetailPage() {
                 opacity: 0.6,
               }}
             >
+              Kunde inte hämta röstdata.
+            </p>
+          )}
+
+          {data && data.partyBreakdown.length === 0 && (
+            <p
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 12,
+                color: "var(--color-fg-muted)",
+                margin: 0,
+                opacity: 0.6,
+              }}
+            >
               Fullständig röstdata ej tillgänglig för detta beslut.
             </p>
           )}
 
-          {data && (
+          {data && data.partyBreakdown.length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {data.partyBreakdown.map((pos) => (
                 <VoteBar key={pos.party} pos={pos} />
