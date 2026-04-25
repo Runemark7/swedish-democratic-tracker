@@ -201,8 +201,20 @@ const STRIP_KPI_META: Record<string, {
 };
 const STRIP_ORDER = ["N00900", "N03102", "N03106"];
 
-// Converts raw Kolada KPI items → 3-element Kpi[] for the header strip.
-function kpiItemsToStrip(items: MunicipalityKPIItem[]): Kpi[] {
+type KpiMeta = {
+  label: string;
+  unit: string;
+  target: number;
+  worseHigher: boolean;
+  format: (v: number) => string;
+};
+
+// Converts raw Kolada KPI items → Kpi[] for the header strip.
+function kpiItemsToStrip(
+  items: MunicipalityKPIItem[],
+  meta: Record<string, KpiMeta>,
+  order: string[],
+): Kpi[] {
   const byKpi = new Map<string, MunicipalityKPIItem[]>();
   for (const item of items) {
     const list = byKpi.get(item.kpi) ?? [];
@@ -210,10 +222,10 @@ function kpiItemsToStrip(items: MunicipalityKPIItem[]): Kpi[] {
     byKpi.set(item.kpi, list);
   }
 
-  return STRIP_ORDER.flatMap(code => {
-    const meta = STRIP_KPI_META[code];
+  return order.flatMap(code => {
+    const m = meta[code];
     const yearItems = (byKpi.get(code) ?? []).sort((a, b) => b.year - a.year);
-    if (!meta || yearItems.length === 0) return [];
+    if (!m || yearItems.length === 0) return [];
 
     const latest = yearItems[0];
     const prev   = yearItems[1];
@@ -223,18 +235,26 @@ function kpiItemsToStrip(items: MunicipalityKPIItem[]): Kpi[] {
     const absDelta = Math.abs(delta).toFixed(2);
 
     return [{
-      label: meta.label,
-      value: meta.format(latest.value),
+      label: m.label,
+      value: m.format(latest.value),
       raw: latest.value,
-      target: meta.target,
-      worseHigher: meta.worseHigher,
-      unit: meta.unit,
+      target: m.target,
+      worseHigher: m.worseHigher,
+      unit: m.unit,
       trend,
-      delta: prev ? `${sign}${absDelta} ${meta.unit}` : "–",
+      delta: prev ? `${sign}${absDelta} ${m.unit}` : "–",
       note: `Källa: Kolada ${latest.year}`,
     } satisfies Kpi];
   });
 }
+
+// Region-level strip KPIs: financial health metrics available for all Swedish regions.
+const REGION_STRIP_KPI_META: Record<string, KpiMeta> = {
+  N00900: { label: "Regionskatt",    unit: "kr", target: 1150, worseHigher: true,  format: v => `${v.toFixed(0)} öre` },
+  N03102: { label: "Resultat/skatt", unit: "%",  target:  2.0, worseHigher: false, format: v => `${v.toFixed(1)} %`  },
+  N03106: { label: "Soliditet",      unit: "%",  target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %`  },
+};
+const REGION_STRIP_ORDER = ["N00900", "N03102", "N03106"];
 
 // ── Riksdag ───────────────────────────────────────────────────────────────────
 // TODO: replace with real /api/riksdag endpoint when implemented
@@ -260,10 +280,11 @@ export function useRegion(code: string) {
   return useQuery<LevelData>({
     queryKey: ["region", code],
     queryFn: async () => {
-      const [detail, feed, budgetAreas] = await Promise.all([
+      const [detail, feed, budgetAreas, kpiItems] = await Promise.all([
         regionsApi.getRegion(code),
         fetchRiksdagFeed("region").catch(() => mockRegion.liveVotes),
         regionsApi.getRegionBudget(code).catch(() => [] as typeof mockRegion.budget.areas),
+        regionsApi.getRegionKPIs(code).catch(() => [] as MunicipalityKPIItem[]),
       ]);
       const { governing, opposition } = electionResultsToParties(detail.electionResults ?? []);
 
@@ -290,8 +311,7 @@ export function useRegion(code: string) {
         liveVotes: feed,
         budget,
         agenda: generateAgenda("region", governing.length ? governing : mockRegion.ruling.parties, code),
-        // TODO: replace with real region KPI endpoint when implemented
-        kpis: mockRegion.kpis,
+        kpis: kpiItemsToStrip(kpiItems, REGION_STRIP_KPI_META, REGION_STRIP_ORDER),
       } satisfies LevelData;
     },
     staleTime: 30_000,
@@ -330,7 +350,7 @@ export function useKommun(code: string) {
         : isLeft ? `Rödgrön ${majority}` : `Borgerlig ${majority}`;
 
       const budget = spendingToBudget(spendingItems, detail.population) ?? mockKommun.budget;
-      const kpis   = kpiItemsToStrip(kpiItems);
+      const kpis   = kpiItemsToStrip(kpiItems, STRIP_KPI_META, STRIP_ORDER);
 
       return {
         title: detail.name,
