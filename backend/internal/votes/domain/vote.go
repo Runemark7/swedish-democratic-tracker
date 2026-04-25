@@ -48,6 +48,9 @@ type DocumentStatus struct {
 	Title      string              `json:"title"`
 	Type       string              `json:"type"`
 	References []DocumentReference `json:"references"`
+	Date       string
+	Subtitle   string
+	Summary    string
 }
 
 type DocumentReference struct {

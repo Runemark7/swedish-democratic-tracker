@@ -528,6 +528,13 @@ export interface components {
             partyBreakdown: components["schemas"]["PartyVotePosition"][];
             /** @description AI-generated explanation of political context */
             contextNote?: string;
+            /** @description Decision date from Riksdagen, YYYY-MM-DD */
+            date?: string;
+            /** @description Authoritative outcome: Bifall | Avslag | Återremiss */
+            status?: string;
+            subtitle?: string;
+            /** @description Plain-text summary of the betänkande */
+            summary?: string;
         };
         PartyVotePosition: {
             party: components["schemas"]["PartyCode"];

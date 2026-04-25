@@ -99,6 +99,10 @@ export interface VoteDetail {
   session: string;
   partyBreakdown: PartyVotePosition[];
   contextNote?: string;
+  date?: string;
+  status?: string;
+  subtitle?: string;
+  summary?: string;
 }
 
 export interface Goal {

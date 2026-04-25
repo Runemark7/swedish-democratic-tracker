@@ -821,6 +821,17 @@ components:
         contextNote:
           type: string
           description: AI-generated explanation of political context
+        date:
+          type: string
+          description: "Decision date from Riksdagen, YYYY-MM-DD"
+        status:
+          type: string
+          description: "Authoritative outcome: Bifall | Avslag | Återremiss"
+        subtitle:
+          type: string
+        summary:
+          type: string
+          description: "Plain-text summary of the betänkande"
 
     PartyVotePosition:
       type: object
