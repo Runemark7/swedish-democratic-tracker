@@ -1,5 +1,6 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Hemicycle, Donut, HBars, Pill, Trend, TargetBar } from "@/components/charts";
+import { AgendaList } from "@/components/AgendaList";
 import { useKommun, useKommunList } from "@/hooks/useDemocracy";
 import type { LiveVote } from "@/types/democracy";
 
@@ -575,47 +576,7 @@ export function MunicipalityDetailPage() {
             AGENDA · PRIORITERINGAR
           </div>
 
-          <ol style={{ listStyle: "none", margin: 0, padding: 0 }}>
-            {data.agenda.map((item, i) => (
-              <li
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "baseline",
-                  gap: 14,
-                  padding: "10px 0",
-                  borderBottom:
-                    i < data.agenda.length - 1
-                      ? "1px solid var(--color-border)"
-                      : "none",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    fontSize: 22,
-                    fontWeight: 400,
-                    color: "var(--color-accent-2)",
-                    lineHeight: 1,
-                    minWidth: 20,
-                    textAlign: "right",
-                  }}
-                >
-                  {i + 1}
-                </span>
-                <span
-                  style={{
-                    fontSize: 14,
-                    color: "var(--color-fg)",
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {item}
-                </span>
-              </li>
-            ))}
-          </ol>
+          <AgendaList items={data.agenda} />
         </div>
       </div>
     </div>
