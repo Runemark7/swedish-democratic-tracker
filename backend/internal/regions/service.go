@@ -13,14 +13,16 @@ var defaultKPIs = []string{
 	"N00900", "N11037", "N15027", "N20043", "N03010",
 	// Budget & ekonomi
 	"N03007", "N03102", "N03106", "N03040", "N03132",
+	// Skola & arbetsmarknad
+	"N15428", "N00708",
 }
 var defaultKPIYears = []int{2019, 2020, 2021, 2022, 2023}
 
 // regionStripKPIs are the three KPIs shown in the region header strip.
 // N63007 = Soliditet region (%), N63016 = Resultat/skatt region (%), N60008 = Nettokostnad/inv (kr).
 // Region KPIs use the N6xxxx namespace (mun_type "L" in Kolada), not N0xxxx (which is municipality-only).
-var regionStripKPIs = []string{"N60008", "N63016", "N63007"}
-var regionKPIYears  = []int{2020, 2021, 2022, 2023}
+var regionStripKPIs = []string{"N60008", "N63016", "N63007", "N79173", "N79179"}
+var regionKPIYears  = []int{2020, 2021, 2022, 2023, 2024}
 
 // koladaRegionCode converts a Swedish 2-digit county code (e.g. "09") to the
 // 4-digit zero-prefixed code Kolada expects (e.g. "0009").
