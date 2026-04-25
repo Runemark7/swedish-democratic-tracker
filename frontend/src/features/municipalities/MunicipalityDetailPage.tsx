@@ -264,7 +264,7 @@ export function MunicipalityDetailPage() {
             border: "1px solid var(--color-border)",
           }}
         >
-          {kpis.slice(0, 3).map((kpi) => (
+          {kpis.map((kpi) => (
             <div
               key={kpi.label}
               style={{
@@ -306,6 +306,21 @@ export function MunicipalityDetailPage() {
                 unit={kpi.unit}
                 height={28}
               />
+              {kpi.description && (
+                <div
+                  style={{
+                    marginTop: 12,
+                    fontFamily: "var(--font-sans)",
+                    fontSize: 11,
+                    lineHeight: 1.5,
+                    color: "var(--color-fg-muted)",
+                    borderTop: "1px solid var(--color-border)",
+                    paddingTop: 10,
+                  }}
+                >
+                  {kpi.description}
+                </div>
+              )}
             </div>
           ))}
         </div>

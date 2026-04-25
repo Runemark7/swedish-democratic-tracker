@@ -216,8 +216,18 @@ const STRIP_KPI_META: Record<string, KpiMeta> = {
     description: "Hur stor del av kommunens tillgångar som är skuldfria. Låg soliditet ökar sårbarheten vid ekonomiska kriser.",
     unit: "%", target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %`,
   },
+  N15428: {
+    label: "Gymnasiebehörighet",
+    description: "Andel elever i åk 9 som är behöriga till gymnasiet. Viktig signal om skolkvaliteten i kommunen.",
+    unit: "%", target: 85.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
+  },
+  N00708: {
+    label: "Arbetslöshet",
+    description: "Andel av befolkningen 20–64 år som var arbetslösa någon gång under året. Låg arbetslöshet stärker kommunens skatteunderlag.",
+    unit: "%", target: 5.0, worseHigher: true, format: v => `${v.toFixed(1)} %`,
+  },
 };
-const STRIP_ORDER = ["N00900", "N03102", "N03106"];
+const STRIP_ORDER = ["N00900", "N03102", "N03106", "N15428", "N00708"];
 
 // Converts raw Kolada KPI items → Kpi[] for the header strip.
 function kpiItemsToStrip(
@@ -276,8 +286,18 @@ const REGION_STRIP_KPI_META: Record<string, KpiMeta> = {
     description: "Hur stor del av regionens tillgångar som är skuldfria. Låg soliditet ökar sårbarheten vid ekonomiska kriser.",
     unit: "%", target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %`,
   },
+  N79173: {
+    label: "Primärvård 3 dagar",
+    description: "Andel patienter som fick medicinsk bedömning inom tre dagar i primärvården. Visar tillgängligheten till vård i din region.",
+    unit: "%", target: 90.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
+  },
+  N79179: {
+    label: "Svar primärvård",
+    description: "Andel samtal till primärvården som besvarades samma dag. Låg andel kan tyda på underbemanning eller hög belastning.",
+    unit: "%", target: 90.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
+  },
 };
-const REGION_STRIP_ORDER = ["N60008", "N63016", "N63007"];
+const REGION_STRIP_ORDER = ["N60008", "N63016", "N63007", "N79173", "N79179"];
 
 // ── Riksdag ───────────────────────────────────────────────────────────────────
 // TODO: replace with real /api/riksdag endpoint when implemented
