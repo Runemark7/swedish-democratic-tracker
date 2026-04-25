@@ -248,13 +248,13 @@ function kpiItemsToStrip(
   });
 }
 
-// Region-level strip KPIs: financial health metrics available for all Swedish regions.
+// Region-level strip KPIs: financial health metrics from Kolada's region (N6xxxx) namespace.
 const REGION_STRIP_KPI_META: Record<string, KpiMeta> = {
-  N00900: { label: "Regionskatt",    unit: "kr", target: 1150, worseHigher: true,  format: v => `${v.toFixed(0)} öre` },
-  N03102: { label: "Resultat/skatt", unit: "%",  target:  2.0, worseHigher: false, format: v => `${v.toFixed(1)} %`  },
-  N03106: { label: "Soliditet",      unit: "%",  target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %`  },
+  N60008: { label: "Nettokostnad/inv", unit: "kr", target: 40000, worseHigher: true,  format: v => `${Math.round(v).toLocaleString("sv-SE")} kr` },
+  N63016: { label: "Resultat/skatt",   unit: "%",  target:   2.0, worseHigher: false, format: v => `${v.toFixed(1)} %` },
+  N63007: { label: "Soliditet",        unit: "%",  target:  25.0, worseHigher: false, format: v => `${v.toFixed(0)} %` },
 };
-const REGION_STRIP_ORDER = ["N00900", "N03102", "N03106"];
+const REGION_STRIP_ORDER = ["N60008", "N63016", "N63007"];
 
 // ── Riksdag ───────────────────────────────────────────────────────────────────
 // TODO: replace with real /api/riksdag endpoint when implemented
