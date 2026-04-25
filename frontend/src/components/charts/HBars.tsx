@@ -1,5 +1,5 @@
 export interface HBarsProps {
-  items: { name: string; value: number; color?: string; pct?: number }[];
+  items: { name: string; value: number; color?: string; pct?: number; amount?: string }[];
   max?: number;
   unit?: string;
   height?: number;
@@ -21,7 +21,7 @@ export function HBars({
         const fraction = Math.max(0, Math.min(1, item.value / computedMax));
         const displayValue =
           item.pct !== undefined
-            ? `${item.pct}%`
+            ? item.amount ? `${item.pct}%  ${item.amount}` : `${item.pct}%`
             : `${item.value}${unit}`;
 
         return (
