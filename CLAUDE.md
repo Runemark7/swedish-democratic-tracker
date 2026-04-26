@@ -108,6 +108,7 @@ graph TD
             GS["goals / matching"]
             BS["budget"]
             RS["regions / municipalities"]
+            RKS["riksdag / myndigheter"]
         end
 
         subgraph ingestion["Ingestion scheduler (cron)"]
@@ -129,6 +130,7 @@ graph TD
         KO["Kolada API v3\napi.kolada.se"]
         SC["SCB PxWeb API\napi.scb.se"]
         TED["TED API\nted.europa.eu"]
+        SK["Statskontoret Open Data\nstatskontoret.se/psidata/arsutfall"]
     end
 
     DB[(PostgreSQL 17)]
@@ -144,6 +146,7 @@ graph TD
     RS -->|KPIs + spending| KO
     RS -->|population trend| SC
     RS -->|procurement| TED
+    RKS -->|agency expenditure ZIP/CSV| SK
     SD -->|2022 mandates + population| SC
     SD --> DB
 
@@ -172,7 +175,7 @@ internal/{feature}/
 - Never import an adapter package into domain.
 - `cmd/api/main.go` is the only wiring point — it instantiates all services and registers all HTTP routes.
 
-**Current features**: `politicians`, `speeches`, `votes`, `goals`, `promises`, `matching`, `budget`, `context`, `regions`, `ingestion`
+**Current features**: `politicians`, `speeches`, `votes`, `goals`, `promises`, `matching`, `budget`, `context`, `regions`, `ingestion`, `riksdag`
 
 The `ingestion` feature contains scheduled workers (`internal/ingestion/workers/`) that sync data from the Riksdagen open API on a cron schedule. Workers: `politicians`, `speeches`, `votes`, `scorecards`, `keyword_matcher`.
 
