@@ -51,6 +51,11 @@ export interface YearlyExpenditure {
   expenditureMdkr: number;
 }
 
+export interface YearlyHeadcount {
+  year: number;
+  headcountInt: number;
+}
+
 export interface Authority {
   slug: string;
   name: string;
@@ -64,6 +69,7 @@ export interface Authority {
   expenditureMdkr: number;
   year: number;
   history: YearlyExpenditure[];
+  headcountHistory?: YearlyHeadcount[];
 }
 
 export interface AuthorityDetail extends Authority {

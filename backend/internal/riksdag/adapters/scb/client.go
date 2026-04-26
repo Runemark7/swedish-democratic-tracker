@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -63,8 +64,15 @@ func (c *Client) FetchHeadcounts(ctx context.Context) ([]ports.HeadcountData, er
 	return data, nil
 }
 
+const historyFromYear = 2015
+
 func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
-	year := time.Now().Year() - 1
+	latestYear := time.Now().Year() - 1
+	years := make([]string, 0, latestYear-historyFromYear+1)
+	for y := historyFromYear; y <= latestYear; y++ {
+		years = append(years, strconv.Itoa(y))
+	}
+
 	body := map[string]any{
 		"query": []map[string]any{
 			{
@@ -73,7 +81,7 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 			},
 			{
 				"code":      "Tid",
-				"selection": map[string]any{"filter": "item", "values": []string{strconv.Itoa(year)}},
+				"selection": map[string]any{"filter": "item", "values": years},
 			},
 		},
 		"response": map[string]any{"format": "json"},
@@ -101,11 +109,6 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 	}
 
 	var result struct {
-		Columns []struct {
-			Code  string `json:"code"`
-			Text  string `json:"text"`
-			Type  string `json:"type"`
-		} `json:"columns"`
 		Data []struct {
 			Key    []string `json:"key"`
 			Values []string `json:"values"`
@@ -115,13 +118,19 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 		return nil, fmt.Errorf("scb headcount decode: %w", err)
 	}
 
-	var out []ports.HeadcountData
+	// Aggregate per agency: collect all years into HeadcountHistory.
+	type agencyAcc struct {
+		latestYear int
+		latest     int
+		history    []ports.YearlyHeadcount
+	}
+	byName := map[string]*agencyAcc{}
+
 	for _, row := range result.Data {
 		if len(row.Key) < 2 || len(row.Values) == 0 {
 			continue
 		}
-		scbName := row.Key[0]
-		canonical, ok := scbNameMap[scbName]
+		canonical, ok := scbNameMap[row.Key[0]]
 		if !ok {
 			continue
 		}
@@ -133,15 +142,32 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 		if err != nil {
 			continue
 		}
-		out = append(out, ports.HeadcountData{
-			Name:         canonical,
-			HeadcountInt: count,
-			Year:         yr,
-		})
+		acc := byName[canonical]
+		if acc == nil {
+			acc = &agencyAcc{}
+			byName[canonical] = acc
+		}
+		acc.history = append(acc.history, ports.YearlyHeadcount{Year: yr, HeadcountInt: count})
+		if yr > acc.latestYear {
+			acc.latestYear = yr
+			acc.latest = count
+		}
 	}
 
-	if len(out) == 0 {
+	if len(byName) == 0 {
 		return nil, fmt.Errorf("scb headcount: no matching agencies in response")
+	}
+
+	out := make([]ports.HeadcountData, 0, len(byName))
+	for name, acc := range byName {
+		// Sort history ascending by year.
+		sort.Slice(acc.history, func(i, j int) bool { return acc.history[i].Year < acc.history[j].Year })
+		out = append(out, ports.HeadcountData{
+			Name:             name,
+			HeadcountInt:     acc.latest,
+			Year:             acc.latestYear,
+			HeadcountHistory: acc.history,
+		})
 	}
 	return out, nil
 }

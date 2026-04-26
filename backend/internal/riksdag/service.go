@@ -51,23 +51,33 @@ func (s *Service) GetAuthorities(ctx context.Context) ([]domain.Authority, error
 				ExpenditureMdkr: h.ExpenditureMdkr,
 			}
 		}
+
 		hc := d.HeadcountInt
-		if override, ok := headcounts[d.Name]; ok {
-			hc = override
+		var hcHistory []domain.YearlyHeadcount
+		if scbData, ok := headcounts[d.Name]; ok {
+			if scbData.HeadcountInt > 0 {
+				hc = scbData.HeadcountInt
+			}
+			hcHistory = make([]domain.YearlyHeadcount, len(scbData.HeadcountHistory))
+			for k, h := range scbData.HeadcountHistory {
+				hcHistory[k] = domain.YearlyHeadcount{Year: h.Year, HeadcountInt: h.HeadcountInt}
+			}
 		}
+
 		result[i] = domain.Authority{
-			Slug:            toSlug(d.Name),
-			Name:            d.Name,
-			Role:            d.Role,
-			Ministry:        d.Ministry,
-			Headcount:       d.Headcount,
-			HeadcountInt:    hc,
-			Description:     d.Description,
-			WebsiteURL:      d.WebsiteURL,
-			AnnualReportURL: d.AnnualReportURL,
-			ExpenditureMdkr: d.ExpenditureMdkr,
-			Year:            d.Year,
-			History:         history,
+			Slug:             toSlug(d.Name),
+			Name:             d.Name,
+			Role:             d.Role,
+			Ministry:         d.Ministry,
+			Headcount:        d.Headcount,
+			HeadcountInt:     hc,
+			Description:      d.Description,
+			WebsiteURL:       d.WebsiteURL,
+			AnnualReportURL:  d.AnnualReportURL,
+			ExpenditureMdkr:  d.ExpenditureMdkr,
+			Year:             d.Year,
+			History:          history,
+			HeadcountHistory: hcHistory,
 		}
 	}
 
@@ -93,8 +103,8 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 	return nil, ErrNotFound
 }
 
-// fetchHeadcounts returns name→headcountInt from the SCB client, or empty map on failure/nil.
-func (s *Service) fetchHeadcounts(ctx context.Context) map[string]int {
+// fetchHeadcounts returns name→HeadcountData from the SCB client, or empty map on failure/nil.
+func (s *Service) fetchHeadcounts(ctx context.Context) map[string]ports.HeadcountData {
 	if s.headcount == nil {
 		return nil
 	}
@@ -103,9 +113,9 @@ func (s *Service) fetchHeadcounts(ctx context.Context) map[string]int {
 		slog.Warn("scb headcount fetch failed", "error", err)
 		return nil
 	}
-	m := make(map[string]int, len(data))
+	m := make(map[string]ports.HeadcountData, len(data))
 	for _, d := range data {
-		m[d.Name] = d.HeadcountInt
+		m[d.Name] = d
 	}
 	return m
 }

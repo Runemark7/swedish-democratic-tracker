@@ -25,10 +25,16 @@ type AuthorityClient interface {
 	FetchAuthorities(ctx context.Context) ([]AuthorityData, error)
 }
 
-type HeadcountData struct {
-	Name         string
-	HeadcountInt int
+type YearlyHeadcount struct {
 	Year         int
+	HeadcountInt int
+}
+
+type HeadcountData struct {
+	Name             string
+	HeadcountInt     int
+	Year             int
+	HeadcountHistory []YearlyHeadcount
 }
 
 type HeadcountClient interface {
