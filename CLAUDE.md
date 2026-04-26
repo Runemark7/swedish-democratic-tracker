@@ -140,6 +140,7 @@ graph TD
     W1 & W2 & W3 & W4 -->|HTTP| RD
     W5 & W6 --> DB
 
+    VS -->|GET /dokumentlista betänkanden\nriksdags-feed endpoint| RD
     RS -->|KPIs + spending| KO
     RS -->|population trend| SC
     RS -->|procurement| TED

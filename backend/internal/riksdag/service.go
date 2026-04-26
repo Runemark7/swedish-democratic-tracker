@@ -30,12 +30,20 @@ func (s *Service) GetAuthorities(ctx context.Context) ([]domain.Authority, error
 
 	result := make([]domain.Authority, len(data))
 	for i, d := range data {
+		history := make([]domain.YearlyExpenditure, len(d.History))
+		for j, h := range d.History {
+			history[j] = domain.YearlyExpenditure{
+				Year:            h.Year,
+				ExpenditureMdkr: h.ExpenditureMdkr,
+			}
+		}
 		result[i] = domain.Authority{
 			Name:            d.Name,
 			Role:            d.Role,
 			Headcount:       d.Headcount,
 			ExpenditureMdkr: d.ExpenditureMdkr,
 			Year:            d.Year,
+			History:         history,
 		}
 	}
 

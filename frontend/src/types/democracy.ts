@@ -46,12 +46,18 @@ export interface Kpi {
   note: string;
 }
 
+export interface YearlyExpenditure {
+  year: number;
+  expenditureMdkr: number;
+}
+
 export interface Authority {
   name: string;
   role: string;
   headcount: string;
   expenditureMdkr: number;
   year: number;
+  history: YearlyExpenditure[];
 }
 
 export interface AgendaItem {

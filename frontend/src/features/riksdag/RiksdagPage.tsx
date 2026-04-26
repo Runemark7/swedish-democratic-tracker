@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
 import { Hemicycle, Donut, HBars, Pill, TargetBar, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
-import type { LiveVote, Party } from "@/types/democracy";
+import type { Authority, LiveVote, Party } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
   if (!v.beteckning) return null;
@@ -50,10 +51,100 @@ function Skeleton() {
   );
 }
 
+// ── AuthorityRow ──────────────────────────────────────────────────────────────
+
+function AuthorityRow({
+  authority,
+  color,
+  isOpen,
+  onToggle,
+}: {
+  authority: Authority;
+  color: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const histMax = authority.history.length > 0
+    ? Math.max(...authority.history.map((h) => h.expenditureMdkr))
+    : authority.expenditureMdkr;
+
+  return (
+    <div style={{ borderBottom: "1px solid var(--color-border)" }}>
+      {/* Summary row — clickable */}
+      <button
+        onClick={onToggle}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          width: "100%",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          padding: "10px 0",
+          textAlign: "left",
+        }}
+      >
+        <span style={{ flex: 1, fontSize: 13, color: "var(--color-fg)", fontFamily: "var(--font-body)" }}>
+          {authority.name}
+        </span>
+        <span style={{ fontSize: 11, color: "var(--color-fg-muted)", fontFamily: "var(--font-mono)", whiteSpace: "nowrap" }}>
+          {authority.headcount} anst
+        </span>
+        <span style={{ fontSize: 12, color: "var(--color-fg)", fontFamily: "var(--font-mono)", fontVariantNumeric: "tabular-nums", minWidth: 70, textAlign: "right" }}>
+          {authority.expenditureMdkr.toFixed(1)} mdkr
+        </span>
+        <span style={{ fontSize: 10, color: "var(--color-fg-muted)", marginLeft: 4, flexShrink: 0 }}>
+          {isOpen ? "▲" : "▼"}
+        </span>
+      </button>
+
+      {/* Bar */}
+      {!isOpen && (
+        <div style={{ paddingBottom: 10 }}>
+          <div style={{ height: 5, borderRadius: 3, background: "var(--color-track)", overflow: "hidden" }}>
+            <div style={{ height: "100%", width: "100%", borderRadius: 3, background: color, transition: "width 0.4s ease" }} />
+          </div>
+        </div>
+      )}
+
+      {/* Expanded detail */}
+      {isOpen && (
+        <div style={{ paddingBottom: 20 }}>
+          <div style={{ fontSize: 11, color: "var(--color-fg-muted)", marginBottom: 14, fontFamily: "var(--font-mono)" }}>
+            {authority.role} · {authority.headcount} anställda
+          </div>
+          {authority.history.length > 0 ? (
+            <>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "1px", marginBottom: 10, textTransform: "uppercase" }}>
+                Kostnadsutveckling {authority.history[0].year}–{authority.history[authority.history.length - 1].year}
+              </div>
+              <HBars
+                items={authority.history.map((h) => ({
+                  name: String(h.year),
+                  value: Math.round(h.expenditureMdkr * 10) / 10,
+                  color,
+                }))}
+                max={histMax}
+                unit=" mdkr"
+                height={5}
+                gap={8}
+              />
+            </>
+          ) : (
+            <div style={{ fontSize: 11, color: "var(--color-fg-muted)" }}>Ingen historik tillgänglig</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── RiksdagPage ───────────────────────────────────────────────────────────────
 
 export function RiksdagPage() {
   const { data, isLoading } = useRiksdag();
+  const [openAuthority, setOpenAuthority] = useState<number | null>(null);
 
   if (isLoading || !data) return <Skeleton />;
 
@@ -515,50 +606,100 @@ export function RiksdagPage() {
       </div>
 
       {/* ── MYNDIGHETER ──────────────────────────────────────────────── */}
-      {authorities && authorities.length > 0 && (
-        <div
-          style={{
-            border: "1px solid var(--color-border)",
-            borderTop: "none",
-            margin: "0 32px 32px",
-            background: "var(--color-sdt-surface)",
-            padding: "24px 28px",
-          }}
-        >
+      {authorities && authorities.length > 0 && (() => {
+        const totalMdkr = authorities.reduce((s, a) => s + a.expenditureMdkr, 0);
+        const donutSegments = authorities.map((a, i) => ({
+          color: BUDGET_COLORS[i % BUDGET_COLORS.length],
+          value: a.expenditureMdkr,
+          name: a.name,
+        }));
+        return (
           <div
             style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "0.15em",
-              color: "var(--color-fg-muted)",
-              marginBottom: 20,
+              border: "1px solid var(--color-border)",
+              borderTop: "none",
+              margin: "0 32px 32px",
+              background: "var(--color-sdt-surface)",
+              padding: "24px 28px",
             }}
           >
-            MYNDIGHETER · STATLIGA DRIFTKOSTNADER {authorities[0].year}
+            {/* Header */}
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                letterSpacing: "0.15em",
+                color: "var(--color-fg-muted)",
+                marginBottom: 24,
+              }}
+            >
+              MYNDIGHETER · STATLIGA DRIFTKOSTNADER {authorities[0].year}
+            </div>
+
+            {/* Two-column: donut left, list right */}
+            <div style={{ display: "flex", gap: 40, alignItems: "flex-start" }}>
+
+              {/* Left: donut + legend */}
+              <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+                <Donut
+                  segments={donutSegments}
+                  size={200}
+                  thickness={32}
+                  label={`${Math.round(totalMdkr)} mdkr`}
+                  sublabel="totalt"
+                />
+                <div style={{ display: "flex", flexDirection: "column", gap: 5, width: 200 }}>
+                  {authorities.map((a, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: BUDGET_COLORS[i % BUDGET_COLORS.length], flexShrink: 0 }} />
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {a.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right: expandable agency rows */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {authorities.map((a, i) => (
+                  <AuthorityRow
+                    key={a.name}
+                    authority={a}
+                    color={BUDGET_COLORS[i % BUDGET_COLORS.length]}
+                    isOpen={openAuthority === i}
+                    onToggle={() => setOpenAuthority(openAuthority === i ? null : i)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Footer with source link */}
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 9,
+                color: "var(--color-fg-muted)",
+                marginTop: 20,
+                opacity: 0.6,
+                display: "flex",
+                gap: 12,
+                alignItems: "center",
+              }}
+            >
+              <span>Källa: Statskontoret årsutfall · driftkostnader exkl. transfereringar</span>
+              <a
+                href="https://www.statskontoret.se/psidata/arsutfall"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--color-accent)", textDecoration: "none", letterSpacing: "0.5px" }}
+              >
+                ↗ öppna datakälla
+              </a>
+            </div>
           </div>
-          <HBars
-            items={authorities.map((a, i) => ({
-              name: a.name,
-              value: Math.round(a.expenditureMdkr * 10) / 10,
-              color: BUDGET_COLORS[i % BUDGET_COLORS.length],
-            }))}
-            unit=" mdkr"
-            height={6}
-            gap={14}
-          />
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 9,
-              color: "var(--color-fg-muted)",
-              marginTop: 18,
-              opacity: 0.6,
-            }}
-          >
-            Källa: Statskontoret årsutfall · driftkostnader exkl. transfereringar
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

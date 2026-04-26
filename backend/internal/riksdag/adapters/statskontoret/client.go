@@ -9,6 +9,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -17,15 +18,13 @@ import (
 	"riksdagskollen/internal/riksdag/ports"
 )
 
-// anslagInfo holds the canonical name, role, and headcount for a target appropriation code.
 type anslagInfo struct {
 	name      string
 	role      string
 	headcount string
 }
 
-// targetAnslag maps Statskontoret appropriation codes (format "UUAASSS") to agency metadata.
-// Values verified against the 2025 årsutfall definitiv (covers 2024 spend).
+// targetAnslag maps Statskontoret appropriation codes (UUAASSS) to agency metadata.
 var targetAnslag = map[string]anslagInfo{
 	"0301001": {"Skatteverket", "Skatt & folkbokföring", "11 100"},
 	"0301002": {"Tullverket", "Tull & gränskontroll", "2 700"},
@@ -39,7 +38,9 @@ var targetAnslag = map[string]anslagInfo{
 	"1401001": {"Arbetsförmedlingen", "Matchning & arbetsmarknadspolitik", "9 400"},
 }
 
-// downloadURL builds the Statskontoret open data download URL for the given year.
+// historyFromYear is the earliest year included in per-agency history.
+const historyFromYear = 2010
+
 func downloadURL(year int) string {
 	filename := fmt.Sprintf("%%C3%%85rsutfall%%20utgifter%%201997%%20-%%20%d,%%20definitivt.zip", year)
 	return fmt.Sprintf(
@@ -49,11 +50,11 @@ func downloadURL(year int) string {
 }
 
 type Client struct {
-	http      *http.Client
-	mu        sync.Mutex
-	cached    []ports.AuthorityData
-	cachedAt  time.Time
-	cacheTTL  time.Duration
+	http     *http.Client
+	mu       sync.Mutex
+	cached   []ports.AuthorityData
+	cachedAt time.Time
+	cacheTTL time.Duration
 }
 
 func NewClient() *Client {
@@ -72,7 +73,6 @@ func (c *Client) FetchAuthorities(ctx context.Context) ([]ports.AuthorityData, e
 	}
 
 	now := time.Now()
-	// Try current year - 1 (definitiv data for last year); fall back to year - 2.
 	for _, year := range []int{now.Year() - 1, now.Year() - 2} {
 		data, err := c.fetchYear(ctx, year)
 		if err != nil {
@@ -86,8 +86,8 @@ func (c *Client) FetchAuthorities(ctx context.Context) ([]ports.AuthorityData, e
 	return nil, fmt.Errorf("statskontoret: all year attempts failed")
 }
 
-func (c *Client) fetchYear(ctx context.Context, year int) ([]ports.AuthorityData, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL(year), nil)
+func (c *Client) fetchYear(ctx context.Context, latestYear int) ([]ports.AuthorityData, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL(latestYear), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -119,18 +119,17 @@ func (c *Client) fetchYear(ctx context.Context, year int) ([]ports.AuthorityData
 	}
 	defer f.Close()
 
-	return parseCSV(f, year)
+	return parseCSV(f, latestYear)
 }
 
-// parseCSV reads the semicolon-delimited UTF-8 CSV and extracts per-agency utfall.
+// parseCSV reads the semicolon-delimited CSV and extracts per-agency utfall for all years.
 //
-// Expected columns (0-indexed):
+// Relevant columns (0-indexed):
 //
-//	2: Anslag          (e.g. "0401001")
-//	4: År              (e.g. "2024")
-//	10: Utfall         (Mkr, Swedish decimal comma)
-func parseCSV(r io.Reader, year int) ([]ports.AuthorityData, error) {
-	// Strip UTF-8 BOM if present.
+//	2:  Anslag   (e.g. "0401001")
+//	4:  År       (e.g. "2024")
+//	10: Utfall   (Mkr, Swedish decimal comma)
+func parseCSV(r io.Reader, latestYear int) ([]ports.AuthorityData, error) {
 	raw, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -142,13 +141,15 @@ func parseCSV(r io.Reader, year int) ([]ports.AuthorityData, error) {
 	cr.LazyQuotes = true
 	cr.FieldsPerRecord = -1
 
-	// Skip header row.
 	if _, err := cr.Read(); err != nil {
 		return nil, fmt.Errorf("read header: %w", err)
 	}
 
-	yearStr := strconv.Itoa(year)
-	sums := make(map[string]float64)
+	// yearSums[anslagCode][year] → total Mkr
+	yearSums := make(map[string]map[int]float64)
+	for code := range targetAnslag {
+		yearSums[code] = make(map[int]float64)
+	}
 
 	for {
 		row, err := cr.Read()
@@ -165,36 +166,50 @@ func parseCSV(r io.Reader, year int) ([]ports.AuthorityData, error) {
 		if _, ok := targetAnslag[anslag]; !ok {
 			continue
 		}
-		if strings.TrimSpace(row[4]) != yearStr {
+		year, err := strconv.Atoi(strings.TrimSpace(row[4]))
+		if err != nil || year < historyFromYear {
 			continue
 		}
 		utfallStr := strings.TrimSpace(row[10])
 		if utfallStr == "" {
 			continue
 		}
-		// Swedish decimal: replace comma with period.
-		utfallStr = strings.ReplaceAll(utfallStr, ",", ".")
-		val, err := strconv.ParseFloat(utfallStr, 64)
+		val, err := strconv.ParseFloat(strings.ReplaceAll(utfallStr, ",", "."), 64)
 		if err != nil {
 			continue
 		}
-		sums[anslag] += val
+		yearSums[anslag][year] += val
 	}
 
-	if len(sums) == 0 {
-		return nil, fmt.Errorf("no matching rows found for year %d", year)
-	}
-
-	result := make([]ports.AuthorityData, 0, len(sums))
-	for code, mkr := range sums {
+	var result []ports.AuthorityData
+	for code, byYear := range yearSums {
+		if len(byYear) == 0 {
+			continue
+		}
 		info := targetAnslag[code]
+
+		history := make([]ports.YearlyExpenditure, 0, len(byYear))
+		for yr, mkr := range byYear {
+			history = append(history, ports.YearlyExpenditure{
+				Year:            yr,
+				ExpenditureMdkr: mkr / 1000,
+			})
+		}
+		sort.Slice(history, func(i, j int) bool { return history[i].Year < history[j].Year })
+
+		latest := history[len(history)-1]
 		result = append(result, ports.AuthorityData{
 			Name:            info.name,
 			Role:            info.role,
 			Headcount:       info.headcount,
-			ExpenditureMdkr: mkr / 1000, // Mkr → mdkr
-			Year:            year,
+			ExpenditureMdkr: latest.ExpenditureMdkr,
+			Year:            latest.Year,
+			History:         history,
 		})
+	}
+
+	if len(result) == 0 {
+		return nil, fmt.Errorf("no matching rows found")
 	}
 	return result, nil
 }
