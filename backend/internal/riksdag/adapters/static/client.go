@@ -18,7 +18,11 @@ func hist(pairs [][2]float64) []ports.YearlyExpenditure {
 // Values are in mdkr. History covers 2015–2024; latest year is 2024.
 var staticAuthorities = []ports.AuthorityData{
 	{
-		Name: "Polismyndigheten", Role: "Ordning & utredning", Headcount: "35 500",
+		Name: "Polismyndigheten", Role: "Ordning & utredning",
+		Ministry: "Justitiedepartementet", Headcount: "35 500", HeadcountInt: 35500,
+		Description:     "Sveriges största myndighet, ansvarar för brottsbekämpning, utredning och ordningshållning.",
+		WebsiteURL:      "https://polisen.se",
+		AnnualReportURL: "https://polisen.se/om-polisen/organisation/arsredovisning/",
 		ExpenditureMdkr: 41.4, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 21.3}, {2016, 22.5}, {2017, 23.7}, {2018, 25.1},
@@ -27,7 +31,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Kriminalvården", Role: "Kriminalvård & häkte", Headcount: "14 200",
+		Name: "Kriminalvården", Role: "Kriminalvård & häkte",
+		Ministry: "Justitiedepartementet", Headcount: "14 200", HeadcountInt: 14200,
+		Description:     "Ansvarar för häkten, fängelser och frivård med målet att minska återfall i brott.",
+		WebsiteURL:      "https://www.kriminalvarden.se",
+		AnnualReportURL: "https://www.kriminalvarden.se/om-kriminalvarden/publikationer/arsredovisningar/",
 		ExpenditureMdkr: 17.6, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 8.9}, {2016, 9.2}, {2017, 9.6}, {2018, 10.1},
@@ -36,7 +44,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Försäkringskassan", Role: "Administration socialförsäkring", Headcount: "14 200",
+		Name: "Försäkringskassan", Role: "Administration socialförsäkring",
+		Ministry: "Socialdepartementet", Headcount: "14 200", HeadcountInt: 14200,
+		Description:     "Administrerar socialförsäkringssystemet inklusive sjukpenning, föräldrapenning och aktivitetsersättning.",
+		WebsiteURL:      "https://www.forsakringskassan.se",
+		AnnualReportURL: "https://www.forsakringskassan.se/om-forsakringskassan/publikationer/arsredovisning",
 		ExpenditureMdkr: 9.6, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 7.1}, {2016, 7.3}, {2017, 7.5}, {2018, 7.8},
@@ -45,7 +57,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Skatteverket", Role: "Skatt & folkbokföring", Headcount: "11 100",
+		Name: "Skatteverket", Role: "Skatt & folkbokföring",
+		Ministry: "Finansdepartementet", Headcount: "11 100", HeadcountInt: 11100,
+		Description:     "Ansvarar för beskattning, folkbokföring och bouppteckningar i hela Sverige.",
+		WebsiteURL:      "https://www.skatteverket.se",
+		AnnualReportURL: "https://www.skatteverket.se/omoss/omskatteverket/publikationer/arsredovisning.4.html",
 		ExpenditureMdkr: 8.6, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 6.8}, {2016, 7.0}, {2017, 7.1}, {2018, 7.3},
@@ -54,7 +70,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Sveriges Domstolar", Role: "Domstolar & nämnder", Headcount: "7 200",
+		Name: "Sveriges Domstolar", Role: "Domstolar & nämnder",
+		Ministry: "Justitiedepartementet", Headcount: "7 200", HeadcountInt: 7200,
+		Description:     "Samlingsnamn för landets domstolar och nämnder — tingsrätter, hovrätter, förvaltningsrätter och Högsta domstolen.",
+		WebsiteURL:      "https://www.domstol.se",
+		AnnualReportURL: "https://www.domstol.se/om-sveriges-domstolar/publikationer/arsredovisningar/",
 		ExpenditureMdkr: 7.7, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 5.4}, {2016, 5.6}, {2017, 5.8}, {2018, 6.0},
@@ -63,7 +83,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Arbetsförmedlingen", Role: "Matchning & arbetsmarknadspolitik", Headcount: "9 400",
+		Name: "Arbetsförmedlingen", Role: "Matchning & arbetsmarknadspolitik",
+		Ministry: "Arbetsmarknadsdepartementet", Headcount: "9 400", HeadcountInt: 9400,
+		Description:     "Ansvarar för arbetsförmedling, matchning mellan arbetsgivare och arbetssökande, och genomförande av arbetsmarknadspolitiken.",
+		WebsiteURL:      "https://www.arbetsformedlingen.se",
+		AnnualReportURL: "https://www.arbetsformedlingen.se/om-oss/fakta-om-af/publikationer/arsredovisning.html",
 		ExpenditureMdkr: 7.5, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 9.1}, {2016, 9.4}, {2017, 9.8}, {2018, 9.3},
@@ -72,7 +96,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Migrationsverket", Role: "Uppehållstillstånd & asyl", Headcount: "5 800",
+		Name: "Migrationsverket", Role: "Uppehållstillstånd & asyl",
+		Ministry: "Justitiedepartementet", Headcount: "5 800", HeadcountInt: 5800,
+		Description:     "Prövar ansökningar om uppehållstillstånd, asyl, medborgarskap och arbetstillstånd.",
+		WebsiteURL:      "https://www.migrationsverket.se",
+		AnnualReportURL: "https://www.migrationsverket.se/Om-Migrationsverket/Fakta-och-statistik/Publikationer/Arsredovisningar.html",
 		ExpenditureMdkr: 4.8, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 5.2}, {2016, 7.1}, {2017, 6.3}, {2018, 5.5},
@@ -81,7 +109,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Tullverket", Role: "Tull & gränskontroll", Headcount: "2 700",
+		Name: "Tullverket", Role: "Tull & gränskontroll",
+		Ministry: "Finansdepartementet", Headcount: "2 700", HeadcountInt: 2700,
+		Description:     "Kontrollerar in- och utförsel av varor vid Sveriges gränser och bekämpar smuggling.",
+		WebsiteURL:      "https://www.tullverket.se",
+		AnnualReportURL: "https://www.tullverket.se/omtullverket/publikationer/arsredovisningar.4.html",
 		ExpenditureMdkr: 2.9, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 2.0}, {2016, 2.1}, {2017, 2.2}, {2018, 2.3},
@@ -90,7 +122,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Åklagarmyndigheten", Role: "Åklagare", Headcount: "1 900",
+		Name: "Åklagarmyndigheten", Role: "Åklagare",
+		Ministry: "Justitiedepartementet", Headcount: "1 900", HeadcountInt: 1900,
+		Description:     "Leder förundersökningar och väcker åtal i brottmål vid Sveriges allmänna domstolar.",
+		WebsiteURL:      "https://www.aklagare.se",
+		AnnualReportURL: "https://www.aklagare.se/om-aklagarmyndigheten/publikationer/arsredovisningar/",
 		ExpenditureMdkr: 2.6, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 1.6}, {2016, 1.7}, {2017, 1.8}, {2018, 1.9},
@@ -99,7 +135,11 @@ var staticAuthorities = []ports.AuthorityData{
 		}),
 	},
 	{
-		Name: "Säkerhetspolisen", Role: "Nationell säkerhet", Headcount: "2 100",
+		Name: "Säkerhetspolisen", Role: "Nationell säkerhet",
+		Ministry: "Justitiedepartementet", Headcount: "2 100", HeadcountInt: 2100,
+		Description:     "Skyddar Sverige mot terrorism, spionage och andra hot mot den nationella säkerheten.",
+		WebsiteURL:      "https://www.sakerhetspolisen.se",
+		AnnualReportURL: "https://www.sakerhetspolisen.se/om-sapo/publikationer/arsredovisningar.html",
 		ExpenditureMdkr: 2.4, Year: 2024,
 		History: hist([][2]float64{
 			{2015, 1.2}, {2016, 1.3}, {2017, 1.5}, {2018, 1.6},

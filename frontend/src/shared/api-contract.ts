@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/riksdag/authorities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** State agencies with actual annual expenditure (driftkostnader) */
+        get: operations["getRiksdagAuthorities"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/riksdag/authorities/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Single state agency detail including regleringsbrev link */
+        get: operations["getRiksdagAuthority"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/healthz": {
         parameters: {
             query?: never;
@@ -907,6 +941,57 @@ export interface components {
              */
             count: number;
         };
+        YearlyExpenditure: {
+            /** @example 2024 */
+            year: number;
+            /**
+             * Format: float
+             * @example 41.4
+             */
+            expenditureMdkr: number;
+        };
+        RiksdagAuthority: {
+            /** @example polismyndigheten */
+            slug: string;
+            /** @example Polismyndigheten */
+            name: string;
+            /** @example Ordning & utredning */
+            role: string;
+            /** @example Justitiedepartementet */
+            ministry: string;
+            /** @example 35 500 */
+            headcount: string;
+            /** @example 35500 */
+            headcountInt: number;
+            /** @example Sveriges största myndighet, ansvarar för brottsbekämpning, utredning och ordningshållning. */
+            description?: string;
+            /**
+             * Format: uri
+             * @example https://polisen.se
+             */
+            websiteUrl?: string;
+            /**
+             * Format: uri
+             * @example https://polisen.se/om-polisen/organisation/arsredovisning/
+             */
+            annualReportUrl?: string;
+            /**
+             * Format: float
+             * @description Actual annual driftkostnad in mdkr (excl. transfer payments)
+             * @example 41.4
+             */
+            expenditureMdkr: number;
+            /** @example 2024 */
+            year: number;
+            history?: components["schemas"]["YearlyExpenditure"][];
+        };
+        RiksdagAuthorityDetail: components["schemas"]["RiksdagAuthority"] & {
+            /**
+             * Format: uri
+             * @example https://data.riksdagen.se/dokumentlista/?doktyp=Rb&titel=Polismyndigheten&utformat=json&sz=200
+             */
+            regleringsbrevUrl: string;
+        };
     };
     responses: {
         /** @description Resource not found */
@@ -939,6 +1024,70 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getRiksdagAuthorities: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of state agencies sorted by expenditure descending */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiksdagAuthority"][];
+                };
+            };
+            /** @description Upstream data source unavailable */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getRiksdagAuthority: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @example polismyndigheten */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Agency detail */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiksdagAuthorityDetail"];
+                };
+            };
+            /** @description Agency not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Upstream data source unavailable */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getHealth: {
         parameters: {
             query?: never;

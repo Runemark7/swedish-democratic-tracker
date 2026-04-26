@@ -17,6 +17,7 @@ import { MunicipalityDetailPage } from "./features/municipalities/MunicipalityDe
 import { MunicipalityComparePage } from "./features/municipalities/MunicipalityComparePage";
 import { HomePage } from "./features/home/HomePage";
 import { RiksdagPage } from "./features/riksdag/RiksdagPage";
+import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { SearchPage } from "./features/search/SearchPage";
 import { useTheme } from "./contexts/ThemeContext";
 
@@ -296,6 +297,7 @@ export default function App() {
         <Routes>
           <Route path="/"                                      element={<HomePage />} />
           <Route path="/riksdag"                               element={<RiksdagPage />} />
+          <Route path="/riksdag/myndigheter/:slug"             element={<AuthorityDetailPage />} />
           <Route path="/parties"                               element={<PartiesPage />} />
           <Route path="/parties/:party/goals"                  element={<PartyGoalsPage />} />
           <Route path="/parties/:party/goals/:goalId/votes"    element={<GoalVotesPage />} />

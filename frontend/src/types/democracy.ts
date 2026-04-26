@@ -52,12 +52,22 @@ export interface YearlyExpenditure {
 }
 
 export interface Authority {
+  slug: string;
   name: string;
   role: string;
+  ministry: string;
   headcount: string;
+  headcountInt: number;
+  description?: string;
+  websiteUrl?: string;
+  annualReportUrl?: string;
   expenditureMdkr: number;
   year: number;
   history: YearlyExpenditure[];
+}
+
+export interface AuthorityDetail extends Authority {
+  regleringsbrevUrl: string;
 }
 
 export interface AgendaItem {
