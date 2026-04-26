@@ -48,6 +48,30 @@ paths:
         "502":
           description: Upstream data source unavailable
 
+  /riksdag/authorities/{slug}:
+    get:
+      operationId: getRiksdagAuthority
+      tags: [riksdag]
+      summary: Single state agency detail including regleringsbrev link
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: polismyndigheten
+      responses:
+        "200":
+          description: Agency detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiksdagAuthorityDetail"
+        "404":
+          description: Agency not found
+        "502":
+          description: Upstream data source unavailable
+
   /healthz:
     get:
       operationId: getHealth
@@ -1482,19 +1506,51 @@ components:
           example: 12
           description: Number of contract award notices in this category
 
+    YearlyExpenditure:
+      type: object
+      required: [year, expenditureMdkr]
+      properties:
+        year:
+          type: integer
+          example: 2024
+        expenditureMdkr:
+          type: number
+          format: float
+          example: 41.4
+
     RiksdagAuthority:
       type: object
-      required: [name, role, headcount, expenditureMdkr, year]
+      required: [slug, name, role, ministry, headcount, headcountInt, expenditureMdkr, year]
       properties:
+        slug:
+          type: string
+          example: polismyndigheten
         name:
           type: string
           example: Polismyndigheten
         role:
           type: string
           example: Ordning & utredning
+        ministry:
+          type: string
+          example: Justitiedepartementet
         headcount:
           type: string
           example: "35 500"
+        headcountInt:
+          type: integer
+          example: 35500
+        description:
+          type: string
+          example: Sveriges största myndighet, ansvarar för brottsbekämpning, utredning och ordningshållning.
+        websiteUrl:
+          type: string
+          format: uri
+          example: https://polisen.se
+        annualReportUrl:
+          type: string
+          format: uri
+          example: https://polisen.se/om-polisen/organisation/arsredovisning/
         expenditureMdkr:
           type: number
           format: float
@@ -1503,3 +1559,18 @@ components:
         year:
           type: integer
           example: 2024
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/YearlyExpenditure"
+
+    RiksdagAuthorityDetail:
+      allOf:
+        - $ref: "#/components/schemas/RiksdagAuthority"
+        - type: object
+          required: [regleringsbrevUrl]
+          properties:
+            regleringsbrevUrl:
+              type: string
+              format: uri
+              example: https://data.riksdagen.se/dokumentlista/?doktyp=Rb&titel=Polismyndigheten&utformat=json&sz=200

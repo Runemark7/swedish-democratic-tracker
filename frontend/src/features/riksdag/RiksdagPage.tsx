@@ -86,7 +86,9 @@ function AuthorityRow({
         }}
       >
         <span style={{ flex: 1, fontSize: 13, color: "var(--color-fg)", fontFamily: "var(--font-body)" }}>
-          {authority.name}
+          {authority.slug
+            ? <Link to={`/riksdag/myndigheter/${authority.slug}`} onClick={(e) => e.stopPropagation()} style={{ color: "inherit", textDecoration: "none", borderBottom: "1px dotted var(--color-border)" }}>{authority.name}</Link>
+            : authority.name}
         </span>
         <span style={{ fontSize: 11, color: "var(--color-fg-muted)", fontFamily: "var(--font-mono)", whiteSpace: "nowrap" }}>
           {authority.headcount} anst
@@ -113,6 +115,9 @@ function AuthorityRow({
         <div style={{ paddingBottom: 20 }}>
           <div style={{ fontSize: 11, color: "var(--color-fg-muted)", marginBottom: 14, fontFamily: "var(--font-mono)" }}>
             {authority.role} · {authority.headcount} anställda
+            {authority.ministry && (
+              <span style={{ marginLeft: 8, opacity: 0.7 }}>· {authority.ministry}</span>
+            )}
           </div>
           {authority.history.length > 0 ? (
             <>

@@ -19,23 +19,88 @@ import (
 )
 
 type anslagInfo struct {
-	name      string
-	role      string
-	headcount string
+	name            string
+	role            string
+	ministry        string
+	headcount       string
+	headcountInt    int
+	description     string
+	websiteURL      string
+	annualReportURL string
 }
 
 // targetAnslag maps Statskontoret appropriation codes (UUAASSS) to agency metadata.
 var targetAnslag = map[string]anslagInfo{
-	"0301001": {"Skatteverket", "Skatt & folkbokföring", "11 100"},
-	"0301002": {"Tullverket", "Tull & gränskontroll", "2 700"},
-	"0401001": {"Polismyndigheten", "Ordning & utredning", "35 500"},
-	"0401002": {"Säkerhetspolisen", "Nationell säkerhet", "2 100"},
-	"0401003": {"Åklagarmyndigheten", "Åklagare", "1 900"},
-	"0401005": {"Sveriges Domstolar", "Domstolar & nämnder", "7 200"},
-	"0401006": {"Kriminalvården", "Kriminalvård & häkte", "14 200"},
-	"0801001": {"Migrationsverket", "Uppehållstillstånd & asyl", "5 800"},
-	"1002001": {"Försäkringskassan", "Administration socialförsäkring", "14 200"},
-	"1401001": {"Arbetsförmedlingen", "Matchning & arbetsmarknadspolitik", "9 400"},
+	"0301001": {
+		name: "Skatteverket", role: "Skatt & folkbokföring",
+		ministry: "Finansdepartementet", headcount: "11 100", headcountInt: 11100,
+		description:     "Ansvarar för beskattning, folkbokföring och bouppteckningar i hela Sverige.",
+		websiteURL:      "https://www.skatteverket.se",
+		annualReportURL: "https://www.skatteverket.se/omoss/omskatteverket/publikationer/arsredovisning.4.html",
+	},
+	"0301002": {
+		name: "Tullverket", role: "Tull & gränskontroll",
+		ministry: "Finansdepartementet", headcount: "2 700", headcountInt: 2700,
+		description:     "Kontrollerar in- och utförsel av varor vid Sveriges gränser och bekämpar smuggling.",
+		websiteURL:      "https://www.tullverket.se",
+		annualReportURL: "https://www.tullverket.se/omtullverket/publikationer/arsredovisningar.4.html",
+	},
+	"0401001": {
+		name: "Polismyndigheten", role: "Ordning & utredning",
+		ministry: "Justitiedepartementet", headcount: "35 500", headcountInt: 35500,
+		description:     "Sveriges största myndighet, ansvarar för brottsbekämpning, utredning och ordningshållning.",
+		websiteURL:      "https://polisen.se",
+		annualReportURL: "https://polisen.se/om-polisen/organisation/arsredovisning/",
+	},
+	"0401002": {
+		name: "Säkerhetspolisen", role: "Nationell säkerhet",
+		ministry: "Justitiedepartementet", headcount: "2 100", headcountInt: 2100,
+		description:     "Skyddar Sverige mot terrorism, spionage och andra hot mot den nationella säkerheten.",
+		websiteURL:      "https://www.sakerhetspolisen.se",
+		annualReportURL: "https://www.sakerhetspolisen.se/om-sapo/publikationer/arsredovisningar.html",
+	},
+	"0401003": {
+		name: "Åklagarmyndigheten", role: "Åklagare",
+		ministry: "Justitiedepartementet", headcount: "1 900", headcountInt: 1900,
+		description:     "Leder förundersökningar och väcker åtal i brottmål vid Sveriges allmänna domstolar.",
+		websiteURL:      "https://www.aklagare.se",
+		annualReportURL: "https://www.aklagare.se/om-aklagarmyndigheten/publikationer/arsredovisningar/",
+	},
+	"0401005": {
+		name: "Sveriges Domstolar", role: "Domstolar & nämnder",
+		ministry: "Justitiedepartementet", headcount: "7 200", headcountInt: 7200,
+		description:     "Samlingsnamn för landets domstolar och nämnder — tingsrätter, hovrätter, förvaltningsrätter och Högsta domstolen.",
+		websiteURL:      "https://www.domstol.se",
+		annualReportURL: "https://www.domstol.se/om-sveriges-domstolar/publikationer/arsredovisningar/",
+	},
+	"0401006": {
+		name: "Kriminalvården", role: "Kriminalvård & häkte",
+		ministry: "Justitiedepartementet", headcount: "14 200", headcountInt: 14200,
+		description:     "Ansvarar för häkten, fängelser och frivård med målet att minska återfall i brott.",
+		websiteURL:      "https://www.kriminalvarden.se",
+		annualReportURL: "https://www.kriminalvarden.se/om-kriminalvarden/publikationer/arsredovisningar/",
+	},
+	"0801001": {
+		name: "Migrationsverket", role: "Uppehållstillstånd & asyl",
+		ministry: "Justitiedepartementet", headcount: "5 800", headcountInt: 5800,
+		description:     "Prövar ansökningar om uppehållstillstånd, asyl, medborgarskap och arbetstillstånd.",
+		websiteURL:      "https://www.migrationsverket.se",
+		annualReportURL: "https://www.migrationsverket.se/Om-Migrationsverket/Fakta-och-statistik/Publikationer/Arsredovisningar.html",
+	},
+	"1002001": {
+		name: "Försäkringskassan", role: "Administration socialförsäkring",
+		ministry: "Socialdepartementet", headcount: "14 200", headcountInt: 14200,
+		description:     "Administrerar socialförsäkringssystemet inklusive sjukpenning, föräldrapenning och aktivitetsersättning.",
+		websiteURL:      "https://www.forsakringskassan.se",
+		annualReportURL: "https://www.forsakringskassan.se/om-forsakringskassan/publikationer/arsredovisning",
+	},
+	"1401001": {
+		name: "Arbetsförmedlingen", role: "Matchning & arbetsmarknadspolitik",
+		ministry: "Arbetsmarknadsdepartementet", headcount: "9 400", headcountInt: 9400,
+		description:     "Ansvarar för arbetsförmedling, matchning mellan arbetsgivare och arbetssökande, och genomförande av arbetsmarknadspolitiken.",
+		websiteURL:      "https://www.arbetsformedlingen.se",
+		annualReportURL: "https://www.arbetsformedlingen.se/om-oss/fakta-om-af/publikationer/arsredovisning.html",
+	},
 }
 
 // historyFromYear is the earliest year included in per-agency history.
@@ -201,7 +266,12 @@ func parseCSV(r io.Reader, latestYear int) ([]ports.AuthorityData, error) {
 		result = append(result, ports.AuthorityData{
 			Name:            info.name,
 			Role:            info.role,
+			Ministry:        info.ministry,
 			Headcount:       info.headcount,
+			HeadcountInt:    info.headcountInt,
+			Description:     info.description,
+			WebsiteURL:      info.websiteURL,
+			AnnualReportURL: info.annualReportURL,
 			ExpenditureMdkr: latest.ExpenditureMdkr,
 			Year:            latest.Year,
 			History:         history,

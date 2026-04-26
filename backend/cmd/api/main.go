@@ -69,6 +69,7 @@ import (
 
 	// Feature: riksdag
 	riksdagHTTP "riksdagskollen/internal/riksdag/adapters/http"
+	riksdagSCB "riksdagskollen/internal/riksdag/adapters/scb"
 	riksdagStatic "riksdagskollen/internal/riksdag/adapters/static"
 	riksdagSK "riksdagskollen/internal/riksdag/adapters/statskontoret"
 	"riksdagskollen/internal/riksdag"
@@ -170,7 +171,7 @@ func main() {
 	regionsSvc := regions.NewService(regionsRepo, koladaCl, scbCl, tedCl)
 	regionsHandler := regionsHTTP.NewHandler(regionsSvc)
 
-	riksdagSvc := riksdag.NewService(riksdagSK.NewClient(), riksdagStatic.NewClient())
+	riksdagSvc := riksdag.NewServiceWithSCB(riksdagSK.NewClient(), riksdagStatic.NewClient(), riksdagSCB.NewClient())
 	riksdagHandler := riksdagHTTP.NewHandler(riksdagSvc)
 
 	// -- Router --
