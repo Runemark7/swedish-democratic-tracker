@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { HBars } from "@/components/charts";
+import type { YearlyHeadcount } from "@/types/democracy";
 import { riksdagApi } from "./api";
 
 function Skeleton() {
@@ -179,50 +180,46 @@ export function AuthorityDetailPage() {
 
         {/* Employees */}
         <div style={{ padding: "24px 28px" }}>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "0.15em",
-              color: "var(--color-fg-muted)",
-              marginBottom: 20,
-              textTransform: "uppercase",
-            }}
-          >
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", marginBottom: 20, textTransform: "uppercase" }}>
             Anställda
           </div>
-          <div
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: 48,
-              fontWeight: 700,
-              color: "var(--color-fg)",
-              lineHeight: 1,
-              marginBottom: 6,
-            }}
-          >
-            {authority.headcountInt > 0
-              ? authority.headcountInt.toLocaleString("sv-SE")
-              : authority.headcount}
+
+          {/* Current headcount hero */}
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
+            <span style={{ fontFamily: "var(--font-serif)", fontSize: 48, fontWeight: 700, color: "var(--color-fg)", lineHeight: 1 }}>
+              {authority.headcountInt > 0 ? authority.headcountInt.toLocaleString("sv-SE") : authority.headcount}
+            </span>
           </div>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              color: "var(--color-fg-muted)",
-              marginBottom: 16,
-            }}
-          >
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-fg-muted)", marginBottom: 20 }}>
             heltidsanställda · {authority.year}
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-              marginTop: 8,
-            }}
-          >
+
+          {/* Headcount history chart */}
+          {authority.headcountHistory && authority.headcountHistory.length > 1 ? (
+            <>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "1px", marginBottom: 10, textTransform: "uppercase" }}>
+                Personalutveckling {authority.headcountHistory[0].year}–{authority.headcountHistory[authority.headcountHistory.length - 1].year}
+              </div>
+              <HBars
+                items={(authority.headcountHistory as YearlyHeadcount[]).map((h) => ({
+                  name: String(h.year),
+                  value: h.headcountInt,
+                  color: "#5a9fd0",
+                }))}
+                max={Math.max(...authority.headcountHistory.map((h) => h.headcountInt))}
+                unit=""
+                height={5}
+                gap={8}
+                formatValue={(v) => v.toLocaleString("sv-SE")}
+              />
+              <div style={{ marginTop: 10, fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", opacity: 0.7 }}>
+                Källa: SCB OE0108 · heltidsanställda årsgenomsnitt
+              </div>
+            </>
+          ) : null}
+
+          {/* Meta */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 16 }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
               <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Departement</span>
               <span style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg)" }}>{authority.ministry}</span>
@@ -233,6 +230,35 @@ export function AuthorityDetailPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* ── Kostnad & datakälla ────────────────────────────────────────── */}
+      <div
+        style={{
+          margin: "0 32px",
+          border: "1px solid var(--color-border)",
+          borderTop: "none",
+          background: "var(--color-sdt-surface)",
+          padding: "20px 24px",
+        }}
+      >
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 10 }}>
+          Om kostnaderna · Hur beräknas {authority.expenditureMdkr.toFixed(1)} mdkr?
+        </div>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg-muted)", margin: "0 0 10px", lineHeight: 1.65, maxWidth: 620 }}>
+          Siffran visar <strong style={{ color: "var(--color-fg)" }}>driftkostnader</strong> — vad myndigheten faktiskt kostade att driva under {authority.year}. Det inkluderar löner, lokaler, IT och övriga förvaltningskostnader. Det exkluderar <em>transfereringar</em> (t.ex. bidrag och ersättningar som myndigheten betalar ut till hushåll eller företag).
+        </p>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg-muted)", margin: "0 0 12px", lineHeight: 1.65, maxWidth: 620 }}>
+          Källa är <strong style={{ color: "var(--color-fg)" }}>Statskontoret årsutfall definitiv</strong> — den slutgiltiga redovisningen av statens faktiska utgifter per anslag. För att verifiera siffran: jämför med det anslag som Riksdagen beslutade i regleringsbrevet nedan. Skillnaden är myndighetens eventuella under- eller överskridande av tilldelat anslag.
+        </p>
+        <a
+          href="https://www.statskontoret.se/psidata/arsutfall"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-accent)", textDecoration: "none", letterSpacing: "0.05em" }}
+        >
+          ↗ Öppna Statskontoret årsutfall
+        </a>
       </div>
 
       {/* ── Regleringsbrev ────────────────────────────────────────────── */}

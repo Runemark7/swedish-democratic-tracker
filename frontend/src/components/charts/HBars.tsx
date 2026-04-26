@@ -4,6 +4,7 @@ export interface HBarsProps {
   unit?: string;
   height?: number;
   gap?: number;
+  formatValue?: (v: number) => string;
 }
 
 export function HBars({
@@ -12,6 +13,7 @@ export function HBars({
   unit = '',
   height = 6,
   gap = 10,
+  formatValue,
 }: HBarsProps) {
   const computedMax = max ?? Math.max(...items.map(i => i.value), 1);
 
@@ -19,8 +21,9 @@ export function HBars({
     <div style={{ display: 'flex', flexDirection: 'column', gap }}>
       {items.map((item, i) => {
         const fraction = Math.max(0, Math.min(1, item.value / computedMax));
-        const displayValue =
-          item.pct !== undefined
+        const displayValue = formatValue
+          ? formatValue(item.value)
+          : item.pct !== undefined
             ? item.amount ? `${item.pct}%  ${item.amount}` : `${item.pct}%`
             : `${item.value}${unit}`;
 
