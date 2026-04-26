@@ -167,8 +167,9 @@ export const mockKommun: LevelData = {
       { name: "Individ & familj", value: 3.1, pct: 12.5 },
       { name: "Funktionsstöd",    value: 2.4, pct: 9.7  },
       { name: "Gata, park, plan", value: 1.8, pct: 7.3  },
+      { name: "Vatten & avlopp", value: 1.8, pct: 7.3  },
       { name: "Kultur & fritid",  value: 1.2, pct: 4.8  },
-      { name: "Övrigt",           value: 3.2, pct: 12.9 },
+      { name: "Övrigt",           value: 1.4, pct: 5.6  },
     ],
   },
   agenda: [
