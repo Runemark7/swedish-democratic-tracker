@@ -147,9 +147,10 @@ const SPENDING_NAMES: Record<string, string> = {
   N07037: "Gata, park, plan",
   N09022: "Fritid & kultur",
   N05011: "Politisk verksamhet",
+  N45014: "Vatten & avlopp",
 };
 
-const KPI_ORDER = ["N11004","N15028","N17014","N20014","N30005","N07037","N09022","N05011"];
+const KPI_ORDER = ["N11004","N15028","N17014","N20014","N30005","N07037","N09022","N05011","N45014"];
 
 // Converts Kolada spending KPIs (kr/invånare) × population → Budget.
 // Returns null when data is absent so the caller can fall back to mock.
@@ -297,8 +298,18 @@ const REGION_STRIP_KPI_META: Record<string, KpiMeta> = {
     description: "Andel samtal till primärvården som besvarades samma dag. Låg andel kan tyda på underbemanning eller hög belastning.",
     unit: "%", target: 90.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
   },
+  N60404: {
+    label: "Kollektivtrafik",
+    description: "Antal resor med kollektivtrafik per invånare och år. Speglar hur väl regionen uppfyller sin lagstadgade skyldighet att tillhandahålla allmän kollektivtrafik.",
+    unit: " resor/inv", target: 120, worseHigher: false, format: v => `${Math.round(v)} resor/inv`,
+  },
+  N85012: {
+    label: "Regional utv.",
+    description: "Nettokostnad för regional utveckling per invånare. Täcker EU-program, regional strategi och infrastrukturplanering enligt Lag (2010:630).",
+    unit: " kr/inv", target: 1200, worseHigher: true, format: v => `${Math.round(v).toLocaleString("sv-SE")} kr/inv`,
+  },
 };
-const REGION_STRIP_ORDER = ["N60008", "N63016", "N63007", "N79173", "N79179"];
+const REGION_STRIP_ORDER = ["N60008", "N63016", "N63007", "N79173", "N79179", "N60404", "N85012"];
 
 // ── Riksdag ───────────────────────────────────────────────────────────────────
 export function useRiksdag() {

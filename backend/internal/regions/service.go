@@ -21,7 +21,11 @@ var defaultKPIYears = []int{2019, 2020, 2021, 2022, 2023}
 // regionStripKPIs are the three KPIs shown in the region header strip.
 // N63007 = Soliditet region (%), N63016 = Resultat/skatt region (%), N60008 = Nettokostnad/inv (kr).
 // Region KPIs use the N6xxxx namespace (mun_type "L" in Kolada), not N0xxxx (which is municipality-only).
-var regionStripKPIs = []string{"N60008", "N63016", "N63007", "N79173", "N79179"}
+var regionStripKPIs = []string{
+	"N60008", "N63016", "N63007", "N79173", "N79179",
+	"N60404", // Resor med kollektivtrafik, resor/inv (Infrastruktur – mandatory)
+	"N85012", // Nettokostnad regional utveckling totalt, kr/inv (Regional utveckling – mandatory)
+}
 var regionKPIYears  = []int{2020, 2021, 2022, 2023, 2024}
 
 // koladaRegionCode converts a Swedish 2-digit county code (e.g. "09") to the
@@ -34,7 +38,7 @@ func koladaRegionCode(code string) string {
 }
 var defaultPopYears = []int{2019, 2020, 2021, 2022, 2023}
 
-var spendingKPIs  = []string{"N11004", "N15028", "N17014", "N20014", "N30005", "N07037", "N09022", "N05011"}
+var spendingKPIs  = []string{"N11004", "N15028", "N17014", "N20014", "N30005", "N07037", "N09022", "N05011", "N45014"}
 var spendingYears = []int{2019, 2020, 2021, 2022, 2023}
 
 type Service struct {
