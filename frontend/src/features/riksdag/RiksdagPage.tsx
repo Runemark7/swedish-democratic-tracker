@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
-import { Hemicycle, Donut, HBars, Pill, TargetBar, Trend } from "@/components/charts";
+import { Hemicycle, Donut, HBars, DualLine, Pill, TargetBar, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import type { Authority, LiveVote, Party } from "@/types/democracy";
 
@@ -120,9 +120,29 @@ function AuthorityRow({
             )}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-            {/* Cost history */}
-            {authority.history.length > 0 && (
+          {authority.history.length > 0 && authority.headcountHistory && authority.headcountHistory.length > 1 ? (
+            /* Dual-line chart when both series are available */
+            <DualLine
+              series={[
+                {
+                  label: "Kostnad (mdkr)",
+                  color,
+                  unit: " mdkr",
+                  formatValue: (v) => `${v.toFixed(1)} mdkr`,
+                  points: authority.history.map((h) => ({ year: h.year, value: Math.round(h.expenditureMdkr * 10) / 10 })),
+                },
+                {
+                  label: "Anställda",
+                  color: "#5a8f6e",
+                  unit: "",
+                  formatValue: (v) => v.toLocaleString("sv-SE"),
+                  points: authority.headcountHistory.map((h) => ({ year: h.year, value: h.headcountInt })),
+                },
+              ]}
+            />
+          ) : (
+            /* Fallback: cost-only HBars when headcount is missing */
+            authority.history.length > 0 && (
               <div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "1px", marginBottom: 10, textTransform: "uppercase" }}>
                   Kostnadsutveckling {authority.history[0].year}–{authority.history[authority.history.length - 1].year}
@@ -139,29 +159,8 @@ function AuthorityRow({
                   gap={8}
                 />
               </div>
-            )}
-
-            {/* Headcount history */}
-            {authority.headcountHistory && authority.headcountHistory.length > 1 && (
-              <div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "1px", marginBottom: 10, textTransform: "uppercase" }}>
-                  Personalutveckling {authority.headcountHistory[0].year}–{authority.headcountHistory[authority.headcountHistory.length - 1].year}
-                </div>
-                <HBars
-                  items={authority.headcountHistory.map((h) => ({
-                    name: String(h.year),
-                    value: h.headcountInt,
-                    color: "#5a9fd0",
-                  }))}
-                  max={Math.max(...authority.headcountHistory.map((h) => h.headcountInt))}
-                  unit=""
-                  height={5}
-                  gap={8}
-                  formatValue={(v) => v.toLocaleString("sv-SE")}
-                />
-              </div>
-            )}
-          </div>
+            )
+          )}
         </div>
       )}
     </div>
