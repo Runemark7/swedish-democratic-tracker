@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"sort"
 	"strings"
+	"time"
 	"unicode"
 
 	"riksdagskollen/internal/riksdag/domain"
@@ -40,7 +41,7 @@ func (s *Service) GetAuthorities(ctx context.Context) ([]domain.Authority, error
 		}
 	}
 
-	headcounts := s.fetchHeadcounts(ctx)
+	headcounts := s.fetchHeadcounts()
 
 	result := make([]domain.Authority, len(data))
 	for i, d := range data {
@@ -105,11 +106,15 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 	return nil, ErrNotFound
 }
 
-// fetchHeadcounts returns name→HeadcountData from the SCB client, or empty map on failure/nil.
-func (s *Service) fetchHeadcounts(ctx context.Context) map[string]ports.HeadcountData {
+// fetchHeadcounts fetches SCB headcount data using its own background context so it is
+// never cancelled by the HTTP request context (which may already be partially consumed
+// by the Statskontoret ZIP download that runs first).
+func (s *Service) fetchHeadcounts() map[string]ports.HeadcountData {
 	if s.headcount == nil {
 		return nil
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
 	data, err := s.headcount.FetchHeadcounts(ctx)
 	if err != nil {
 		slog.Warn("scb headcount fetch failed", "error", err)
