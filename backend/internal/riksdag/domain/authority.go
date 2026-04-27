@@ -3,6 +3,7 @@ package domain
 type YearlyExpenditure struct {
 	Year            int     `json:"year"`
 	ExpenditureMdkr float64 `json:"expenditureMdkr"`
+	BudgetMdkr      float64 `json:"budgetMdkr"`
 }
 
 type YearlyHeadcount struct {
@@ -21,6 +22,7 @@ type Authority struct {
 	WebsiteURL       string            `json:"websiteUrl"`
 	AnnualReportURL  string            `json:"annualReportUrl"`
 	ExpenditureMdkr  float64           `json:"expenditureMdkr"`
+	BudgetMdkr       float64           `json:"budgetMdkr"`
 	Year             int               `json:"year"`
 	History          []YearlyExpenditure `json:"history"`
 	HeadcountHistory []YearlyHeadcount   `json:"headcountHistory"`

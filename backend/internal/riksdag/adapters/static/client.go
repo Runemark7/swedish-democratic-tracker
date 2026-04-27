@@ -6,16 +6,17 @@ import (
 	"riksdagskollen/internal/riksdag/ports"
 )
 
-func hist(pairs [][2]float64) []ports.YearlyExpenditure {
-	out := make([]ports.YearlyExpenditure, len(pairs))
-	for i, p := range pairs {
-		out[i] = ports.YearlyExpenditure{Year: int(p[0]), ExpenditureMdkr: p[1]}
+// hist converts {year, utfall_mdkr, budget_mdkr} triples to []YearlyExpenditure.
+func hist(triples [][3]float64) []ports.YearlyExpenditure {
+	out := make([]ports.YearlyExpenditure, len(triples))
+	for i, t := range triples {
+		out[i] = ports.YearlyExpenditure{Year: int(t[0]), ExpenditureMdkr: t[1], BudgetMdkr: t[2]}
 	}
 	return out
 }
 
-// staticAuthorities holds verified driftkostnad figures from Statskontoret årsutfall definitiv.
-// Values are in mdkr. History covers 2015–2024; latest year is 2024.
+// staticAuthorities holds verified utfall + anslag figures from Statskontoret årsutfall definitiv.
+// Columns: year, utfall (mdkr), budget/anslag (mdkr). History covers 2015–2024.
 var staticAuthorities = []ports.AuthorityData{
 	{
 		Name: "Polismyndigheten", Role: "Ordning & utredning",
@@ -23,11 +24,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Sveriges största myndighet, ansvarar för brottsbekämpning, utredning och ordningshållning.",
 		WebsiteURL:      "https://polisen.se",
 		AnnualReportURL: "https://polisen.se/om-polisen/organisation/arsredovisning/",
-		ExpenditureMdkr: 41.4, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 21.3}, {2016, 22.5}, {2017, 23.7}, {2018, 25.1},
-			{2019, 26.8}, {2020, 28.4}, {2021, 30.9}, {2022, 33.5},
-			{2023, 37.2}, {2024, 41.4},
+		ExpenditureMdkr: 41.38, BudgetMdkr: 41.17, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 20.76, 21.16}, {2016, 21.88, 21.84}, {2017, 22.91, 22.62}, {2018, 23.77, 24.72},
+			{2019, 26.55, 26.11}, {2020, 28.80, 28.55}, {2021, 30.98, 30.99}, {2022, 33.31, 33.84},
+			{2023, 37.43, 37.04}, {2024, 41.38, 41.17},
 		}),
 	},
 	{
@@ -36,11 +37,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Ansvarar för häkten, fängelser och frivård med målet att minska återfall i brott.",
 		WebsiteURL:      "https://www.kriminalvarden.se",
 		AnnualReportURL: "https://www.kriminalvarden.se/om-kriminalvarden/publikationer/arsredovisningar/",
-		ExpenditureMdkr: 17.6, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 8.9}, {2016, 9.2}, {2017, 9.6}, {2018, 10.1},
-			{2019, 10.9}, {2020, 11.5}, {2021, 12.4}, {2022, 13.8},
-			{2023, 15.6}, {2024, 17.6},
+		ExpenditureMdkr: 17.57, BudgetMdkr: 17.80, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 7.97, 7.84}, {2016, 8.20, 8.12}, {2017, 8.62, 8.35}, {2018, 8.96, 8.65},
+			{2019, 9.02, 9.55}, {2020, 9.59, 9.47}, {2021, 10.61, 10.65}, {2022, 11.94, 12.36},
+			{2023, 14.55, 14.13}, {2024, 17.57, 17.80},
 		}),
 	},
 	{
@@ -49,11 +50,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Administrerar socialförsäkringssystemet inklusive sjukpenning, föräldrapenning och aktivitetsersättning.",
 		WebsiteURL:      "https://www.forsakringskassan.se",
 		AnnualReportURL: "https://www.forsakringskassan.se/om-forsakringskassan/publikationer/arsredovisning",
-		ExpenditureMdkr: 9.6, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 7.1}, {2016, 7.3}, {2017, 7.5}, {2018, 7.8},
-			{2019, 8.0}, {2020, 8.3}, {2021, 8.6}, {2022, 8.9},
-			{2023, 9.2}, {2024, 9.6},
+		ExpenditureMdkr: 9.63, BudgetMdkr: 10.47, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 7.82, 8.03}, {2016, 8.26, 8.20}, {2017, 8.44, 8.42}, {2018, 8.47, 8.73},
+			{2019, 8.90, 8.64}, {2020, 9.14, 9.39}, {2021, 9.26, 9.25}, {2022, 9.47, 9.31},
+			{2023, 9.83, 9.28}, {2024, 9.63, 10.47},
 		}),
 	},
 	{
@@ -62,11 +63,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Ansvarar för beskattning, folkbokföring och bouppteckningar i hela Sverige.",
 		WebsiteURL:      "https://www.skatteverket.se",
 		AnnualReportURL: "https://www.skatteverket.se/omoss/omskatteverket/publikationer/arsredovisning.4.html",
-		ExpenditureMdkr: 8.6, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 6.8}, {2016, 7.0}, {2017, 7.1}, {2018, 7.3},
-			{2019, 7.4}, {2020, 7.6}, {2021, 7.8}, {2022, 8.0},
-			{2023, 8.3}, {2024, 8.6},
+		ExpenditureMdkr: 8.64, BudgetMdkr: 8.67, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 7.19, 7.09}, {2016, 7.22, 7.19}, {2017, 7.38, 7.38}, {2018, 7.63, 7.60},
+			{2019, 7.55, 7.57}, {2020, 7.90, 8.17}, {2021, 8.17, 8.41}, {2022, 8.25, 8.30},
+			{2023, 8.60, 8.17}, {2024, 8.64, 8.67},
 		}),
 	},
 	{
@@ -75,11 +76,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Samlingsnamn för landets domstolar och nämnder — tingsrätter, hovrätter, förvaltningsrätter och Högsta domstolen.",
 		WebsiteURL:      "https://www.domstol.se",
 		AnnualReportURL: "https://www.domstol.se/om-sveriges-domstolar/publikationer/arsredovisningar/",
-		ExpenditureMdkr: 7.7, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 5.4}, {2016, 5.6}, {2017, 5.8}, {2018, 6.0},
-			{2019, 6.2}, {2020, 6.4}, {2021, 6.7}, {2022, 7.0},
-			{2023, 7.3}, {2024, 7.7},
+		ExpenditureMdkr: 7.71, BudgetMdkr: 7.96, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 5.32, 5.37}, {2016, 5.40, 5.42}, {2017, 5.51, 5.52}, {2018, 5.76, 5.61},
+			{2019, 5.89, 5.99}, {2020, 6.14, 6.27}, {2021, 6.46, 6.47}, {2022, 6.77, 6.68},
+			{2023, 7.36, 7.05}, {2024, 7.71, 7.96},
 		}),
 	},
 	{
@@ -88,11 +89,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Ansvarar för arbetsförmedling, matchning mellan arbetsgivare och arbetssökande, och genomförande av arbetsmarknadspolitiken.",
 		WebsiteURL:      "https://www.arbetsformedlingen.se",
 		AnnualReportURL: "https://www.arbetsformedlingen.se/om-oss/fakta-om-af/publikationer/arsredovisning.html",
-		ExpenditureMdkr: 7.5, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 9.1}, {2016, 9.4}, {2017, 9.8}, {2018, 9.3},
-			{2019, 8.5}, {2020, 8.1}, {2021, 7.6}, {2022, 7.4},
-			{2023, 7.4}, {2024, 7.5},
+		ExpenditureMdkr: 7.45, BudgetMdkr: 7.41, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 7.47, 7.45}, {2016, 8.15, 7.96}, {2017, 8.50, 8.39}, {2018, 8.19, 8.41},
+			{2019, 7.64, 7.62}, {2020, 7.52, 7.55}, {2021, 7.74, 7.85}, {2022, 7.87, 7.86},
+			{2023, 7.68, 7.64}, {2024, 7.45, 7.41},
 		}),
 	},
 	{
@@ -101,11 +102,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Prövar ansökningar om uppehållstillstånd, asyl, medborgarskap och arbetstillstånd.",
 		WebsiteURL:      "https://www.migrationsverket.se",
 		AnnualReportURL: "https://www.migrationsverket.se/Om-Migrationsverket/Fakta-och-statistik/Publikationer/Arsredovisningar.html",
-		ExpenditureMdkr: 4.8, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 5.2}, {2016, 7.1}, {2017, 6.3}, {2018, 5.5},
-			{2019, 4.9}, {2020, 4.6}, {2021, 4.2}, {2022, 4.5},
-			{2023, 4.9}, {2024, 4.8},
+		ExpenditureMdkr: 4.79, BudgetMdkr: 4.73, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 4.72, 4.54}, {2016, 5.98, 6.88}, {2017, 6.01, 5.90}, {2018, 5.19, 5.35},
+			{2019, 4.55, 4.38}, {2020, 4.34, 4.44}, {2021, 4.09, 4.42}, {2022, 4.44, 4.32},
+			{2023, 4.71, 4.72}, {2024, 4.79, 4.73},
 		}),
 	},
 	{
@@ -114,11 +115,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Kontrollerar in- och utförsel av varor vid Sveriges gränser och bekämpar smuggling.",
 		WebsiteURL:      "https://www.tullverket.se",
 		AnnualReportURL: "https://www.tullverket.se/omtullverket/publikationer/arsredovisningar.4.html",
-		ExpenditureMdkr: 2.9, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 2.0}, {2016, 2.1}, {2017, 2.2}, {2018, 2.3},
-			{2019, 2.4}, {2020, 2.5}, {2021, 2.6}, {2022, 2.7},
-			{2023, 2.8}, {2024, 2.9},
+		ExpenditureMdkr: 2.92, BudgetMdkr: 2.88, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 1.77, 1.68}, {2016, 1.72, 1.73}, {2017, 1.72, 1.74}, {2018, 1.90, 1.93},
+			{2019, 1.99, 1.98}, {2020, 2.14, 2.13}, {2021, 2.28, 2.30}, {2022, 2.47, 2.48},
+			{2023, 2.64, 2.59}, {2024, 2.92, 2.88},
 		}),
 	},
 	{
@@ -127,11 +128,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Leder förundersökningar och väcker åtal i brottmål vid Sveriges allmänna domstolar.",
 		WebsiteURL:      "https://www.aklagare.se",
 		AnnualReportURL: "https://www.aklagare.se/om-aklagarmyndigheten/publikationer/arsredovisningar/",
-		ExpenditureMdkr: 2.6, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 1.6}, {2016, 1.7}, {2017, 1.8}, {2018, 1.9},
-			{2019, 2.0}, {2020, 2.1}, {2021, 2.2}, {2022, 2.3},
-			{2023, 2.4}, {2024, 2.6},
+		ExpenditureMdkr: 2.59, BudgetMdkr: 2.63, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 1.36, 1.40}, {2016, 1.44, 1.45}, {2017, 1.50, 1.47}, {2018, 1.51, 1.52},
+			{2019, 1.60, 1.61}, {2020, 1.69, 1.70}, {2021, 1.83, 1.81}, {2022, 2.01, 2.07},
+			{2023, 2.26, 2.30}, {2024, 2.59, 2.63},
 		}),
 	},
 	{
@@ -140,11 +141,11 @@ var staticAuthorities = []ports.AuthorityData{
 		Description:     "Skyddar Sverige mot terrorism, spionage och andra hot mot den nationella säkerheten.",
 		WebsiteURL:      "https://www.sakerhetspolisen.se",
 		AnnualReportURL: "https://www.sakerhetspolisen.se/om-sapo/publikationer/arsredovisningar.html",
-		ExpenditureMdkr: 2.4, Year: 2024,
-		History: hist([][2]float64{
-			{2015, 1.2}, {2016, 1.3}, {2017, 1.5}, {2018, 1.6},
-			{2019, 1.8}, {2020, 1.9}, {2021, 2.0}, {2022, 2.1},
-			{2023, 2.2}, {2024, 2.4},
+		ExpenditureMdkr: 2.40, BudgetMdkr: 2.45, Year: 2024,
+		History: hist([][3]float64{
+			{2015, 1.15, 1.14}, {2016, 1.20, 1.20}, {2017, 1.36, 1.31}, {2018, 1.47, 1.49},
+			{2019, 1.55, 1.58}, {2020, 1.59, 1.68}, {2021, 1.73, 1.74}, {2022, 1.94, 1.90},
+			{2023, 2.11, 2.11}, {2024, 2.40, 2.45},
 		}),
 	},
 }

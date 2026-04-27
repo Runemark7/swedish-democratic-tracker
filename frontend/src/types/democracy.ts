@@ -49,6 +49,7 @@ export interface Kpi {
 export interface YearlyExpenditure {
   year: number;
   expenditureMdkr: number;
+  budgetMdkr?: number;
 }
 
 export interface YearlyHeadcount {
@@ -67,6 +68,7 @@ export interface Authority {
   websiteUrl?: string;
   annualReportUrl?: string;
   expenditureMdkr: number;
+  budgetMdkr?: number;
   year: number;
   history: YearlyExpenditure[];
   headcountHistory?: YearlyHeadcount[];

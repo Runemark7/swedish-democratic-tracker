@@ -232,6 +232,56 @@ export function AuthorityDetailPage() {
         </div>
       </div>
 
+      {/* ── Budget vs Utfall ──────────────────────────────────────────── */}
+      {authority.history.length > 0 && authority.history.some(h => (h.budgetMdkr ?? 0) > 0) && (() => {
+        type RowWithBudget = { year: number; expenditureMdkr: number; budgetMdkr: number };
+        const rows = ([...authority.history].reverse() as RowWithBudget[]).filter(h => h.budgetMdkr > 0);
+        const deviations = rows
+          .map(h => (h.expenditureMdkr - h.budgetMdkr) / h.budgetMdkr * 100);
+        const avgDev = deviations.reduce((s, d) => s + d, 0) / deviations.length;
+        const devColor = (d: number) => Math.abs(d) <= 2 ? "var(--color-fg-muted)" : d > 0 ? "#d0533f" : "#2d9e6b";
+        return (
+          <div style={{ margin: "0 32px", border: "1px solid var(--color-border)", borderTop: "none", background: "var(--color-sdt-surface)", padding: "20px 24px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase" }}>
+                Budget vs Utfall · Anslag jämfört med faktiska kostnader
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: devColor(avgDev) }}>
+                Genomsnitt {avgDev > 0 ? "+" : ""}{avgDev.toFixed(1)}% {Math.abs(avgDev) <= 2 ? "· Håller budgeten" : avgDev > 0 ? "· Överskrider budget" : "· Under budget"}
+              </div>
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "var(--font-mono)", fontSize: 12 }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                  {["År", "Anslag", "Utfall", "Avvikelse"].map(h => (
+                    <th key={h} style={{ textAlign: h === "År" ? "left" : "right", padding: "4px 8px", fontSize: 9, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-fg-muted)", fontWeight: 400 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(h => {
+                  const dev = (h.expenditureMdkr - h.budgetMdkr) / h.budgetMdkr * 100;
+                  const color = devColor(dev);
+                  return (
+                    <tr key={h.year} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                      <td style={{ padding: "6px 8px", color: "var(--color-fg-muted)" }}>{h.year}</td>
+                      <td style={{ padding: "6px 8px", textAlign: "right", color: "var(--color-fg-muted)" }}>{h.budgetMdkr.toFixed(2)} mdkr</td>
+                      <td style={{ padding: "6px 8px", textAlign: "right", color: "var(--color-fg)" }}>{h.expenditureMdkr.toFixed(2)} mdkr</td>
+                      <td style={{ padding: "6px 8px", textAlign: "right", color, fontWeight: Math.abs(dev) > 5 ? 600 : 400 }}>
+                        {dev > 0 ? "+" : ""}{dev.toFixed(1)}%
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div style={{ marginTop: 10, fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--color-fg-muted)", opacity: 0.7 }}>
+              Anslag = Statens budget + Ändringsbudgetar · Källa: Statskontoret årsutfall definitiv
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ── Kostnad & datakälla ────────────────────────────────────────── */}
       <div
         style={{
