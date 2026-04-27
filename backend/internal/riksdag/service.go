@@ -49,6 +49,7 @@ func (s *Service) GetAuthorities(ctx context.Context) ([]domain.Authority, error
 			history[j] = domain.YearlyExpenditure{
 				Year:            h.Year,
 				ExpenditureMdkr: h.ExpenditureMdkr,
+				BudgetMdkr:      h.BudgetMdkr,
 			}
 		}
 
@@ -75,6 +76,7 @@ func (s *Service) GetAuthorities(ctx context.Context) ([]domain.Authority, error
 			WebsiteURL:       d.WebsiteURL,
 			AnnualReportURL:  d.AnnualReportURL,
 			ExpenditureMdkr:  d.ExpenditureMdkr,
+			BudgetMdkr:       d.BudgetMdkr,
 			Year:             d.Year,
 			History:          history,
 			HeadcountHistory: hcHistory,

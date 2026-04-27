@@ -210,10 +210,11 @@ func parseCSV(r io.Reader, latestYear int) ([]ports.AuthorityData, error) {
 		return nil, fmt.Errorf("read header: %w", err)
 	}
 
-	// yearSums[anslagCode][year] → total Mkr
-	yearSums := make(map[string]map[int]float64)
+	type yearEntry struct{ utfall, budget float64 }
+	// yearData[anslagCode][year] → utfall + budget Mkr
+	yearData := make(map[string]map[int]yearEntry)
 	for code := range targetAnslag {
-		yearSums[code] = make(map[int]float64)
+		yearData[code] = make(map[int]yearEntry)
 	}
 
 	for {
@@ -239,25 +240,30 @@ func parseCSV(r io.Reader, latestYear int) ([]ports.AuthorityData, error) {
 		if utfallStr == "" {
 			continue
 		}
-		val, err := strconv.ParseFloat(strings.ReplaceAll(utfallStr, ",", "."), 64)
+		utfall, err := strconv.ParseFloat(strings.ReplaceAll(utfallStr, ",", "."), 64)
 		if err != nil {
 			continue
 		}
-		yearSums[anslag][year] += val
+		budgetMkr := parseMkr(row[6]) + parseMkr(row[7]) // Statens budget + Ändringsbudgetar
+		e := yearData[anslag][year]
+		e.utfall += utfall
+		e.budget += budgetMkr
+		yearData[anslag][year] = e
 	}
 
 	var result []ports.AuthorityData
-	for code, byYear := range yearSums {
+	for code, byYear := range yearData {
 		if len(byYear) == 0 {
 			continue
 		}
 		info := targetAnslag[code]
 
 		history := make([]ports.YearlyExpenditure, 0, len(byYear))
-		for yr, mkr := range byYear {
+		for yr, e := range byYear {
 			history = append(history, ports.YearlyExpenditure{
 				Year:            yr,
-				ExpenditureMdkr: mkr / 1000,
+				ExpenditureMdkr: e.utfall / 1000,
+				BudgetMdkr:      e.budget / 1000,
 			})
 		}
 		sort.Slice(history, func(i, j int) bool { return history[i].Year < history[j].Year })
@@ -273,6 +279,7 @@ func parseCSV(r io.Reader, latestYear int) ([]ports.AuthorityData, error) {
 			WebsiteURL:      info.websiteURL,
 			AnnualReportURL: info.annualReportURL,
 			ExpenditureMdkr: latest.ExpenditureMdkr,
+			BudgetMdkr:      latest.BudgetMdkr,
 			Year:            latest.Year,
 			History:         history,
 		})
@@ -282,4 +289,13 @@ func parseCSV(r io.Reader, latestYear int) ([]ports.AuthorityData, error) {
 		return nil, fmt.Errorf("no matching rows found")
 	}
 	return result, nil
+}
+
+func parseMkr(s string) float64 {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0
+	}
+	v, _ := strconv.ParseFloat(strings.ReplaceAll(s, ",", "."), 64)
+	return v
 }

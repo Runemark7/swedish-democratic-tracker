@@ -5,6 +5,7 @@ import "context"
 type YearlyExpenditure struct {
 	Year            int
 	ExpenditureMdkr float64
+	BudgetMdkr      float64 // Statens budget + Ändringsbudgetar (col6+col7 in CSV)
 }
 
 type AuthorityData struct {
@@ -17,6 +18,7 @@ type AuthorityData struct {
 	WebsiteURL      string
 	AnnualReportURL string
 	ExpenditureMdkr float64
+	BudgetMdkr      float64
 	Year            int
 	History         []YearlyExpenditure
 }
