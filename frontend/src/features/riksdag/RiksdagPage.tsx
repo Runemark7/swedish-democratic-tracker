@@ -120,7 +120,7 @@ function AuthorityRow({
             )}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
             {/* Cost history */}
             {authority.history.length > 0 && (
               <div>
