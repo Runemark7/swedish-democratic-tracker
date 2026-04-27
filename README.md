@@ -192,6 +192,53 @@ The `context_note` field exists on every match specifically to capture this nuan
 
 ---
 
+## Database Structure
+
+PostgreSQL 17. All migrations in `backend/migrations/` (numbered `000001`–`000011`). Run automatically on backend startup.
+
+### Tables
+
+| Table | What it holds | Source | Updated |
+|---|---|---|---|
+| `politicians` | Riksdag MPs — name, party, constituency, active status | Riksdagen Open API | Daily cron |
+| `speeches` | Debate contributions (anföranden) — raw text, date, politician | Riksdagen Open API | Daily cron |
+| `votes` | Individual votes per MP per proposal point — result, beteckning, enriched origin | Riksdagen Open API | Daily cron |
+| `ingestion_cursors` | Watermark per data type (last fetched date/id) | Internal | Each sync |
+| `party_goals` | Goals extracted from manifestos and Tidöavtalet — topic, specificity, keywords | SQL seed (migration 003) | Manual |
+| `promises` | Commitments extracted by AI from speeches — topic, keywords | AI worker | As speeches arrive |
+| `goal_vote_matches` | Relevance links between a party goal and a vote — score, aligned direction, context note | AI matching job | Weekly |
+| `promise_vote_matches` | Relevance links between a promise and a vote | AI matching job | Weekly |
+| `expenditure_areas` | The 27 fixed Swedish budget categories (UO1–UO27) | SQL seed (migration 004) | Static |
+| `budget_years` | One row per budget year + status (decided / proposed) | SQL seed (migrations 005–009) | Manual |
+| `budget_allocations` | Allocation per expenditure area per year, in KSEK | SQL seed (migrations 005–009) | Manual |
+| `economic_indicators` | KPI time series for regions and municipalities | Kolada + SCB APIs | On request, cached |
+| `regions` | 21 Swedish regions — population, governing parties, 2022 election results | SQL seed (migration 011) | Manual |
+| `municipalities` | 290 Swedish kommuner — population, governing parties, 2022 election results | SQL seed (migration 011) | Manual |
+| `regional_election_results` | Per-party mandates and vote share per region, 2022 | SQL seed (migration 011) | Manual |
+| `municipal_election_results` | Per-party mandates and vote share per municipality, 2022 | SQL seed (migration 011) | Manual |
+| `party_scorecards` | Materialized view — per-party alignment % per goal across all matching votes | Derived from above | Refreshed weekly |
+
+### What lives outside the database
+
+These are **fetched at request time** (with in-process cache) and never persisted to Postgres:
+
+| Data | Source | Cache |
+|---|---|---|
+| Government agency (myndighet) expenditure & budget history | Statskontoret årsutfall ZIP/CSV | 24 h in-process |
+| Government agency headcount history | SCB KLS API (AM0102) | 24 h in-process |
+| Regleringsbrev links | Riksdagen document search API | None (URL template) |
+
+### Adding new migrations
+
+```bash
+# Create a new migration pair
+migrate create -ext sql -dir backend/migrations -seq description_here
+# Then edit the generated .up.sql / .down.sql files
+# Migrations run automatically on next backend startup
+```
+
+---
+
 ## AI Layer
 
 Three AI tasks:
