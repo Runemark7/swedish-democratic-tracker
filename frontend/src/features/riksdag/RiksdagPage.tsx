@@ -119,26 +119,49 @@ function AuthorityRow({
               <span style={{ marginLeft: 8, opacity: 0.7 }}>· {authority.ministry}</span>
             )}
           </div>
-          {authority.history.length > 0 ? (
-            <>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "1px", marginBottom: 10, textTransform: "uppercase" }}>
-                Kostnadsutveckling {authority.history[0].year}–{authority.history[authority.history.length - 1].year}
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+            {/* Cost history */}
+            {authority.history.length > 0 && (
+              <div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "1px", marginBottom: 10, textTransform: "uppercase" }}>
+                  Kostnadsutveckling {authority.history[0].year}–{authority.history[authority.history.length - 1].year}
+                </div>
+                <HBars
+                  items={authority.history.map((h) => ({
+                    name: String(h.year),
+                    value: Math.round(h.expenditureMdkr * 10) / 10,
+                    color,
+                  }))}
+                  max={histMax}
+                  unit=" mdkr"
+                  height={5}
+                  gap={8}
+                />
               </div>
-              <HBars
-                items={authority.history.map((h) => ({
-                  name: String(h.year),
-                  value: Math.round(h.expenditureMdkr * 10) / 10,
-                  color,
-                }))}
-                max={histMax}
-                unit=" mdkr"
-                height={5}
-                gap={8}
-              />
-            </>
-          ) : (
-            <div style={{ fontSize: 11, color: "var(--color-fg-muted)" }}>Ingen historik tillgänglig</div>
-          )}
+            )}
+
+            {/* Headcount history */}
+            {authority.headcountHistory && authority.headcountHistory.length > 1 && (
+              <div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "1px", marginBottom: 10, textTransform: "uppercase" }}>
+                  Personalutveckling {authority.headcountHistory[0].year}–{authority.headcountHistory[authority.headcountHistory.length - 1].year}
+                </div>
+                <HBars
+                  items={authority.headcountHistory.map((h) => ({
+                    name: String(h.year),
+                    value: h.headcountInt,
+                    color: "#5a9fd0",
+                  }))}
+                  max={Math.max(...authority.headcountHistory.map((h) => h.headcountInt))}
+                  unit=""
+                  height={5}
+                  gap={8}
+                  formatValue={(v) => v.toLocaleString("sv-SE")}
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
