@@ -1,7 +1,5 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { HBars } from "@/components/charts";
-import type { YearlyHeadcount } from "@/types/democracy";
 import { riksdagApi } from "./api";
 
 function Skeleton() {
@@ -47,9 +45,22 @@ export function AuthorityDetailPage() {
     );
   }
 
-  const histMax = authority.history.length > 0
-    ? Math.max(...authority.history.map((h) => h.expenditureMdkr))
+  const hasHeadcount = (authority.headcountHistory?.length ?? 0) > 1;
+  const hcByYear = new Map((authority.headcountHistory ?? []).map((h) => [h.year, h.headcountInt]));
+
+  const mergedHistory = authority.history.map((h) => ({
+    year: h.year,
+    expenditureMdkr: h.expenditureMdkr,
+    headcountInt: hcByYear.get(h.year) ?? null,
+  }));
+
+  const maxCost = mergedHistory.length > 0
+    ? Math.max(...mergedHistory.map((h) => h.expenditureMdkr))
     : authority.expenditureMdkr;
+
+  const maxHead = hasHeadcount
+    ? Math.max(...mergedHistory.map((h) => h.headcountInt ?? 0))
+    : 0;
 
   return (
     <div className="sdt-page">
@@ -120,113 +131,83 @@ export function AuthorityDetailPage() {
         )}
       </div>
 
-      {/* ── Main grid ─────────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 0,
-          borderBottom: "1px solid var(--color-border)",
-        }}
-      >
-        {/* Expenditure history */}
-        <div
-          style={{
-            padding: "24px 28px",
-            borderRight: "1px solid var(--color-border)",
-          }}
-        >
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "0.15em",
-              color: "var(--color-fg-muted)",
-              marginBottom: 20,
-              textTransform: "uppercase",
-            }}
-          >
-            Kostnadsutveckling {authority.history.length > 0 ? `${authority.history[0].year}–${authority.history[authority.history.length - 1].year}` : authority.year}
+      {/* ── Combined historik ─────────────────────────────────────────── */}
+      <div style={{ padding: "24px 32px", borderBottom: "1px solid var(--color-border)" }}>
+        {/* Header row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase" }}>
+            Historik {mergedHistory.length > 0 ? `${mergedHistory[0].year}–${mergedHistory[mergedHistory.length - 1].year}` : authority.year}
           </div>
-          {authority.history.length > 0 ? (
-            <HBars
-              items={authority.history.map((h) => ({
-                name: String(h.year),
-                value: Math.round(h.expenditureMdkr * 10) / 10,
-                color: "#2d6fa8",
-              }))}
-              max={histMax}
-              unit=" mdkr"
-              height={5}
-              gap={8}
-            />
-          ) : (
-            <div style={{ fontSize: 12, color: "var(--color-fg-muted)", fontFamily: "var(--font-mono)" }}>
-              {authority.expenditureMdkr.toFixed(1)} mdkr ({authority.year})
+          {/* Current stats */}
+          <div style={{ display: "flex", gap: 24 }}>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 18, fontWeight: 600, color: "var(--color-fg)" }}>
+                {authority.expenditureMdkr.toFixed(1)} mdkr
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.05em" }}>
+                kostnad {authority.year}
+              </div>
             </div>
-          )}
-          <div
-            style={{
-              marginTop: 16,
-              fontFamily: "var(--font-mono)",
-              fontSize: 9,
-              color: "var(--color-fg-muted)",
-              opacity: 0.7,
-            }}
-          >
-            Källa: Statskontoret årsutfall · driftkostnader exkl. transfereringar
+            {authority.headcountInt > 0 && (
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 18, fontWeight: 600, color: "var(--color-fg)" }}>
+                  {authority.headcountInt.toLocaleString("sv-SE")}
+                </div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.05em" }}>
+                  anställda {authority.year}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Employees */}
-        <div style={{ padding: "24px 28px" }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", marginBottom: 20, textTransform: "uppercase" }}>
-            Anställda
-          </div>
+        {/* Year rows */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+          {mergedHistory.map((row) => (
+            <div key={row.year} style={{ display: "grid", gridTemplateColumns: `3rem 1fr${hasHeadcount ? " 1fr" : ""}`, gap: "0 16px", alignItems: "center" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>{row.year}</div>
 
-          {/* Current headcount hero */}
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
-            <span style={{ fontFamily: "var(--font-serif)", fontSize: 48, fontWeight: 700, color: "var(--color-fg)", lineHeight: 1 }}>
-              {authority.headcountInt > 0 ? authority.headcountInt.toLocaleString("sv-SE") : authority.headcount}
-            </span>
-          </div>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-fg-muted)", marginBottom: 20 }}>
-            heltidsanställda · {authority.year}
-          </div>
-
-          {/* Headcount history chart */}
-          {authority.headcountHistory && authority.headcountHistory.length > 1 ? (
-            <>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "1px", marginBottom: 10, textTransform: "uppercase" }}>
-                Personalutveckling {authority.headcountHistory[0].year}–{authority.headcountHistory[authority.headcountHistory.length - 1].year}
+              {/* Cost bar */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ flex: 1, height: 5, background: "var(--color-track)", borderRadius: 2, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${(row.expenditureMdkr / maxCost) * 100}%`, background: "#2d6fa8", borderRadius: 2 }} />
+                </div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg)", minWidth: "5.5rem", textAlign: "right" }}>
+                  {row.expenditureMdkr.toFixed(1)} mdkr
+                </div>
               </div>
-              <HBars
-                items={(authority.headcountHistory as YearlyHeadcount[]).map((h) => ({
-                  name: String(h.year),
-                  value: h.headcountInt,
-                  color: "#5a9fd0",
-                }))}
-                max={Math.max(...authority.headcountHistory.map((h) => h.headcountInt))}
-                unit=""
-                height={5}
-                gap={8}
-                formatValue={(v) => v.toLocaleString("sv-SE")}
-              />
-              <div style={{ marginTop: 10, fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", opacity: 0.7 }}>
-                Källa: SCB KLS (AM0102) · anställda december varje år
-              </div>
-            </>
-          ) : null}
 
-          {/* Meta */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 16 }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Departement</span>
-              <span style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg)" }}>{authority.ministry}</span>
+              {/* Headcount bar */}
+              {hasHeadcount && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ flex: 1, height: 5, background: "var(--color-track)", borderRadius: 2, overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: row.headcountInt ? `${(row.headcountInt / maxHead) * 100}%` : "0%", background: "#5a8f6e", borderRadius: 2 }} />
+                  </div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg)", minWidth: "4.5rem", textAlign: "right" }}>
+                    {row.headcountInt ? row.headcountInt.toLocaleString("sv-SE") : "–"}
+                  </div>
+                </div>
+              )}
             </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Kostnad {authority.year}</span>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: "var(--color-fg)" }}>{authority.expenditureMdkr.toFixed(1)} mdkr</span>
+          ))}
+        </div>
+
+        {/* Legend */}
+        <div style={{ display: "flex", gap: 20, marginTop: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ width: 12, height: 4, background: "#2d6fa8", borderRadius: 2 }} />
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", opacity: 0.8 }}>Kostnad · Statskontoret årsutfall</span>
+          </div>
+          {hasHeadcount && (
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 12, height: 4, background: "#5a8f6e", borderRadius: 2 }} />
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", opacity: 0.8 }}>Anställda dec. · SCB KLS AM0102</span>
+            </div>
+          )}
+          <div style={{ display: "flex", alignItems: "center", gap: 5, marginLeft: "auto" }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Departement</span>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg)" }}>{authority.ministry}</span>
             </div>
           </div>
         </div>
