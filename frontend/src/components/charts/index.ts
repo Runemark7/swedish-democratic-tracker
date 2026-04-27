@@ -1,4 +1,6 @@
 export { Donut } from './Donut';
+export { DualLine } from './DualLine';
+export type { DualLineSeries } from './DualLine';
 export { HBars } from './HBars';
 export { TargetBar } from './TargetBar';
 export { Pill } from './Pill';
