@@ -14,22 +14,21 @@ import (
 	"riksdagskollen/internal/riksdag/ports"
 )
 
-// headcountURL is the SCB PxWebApi endpoint for government employees by authority.
-const headcountURL = "https://api.scb.se/OV0104/v1/doris/sv/ssd/OE/OE0108/OE0108A/OE0108T01A"
+// headcountURL is the SCB KLS table: monthly employees in statlig sektor by agency.
+const headcountURL = "https://api.scb.se/OV0104/v1/doris/sv/ssd/AM/AM0102/AM0102A/KLStabell14LpMan"
 
-// scbNameMap maps SCB agency names to our canonical agency names.
-// SCB uses full legal names; we match our 10 tracked agencies.
-var scbNameMap = map[string]string{
-	"Polismyndigheten":                             "Polismyndigheten",
-	"Säkerhetspolisen":                             "Säkerhetspolisen",
-	"Åklagarmyndigheten":                           "Åklagarmyndigheten",
-	"Sveriges Domstolar":                           "Sveriges Domstolar",
-	"Kriminalvården":                               "Kriminalvården",
-	"Skatteverket":                                 "Skatteverket",
-	"Tullverket":                                   "Tullverket",
-	"Migrationsverket":                             "Migrationsverket",
-	"Försäkringskassan":                            "Försäkringskassan",
-	"Arbetsförmedlingen":                           "Arbetsförmedlingen",
+// klsCodeMap maps KLS agency codes to our canonical agency names.
+// C021 = polisväsendet (includes Polismyndigheten + Säkerhetspolisen).
+// Åklagarmyndigheten and Säkerhetspolisen have no separate codes in this table.
+var klsCodeMap = map[string]string{
+	"C021": "Polismyndigheten",
+	"C022": "Sveriges Domstolar",
+	"C025": "Kriminalvården",
+	"C026": "Migrationsverket",
+	"C051": "Försäkringskassan",
+	"C071": "Skatteverket",
+	"C076": "Tullverket",
+	"C172": "Arbetsförmedlingen",
 }
 
 type Client struct {
@@ -68,21 +67,25 @@ const historyFromYear = 2015
 
 func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 	latestYear := time.Now().Year() - 1
-	years := make([]string, 0, latestYear-historyFromYear+1)
+
+	// Request December of each year as the annual snapshot.
+	var tidValues []string
 	for y := historyFromYear; y <= latestYear; y++ {
-		years = append(years, strconv.Itoa(y))
+		tidValues = append(tidValues, fmt.Sprintf("%dM12", y))
+	}
+
+	codes := make([]string, 0, len(klsCodeMap))
+	for k := range klsCodeMap {
+		codes = append(codes, k)
 	}
 
 	body := map[string]any{
 		"query": []map[string]any{
-			{
-				"code":      "ContentsCode",
-				"selection": map[string]any{"filter": "item", "values": []string{"OE0108A1"}},
-			},
-			{
-				"code":      "Tid",
-				"selection": map[string]any{"filter": "item", "values": years},
-			},
+			{"code": "Myndighet", "selection": map[string]any{"filter": "item", "values": codes}},
+			{"code": "Kon", "selection": map[string]any{"filter": "item", "values": []string{"1+2"}}},
+			{"code": "Heltiddeltid", "selection": map[string]any{"filter": "item", "values": []string{"HT+DT"}}},
+			{"code": "ContentsCode", "selection": map[string]any{"filter": "item", "values": []string{"AM0102AB"}}},
+			{"code": "Tid", "selection": map[string]any{"filter": "item", "values": tidValues}},
 		},
 		"response": map[string]any{"format": "json"},
 	}
@@ -118,7 +121,7 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 		return nil, fmt.Errorf("scb headcount decode: %w", err)
 	}
 
-	// Aggregate per agency: collect all years into HeadcountHistory.
+	// Aggregate per agency: key layout is [Myndighet, Kon, Heltiddeltid, Tid].
 	type agencyAcc struct {
 		latestYear int
 		latest     int
@@ -127,14 +130,15 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 	byName := map[string]*agencyAcc{}
 
 	for _, row := range result.Data {
-		if len(row.Key) < 2 || len(row.Values) == 0 {
+		if len(row.Key) < 4 || len(row.Values) == 0 {
 			continue
 		}
-		canonical, ok := scbNameMap[row.Key[0]]
+		canonical, ok := klsCodeMap[row.Key[0]]
 		if !ok {
 			continue
 		}
-		yr, err := strconv.Atoi(row.Key[1])
+		// Tid is "YYYYMmm", extract year from first 4 chars.
+		yr, err := strconv.Atoi(row.Key[3][:4])
 		if err != nil {
 			continue
 		}
@@ -160,7 +164,6 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 
 	out := make([]ports.HeadcountData, 0, len(byName))
 	for name, acc := range byName {
-		// Sort history ascending by year.
 		sort.Slice(acc.history, func(i, j int) bool { return acc.history[i].Year < acc.history[j].Year })
 		out = append(out, ports.HeadcountData{
 			Name:             name,

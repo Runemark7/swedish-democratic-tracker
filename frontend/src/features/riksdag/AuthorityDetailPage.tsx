@@ -213,7 +213,7 @@ export function AuthorityDetailPage() {
                 formatValue={(v) => v.toLocaleString("sv-SE")}
               />
               <div style={{ marginTop: 10, fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", opacity: 0.7 }}>
-                Källa: SCB OE0108 · heltidsanställda årsgenomsnitt
+                Källa: SCB KLS (AM0102) · anställda december varje år
               </div>
             </>
           ) : null}
