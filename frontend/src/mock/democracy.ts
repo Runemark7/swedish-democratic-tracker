@@ -64,22 +64,22 @@ export const mockRiksdag: LevelData = {
     {
       label: "Statsskuld/BNP",
       description: "Statens samlade skuld i förhållande till BNP. Hög skuld begränsar statens möjlighet att investera i välfärd och krisberedskap utan att höja skatterna.",
-      value: "38 %", raw: 38, target: 35, worseHigher: true, unit: "%", trend: "down", delta: "−1,2 pp", note: "Källa: Riksgälden 2025",
+      value: "38 %", raw: 38, target: 35, worseHigher: true, unit: "%", trend: "down", delta: "−1,2 pp", note: "Källa: Riksgälden", sourceUrl: "https://www.riksgalden.se/sv/var-verksamhet/statsskulden/",
     },
     {
       label: "Arbetslöshet",
       description: "Andel av arbetskraften som är arbetslösa. Hög arbetslöshet minskar skatteintäkterna och ökar kostnaderna för socialförsäkringssystemet.",
-      value: "8,5 %", raw: 8.5, target: 5, worseHigher: true, unit: "%", trend: "up", delta: "+0,3 pp", note: "Källa: SCB 2025",
+      value: "8,5 %", raw: 8.5, target: 5, worseHigher: true, unit: "%", trend: "up", delta: "+0,3 pp", note: "Källa: SCB", sourceUrl: "https://www.scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/",
     },
     {
       label: "Inflation (KPI)",
       description: "Konsumentprisindex visar hur snabbt priserna stiger. Riksbankens mål är 2 %. För hög inflation urholkar hushållens köpkraft.",
-      value: "1,8 %", raw: 1.8, target: 2, worseHigher: false, unit: "%", trend: "down", delta: "−0,6 pp", note: "Källa: SCB 2025",
+      value: "1,8 %", raw: 1.8, target: 2, worseHigher: false, unit: "%", trend: "down", delta: "−0,6 pp", note: "Källa: SCB", sourceUrl: "https://www.scb.se/hitta-statistik/statistik-efter-amne/priser-och-konsumtion/konsumentprisindex/konsumentprisindex-kpi/",
     },
     {
       label: "BNP-tillväxt",
       description: "Hur snabbt ekonomin växer. Positiv tillväxt innebär fler jobb och ökade skatteintäkter som kan finansiera välfärden.",
-      value: "1,2 %", raw: 1.2, target: 2, worseHigher: false, unit: "%", trend: "up", delta: "+0,8 pp", note: "Källa: Konjunkturinstitutet 2025",
+      value: "1,2 %", raw: 1.2, target: 2, worseHigher: false, unit: "%", trend: "up", delta: "+0,8 pp", note: "Källa: Konjunkturinstitutet", sourceUrl: "https://www.konj.se/statistik/prognoser.html",
     },
   ],
 };

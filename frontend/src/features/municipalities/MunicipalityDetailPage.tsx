@@ -1,5 +1,5 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Hemicycle, Donut, HBars, Pill, Trend, TargetBar } from "@/components/charts";
+import { Hemicycle, Donut, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { useKommun, useKommunList } from "@/hooks/useDemocracy";
 import type { LiveVote } from "@/types/democracy";
@@ -299,12 +299,13 @@ export function MunicipalityDetailPage() {
               <div style={{ marginBottom: 12 }}>
                 <Trend trend={kpi.trend} delta={kpi.delta} />
               </div>
-              <TargetBar
-                value={kpi.raw}
+              <GoalBadge
+                raw={kpi.raw}
                 target={kpi.target}
                 worseHigher={kpi.worseHigher}
                 unit={kpi.unit}
-                height={28}
+                note={kpi.note}
+                sourceUrl={kpi.sourceUrl}
               />
               {kpi.description && (
                 <div
