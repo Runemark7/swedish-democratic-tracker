@@ -18,21 +18,46 @@ import (
 var ErrNotFound = errors.New("authority not found")
 
 type Service struct {
-	primary   ports.AuthorityClient
-	fallback  ports.AuthorityClient
-	headcount ports.HeadcountClient // optional; nil means use static data
-	kpiRepo   ports.KpiRepository   // optional; nil means KPIs unavailable
+	primary       ports.AuthorityClient
+	fallback      ports.AuthorityClient
+	headcount     ports.HeadcountClient    // optional; nil means use static data
+	kpiRepo       ports.KpiRepository      // optional
+	govRepo       ports.GovRepository      // optional
+	agendaRepo    ports.AgendaRepository   // optional
+	liveVotesRepo ports.LiveVotesRepository // optional
 }
 
-func (s *Service) SetKpiRepo(r ports.KpiRepository) {
-	s.kpiRepo = r
-}
+func (s *Service) SetKpiRepo(r ports.KpiRepository)            { s.kpiRepo = r }
+func (s *Service) SetGovRepo(r ports.GovRepository)            { s.govRepo = r }
+func (s *Service) SetAgendaRepo(r ports.AgendaRepository)      { s.agendaRepo = r }
+func (s *Service) SetLiveVotesRepo(r ports.LiveVotesRepository) { s.liveVotesRepo = r }
 
 func (s *Service) ListKpis(ctx context.Context) ([]domain.Kpi, error) {
 	if s.kpiRepo == nil {
 		return nil, errors.New("kpi repository not configured")
 	}
 	return s.kpiRepo.ListKpis(ctx)
+}
+
+func (s *Service) GetGovernment(ctx context.Context) (*domain.Government, error) {
+	if s.govRepo == nil {
+		return nil, errors.New("government repository not configured")
+	}
+	return s.govRepo.GetCurrentGovernment(ctx)
+}
+
+func (s *Service) ListAgenda(ctx context.Context) ([]domain.AgendaItem, error) {
+	if s.agendaRepo == nil {
+		return nil, errors.New("agenda repository not configured")
+	}
+	return s.agendaRepo.ListAgenda(ctx)
+}
+
+func (s *Service) ListLiveVotes(ctx context.Context, limit int) ([]domain.LiveVote, error) {
+	if s.liveVotesRepo == nil {
+		return nil, errors.New("live votes repository not configured")
+	}
+	return s.liveVotesRepo.ListLiveVotes(ctx, limit)
 }
 
 func NewService(primary, fallback ports.AuthorityClient) *Service {

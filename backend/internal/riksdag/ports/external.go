@@ -50,3 +50,15 @@ type HeadcountClient interface {
 type KpiRepository interface {
 	ListKpis(ctx context.Context) ([]domain.Kpi, error)
 }
+
+type GovRepository interface {
+	GetCurrentGovernment(ctx context.Context) (*domain.Government, error)
+}
+
+type AgendaRepository interface {
+	ListAgenda(ctx context.Context) ([]domain.AgendaItem, error)
+}
+
+type LiveVotesRepository interface {
+	ListLiveVotes(ctx context.Context, limit int) ([]domain.LiveVote, error)
+}

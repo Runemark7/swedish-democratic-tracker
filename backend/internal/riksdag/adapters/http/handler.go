@@ -22,6 +22,9 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/riksdag/authorities", h.getAuthorities)
 	r.Get("/riksdag/authorities/{slug}", h.getAuthority)
 	r.Get("/riksdag/kpis", h.getKpis)
+	r.Get("/riksdag/government", h.getGovernment)
+	r.Get("/riksdag/agenda", h.getAgenda)
+	r.Get("/riksdag/live-votes", h.getLiveVotes)
 }
 
 func (h *Handler) getAuthorities(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +57,33 @@ func (h *Handler) getKpis(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonOK(w, kpis)
+}
+
+func (h *Handler) getGovernment(w http.ResponseWriter, r *http.Request) {
+	gov, err := h.svc.GetGovernment(r.Context())
+	if err != nil {
+		jsonError(w, "failed to fetch government", http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, gov)
+}
+
+func (h *Handler) getAgenda(w http.ResponseWriter, r *http.Request) {
+	items, err := h.svc.ListAgenda(r.Context())
+	if err != nil {
+		jsonError(w, "failed to fetch agenda", http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, items)
+}
+
+func (h *Handler) getLiveVotes(w http.ResponseWriter, r *http.Request) {
+	votes, err := h.svc.ListLiveVotes(r.Context(), 10)
+	if err != nil {
+		jsonError(w, "failed to fetch live votes", http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, votes)
 }
 
 func jsonOK(w http.ResponseWriter, v any) {
