@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
-import { Hemicycle, Donut, HBars, DualLine, Pill, TargetBar, Trend } from "@/components/charts";
+import { Hemicycle, Donut, HBars, DualLine, Pill, GoalBadge, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import type { Authority, LiveVote, Party } from "@/types/democracy";
 
@@ -304,12 +304,13 @@ export function RiksdagPage() {
               <div style={{ marginBottom: 12 }}>
                 <Trend trend={k.trend} delta={k.delta} />
               </div>
-              <TargetBar
-                value={k.raw}
+              <GoalBadge
+                raw={k.raw}
                 target={k.target}
                 worseHigher={k.worseHigher}
                 unit={k.unit}
-                height={28}
+                note={k.note}
+                sourceUrl={k.sourceUrl}
               />
               {k.description && (
                 <div

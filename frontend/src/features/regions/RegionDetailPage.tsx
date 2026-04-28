@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useRegion, useRegionList } from "@/hooks/useDemocracy";
-import { Hemicycle, Donut, HBars, Pill, Trend, TargetBar } from "@/components/charts";
+import { Hemicycle, Donut, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import type { LiveVote, Party } from "@/types/democracy";
 
@@ -248,11 +248,13 @@ export function RegionDetailPage() {
                 </span>
                 <Trend trend={k.trend} delta={k.delta} />
               </div>
-              <TargetBar
-                value={k.raw}
+              <GoalBadge
+                raw={k.raw}
                 target={k.target}
                 worseHigher={k.worseHigher}
                 unit={k.unit}
+                note={k.note}
+                sourceUrl={k.sourceUrl}
               />
               {k.description && (
                 <div

@@ -44,6 +44,7 @@ export interface Kpi {
   trend: "up" | "down" | "flat";
   delta: string;
   note: string;
+  sourceUrl?: string;
 }
 
 export interface YearlyExpenditure {
