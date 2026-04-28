@@ -21,6 +21,7 @@ func NewHandler(svc *riksdag.Service) *Handler {
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/riksdag/authorities", h.getAuthorities)
 	r.Get("/riksdag/authorities/{slug}", h.getAuthority)
+	r.Get("/riksdag/kpis", h.getKpis)
 }
 
 func (h *Handler) getAuthorities(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +45,15 @@ func (h *Handler) getAuthority(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonOK(w, detail)
+}
+
+func (h *Handler) getKpis(w http.ResponseWriter, r *http.Request) {
+	kpis, err := h.svc.ListKpis(r.Context())
+	if err != nil {
+		jsonError(w, "failed to fetch kpis", http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, kpis)
 }
 
 func jsonOK(w http.ResponseWriter, v any) {
