@@ -1,6 +1,10 @@
 package ports
 
-import "context"
+import (
+	"context"
+
+	"riksdagskollen/internal/riksdag/domain"
+)
 
 type YearlyExpenditure struct {
 	Year            int
@@ -41,4 +45,8 @@ type HeadcountData struct {
 
 type HeadcountClient interface {
 	FetchHeadcounts(ctx context.Context) ([]HeadcountData, error)
+}
+
+type KpiRepository interface {
+	ListKpis(ctx context.Context) ([]domain.Kpi, error)
 }

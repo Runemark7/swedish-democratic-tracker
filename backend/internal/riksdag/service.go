@@ -21,6 +21,18 @@ type Service struct {
 	primary   ports.AuthorityClient
 	fallback  ports.AuthorityClient
 	headcount ports.HeadcountClient // optional; nil means use static data
+	kpiRepo   ports.KpiRepository   // optional; nil means KPIs unavailable
+}
+
+func (s *Service) SetKpiRepo(r ports.KpiRepository) {
+	s.kpiRepo = r
+}
+
+func (s *Service) ListKpis(ctx context.Context) ([]domain.Kpi, error) {
+	if s.kpiRepo == nil {
+		return nil, errors.New("kpi repository not configured")
+	}
+	return s.kpiRepo.ListKpis(ctx)
 }
 
 func NewService(primary, fallback ports.AuthorityClient) *Service {

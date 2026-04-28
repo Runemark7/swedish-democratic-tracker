@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
-import { riksdagApi } from "@/features/riksdag/api";
+import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi } from "@/features/riksdag/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem } from "@/types/democracy";
 import { mockRiksdag, mockRegion, mockKommun } from "@/mock/democracy";
 import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem } from "@/shared/types";
@@ -311,14 +311,93 @@ const REGION_STRIP_KPI_META: Record<string, KpiMeta> = {
 };
 const REGION_STRIP_ORDER = ["N60008", "N63016", "N63007", "N79173", "N79179", "N60404", "N85012"];
 
+// ── Riksdag budget helpers ────────────────────────────────────────────────────
+
+const UO_TO_GROUP: Record<string, string> = {
+  UO4: "Rättsväsen",
+  UO6: "Försvar",
+  UO9: "Hälsovård",
+  UO10: "Socialförsäkring", UO11: "Socialförsäkring", UO12: "Socialförsäkring",
+  UO15: "Utbildning", UO16: "Utbildning",
+  UO22: "Infrastruktur",
+  UO26: "Statsskuld & räntor",
+};
+
+const BUDGET_GROUP_ORDER = [
+  "Socialförsäkring", "Hälsovård", "Utbildning", "Försvar",
+  "Rättsväsen", "Infrastruktur", "Statsskuld & räntor", "Övrigt",
+];
+
+function mapBudgetDetail(detail: BudgetYearDetail): Budget {
+  const grouped = new Map<string, number>();
+  for (const alloc of detail.allocations) {
+    const group = UO_TO_GROUP[alloc.area.code] ?? "Övrigt";
+    grouped.set(group, (grouped.get(group) ?? 0) + alloc.amountKsek);
+  }
+  const totalKsek = detail.totalKsek;
+  const areas: BudgetArea[] = BUDGET_GROUP_ORDER.map(name => {
+    const ksek = grouped.get(name) ?? 0;
+    return {
+      name,
+      value: Math.round(ksek / 1_000_000),
+      pct: totalKsek > 0 ? Math.round((ksek / totalKsek) * 1000) / 10 : 0,
+    };
+  });
+  const mdkr = Math.round(totalKsek / 1_000_000);
+  const sourceUrl = detail.documents?.[0]?.url;
+  return {
+    total: `${mdkr.toLocaleString("sv-SE")} mdkr`,
+    year: String(detail.year),
+    areas,
+    sourceUrl,
+  };
+}
+
+function mapApiKpis(apiKpis: RiksdagKpi[]): Kpi[] {
+  return apiKpis.map(k => {
+    const rawStr = k.raw % 1 === 0
+      ? `${k.raw}${k.unit ? " " + k.unit : ""}`
+      : `${k.raw.toFixed(1).replace(".", ",")}${k.unit ? " " + k.unit : ""}`;
+    return {
+      label: k.label,
+      description: k.description,
+      value: rawStr,
+      raw: k.raw,
+      target: k.target,
+      worseHigher: k.worseHigher,
+      unit: k.unit,
+      trend: k.trend,
+      delta: k.delta,
+      note: k.note,
+      sourceUrl: k.sourceUrl,
+    };
+  });
+}
+
 // ── Riksdag ───────────────────────────────────────────────────────────────────
 export function useRiksdag() {
   return useQuery<LevelData>({
     queryKey: ["riksdag"],
     queryFn: async () => {
-      const authorities = await riksdagApi.getAuthorities()
-        .catch(() => mockRiksdag.authorities ?? []);
-      return { ...mockRiksdag, authorities };
+      const [authorities, years, apiKpis] = await Promise.all([
+        riksdagApi.getAuthorities().catch(() => mockRiksdag.authorities ?? []),
+        budgetApi.listYears().catch((): import("@/features/riksdag/api").BudgetYearSummary[] => []),
+        riksdagApi.getKpis().catch(() => [] as RiksdagKpi[]),
+      ]);
+
+      const latestDecided = [...(years ?? [])]
+        .filter(y => y.status === "decided")
+        .sort((a, b) => b.year - a.year)[0];
+
+      const budget = latestDecided
+        ? await budgetApi.getYear(latestDecided.year)
+            .then(mapBudgetDetail)
+            .catch(() => mockRiksdag.budget)
+        : mockRiksdag.budget;
+
+      const kpis = apiKpis.length > 0 ? mapApiKpis(apiKpis) : mockRiksdag.kpis;
+
+      return { ...mockRiksdag, authorities, budget, kpis };
     },
     staleTime: 60_000,
   });
