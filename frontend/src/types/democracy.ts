@@ -31,6 +31,7 @@ export interface Budget {
   total: string;
   year: string;
   areas: BudgetArea[];
+  sourceUrl?: string;
 }
 
 export interface Kpi {

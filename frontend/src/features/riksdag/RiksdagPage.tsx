@@ -472,6 +472,24 @@ export function RiksdagPage() {
               />
             </div>
           </div>
+          {budget.sourceUrl && (
+            <a
+              href={budget.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                marginTop: 14,
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                letterSpacing: "0.04em",
+                color: "var(--color-fg-muted)",
+                textDecoration: "none",
+              }}
+            >
+              Källa: Budgetpropositionen 2025/26:1 →
+            </a>
+          )}
         </div>
       </div>
 
