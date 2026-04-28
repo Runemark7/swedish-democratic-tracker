@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
-import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi } from "@/features/riksdag/api";
+import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type RiksdagGovernment, type RiksdagAgendaItem, type RiksdagLiveVote } from "@/features/riksdag/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem } from "@/types/democracy";
 import { mockRiksdag, mockRegion, mockKommun } from "@/mock/democracy";
 import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem } from "@/shared/types";
@@ -374,15 +374,44 @@ function mapApiKpis(apiKpis: RiksdagKpi[]): Kpi[] {
   });
 }
 
+function mapGovernment(gov: RiksdagGovernment): LevelData["ruling"] {
+  const toParty = (p: RiksdagGovernment["parties"][number]): Party => ({
+    name: p.name, short: p.short, seats: p.seats, color: p.color,
+  });
+  return {
+    type: gov.typeLabel,
+    parties: gov.parties.map(toParty),
+    support: gov.support.map(toParty),
+    opposition: gov.opposition.map(toParty),
+  };
+}
+
+function mapAgenda(items: RiksdagAgendaItem[]): AgendaItem[] {
+  return items.map(i => ({ title: i.title, description: i.description, source: i.source, status: i.status as AgendaItem["status"] }));
+}
+
+function mapLiveVotes(votes: RiksdagLiveVote[]): LiveVote[] {
+  return votes.map(v => ({
+    time: formatSwedishDate(v.date),
+    title: v.title,
+    status: v.status as LiveVote["status"],
+    tag: v.tag,
+    beteckning: v.beteckning,
+  }));
+}
+
 // ── Riksdag ───────────────────────────────────────────────────────────────────
 export function useRiksdag() {
   return useQuery<LevelData>({
     queryKey: ["riksdag"],
     queryFn: async () => {
-      const [authorities, years, apiKpis] = await Promise.all([
+      const [authorities, years, apiKpis, apiGov, apiAgenda, apiLiveVotes] = await Promise.all([
         riksdagApi.getAuthorities().catch(() => mockRiksdag.authorities ?? []),
         budgetApi.listYears().catch((): import("@/features/riksdag/api").BudgetYearSummary[] => []),
         riksdagApi.getKpis().catch(() => [] as RiksdagKpi[]),
+        riksdagApi.getGovernment().catch(() => null as RiksdagGovernment | null),
+        riksdagApi.getAgenda().catch(() => [] as RiksdagAgendaItem[]),
+        riksdagApi.getLiveVotes().catch(() => [] as RiksdagLiveVote[]),
       ]);
 
       const latestDecided = [...(years ?? [])]
@@ -396,8 +425,11 @@ export function useRiksdag() {
         : mockRiksdag.budget;
 
       const kpis = apiKpis.length > 0 ? mapApiKpis(apiKpis) : mockRiksdag.kpis;
+      const ruling = apiGov ? mapGovernment(apiGov) : mockRiksdag.ruling;
+      const agenda = apiAgenda.length > 0 ? mapAgenda(apiAgenda) : mockRiksdag.agenda;
+      const liveVotes = apiLiveVotes.length > 0 ? mapLiveVotes(apiLiveVotes) : mockRiksdag.liveVotes;
 
-      return { ...mockRiksdag, authorities, budget, kpis };
+      return { ...mockRiksdag, authorities, budget, kpis, ruling, agenda, liveVotes };
     },
     staleTime: 60_000,
   });

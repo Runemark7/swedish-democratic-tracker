@@ -174,6 +174,9 @@ func main() {
 
 	riksdagSvc := riksdag.NewServiceWithSCB(riksdagSK.NewClient(), riksdagStatic.NewClient(), riksdagSCB.NewClient())
 	riksdagSvc.SetKpiRepo(riksdagPG.NewKpiRepository(db))
+	riksdagSvc.SetGovRepo(riksdagPG.NewGovRepository(db))
+	riksdagSvc.SetAgendaRepo(riksdagPG.NewAgendaRepository(db))
+	riksdagSvc.SetLiveVotesRepo(riksdagPG.NewLiveVotesRepository(db))
 	riksdagHandler := riksdagHTTP.NewHandler(riksdagSvc)
 
 	// -- Router --

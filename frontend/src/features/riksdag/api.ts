@@ -39,6 +39,48 @@ export interface RiksdagKpi {
   year: number;
 }
 
+// ── Government API types (from /api/riksdag/government) ───────────────────────
+
+export interface RiksdagGovernmentParty {
+  name: string;
+  short: string;
+  seats: number;
+  color: string;
+  role: string;
+  sortOrder: number;
+}
+
+export interface RiksdagGovernment {
+  typeLabel: string;
+  validFrom: string;
+  parties: RiksdagGovernmentParty[];
+  support: RiksdagGovernmentParty[];
+  opposition: RiksdagGovernmentParty[];
+}
+
+// ── Agenda API types (from /api/riksdag/agenda) ────────────────────────────────
+
+export interface RiksdagAgendaItem {
+  id: number;
+  title: string;
+  description: string;
+  source: string;
+  status: string;
+}
+
+// ── Live votes API types (from /api/riksdag/live-votes) ───────────────────────
+
+export interface RiksdagLiveVote {
+  beteckning: string;
+  title: string;
+  status: string;
+  jaCount: number;
+  nejCount: number;
+  margin: string;
+  tag: string;
+  date: string;
+}
+
 // ── API clients ────────────────────────────────────────────────────────────────
 
 export const riksdagApi = {
@@ -57,6 +99,24 @@ export const riksdagApi = {
   getKpis: (): Promise<RiksdagKpi[]> =>
     fetch("/api/riksdag/kpis").then((r) => {
       if (!r.ok) throw new Error(`riksdag/kpis: ${r.status}`);
+      return r.json();
+    }),
+
+  getGovernment: (): Promise<RiksdagGovernment> =>
+    fetch("/api/riksdag/government").then((r) => {
+      if (!r.ok) throw new Error(`riksdag/government: ${r.status}`);
+      return r.json();
+    }),
+
+  getAgenda: (): Promise<RiksdagAgendaItem[]> =>
+    fetch("/api/riksdag/agenda").then((r) => {
+      if (!r.ok) throw new Error(`riksdag/agenda: ${r.status}`);
+      return r.json();
+    }),
+
+  getLiveVotes: (): Promise<RiksdagLiveVote[]> =>
+    fetch("/api/riksdag/live-votes").then((r) => {
+      if (!r.ok) throw new Error(`riksdag/live-votes: ${r.status}`);
       return r.json();
     }),
 };
