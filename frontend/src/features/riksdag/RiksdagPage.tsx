@@ -302,7 +302,7 @@ export function RiksdagPage() {
                 {k.value}
               </div>
               <div style={{ marginBottom: 12 }}>
-                <Trend trend={k.trend} delta={k.delta} />
+                <Trend trend={k.trend} delta={k.delta} worseHigher={k.worseHigher} />
               </div>
               <GoalBadge
                 raw={k.raw}

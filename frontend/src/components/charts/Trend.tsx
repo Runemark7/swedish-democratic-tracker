@@ -3,16 +3,22 @@ type TrendDirection = 'up' | 'down' | 'flat';
 interface TrendProps {
   trend: TrendDirection;
   delta: string;
+  worseHigher?: boolean;
 }
 
-const trendConfig: Record<TrendDirection, { symbol: string; color: string }> = {
-  up: { symbol: '↑', color: 'var(--color-up)' },
-  down: { symbol: '↓', color: 'var(--color-down)' },
-  flat: { symbol: '→', color: 'var(--color-fg-muted)' },
+const trendSymbol: Record<TrendDirection, string> = {
+  up: '↑', down: '↓', flat: '→',
 };
 
-export function Trend({ trend, delta }: TrendProps) {
-  const { symbol, color } = trendConfig[trend];
+export function Trend({ trend, delta, worseHigher = false }: TrendProps) {
+  const symbol = trendSymbol[trend];
+  const isGoodChange =
+    trend === 'flat' ? null :
+    trend === 'up' ? !worseHigher :
+    worseHigher;
+  const color =
+    isGoodChange === null ? 'var(--color-fg-muted)' :
+    isGoodChange ? 'var(--color-up)' : 'var(--color-down)';
 
   return (
     <span

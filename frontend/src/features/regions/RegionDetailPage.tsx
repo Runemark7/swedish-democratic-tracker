@@ -246,7 +246,7 @@ export function RegionDetailPage() {
                 >
                   {k.value}
                 </span>
-                <Trend trend={k.trend} delta={k.delta} />
+                <Trend trend={k.trend} delta={k.delta} worseHigher={k.worseHigher} />
               </div>
               <GoalBadge
                 raw={k.raw}

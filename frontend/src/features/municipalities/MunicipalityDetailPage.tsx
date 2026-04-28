@@ -297,7 +297,7 @@ export function MunicipalityDetailPage() {
                 {kpi.value}
               </div>
               <div style={{ marginBottom: 12 }}>
-                <Trend trend={kpi.trend} delta={kpi.delta} />
+                <Trend trend={kpi.trend} delta={kpi.delta} worseHigher={kpi.worseHigher} />
               </div>
               <GoalBadge
                 raw={kpi.raw}
