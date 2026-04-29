@@ -985,12 +985,43 @@ export interface components {
             year: number;
             history?: components["schemas"]["YearlyExpenditure"][];
         };
-        RiksdagAuthorityDetail: components["schemas"]["RiksdagAuthority"] & {
+        AgencyRegleringsbrev: {
+            /** @example 2024 */
+            year: number;
+            /**
+             * Format: date
+             * @example 2024-12-19
+             */
+            date: string;
+            /** @example Regleringsbrev för budgetåret 2024 avseende Polismyndigheten */
+            title: string;
+            /** @example Polismyndigheten ska verka för att minska brottsligheten och öka tryggheten. */
+            summary: string;
             /**
              * Format: uri
-             * @example https://data.riksdagen.se/dokumentlista/?doktyp=Rb&titel=Polismyndigheten&utformat=json&sz=200
+             * @example https://www.riksdagen.se/sv/dokument-och-lagar/dokument/Rb12345/
              */
-            regleringsbrevUrl: string;
+            url: string;
+        };
+        AgencyDecision: {
+            /**
+             * Format: date
+             * @example 2024-11-20
+             */
+            date: string;
+            /** @example Riksdagens kontrollmakt och Riksrevisionen */
+            title: string;
+            /** @example bet */
+            docType: string;
+            summary: string;
+            /** Format: uri */
+            url: string;
+        };
+        RiksdagAuthorityDetail: components["schemas"]["RiksdagAuthority"] & {
+            /** @example Inrättades 2015 per polislagen. Nationell civil myndighet med ansvar för brottsförebyggande arbete, utredning och ordningshållning. */
+            mandate: string;
+            regleringsbrev: components["schemas"]["AgencyRegleringsbrev"][];
+            recentDecisions: components["schemas"]["AgencyDecision"][];
         };
     };
     responses: {

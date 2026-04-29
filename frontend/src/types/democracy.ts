@@ -76,8 +76,26 @@ export interface Authority {
   headcountHistory?: YearlyHeadcount[];
 }
 
+export interface AgencyRegleringsbrev {
+  year: number;
+  date: string;
+  title: string;
+  summary: string;
+  url: string;
+}
+
+export interface AgencyDecision {
+  date: string;
+  title: string;
+  docType: string;
+  summary: string;
+  url: string;
+}
+
 export interface AuthorityDetail extends Authority {
-  regleringsbrevUrl: string;
+  mandate: string;
+  regleringsbrev: AgencyRegleringsbrev[];
+  recentDecisions: AgencyDecision[];
 }
 
 export interface AgendaItem {
