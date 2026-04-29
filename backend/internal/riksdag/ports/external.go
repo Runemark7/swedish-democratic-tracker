@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"riksdagskollen/internal/riksdag/domain"
 )
@@ -19,6 +20,7 @@ type AuthorityData struct {
 	Headcount       string
 	HeadcountInt    int
 	Description     string
+	Mandate         string
 	WebsiteURL      string
 	AnnualReportURL string
 	ExpenditureMdkr float64
@@ -45,6 +47,28 @@ type HeadcountData struct {
 
 type HeadcountClient interface {
 	FetchHeadcounts(ctx context.Context) ([]HeadcountData, error)
+}
+
+type RiksdagenDoc struct {
+	DokID   string
+	Year    int
+	Date    time.Time
+	Title   string
+	Summary string
+	DocType string
+	URL     string
+}
+
+type AgencyDocClient interface {
+	FetchRegleringsbrev(ctx context.Context, agencyName string) ([]RiksdagenDoc, error)
+	FetchDecisions(ctx context.Context, agencyName string) ([]RiksdagenDoc, error)
+}
+
+type AgencyIntelRepository interface {
+	UpsertRegleringsbrev(ctx context.Context, slug string, docs []RiksdagenDoc) error
+	UpsertDecisions(ctx context.Context, slug string, docs []RiksdagenDoc) error
+	GetRegleringsbrev(ctx context.Context, slug string) ([]domain.Regleringsbrev, error)
+	GetDecisions(ctx context.Context, slug string) ([]domain.AgencyDecision, error)
 }
 
 type KpiRepository interface {

@@ -70,6 +70,7 @@ import (
 	// Feature: riksdag
 	riksdagHTTP "riksdagskollen/internal/riksdag/adapters/http"
 	riksdagPG "riksdagskollen/internal/riksdag/adapters/postgres"
+	riksdagRD "riksdagskollen/internal/riksdag/adapters/riksdagen"
 	riksdagSCB "riksdagskollen/internal/riksdag/adapters/scb"
 	riksdagStatic "riksdagskollen/internal/riksdag/adapters/static"
 	riksdagSK "riksdagskollen/internal/riksdag/adapters/statskontoret"
@@ -177,6 +178,8 @@ func main() {
 	riksdagSvc.SetGovRepo(riksdagPG.NewGovRepository(db))
 	riksdagSvc.SetAgendaRepo(riksdagPG.NewAgendaRepository(db))
 	riksdagSvc.SetLiveVotesRepo(riksdagPG.NewLiveVotesRepository(db))
+	agencyIntelRepo := riksdagPG.NewAgencyIntelRepository(db)
+	riksdagSvc.SetAgencyIntelRepo(agencyIntelRepo)
 	riksdagHandler := riksdagHTTP.NewHandler(riksdagSvc)
 
 	// -- Router --
@@ -220,9 +223,15 @@ func main() {
 	keywordWorker := workers.NewKeywordMatcherWorker(goalSvc, voteSvc, matchSvc)
 	refreshWorker := workers.NewRefreshScorecardsWorker(matchSvc)
 
+	agencyIntelWorker := workers.NewAgencyIntelWorker(riksdagRD.NewAgencyClient(), agencyIntelRepo, agencyInfoList())
+
 	sched := ingestion.NewScheduler()
 	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker); err != nil {
 		slog.Error("failed to register ingestion workers", "error", err)
+		os.Exit(1)
+	}
+	if err := sched.Register("@weekly", &agencyIntelWorker); err != nil {
+		slog.Error("failed to register agency-intel worker", "error", err)
 		os.Exit(1)
 	}
 	sched.Start()
@@ -326,4 +335,21 @@ func envOr(key, def string) string {
 		return v
 	}
 	return def
+}
+
+// agencyInfoList returns the static list of tracked agencies for the ingestion worker.
+// Slugs must match the toSlug() function in the riksdag service.
+func agencyInfoList() []workers.AgencyInfo {
+	return []workers.AgencyInfo{
+		{Name: "Polismyndigheten", Slug: "polismyndigheten"},
+		{Name: "Kriminalvården", Slug: "kriminalvarden"},
+		{Name: "Försäkringskassan", Slug: "forsakringskassan"},
+		{Name: "Skatteverket", Slug: "skatteverket"},
+		{Name: "Sveriges Domstolar", Slug: "sveriges-domstolar"},
+		{Name: "Arbetsförmedlingen", Slug: "arbetsformedlingen"},
+		{Name: "Migrationsverket", Slug: "migrationsverket"},
+		{Name: "Tullverket", Slug: "tullverket"},
+		{Name: "Åklagarmyndigheten", Slug: "aklagarmyndigheten"},
+		{Name: "Säkerhetspolisen", Slug: "sakerhetspolisen"},
+	}
 }

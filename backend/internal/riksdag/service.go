@@ -3,9 +3,7 @@ package riksdag
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
-	"net/url"
 	"sort"
 	"strings"
 	"time"
@@ -18,19 +16,21 @@ import (
 var ErrNotFound = errors.New("authority not found")
 
 type Service struct {
-	primary       ports.AuthorityClient
-	fallback      ports.AuthorityClient
-	headcount     ports.HeadcountClient    // optional; nil means use static data
-	kpiRepo       ports.KpiRepository      // optional
-	govRepo       ports.GovRepository      // optional
-	agendaRepo    ports.AgendaRepository   // optional
-	liveVotesRepo ports.LiveVotesRepository // optional
+	primary        ports.AuthorityClient
+	fallback       ports.AuthorityClient
+	headcount      ports.HeadcountClient     // optional; nil means use static data
+	kpiRepo        ports.KpiRepository       // optional
+	govRepo        ports.GovRepository       // optional
+	agendaRepo     ports.AgendaRepository    // optional
+	liveVotesRepo  ports.LiveVotesRepository // optional
+	agencyIntelRepo ports.AgencyIntelRepository // optional
 }
 
-func (s *Service) SetKpiRepo(r ports.KpiRepository)            { s.kpiRepo = r }
-func (s *Service) SetGovRepo(r ports.GovRepository)            { s.govRepo = r }
-func (s *Service) SetAgendaRepo(r ports.AgendaRepository)      { s.agendaRepo = r }
-func (s *Service) SetLiveVotesRepo(r ports.LiveVotesRepository) { s.liveVotesRepo = r }
+func (s *Service) SetKpiRepo(r ports.KpiRepository)                 { s.kpiRepo = r }
+func (s *Service) SetGovRepo(r ports.GovRepository)                 { s.govRepo = r }
+func (s *Service) SetAgendaRepo(r ports.AgendaRepository)           { s.agendaRepo = r }
+func (s *Service) SetLiveVotesRepo(r ports.LiveVotesRepository)     { s.liveVotesRepo = r }
+func (s *Service) SetAgencyIntelRepo(r ports.AgencyIntelRepository) { s.agencyIntelRepo = r }
 
 func (s *Service) ListKpis(ctx context.Context) ([]domain.Kpi, error) {
 	if s.kpiRepo == nil {
@@ -128,19 +128,53 @@ func (s *Service) GetAuthorities(ctx context.Context) ([]domain.Authority, error
 }
 
 func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.AuthorityDetail, error) {
+	// Build mandate map from static data on each call (cheap — 11 entries).
+	mandateBySlug := s.buildMandateMap(ctx)
+
 	all, err := s.GetAuthorities(ctx)
 	if err != nil {
 		return nil, err
 	}
 	for _, a := range all {
-		if a.Slug == slug {
-			return &domain.AuthorityDetail{
-				Authority:         a,
-				RegleringsbrevURL: regleringsbrevURL(a.Name),
-			}, nil
+		if a.Slug != slug {
+			continue
 		}
+
+		detail := &domain.AuthorityDetail{
+			Authority: a,
+			Mandate:   mandateBySlug[slug],
+		}
+
+		if s.agencyIntelRepo != nil {
+			if rb, err := s.agencyIntelRepo.GetRegleringsbrev(ctx, slug); err == nil {
+				detail.Regleringsbrev = rb
+			} else {
+				slog.Warn("failed to get regleringsbrev", "slug", slug, "error", err)
+			}
+
+			if dec, err := s.agencyIntelRepo.GetDecisions(ctx, slug); err == nil {
+				detail.RecentDecisions = dec
+			} else {
+				slog.Warn("failed to get decisions", "slug", slug, "error", err)
+			}
+		}
+
+		return detail, nil
 	}
 	return nil, ErrNotFound
+}
+
+// buildMandateMap fetches static authority data and builds slug→mandate lookup.
+func (s *Service) buildMandateMap(ctx context.Context) map[string]string {
+	data, err := s.fallback.FetchAuthorities(ctx)
+	if err != nil {
+		return nil
+	}
+	m := make(map[string]string, len(data))
+	for _, d := range data {
+		m[toSlug(d.Name)] = d.Mandate
+	}
+	return m
 }
 
 // fetchHeadcounts fetches SCB headcount data using its own background context so it is
@@ -162,13 +196,6 @@ func (s *Service) fetchHeadcounts() map[string]ports.HeadcountData {
 		m[d.Name] = d
 	}
 	return m
-}
-
-func regleringsbrevURL(name string) string {
-	return fmt.Sprintf(
-		"https://data.riksdagen.se/dokumentlista/?doktyp=Rb&titel=%s&utformat=json&sz=200",
-		url.QueryEscape(name),
-	)
 }
 
 // toSlug produces a stable URL slug from an agency name.

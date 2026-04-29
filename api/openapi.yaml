@@ -1564,13 +1564,62 @@ components:
           items:
             $ref: "#/components/schemas/YearlyExpenditure"
 
+    AgencyRegleringsbrev:
+      type: object
+      required: [year, date, title, summary, url]
+      properties:
+        year:
+          type: integer
+          example: 2024
+        date:
+          type: string
+          format: date
+          example: "2024-12-19"
+        title:
+          type: string
+          example: "Regleringsbrev för budgetåret 2024 avseende Polismyndigheten"
+        summary:
+          type: string
+          example: "Polismyndigheten ska verka för att minska brottsligheten och öka tryggheten."
+        url:
+          type: string
+          format: uri
+          example: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/Rb12345/
+
+    AgencyDecision:
+      type: object
+      required: [date, title, docType, summary, url]
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2024-11-20"
+        title:
+          type: string
+          example: "Riksdagens kontrollmakt och Riksrevisionen"
+        docType:
+          type: string
+          example: bet
+        summary:
+          type: string
+        url:
+          type: string
+          format: uri
+
     RiksdagAuthorityDetail:
       allOf:
         - $ref: "#/components/schemas/RiksdagAuthority"
         - type: object
-          required: [regleringsbrevUrl]
+          required: [mandate, regleringsbrev, recentDecisions]
           properties:
-            regleringsbrevUrl:
+            mandate:
               type: string
-              format: uri
-              example: https://data.riksdagen.se/dokumentlista/?doktyp=Rb&titel=Polismyndigheten&utformat=json&sz=200
+              example: "Inrättades 2015 per polislagen. Nationell civil myndighet med ansvar för brottsförebyggande arbete, utredning och ordningshållning."
+            regleringsbrev:
+              type: array
+              items:
+                $ref: "#/components/schemas/AgencyRegleringsbrev"
+            recentDecisions:
+              type: array
+              items:
+                $ref: "#/components/schemas/AgencyDecision"

@@ -292,7 +292,27 @@ export function AuthorityDetailPage() {
         </a>
       </div>
 
-      {/* ── Regleringsbrev ────────────────────────────────────────────── */}
+      {/* ── Uppdrag & mandat ──────────────────────────────────────────── */}
+      {authority.mandate && (
+        <div
+          style={{
+            margin: "0 32px",
+            border: "1px solid var(--color-border)",
+            borderTop: "none",
+            background: "var(--color-sdt-surface)",
+            padding: "20px 24px",
+          }}
+        >
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 10 }}>
+            Uppdrag & mandat · Varför finns myndigheten?
+          </div>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg-muted)", margin: 0, lineHeight: 1.65, maxWidth: 620 }}>
+            {authority.mandate}
+          </p>
+        </div>
+      )}
+
+      {/* ── Mål & direktiv (Regleringsbrev timeline) ──────────────────── */}
       <div
         style={{
           margin: "0 32px",
@@ -302,45 +322,117 @@ export function AuthorityDetailPage() {
           padding: "20px 24px",
         }}
       >
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 16 }}>
+          Mål & direktiv · Regleringsbrev per år
+        </div>
+        {(authority.regleringsbrev?.length ?? 0) === 0 ? (
+          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg-muted)", margin: 0, lineHeight: 1.6, maxWidth: 560 }}>
+            Regleringsbrev hämtas vid nästa schemalagda synkronisering. Riksdagen styr myndigheter genom årliga regleringsbrev som anger uppdrag, mål och ekonomiska ramar.
+          </p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            {authority.regleringsbrev.map((rb, idx) => (
+              <div
+                key={rb.year}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "3.5rem 1fr",
+                  gap: "0 20px",
+                  paddingBottom: 20,
+                  marginBottom: idx < authority.regleringsbrev.length - 1 ? 20 : 0,
+                  borderBottom: idx < authority.regleringsbrev.length - 1 ? "1px solid var(--color-border)" : "none",
+                }}
+              >
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 20, fontWeight: 700, color: "var(--color-fg)", lineHeight: 1, paddingTop: 2 }}>
+                  {rb.year}
+                </div>
+                <div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.05em", marginBottom: 4 }}>
+                    {rb.date}
+                  </div>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg)", fontWeight: 500, marginBottom: rb.summary ? 8 : 0 }}>
+                    {rb.title}
+                  </div>
+                  {rb.summary && (
+                    <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg-muted)", margin: "0 0 10px", lineHeight: 1.6, maxWidth: 580 }}>
+                      {rb.summary}
+                    </p>
+                  )}
+                  <a
+                    href={rb.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-accent)", textDecoration: "none", letterSpacing: "0.05em" }}
+                  >
+                    Läs regleringsbrev {rb.year} ↗
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── Senaste riksdagsbeslut ─────────────────────────────────────── */}
+      {(authority.recentDecisions?.length ?? 0) > 0 && (
         <div
           style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            letterSpacing: "0.15em",
-            color: "var(--color-fg-muted)",
-            textTransform: "uppercase",
-            marginBottom: 10,
+            margin: "0 32px",
+            border: "1px solid var(--color-border)",
+            borderTop: "none",
+            background: "var(--color-sdt-surface)",
+            padding: "20px 24px",
           }}
         >
-          Krav från riksdag · Regleringsbrev
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 16 }}>
+            Senaste riksdagsbeslut · Betänkanden som berör {authority.name}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            {authority.recentDecisions.map((dec, idx) => (
+              <div
+                key={`${dec.date}-${idx}`}
+                style={{
+                  paddingBottom: 16,
+                  marginBottom: idx < authority.recentDecisions.length - 1 ? 16 : 0,
+                  borderBottom: idx < authority.recentDecisions.length - 1 ? "1px solid var(--color-border)" : "none",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.05em" }}>{dec.date}</span>
+                  <span style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 8,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "var(--color-fg-muted)",
+                    background: "var(--color-track)",
+                    padding: "2px 5px",
+                    borderRadius: 2,
+                  }}>
+                    {dec.docType}
+                  </span>
+                </div>
+                <div style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg)", fontWeight: 500, marginBottom: dec.summary ? 6 : 8 }}>
+                  {dec.title}
+                </div>
+                {dec.summary && (
+                  <p style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-fg-muted)", margin: "0 0 8px", lineHeight: 1.6, maxWidth: 580 }}>
+                    {dec.summary.length > 200 ? dec.summary.slice(0, 200) + "…" : dec.summary}
+                  </p>
+                )}
+                <a
+                  href={dec.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-accent)", textDecoration: "none", letterSpacing: "0.05em" }}
+                >
+                  Läs betänkande ↗
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
-        <p
-          style={{
-            fontFamily: "var(--font-body)",
-            fontSize: 13,
-            color: "var(--color-fg-muted)",
-            margin: "0 0 12px",
-            lineHeight: 1.6,
-            maxWidth: 560,
-          }}
-        >
-          Riksdagen styr myndigheter genom regleringsbrev — årliga beslut som anger uppdrag, mål och ekonomiska ramar. Sök bland gällande och historiska regleringsbrev för {authority.name} i Riksdagens öppna dokumentdatabas.
-        </p>
-        <a
-          href={authority.regleringsbrevUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 11,
-            color: "var(--color-accent)",
-            textDecoration: "none",
-            letterSpacing: "0.05em",
-          }}
-        >
-          ↗ Sök regleringsbrev för {authority.name}
-        </a>
-      </div>
+      )}
 
       {/* ── Links ─────────────────────────────────────────────────────── */}
       {(authority.websiteUrl || authority.annualReportUrl) && (
