@@ -21,6 +21,7 @@ type AuthorityData struct {
 	HeadcountInt    int
 	Description     string
 	Mandate         string
+	MandateURL      string
 	WebsiteURL      string
 	AnnualReportURL string
 	ExpenditureMdkr float64

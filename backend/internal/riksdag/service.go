@@ -140,9 +140,11 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 			continue
 		}
 
+		info := mandateBySlug[slug]
 		detail := &domain.AuthorityDetail{
-			Authority: a,
-			Mandate:   mandateBySlug[slug],
+			Authority:  a,
+			Mandate:    info.text,
+			MandateURL: info.url,
 		}
 
 		if s.agencyIntelRepo != nil {
@@ -164,15 +166,17 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 	return nil, ErrNotFound
 }
 
+type mandateInfo struct{ text, url string }
+
 // buildMandateMap fetches static authority data and builds slug→mandate lookup.
-func (s *Service) buildMandateMap(ctx context.Context) map[string]string {
+func (s *Service) buildMandateMap(ctx context.Context) map[string]mandateInfo {
 	data, err := s.fallback.FetchAuthorities(ctx)
 	if err != nil {
 		return nil
 	}
-	m := make(map[string]string, len(data))
+	m := make(map[string]mandateInfo, len(data))
 	for _, d := range data {
-		m[toSlug(d.Name)] = d.Mandate
+		m[toSlug(d.Name)] = mandateInfo{text: d.Mandate, url: d.MandateURL}
 	}
 	return m
 }

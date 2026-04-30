@@ -1615,6 +1615,10 @@ components:
             mandate:
               type: string
               example: "Inrättades 2015 per polislagen. Nationell civil myndighet med ansvar för brottsförebyggande arbete, utredning och ordningshållning."
+            mandateUrl:
+              type: string
+              format: uri
+              example: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/polislag-1984387_sfs-1984-387/"
             regleringsbrev:
               type: array
               items:

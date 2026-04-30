@@ -306,9 +306,19 @@ export function AuthorityDetailPage() {
           <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 10 }}>
             Uppdrag & mandat · Varför finns myndigheten?
           </div>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg-muted)", margin: 0, lineHeight: 1.65, maxWidth: 620 }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg-muted)", margin: "0 0 10px", lineHeight: 1.65, maxWidth: 620 }}>
             {authority.mandate}
           </p>
+          {authority.mandateUrl && (
+            <a
+              href={authority.mandateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-accent)", textDecoration: "none", letterSpacing: "0.05em" }}
+            >
+              ↗ Läs lagen (riksdagen.se)
+            </a>
+          )}
         </div>
       )}
 

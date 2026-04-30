@@ -94,6 +94,7 @@ export interface AgencyDecision {
 
 export interface AuthorityDetail extends Authority {
   mandate: string;
+  mandateUrl?: string;
   regleringsbrev: AgencyRegleringsbrev[];
   recentDecisions: AgencyDecision[];
 }

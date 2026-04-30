@@ -1020,6 +1020,11 @@ export interface components {
         RiksdagAuthorityDetail: components["schemas"]["RiksdagAuthority"] & {
             /** @example Inrättades 2015 per polislagen. Nationell civil myndighet med ansvar för brottsförebyggande arbete, utredning och ordningshållning. */
             mandate: string;
+            /**
+             * Format: uri
+             * @example https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/polislag-1984387_sfs-1984-387/
+             */
+            mandateUrl?: string;
             regleringsbrev: components["schemas"]["AgencyRegleringsbrev"][];
             recentDecisions: components["schemas"]["AgencyDecision"][];
         };
