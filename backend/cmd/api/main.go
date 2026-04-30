@@ -230,7 +230,7 @@ func main() {
 		slog.Error("failed to register ingestion workers", "error", err)
 		os.Exit(1)
 	}
-	if err := sched.Register("@weekly", &agencyIntelWorker); err != nil {
+	if err := sched.RegisterSync("@weekly", &agencyIntelWorker); err != nil {
 		slog.Error("failed to register agency-intel worker", "error", err)
 		os.Exit(1)
 	}
