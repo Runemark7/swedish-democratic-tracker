@@ -42,16 +42,6 @@ func (w *AgencyIntelWorker) Run(ctx context.Context) error {
 }
 
 func (w *AgencyIntelWorker) syncAgency(ctx context.Context, a AgencyInfo) error {
-	rb, err := w.client.FetchRegleringsbrev(ctx, a.Name)
-	if err != nil {
-		slog.Warn("agency-intel: fetch regleringsbrev failed", "agency", a.Name, "error", err)
-	} else if len(rb) > 0 {
-		if err := w.repo.UpsertRegleringsbrev(ctx, a.Slug, rb); err != nil {
-			return err
-		}
-		slog.Info("agency-intel: upserted regleringsbrev", "agency", a.Name, "count", len(rb))
-	}
-
 	dec, err := w.client.FetchDecisions(ctx, a.Name)
 	if err != nil {
 		slog.Warn("agency-intel: fetch decisions failed", "agency", a.Name, "error", err)

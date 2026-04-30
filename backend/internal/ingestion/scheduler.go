@@ -40,6 +40,15 @@ func (s *Scheduler) Register(spec string, w Worker) error {
 	return err
 }
 
+// RegisterSync registers on the cron schedule AND adds to the initial-sync sequence.
+func (s *Scheduler) RegisterSync(spec string, w Worker) error {
+	if err := s.Register(spec, w); err != nil {
+		return err
+	}
+	s.syncWorkers = append(s.syncWorkers, w)
+	return nil
+}
+
 // RegisterDefaults wires all workers on their standard schedules.
 func (s *Scheduler) RegisterDefaults(
 	pw workers.PoliticiansWorker,
