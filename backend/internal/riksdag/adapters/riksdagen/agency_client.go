@@ -133,7 +133,7 @@ func (c *AgencyClient) FetchDecisions(ctx context.Context, agencyName string) ([
 		"sok":      {agencyName},
 		"doktyp":   {"bet"},
 		"utformat": {"json"},
-		"sz":       {"5"},
+		"sz":       {"20"},
 	}
 	raw, err := c.fetch(ctx, params)
 	if err != nil {

@@ -87,7 +87,7 @@ func (r *AgencyIntelRepository) GetDecisions(ctx context.Context, slug string) (
 		FROM agency_decisions
 		WHERE agency_slug = $1
 		ORDER BY date DESC
-		LIMIT 5
+		LIMIT 20
 	`, slug)
 	if err != nil {
 		return nil, err

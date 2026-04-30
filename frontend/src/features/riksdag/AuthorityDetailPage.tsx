@@ -397,7 +397,7 @@ export function AuthorityDetailPage() {
           }}
         >
           <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 16 }}>
-            Senaste riksdagsbeslut · Betänkanden som berör {authority.name}
+            Riksdagsbeslut · Betänkanden som berör {authority.name}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
             {authority.recentDecisions.map((dec, idx) => (
