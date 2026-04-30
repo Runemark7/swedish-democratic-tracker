@@ -149,8 +149,8 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 		}
 
 		// Regleringsbrev are generated from the Statsliggaren ID (no DB needed).
-		if info.statsliggarenID > 0 {
-			detail.Regleringsbrev = generateRegleringsbrev(info.statsliggarenID)
+		if info.statsliggarenID > 0 && info.activeSince > 0 {
+			detail.Regleringsbrev = generateRegleringsbrev(info.statsliggarenID, info.activeSince)
 		}
 
 		if s.agencyIntelRepo != nil {
@@ -169,6 +169,7 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 type mandateInfo struct {
 	text, url       string
 	statsliggarenID int
+	activeSince     int
 }
 
 // buildMandateMap fetches static authority data and builds slug→mandate lookup.
@@ -183,20 +184,20 @@ func (s *Service) buildMandateMap(ctx context.Context) map[string]mandateInfo {
 			text:            d.Mandate,
 			url:             d.MandateURL,
 			statsliggarenID: d.StatsliggarenID,
+			activeSince:     d.ActiveSince,
 		}
 	}
 	return m
 }
 
 const statsliggarenBase = "https://www.statskontoret.se/statsliggaren/regleringsbrev"
-const regleringsbrevMinYear = 2018
 
-// generateRegleringsbrev produces one entry per year from regleringsbrevMinYear to
-// the current year, each linking to the Statskontoret Statsliggaren for that agency.
-func generateRegleringsbrev(id int) []domain.Regleringsbrev {
+// generateRegleringsbrev produces one entry per year from activeSince to the current year,
+// each linking to the Statskontoret Statsliggaren for that agency.
+func generateRegleringsbrev(id, activeSince int) []domain.Regleringsbrev {
 	currentYear := time.Now().Year()
-	result := make([]domain.Regleringsbrev, 0, currentYear-regleringsbrevMinYear+1)
-	for y := currentYear; y >= regleringsbrevMinYear; y-- {
+	result := make([]domain.Regleringsbrev, 0, currentYear-activeSince+1)
+	for y := currentYear; y >= activeSince; y-- {
 		result = append(result, domain.Regleringsbrev{
 			Year:  y,
 			Title: fmt.Sprintf("Regleringsbrev för budgetåret %d", y),
