@@ -47,6 +47,7 @@ type AgencyDecision struct {
 type AuthorityDetail struct {
 	Authority
 	Mandate         string           `json:"mandate"`
+	MandateURL      string           `json:"mandateUrl,omitempty"`
 	Regleringsbrev  []Regleringsbrev `json:"regleringsbrev"`
 	RecentDecisions []AgencyDecision `json:"recentDecisions"`
 }
