@@ -333,11 +333,11 @@ export function AuthorityDetailPage() {
         }}
       >
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 16 }}>
-          Mål & direktiv · Regleringsbrev per år
+          Mål & direktiv · Regleringsbrev per år · Statsliggaren
         </div>
         {(authority.regleringsbrev?.length ?? 0) === 0 ? (
           <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg-muted)", margin: 0, lineHeight: 1.6, maxWidth: 560 }}>
-            Regleringsbrev hämtas vid nästa schemalagda synkronisering. Riksdagen styr myndigheter genom årliga regleringsbrev som anger uppdrag, mål och ekonomiska ramar.
+            Inga regleringsbrev tillgängliga för denna myndighet.
           </p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -357,10 +357,12 @@ export function AuthorityDetailPage() {
                   {rb.year}
                 </div>
                 <div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.05em", marginBottom: 4 }}>
-                    {rb.date}
-                  </div>
-                  <div style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg)", fontWeight: 500, marginBottom: rb.summary ? 8 : 0 }}>
+                  {rb.date && (
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.05em", marginBottom: 4 }}>
+                      {rb.date}
+                    </div>
+                  )}
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-fg)", fontWeight: 500, marginBottom: rb.summary ? 8 : 10 }}>
                     {rb.title}
                   </div>
                   {rb.summary && (

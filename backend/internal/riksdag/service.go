@@ -3,6 +3,7 @@ package riksdag
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"sort"
 	"strings"
@@ -147,13 +148,12 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 			MandateURL: info.url,
 		}
 
-		if s.agencyIntelRepo != nil {
-			if rb, err := s.agencyIntelRepo.GetRegleringsbrev(ctx, slug); err == nil {
-				detail.Regleringsbrev = rb
-			} else {
-				slog.Warn("failed to get regleringsbrev", "slug", slug, "error", err)
-			}
+		// Regleringsbrev are generated from the Statsliggaren ID (no DB needed).
+		if info.statsliggarenID > 0 {
+			detail.Regleringsbrev = generateRegleringsbrev(info.statsliggarenID)
+		}
 
+		if s.agencyIntelRepo != nil {
 			if dec, err := s.agencyIntelRepo.GetDecisions(ctx, slug); err == nil {
 				detail.RecentDecisions = dec
 			} else {
@@ -166,7 +166,10 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 	return nil, ErrNotFound
 }
 
-type mandateInfo struct{ text, url string }
+type mandateInfo struct {
+	text, url       string
+	statsliggarenID int
+}
 
 // buildMandateMap fetches static authority data and builds slug→mandate lookup.
 func (s *Service) buildMandateMap(ctx context.Context) map[string]mandateInfo {
@@ -176,9 +179,31 @@ func (s *Service) buildMandateMap(ctx context.Context) map[string]mandateInfo {
 	}
 	m := make(map[string]mandateInfo, len(data))
 	for _, d := range data {
-		m[toSlug(d.Name)] = mandateInfo{text: d.Mandate, url: d.MandateURL}
+		m[toSlug(d.Name)] = mandateInfo{
+			text:            d.Mandate,
+			url:             d.MandateURL,
+			statsliggarenID: d.StatsliggarenID,
+		}
 	}
 	return m
+}
+
+const statsliggarenBase = "https://www.statskontoret.se/statsliggaren/regleringsbrev"
+const regleringsbrevMinYear = 2018
+
+// generateRegleringsbrev produces one entry per year from regleringsbrevMinYear to
+// the current year, each linking to the Statskontoret Statsliggaren for that agency.
+func generateRegleringsbrev(id int) []domain.Regleringsbrev {
+	currentYear := time.Now().Year()
+	result := make([]domain.Regleringsbrev, 0, currentYear-regleringsbrevMinYear+1)
+	for y := currentYear; y >= regleringsbrevMinYear; y-- {
+		result = append(result, domain.Regleringsbrev{
+			Year:  y,
+			Title: fmt.Sprintf("Regleringsbrev för budgetåret %d", y),
+			URL:   fmt.Sprintf("%s/%d/%d/senaste", statsliggarenBase, id, y),
+		})
+	}
+	return result
 }
 
 // fetchHeadcounts fetches SCB headcount data using its own background context so it is
