@@ -16,7 +16,7 @@ import (
 
 const (
 	baseURL    = "https://data.riksdagen.se/dokumentlista/"
-	docBaseURL = "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/"
+	docBaseURL = "https://data.riksdagen.se/dokument/"
 	minYear    = 2018
 )
 
@@ -90,7 +90,7 @@ func toDoc(d dokument, docType string) (ports.RiksdagenDoc, error) {
 		Title:   strings.TrimSpace(d.Titel),
 		Summary: stripHTML(d.Sammanfattning),
 		DocType: docType,
-		URL:     docBaseURL + d.DokID + "/",
+		URL:     docBaseURL + d.DokID + ".html",
 	}, nil
 }
 
