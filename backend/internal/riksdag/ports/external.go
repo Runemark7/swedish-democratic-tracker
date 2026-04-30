@@ -23,6 +23,7 @@ type AuthorityData struct {
 	Mandate          string
 	MandateURL       string
 	StatsliggarenID  int // numeric ID in statskontoret.se/statsliggaren
+	ActiveSince      int // first year with regleringsbrev in Statsliggaren
 	WebsiteURL       string
 	AnnualReportURL  string
 	ExpenditureMdkr  float64
