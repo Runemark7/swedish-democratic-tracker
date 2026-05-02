@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { votesApi } from "./api";
@@ -72,6 +73,118 @@ function PartyBreakdownCard({ pos }: { pos: PartyVotePosition }) {
   );
 }
 
+function ShareDropdown({ beteckning, punkt }: { beteckning: string; punkt: string }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const shareUrl = `${window.location.origin}/votes/${beteckning}/${punkt}/dela`;
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // silently fail
+    }
+    setOpen(false);
+  };
+
+  return (
+    <div style={{ position: "relative", flexShrink: 0 }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          padding: "6px 12px",
+          borderRadius: 8,
+          border: "1px solid var(--color-border)",
+          background: open ? "var(--color-sdt-surface)" : "transparent",
+          color: "var(--color-fg-muted)",
+          fontFamily: "var(--font-mono)",
+          fontSize: 11,
+          letterSpacing: "0.08em",
+          cursor: "pointer",
+          transition: "background 0.15s",
+        }}
+      >
+        ↗ Dela
+      </button>
+
+      {open && (
+        <>
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 40 }}
+            onClick={() => setOpen(false)}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% + 8px)",
+              right: 0,
+              zIndex: 50,
+              background: "var(--color-bg)",
+              border: "1px solid var(--color-border)",
+              borderRadius: 10,
+              padding: 8,
+              minWidth: 230,
+              boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
+            <button
+              onClick={copy}
+              style={{
+                display: "block",
+                width: "100%",
+                textAlign: "left",
+                padding: "9px 12px",
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                letterSpacing: "0.06em",
+                background: "transparent",
+                border: "none",
+                borderRadius: 6,
+                cursor: "pointer",
+                color: copied ? "#16a34a" : "var(--color-fg)",
+                transition: "background 0.1s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--color-sdt-surface)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              {copied ? "✓  Länk kopierad!" : "⧉  Kopiera länk"}
+            </button>
+            <a
+              href={shareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              style={{
+                display: "block",
+                padding: "9px 12px",
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                letterSpacing: "0.06em",
+                borderRadius: 6,
+                color: "var(--color-fg-muted)",
+                textDecoration: "none",
+                transition: "background 0.1s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--color-sdt-surface)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              □  Öppna dela-sida →
+            </a>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function VoteDetailPage() {
   const { beteckning = "", punkt = "" } = useParams();
 
@@ -104,9 +217,12 @@ export function VoteDetailPage() {
     <div>
       {/* ── Vote header ────────────────────────────────────────────── */}
       <div className="bg-surface-lowest rounded-xl p-6 mt-3 mb-5">
-        <h2 className="font-display text-[22px] font-extrabold tracking-tight mb-3">
-          {data.documentTitle || `${beteckning} punkt ${punkt}`}
-        </h2>
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <h2 className="font-display text-[22px] font-extrabold tracking-tight flex-1">
+            {data.documentTitle || `${beteckning} punkt ${punkt}`}
+          </h2>
+          <ShareDropdown beteckning={beteckning} punkt={punkt} />
+        </div>
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <span className="text-[11px] font-mono font-semibold text-on-surface-variant px-2 py-0.5 rounded bg-surface-low">
             {beteckning} / punkt {punkt}
