@@ -6,6 +6,7 @@ import { PoliticiansPage } from "./features/politicians/PoliticiansPage";
 import { PoliticianPage } from "./features/politicians/PoliticianPage";
 import { VotesPage } from "./features/votes/VotesPage";
 import { VoteDetailPage } from "./features/votes/VoteDetailPage";
+import { VoteSharePage } from "./features/votes/VoteSharePage";
 import { BeslutDetailPage } from "./features/votes/BeslutDetailPage";
 import { BudgetPage } from "./features/budget/BudgetPage";
 import { AreaHistoryPage } from "./features/budget/AreaHistoryPage";
@@ -34,7 +35,6 @@ function sectionFromPath(pathname: string): NavSection {
     pathname.startsWith("/manifestos") ||
     pathname === "/"
   ) {
-    // "/" alone maps to riksdag tabs, but the active pill is START when literally "/"
     if (pathname === "/") return "start";
     return "riksdag";
   }
@@ -149,6 +149,16 @@ function PillNav({ to, label, active }: PillNavProps) {
 export default function App() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+
+  // Share-only pages render without app chrome
+  if (location.pathname.endsWith("/dela")) {
+    return (
+      <Routes>
+        <Route path="/votes/:beteckning/:punkt/dela" element={<VoteSharePage />} />
+      </Routes>
+    );
+  }
+
   const section = sectionFromPath(location.pathname);
   const showRiksdagTabs = isRiksdagSection(location.pathname);
 
