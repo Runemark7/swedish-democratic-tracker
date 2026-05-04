@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
@@ -75,10 +76,15 @@ func (h *Handler) getRegionKPI(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) getRegionBudget(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
-	areas, err := h.svc.GetRegionBudget(r.Context(), code, 2023)
-	if err != nil {
-		jsonError(w, err.Error(), http.StatusBadGateway)
-		return
+	// SCB publishes the previous year's data; try year-1 then year-2 as fallback.
+	year := time.Now().Year() - 1
+	areas, err := h.svc.GetRegionBudget(r.Context(), code, year)
+	if err != nil || len(areas) == 0 {
+		areas, err = h.svc.GetRegionBudget(r.Context(), code, year-1)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusBadGateway)
+			return
+		}
 	}
 	if areas == nil {
 		areas = []ports.RegionBudgetArea{}

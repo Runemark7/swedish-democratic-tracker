@@ -1,4 +1,8 @@
 -- Regions (21 Swedish regions / landsting)
+-- Source: SCB (Statistics Sweden) official region codes — https://www.scb.se/hitta-statistik/regional-statistik-och-kartor/regionala-indelningar/lan-och-kommuner/
+-- Election results: Valdatakommittén, 2022 regional elections — https://www.val.se/valresultat/riksdag-region-och-kommun/2022/valresultat.html
+-- Population: SCB BE0101 as of 2022 — https://www.scb.se/hitta-statistik/statistik-efter-amne/befolkning/
+-- To verify or update: download SCB region codes CSV and 2022 election mandates from val.se
 CREATE TABLE regions (
     code          TEXT PRIMARY KEY,          -- two-digit SCB code e.g. "01"
     name          TEXT NOT NULL,

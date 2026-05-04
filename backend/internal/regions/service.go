@@ -3,30 +3,54 @@ package regions
 import (
 	"context"
 	"sort"
+	"time"
 
 	"riksdagskollen/internal/regions/domain"
 	"riksdagskollen/internal/regions/ports"
 )
 
+// rollingYears returns the last n completed calendar years (excluding the current year).
+// Source: Kolada and SCB data is published with a 1-year lag.
+func rollingYears(n int) []int {
+	current := time.Now().Year()
+	years := make([]int, n)
+	for i := range years {
+		years[i] = current - 1 - i
+	}
+	return years
+}
+
+// Municipal KPIs fetched from Kolada — source: https://api.kolada.se/v3/kpi/{code}
 var defaultKPIs = []string{
 	// Verksamhet
-	"N00900", "N11037", "N15027", "N20043", "N03010",
+	"N00900", // Kommunalskatt, skattesats (%) — kolada.se/kpi/N00900
+	"N11037", // Nettokostnad förskola, kr/barn — kolada.se/kpi/N11037
+	"N15027", // Nettokostnad grundskola, kr/elev — kolada.se/kpi/N15027
+	"N20043", // Nettokostnad äldreomsorg totalt, kr/inv 80+ år — kolada.se/kpi/N20043
+	"N03010", // Investeringar, kr/inv — kolada.se/kpi/N03010
 	// Budget & ekonomi
-	"N03007", "N03102", "N03106", "N03040", "N03132",
+	"N03007", // Nettokostnader totalt, kr/inv — kolada.se/kpi/N03007
+	"N03102", // Resultat i % av skatteintäkter — kolada.se/kpi/N03102
+	"N03106", // Soliditet inkl. ansvarsförbindelser (%) — kolada.se/kpi/N03106
+	"N03040", // Kassalikviditet (%) — kolada.se/kpi/N03040
+	"N03132", // Långfristiga skulder, kr/inv — kolada.se/kpi/N03132
 	// Skola & arbetsmarknad
-	"N15428", "N00708",
+	"N15428", // Elever behöriga till gymnasiet, andel (%) — kolada.se/kpi/N15428
+	"N00708", // Öppet arbetslösa och i program 20–64 år, andel (%) — kolada.se/kpi/N00708
 }
-var defaultKPIYears = []int{2019, 2020, 2021, 2022, 2023}
 
-// regionStripKPIs are the three KPIs shown in the region header strip.
-// N63007 = Soliditet region (%), N63016 = Resultat/skatt region (%), N60008 = Nettokostnad/inv (kr).
-// Region KPIs use the N6xxxx namespace (mun_type "L" in Kolada), not N0xxxx (which is municipality-only).
+// regionStripKPIs — shown in the region header strip.
+// Region KPIs use the N6xxxx/N7xxxx/N8xxxx Kolada namespaces (mun_type "L" for landsting/region).
+// Source: https://api.kolada.se/v3/kpi/{code}
 var regionStripKPIs = []string{
-	"N60008", "N63016", "N63007", "N79173", "N79179",
-	"N60404", // Resor med kollektivtrafik, resor/inv (Infrastruktur – mandatory)
-	"N85012", // Nettokostnad regional utveckling totalt, kr/inv (Regional utveckling – mandatory)
+	"N60008", // Nettokostnad hälso- och sjukvård totalt, kr/inv — kolada.se/kpi/N60008
+	"N63016", // Resultat i % av skatteintäkter, region — kolada.se/kpi/N63016
+	"N63007", // Soliditet inkl. ansvarsförbindelser, region (%) — kolada.se/kpi/N63007
+	"N79173", // Medicinsk bedömning inom 3 dagar i primärvård, andel (%) — kolada.se/kpi/N79173
+	"N79179", // Telefonsamtal till primärvården besvarade samma dag, andel (%) — kolada.se/kpi/N79179
+	"N60404", // Resor med kollektivtrafik, resor/inv — kolada.se/kpi/N60404
+	"N85012", // Nettokostnad regional utveckling totalt, kr/inv — kolada.se/kpi/N85012
 }
-var regionKPIYears  = []int{2020, 2021, 2022, 2023, 2024}
 
 // koladaRegionCode converts a Swedish 2-digit county code (e.g. "09") to the
 // 4-digit zero-prefixed code Kolada expects (e.g. "0009").
@@ -36,10 +60,21 @@ func koladaRegionCode(code string) string {
 	}
 	return "00" + code
 }
-var defaultPopYears = []int{2019, 2020, 2021, 2022, 2023}
 
-var spendingKPIs  = []string{"N11004", "N15028", "N17014", "N20014", "N30005", "N07037", "N09022", "N05011", "N45014"}
-var spendingYears = []int{2019, 2020, 2021, 2022, 2023}
+// spendingKPIs — municipal spending breakdown by service area (kr/inv from Kolada).
+// Multiplied by population to derive budget-equivalent SEK totals.
+// Source: https://api.kolada.se/v3/kpi/{code}
+var spendingKPIs = []string{
+	"N11004", // Nettokostnad förskola, kr/inv — kolada.se/kpi/N11004
+	"N15028", // Nettokostnad grundskola, kr/inv — kolada.se/kpi/N15028
+	"N17014", // Nettokostnad gymnasieskola, kr/inv — kolada.se/kpi/N17014
+	"N20014", // Nettokostnad äldreomsorg totalt, kr/inv — kolada.se/kpi/N20014
+	"N30005", // Nettokostnad individ- och familjeomsorg, kr/inv — kolada.se/kpi/N30005
+	"N07037", // Nettokostnad gata/väg, park och plan, kr/inv — kolada.se/kpi/N07037
+	"N09022", // Nettokostnad fritid och kultur, kr/inv — kolada.se/kpi/N09022
+	"N05011", // Nettokostnad politisk verksamhet, kr/inv — kolada.se/kpi/N05011
+	"N45014", // Nettokostnad VA (vatten och avlopp), kr/inv — kolada.se/kpi/N45014
+}
 
 type Service struct {
 	repo   ports.RegionRepository
@@ -73,19 +108,19 @@ func (s *Service) GetRegionBudget(ctx context.Context, regionCode string, year i
 }
 
 func (s *Service) GetMunicipalityKPIs(ctx context.Context, munCode string) ([]ports.KPIValue, error) {
-	return s.kolada.FetchKPIs(ctx, munCode, defaultKPIs, defaultKPIYears)
+	return s.kolada.FetchKPIs(ctx, munCode, defaultKPIs, rollingYears(5))
 }
 
 func (s *Service) GetRegionKPIs(ctx context.Context, regionCode string) ([]ports.KPIValue, error) {
-	return s.kolada.FetchKPIs(ctx, koladaRegionCode(regionCode), regionStripKPIs, regionKPIYears)
+	return s.kolada.FetchKPIs(ctx, koladaRegionCode(regionCode), regionStripKPIs, rollingYears(5))
 }
 
 func (s *Service) GetPopulationTrend(ctx context.Context, munCode string) ([]ports.PopulationEntry, error) {
-	return s.scb.FetchPopulationTrend(ctx, munCode, defaultPopYears)
+	return s.scb.FetchPopulationTrend(ctx, munCode, rollingYears(5))
 }
 
 func (s *Service) GetMunicipalitySpending(ctx context.Context, munCode string) ([]ports.KPIValue, error) {
-	return s.kolada.FetchKPIs(ctx, munCode, spendingKPIs, spendingYears)
+	return s.kolada.FetchKPIs(ctx, munCode, spendingKPIs, rollingYears(5))
 }
 
 func (s *Service) GetMunicipalityProcurement(ctx context.Context, munCode string) ([]ports.ProcurementCategorySummary, error) {
@@ -145,6 +180,9 @@ func (s *Service) GetMunicipalityProcurement(ctx context.Context, munCode string
 	return result, nil
 }
 
+// cpvDivisionLabel returns a Swedish label for a 2-digit EU CPV division code.
+// Source: Official EU Common Procurement Vocabulary (CPV) 2008, OJ 2007 L 74
+// Reference: https://simap.ted.europa.eu/cpv
 func cpvDivisionLabel(div string) string {
 	labels := map[string]string{
 		"03": "Jordbruk & naturresurser",

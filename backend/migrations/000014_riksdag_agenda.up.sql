@@ -1,4 +1,7 @@
 -- Policy agenda items displayed on the riksdag overview page.
+-- Source: Tidöavtalet 2022 — https://www.regeringen.se/rattsliga-dokument/overenskommelse/2022/10/tidoavtalet/
+-- Additional sources: Budgetpropositionen per year — https://www.regeringen.se/sveriges-regering/finansdepartementet/statsbudgeten/
+-- UPDATE REQUIRED: manually verify each item against current government policy documents.
 CREATE TABLE riksdag_agenda (
   id          SERIAL PRIMARY KEY,
   title       TEXT NOT NULL,
