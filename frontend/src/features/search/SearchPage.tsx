@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { mockRiksdag, mockKommun } from "@/mock/democracy";
 import { Pill } from "@/components/charts";
+import { TC_PARTY_COLORS } from "@/types/democracy";
 import type { LiveVote } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -21,16 +21,9 @@ const TOPICS = [
   { t: "Trygghet & brott",    n: 14, lvl: ["I", "III"], tag: "Trygghet" },
 ];
 
-const allParties = [
-  ...mockRiksdag.ruling.parties,
-  ...(mockRiksdag.ruling.support ?? []),
-  ...mockRiksdag.ruling.opposition,
-];
+const allParties = Object.entries(TC_PARTY_COLORS).map(([short, color]) => ({ short, color }));
 
-const allVotes = [
-  ...mockKommun.liveVotes,
-  ...mockRiksdag.liveVotes,
-];
+const allVotes: LiveVote[] = [];
 
 function statusTone(status: string): "pass" | "fail" | "pending" | "neutral" {
   if (status === "Bifall") return "pass";
@@ -319,15 +312,6 @@ export function SearchPage() {
                         }}
                       >
                         {p.short}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: 10,
-                          color: isActive ? "rgba(255,255,255,0.7)" : "var(--color-fg-muted)",
-                        }}
-                      >
-                        {p.seats}
                       </span>
                     </button>
                   );

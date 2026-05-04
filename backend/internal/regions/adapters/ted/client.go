@@ -15,57 +15,15 @@ import (
 
 const tedSearchURL = "https://api.ted.europa.eu/v3/notices/search"
 
-// tedYears is the publication-date range we fetch for procurement.
-var tedYears = struct{ from, to string }{"20210101", "20241231"}
-
 // maxPages caps the number of paginated TED API calls per request.
 const maxPages = 10
 
-// cpvLabels maps the first two digits of a CPV code to a Swedish sector label.
-var cpvLabels = map[string]string{
-	"03": "Jordbruk & naturresurser",
-	"09": "Bränsle & energi",
-	"14": "Gruvdrift",
-	"15": "Livsmedel",
-	"18": "Kläder & textil",
-	"22": "Trycksaker",
-	"24": "Kemikalier",
-	"30": "Kontorsutrustning & IT-hårdvara",
-	"31": "Elektrisk utrustning",
-	"32": "Radio- & kommunikationsutrustning",
-	"33": "Medicinsk utrustning",
-	"34": "Transportutrustning",
-	"35": "Säkerhet & försvar",
-	"37": "Sport & fritid",
-	"38": "Laboratorieutrustning",
-	"39": "Möbler & inredning",
-	"41": "Vatten",
-	"42": "Industriella maskiner",
-	"43": "Gruvmaskiner",
-	"44": "Byggnadsstruktur",
-	"45": "Bygg & anläggning",
-	"48": "IT-programvara",
-	"50": "Reparation & underhåll",
-	"51": "Installationstjänster",
-	"55": "Hotell & restaurang",
-	"60": "Transporttjänster",
-	"63": "Stödtjänster transport",
-	"64": "Post & telekommunikation",
-	"65": "Vatten & energiförsörjning",
-	"66": "Finansiella tjänster",
-	"70": "Fastigheter",
-	"71": "Arkitektur & ingenjörstjänster",
-	"72": "IT-tjänster",
-	"73": "Forskning & utveckling",
-	"75": "Offentlig förvaltning",
-	"76": "Oljerelaterade tjänster",
-	"77": "Skogs- & trädgårdstjänster",
-	"79": "Affärstjänster",
-	"80": "Utbildning",
-	"85": "Hälsa & omsorg",
-	"90": "Miljötjänster",
-	"92": "Kultur & fritidstjänster",
-	"98": "Övriga samhällstjänster",
+// tedDateRange returns a TED publication-date filter covering the last 4 full calendar years.
+func tedDateRange() (from, to string) {
+	now := time.Now()
+	end := now.Year() - 1
+	start := end - 3
+	return fmt.Sprintf("%d0101", start), fmt.Sprintf("%d1231", end)
 }
 
 type Client struct {
@@ -77,9 +35,10 @@ func NewClient() *Client {
 }
 
 func (c *Client) FetchProcurement(ctx context.Context, buyerName string) ([]ports.ProcurementNotice, error) {
+	from, to := tedDateRange()
 	query := fmt.Sprintf(
 		"buyer-name ~ %s AND BT-02-notice = can-standard AND publication-date >= %s AND publication-date <= %s",
-		quoteIfNeeded(buyerName), tedYears.from, tedYears.to,
+		quoteIfNeeded(buyerName), from, to,
 	)
 
 	var all []ports.ProcurementNotice

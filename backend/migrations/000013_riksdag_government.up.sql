@@ -1,5 +1,9 @@
 -- Current Riksdag government composition.
 -- One row in riksdag_government is the active coalition (valid_to IS NULL).
+-- Source: Riksdagen.se — https://www.riksdagen.se/sv/riksdagen/regeringen/
+-- Seats: 2022 election results from Valmyndigheten — https://www.val.se/valresultat/riksdag-region-och-kommun/2022/valresultat.html
+-- Party colors: Official party visual identities.
+-- UPDATE REQUIRED after each general election (held every 4 years, next 2026).
 CREATE TABLE riksdag_government (
   id          SERIAL PRIMARY KEY,
   type_label  TEXT NOT NULL,

@@ -2,9 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
 import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type RiksdagGovernment, type RiksdagAgendaItem, type RiksdagLiveVote } from "@/features/riksdag/api";
-import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem } from "@/types/democracy";
-import { mockRiksdag, mockRegion, mockKommun } from "@/mock/democracy";
+import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
 import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem } from "@/shared/types";
+
+const EMPTY_BUDGET: Budget = { total: "–", year: "–", areas: [] };
+const EMPTY_RULING: Ruling = { type: "–", parties: [], opposition: [] };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -153,7 +155,7 @@ const SPENDING_NAMES: Record<string, string> = {
 const KPI_ORDER = ["N11004","N15028","N17014","N20014","N30005","N07037","N09022","N05011","N45014"];
 
 // Converts Kolada spending KPIs (kr/invånare) × population → Budget.
-// Returns null when data is absent so the caller can fall back to mock.
+// Returns null when data is absent; caller uses EMPTY_BUDGET instead.
 function spendingToBudget(items: MunicipalityKPIItem[], population: number): Budget | null {
   if (!items.length || !population) return null;
 
@@ -406,7 +408,7 @@ export function useRiksdag() {
     queryKey: ["riksdag"],
     queryFn: async () => {
       const [authorities, years, apiKpis, apiGov, apiAgenda, apiLiveVotes] = await Promise.all([
-        riksdagApi.getAuthorities().catch(() => mockRiksdag.authorities ?? []),
+        riksdagApi.getAuthorities().catch(() => []),
         budgetApi.listYears().catch((): import("@/features/riksdag/api").BudgetYearSummary[] => []),
         riksdagApi.getKpis().catch(() => [] as RiksdagKpi[]),
         riksdagApi.getGovernment().catch(() => null as RiksdagGovernment | null),
@@ -421,15 +423,24 @@ export function useRiksdag() {
       const budget = latestDecided
         ? await budgetApi.getYear(latestDecided.year)
             .then(mapBudgetDetail)
-            .catch(() => mockRiksdag.budget)
-        : mockRiksdag.budget;
+            .catch(() => EMPTY_BUDGET)
+        : EMPTY_BUDGET;
 
-      const kpis = apiKpis.length > 0 ? mapApiKpis(apiKpis) : mockRiksdag.kpis;
-      const ruling = apiGov ? mapGovernment(apiGov) : mockRiksdag.ruling;
-      const agenda = apiAgenda.length > 0 ? mapAgenda(apiAgenda) : mockRiksdag.agenda;
-      const liveVotes = apiLiveVotes.length > 0 ? mapLiveVotes(apiLiveVotes) : mockRiksdag.liveVotes;
+      const kpis = apiKpis.length > 0 ? mapApiKpis(apiKpis) : [];
+      const ruling = apiGov ? mapGovernment(apiGov) : EMPTY_RULING;
+      const agenda = apiAgenda.length > 0 ? mapAgenda(apiAgenda) : [];
+      const liveVotes = apiLiveVotes.length > 0 ? mapLiveVotes(apiLiveVotes) : [];
 
-      return { ...mockRiksdag, authorities, budget, kpis, ruling, agenda, liveVotes };
+      return {
+        title: "Riksdagen",
+        subtitle: "Sveriges nationella parlament — 349 ledamöter",
+        authorities,
+        budget,
+        kpis,
+        ruling,
+        agenda,
+        liveVotes,
+      };
     },
     staleTime: 60_000,
   });
@@ -451,20 +462,22 @@ export function useRegion(code: string) {
     queryFn: async () => {
       const [detail, feed, budgetAreas, kpiItems] = await Promise.all([
         regionsApi.getRegion(code),
-        fetchRiksdagFeed("region").catch(() => mockRegion.liveVotes),
-        regionsApi.getRegionBudget(code).catch(() => [] as typeof mockRegion.budget.areas),
+        fetchRiksdagFeed("region").catch(() => []),
+        regionsApi.getRegionBudget(code).catch(() => []),
         regionsApi.getRegionKPIs(code).catch(() => [] as MunicipalityKPIItem[]),
       ]);
       const { governing, opposition } = electionResultsToParties(detail.electionResults ?? []);
 
       const totalMnkr = budgetAreas.reduce((s, a) => s + a.value, 0);
+      const budgetYear = String(new Date().getFullYear() - 1);
       const budget = budgetAreas.length > 0
         ? {
             total: `${Math.round(totalMnkr / 1000)} mdkr`,
-            year: "2023",
+            year: budgetYear,
             areas: budgetAreas,
+            sourceUrl: "https://www.scb.se/hitta-statistik/statistik-efter-amne/offentlig-ekonomi/finanser-for-den-kommunala-sektorn/rakenskapssammandrag-for-kommuner-och-regioner/",
           }
-        : mockRegion.budget;
+        : EMPTY_BUDGET;
 
       return {
         title: detail.name,
@@ -473,13 +486,13 @@ export function useRegion(code: string) {
           ? detail.population.toLocaleString("sv-SE") + " invånare"
           : undefined,
         ruling: {
-          type: mockRegion.ruling.type,
-          parties: governing.length ? governing : mockRegion.ruling.parties,
-          opposition: opposition.length ? opposition : mockRegion.ruling.opposition,
+          type: "Regionstyre",
+          parties: governing,
+          opposition,
         },
         liveVotes: feed,
         budget,
-        agenda: generateAgenda("region", governing.length ? governing : mockRegion.ruling.parties, code),
+        agenda: generateAgenda("region", governing, code),
         kpis: kpiItemsToStrip(kpiItems, REGION_STRIP_KPI_META, REGION_STRIP_ORDER),
       } satisfies LevelData;
     },
@@ -504,7 +517,7 @@ export function useKommun(code: string) {
     queryFn: async () => {
       const [detail, feed, kpiItems, spendingItems] = await Promise.all([
         municipalitiesApi.getMunicipality(code),
-        fetchRiksdagFeed("kommun").catch(() => mockKommun.liveVotes),
+        fetchRiksdagFeed("kommun").catch(() => []),
         municipalitiesApi.getMunicipalityKPIs(code).catch(() => [] as MunicipalityKPIItem[]),
         municipalitiesApi.getMunicipalitySpending(code).catch(() => [] as MunicipalityKPIItem[]),
       ]);
@@ -515,10 +528,10 @@ export function useKommun(code: string) {
       const isLeft     = governing.length > 0 && LEFT_BLOC.has(governing[0].name);
       const majority   = govSeats > totalSeats / 2 ? "majoritet" : "minoritet";
       const coalType   = governing.length === 0
-        ? mockKommun.ruling.type
+        ? "–"
         : isLeft ? `Rödgrön ${majority}` : `Borgerlig ${majority}`;
 
-      const budget = spendingToBudget(spendingItems, detail.population) ?? mockKommun.budget;
+      const budget = spendingToBudget(spendingItems, detail.population) ?? EMPTY_BUDGET;
       const kpis   = kpiItemsToStrip(kpiItems, STRIP_KPI_META, STRIP_ORDER);
 
       return {
@@ -529,12 +542,12 @@ export function useKommun(code: string) {
           : undefined,
         ruling: {
           type: coalType,
-          parties: governing.length ? governing : mockKommun.ruling.parties,
-          opposition: opposition.length ? opposition : mockKommun.ruling.opposition,
+          parties: governing,
+          opposition,
         },
         liveVotes: feed,
         budget,
-        agenda: generateAgenda("kommun", governing.length ? governing : mockKommun.ruling.parties, code),
+        agenda: generateAgenda("kommun", governing, code),
         kpis,
       } satisfies LevelData;
     },
