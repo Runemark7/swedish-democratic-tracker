@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { mockRegion, mockKommun } from "@/mock/democracy";
 import { StackBar, Pill } from "@/components/charts";
 import type { LevelData, Party } from "@/types/democracy";
@@ -430,9 +431,13 @@ const LEVEL_COLORS = [
   "var(--color-accent-2)",
 ];
 
-function PulseStrip() {
+interface PulseStripProps {
+  compact?: boolean;
+}
+
+function PulseStrip({ compact }: PulseStripProps) {
   return (
-    <div style={{ padding: "22px 32px 28px" }}>
+    <div style={{ padding: compact ? "16px 14px 24px" : "22px 32px 28px" }}>
       {/* Header */}
       <div
         style={{
@@ -524,6 +529,7 @@ function PulseStrip() {
 
 export function HomePage() {
   const { data: riksdagData, isLoading } = useRiksdag();
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   if (isLoading || !riksdagData) {
     return (
@@ -551,7 +557,7 @@ export function HomePage() {
   return (
     <div className="sdt-page">
       {/* ── Section 1: Hero text ─────────────────────────────────────── */}
-      <div style={{ padding: "80px 32px 24px" }}>
+      <div style={{ padding: isMobile ? "40px 14px 20px" : "80px 32px 24px" }}>
         <div
           style={{
             fontFamily: "var(--font-mono)",
@@ -567,7 +573,7 @@ export function HomePage() {
         <h1
           style={{
             fontFamily: "var(--font-serif)",
-            fontSize: 60,
+            fontSize: isMobile ? 36 : 60,
             fontWeight: 400,
             letterSpacing: "-1.8px",
             color: "var(--color-fg)",
@@ -589,20 +595,22 @@ export function HomePage() {
       </div>
 
       {/* ── Section 2: ChambersHero ──────────────────────────────────── */}
-      <ChambersHero
-        riksdagParties={riksdagData.ruling.parties}
-        regionParties={mockRegion.ruling.parties.slice(0, 2)}
-        kommunParties={mockKommun.ruling.parties.slice(0, 2)}
-      />
+      {!isMobile && (
+        <ChambersHero
+          riksdagParties={riksdagData.ruling.parties}
+          regionParties={mockRegion.ruling.parties.slice(0, 2)}
+          kommunParties={mockKommun.ruling.parties.slice(0, 2)}
+        />
+      )}
 
       {/* ── Section 3: Three-column status strip ─────────────────────── */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
           gap: 1,
           background: "var(--color-border)",
-          margin: "24px 32px 0",
+          margin: isMobile ? "14px 14px 0" : "24px 32px 0",
           borderTop: "1px solid var(--color-border)",
           borderBottom: "1px solid var(--color-border)",
         }}
@@ -613,7 +621,7 @@ export function HomePage() {
       </div>
 
       {/* ── Section 4: 24h pulse strip ───────────────────────────────── */}
-      <PulseStrip />
+      <PulseStrip compact={isMobile} />
     </div>
   );
 }
