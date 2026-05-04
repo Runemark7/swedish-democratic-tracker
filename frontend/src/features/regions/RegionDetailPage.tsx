@@ -101,53 +101,6 @@ export function RegionDetailPage() {
   return (
     <>
       <div className="sdt-page">
-        {/* ── KOMMUNER (clickable map) — TOP ──────────────────────────── */}
-        {code && (
-          <div
-            style={{
-              border: "1px solid var(--color-border)",
-              margin: isMobile ? "14px 14px 0" : "22px 32px 0",
-              background: "var(--color-sdt-surface)",
-              padding: isMobile ? 16 : "24px 28px",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                letterSpacing: "0.15em",
-                color: "var(--color-fg-muted)",
-                marginBottom: 16,
-              }}
-            >
-              KOMMUNER · KLICKA FÖR DETALJ
-            </div>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <div style={{ width: "100%", maxWidth: isMobile ? 320 : 480 }}>
-                <SwedenKommunMap
-                  municipalities={regionKommuner ?? []}
-                  regionCode={code}
-                />
-              </div>
-            </div>
-            {regionKommuner && regionKommuner.length > 0 && (
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 9,
-                  color: "var(--color-fg-muted)",
-                  marginTop: 12,
-                  textAlign: "center",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {regionKommuner.length} kommuner i regionen
-              </div>
-            )}
-          </div>
-        )}
-
         {/* ── Hero ─────────────────────────────────────────────────────── */}
         <div
           style={{
@@ -245,6 +198,53 @@ export function RegionDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* ── KOMMUNER (clickable map) ─────────────────────────────────── */}
+        {code && (
+          <div
+            style={{
+              border: "1px solid var(--color-border)",
+              margin: isMobile ? "14px 14px 0" : "22px 32px 0",
+              background: "var(--color-sdt-surface)",
+              padding: isMobile ? "12px 14px" : "16px 20px",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                letterSpacing: "0.15em",
+                color: "var(--color-fg-muted)",
+                marginBottom: 10,
+              }}
+            >
+              KOMMUNER · KLICKA FÖR DETALJ
+            </div>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{ width: "100%", maxWidth: isMobile ? 200 : 260 }}>
+                <SwedenKommunMap
+                  municipalities={regionKommuner ?? []}
+                  regionCode={code}
+                />
+              </div>
+            </div>
+            {regionKommuner && regionKommuner.length > 0 && (
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 9,
+                  color: "var(--color-fg-muted)",
+                  marginTop: 8,
+                  textAlign: "center",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {regionKommuner.length} kommuner
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── KPI strip ────────────────────────────────────────────────── */}
         {kpis && kpis.length > 0 && (
