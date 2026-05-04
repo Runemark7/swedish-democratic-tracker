@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useRegion, useRegionList } from "@/hooks/useDemocracy";
+import { useRegion, useRegionList, useKommunList } from "@/hooks/useDemocracy";
 import { Hemicycle, Donut, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
+import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import type { LiveVote, Party } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -64,6 +65,7 @@ export function RegionDetailPage() {
 
   const { data, isLoading } = useRegion(code ?? "");
   const { data: regionList } = useRegionList();
+  const { data: regionKommuner } = useKommunList(code);
 
   if (isLoading || !data) return <Skeleton />;
 
@@ -548,6 +550,54 @@ export function RegionDetailPage() {
             <AgendaList items={agenda} />
           </div>
         </div>
+
+        {/* ── KOMMUNER (clickable map) ────────────────────────────────── */}
+        {code && (
+          <div
+            style={{
+              border: "1px solid var(--color-border)",
+              borderTop: "none",
+              margin: isMobile ? "0 14px 28px" : "0 32px 32px",
+              background: "var(--color-sdt-surface)",
+              padding: isMobile ? 16 : "24px 28px",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                letterSpacing: "0.15em",
+                color: "var(--color-fg-muted)",
+                marginBottom: 16,
+              }}
+            >
+              KOMMUNER · KLICKA FÖR DETALJ
+            </div>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{ width: "100%", maxWidth: isMobile ? 320 : 480 }}>
+                <SwedenKommunMap
+                  municipalities={regionKommuner ?? []}
+                  regionCode={code}
+                />
+              </div>
+            </div>
+            {regionKommuner && regionKommuner.length > 0 && (
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 9,
+                  color: "var(--color-fg-muted)",
+                  marginTop: 12,
+                  textAlign: "center",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {regionKommuner.length} kommuner i regionen
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Mobile region selector */}

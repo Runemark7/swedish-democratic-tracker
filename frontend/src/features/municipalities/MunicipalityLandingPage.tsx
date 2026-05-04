@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { municipalitiesApi } from "./api";
 import { SwedenKommunMap } from "./components/SwedenKommunMap";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { MunicipalitySummary } from "@/shared/types";
 
 function MunicipalityCard({ mun }: { mun: MunicipalitySummary }) {
@@ -146,6 +147,7 @@ function MunicipalityCard({ mun }: { mun: MunicipalitySummary }) {
 }
 
 export function MunicipalityLandingPage() {
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const [search, setSearch] = useState("");
 
   const { data: municipalities, isLoading, error } = useQuery({
@@ -171,7 +173,7 @@ export function MunicipalityLandingPage() {
       }}
     >
       {/* Header */}
-      <div style={{ padding: "40px 32px 0" }}>
+      <div style={{ padding: isMobile ? "18px 14px 0" : "40px 32px 0" }}>
         <div
           style={{
             fontFamily: "var(--font-mono)",
@@ -187,7 +189,7 @@ export function MunicipalityLandingPage() {
         <h1
           style={{
             fontFamily: "var(--font-serif)",
-            fontSize: 44,
+            fontSize: isMobile ? 28 : 44,
             fontWeight: 400,
             letterSpacing: "-1.5px",
             lineHeight: 1,
@@ -203,6 +205,7 @@ export function MunicipalityLandingPage() {
             fontSize: 11,
             color: "var(--color-fg-muted)",
             margin: "0 0 24px",
+            display: isMobile ? "none" : undefined,
           }}
         >
           Utforska valresultat och styrande partier i Sveriges kommuner.
@@ -210,7 +213,15 @@ export function MunicipalityLandingPage() {
         </p>
 
         {/* Search */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: isMobile ? "stretch" : "center",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 6 : 12,
+            marginBottom: isMobile ? 16 : 28,
+          }}
+        >
           <input
             type="search"
             placeholder="Sök kommun eller region…"
@@ -225,7 +236,8 @@ export function MunicipalityLandingPage() {
               padding: "8px 12px",
               borderRadius: 4,
               outline: "none",
-              width: 280,
+              width: isMobile ? "100%" : 280,
+              boxSizing: "border-box",
             }}
           />
           {municipalities && (
@@ -275,14 +287,22 @@ export function MunicipalityLandingPage() {
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
-            gap: 32,
-            padding: "0 32px 40px",
-            alignItems: "flex-start",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 20 : 32,
+            padding: isMobile ? "0 14px 32px" : "0 32px 40px",
+            alignItems: isMobile ? "stretch" : "flex-start",
           }}
         >
-          {/* Map column */}
-          <div style={{ flexShrink: 0, width: 260 }}>
+          {/* Map column (full-width centered on mobile) */}
+          <div
+            style={{
+              flexShrink: 0,
+              width: isMobile ? "100%" : 260,
+              display: isMobile ? "flex" : "block",
+              flexDirection: "column",
+              alignItems: isMobile ? "center" : "stretch",
+            }}
+          >
             <div
               style={{
                 fontFamily: "var(--font-mono)",
@@ -291,23 +311,28 @@ export function MunicipalityLandingPage() {
                 textTransform: "uppercase",
                 letterSpacing: "1.5px",
                 marginBottom: 10,
+                alignSelf: isMobile ? "stretch" : "auto",
               }}
             >
               Klicka på en kommun
             </div>
-            <SwedenKommunMap municipalities={municipalities} />
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 9,
-                color: "var(--color-fg-muted)",
-                marginTop: 8,
-                lineHeight: 1.5,
-              }}
-            >
-              Karta: Lokal_Profil / Wikimedia Commons (CC BY-SA 2.5),
-              grunddata från SCB.
-            </p>
+            <div style={{ width: "100%", maxWidth: isMobile ? 320 : "none" }}>
+              <SwedenKommunMap municipalities={municipalities} />
+            </div>
+            {!isMobile && (
+              <p
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 9,
+                  color: "var(--color-fg-muted)",
+                  marginTop: 8,
+                  lineHeight: 1.5,
+                }}
+              >
+                Karta: Lokal_Profil / Wikimedia Commons (CC BY-SA 2.5),
+                grunddata från SCB.
+              </p>
+            )}
           </div>
 
           {/* List grid */}
@@ -315,7 +340,7 @@ export function MunicipalityLandingPage() {
             style={{
               flex: 1,
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(200px, 1fr))",
               gap: 1,
               background: "var(--color-border)",
               border: "1px solid var(--color-border)",

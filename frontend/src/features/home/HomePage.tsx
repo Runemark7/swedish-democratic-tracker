@@ -267,13 +267,14 @@ function StatusCell({ tag, data, to }: StatusCellProps) {
       }}
     >
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 10, minWidth: 0 }}>
         <span
           style={{
             fontFamily: "var(--font-serif)",
             fontStyle: "italic",
             color: "var(--color-accent-2)",
             fontSize: 20,
+            flexShrink: 0,
           }}
         >
           {tag}
@@ -283,6 +284,11 @@ function StatusCell({ tag, data, to }: StatusCellProps) {
             fontFamily: "var(--font-serif)",
             fontSize: 22,
             color: "var(--color-fg)",
+            flex: 1,
+            minWidth: 0,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
           }}
         >
           {data.title}
@@ -294,7 +300,7 @@ function StatusCell({ tag, data, to }: StatusCellProps) {
             fontSize: 10,
             color: "var(--color-pulse)",
             letterSpacing: "0.1em",
-            marginLeft: "auto",
+            flexShrink: 0,
           }}
         >
           ● {data.liveVotes.filter((v) => v.time.startsWith("Idag")).length} IDAG
@@ -454,6 +460,10 @@ function PulseStrip({ compact }: PulseStripProps) {
             fontSize: 10,
             letterSpacing: "0.15em",
             color: "var(--color-fg-muted)",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "100%",
           }}
         >
           DYGNETS PULS — 9 BESLUT I 3 KAMMARE

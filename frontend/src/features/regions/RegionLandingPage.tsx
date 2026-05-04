@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "./api";
 import { SwedenRegionMap } from "./components/SwedenRegionMap";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { RegionSummary } from "@/shared/types";
 
 function RegionCard({ region }: { region: RegionSummary }) {
@@ -169,6 +170,7 @@ function RegionCard({ region }: { region: RegionSummary }) {
 }
 
 export function RegionLandingPage() {
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const { data: regions, isLoading, error } = useQuery({
     queryKey: ["regions"],
     queryFn: regionsApi.listRegions,
@@ -184,12 +186,12 @@ export function RegionLandingPage() {
       }}
     >
       {/* Header */}
-      <div style={{ padding: "40px 32px 0" }}>
+      <div style={{ padding: isMobile ? "18px 14px 0" : "40px 32px 0" }}>
         <div
           style={{
             display: "flex",
             alignItems: "flex-end",
-            gap: 20,
+            gap: isMobile ? 14 : 20,
             marginBottom: 6,
           }}
         >
@@ -198,7 +200,7 @@ export function RegionLandingPage() {
               fontFamily: "var(--font-serif)",
               fontStyle: "italic",
               color: "var(--color-accent-2)",
-              fontSize: 88,
+              fontSize: isMobile ? 56 : 88,
               fontWeight: 400,
               letterSpacing: "-3px",
               lineHeight: 0.85,
@@ -222,7 +224,7 @@ export function RegionLandingPage() {
             <div
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: 52,
+                fontSize: isMobile ? 28 : 52,
                 fontWeight: 400,
                 letterSpacing: "-1.5px",
                 color: "var(--color-fg)",
@@ -238,6 +240,7 @@ export function RegionLandingPage() {
                 fontSize: 11,
                 color: "var(--color-fg-muted)",
                 letterSpacing: "0.05em",
+                display: isMobile ? "none" : undefined,
               }}
             >
               Utforska valresultat och styrande koalitioner i Sveriges 21
@@ -280,14 +283,22 @@ export function RegionLandingPage() {
         <div
           style={{
             display: "flex",
-            flexDirection: "row",
-            gap: 32,
-            padding: "28px 32px 40px",
-            alignItems: "flex-start",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 20 : 32,
+            padding: isMobile ? "20px 14px 32px" : "28px 32px 40px",
+            alignItems: isMobile ? "stretch" : "flex-start",
           }}
         >
-          {/* Map sidebar */}
-          <div style={{ flexShrink: 0, width: 280 }}>
+          {/* Map sidebar (full-width centered on mobile) */}
+          <div
+            style={{
+              flexShrink: 0,
+              width: isMobile ? "100%" : 280,
+              display: isMobile ? "flex" : "block",
+              flexDirection: "column",
+              alignItems: isMobile ? "center" : "stretch",
+            }}
+          >
             <div
               style={{
                 fontFamily: "var(--font-mono)",
@@ -309,7 +320,7 @@ export function RegionLandingPage() {
             style={{
               flex: 1,
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(200px, 1fr))",
               gap: 8,
             }}
           >
