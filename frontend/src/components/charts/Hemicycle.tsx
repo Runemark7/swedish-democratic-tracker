@@ -13,7 +13,13 @@ export function Hemicycle({ groups, width = 320, height = 140 }: HemicycleProps)
   const total = groups.reduce((sum, g) => sum + g.count, 0);
 
   if (total === 0) {
-    return <svg width={width} height={height} aria-hidden="true" />;
+    return (
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        style={{ width: "100%", height: "auto" }}
+        aria-hidden="true"
+      />
+    );
   }
 
   // Scale row count to council size so small councils don't look sparse
@@ -69,9 +75,8 @@ export function Hemicycle({ groups, width = 320, height = 140 }: HemicycleProps)
 
   return (
     <svg
-      width={width}
-      height={height}
       viewBox={`0 0 ${width} ${height}`}
+      style={{ width: "100%", height: "auto" }}
       role="img"
       aria-labelledby="hemicycle-title hemicycle-desc"
     >

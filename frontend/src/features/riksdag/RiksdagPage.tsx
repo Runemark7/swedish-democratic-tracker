@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Hemicycle, Donut, HBars, DualLine, Pill, GoalBadge, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import type { Authority, LiveVote, Party } from "@/types/democracy";
@@ -170,6 +171,7 @@ function AuthorityRow({
 // ── RiksdagPage ───────────────────────────────────────────────────────────────
 
 export function RiksdagPage() {
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const { data, isLoading } = useRiksdag();
   const [openAuthority, setOpenAuthority] = useState<number | null>(null);
 
@@ -207,7 +209,7 @@ export function RiksdagPage() {
           display: "flex",
           alignItems: "flex-end",
           gap: 28,
-          padding: "40px 32px 0",
+          padding: isMobile ? "18px 14px 0" : "40px 32px 0",
         }}
       >
         <span
@@ -215,7 +217,7 @@ export function RiksdagPage() {
             fontFamily: "var(--font-serif)",
             fontStyle: "italic",
             color: "var(--color-accent-2)",
-            fontSize: 88,
+            fontSize: isMobile ? 56 : 88,
             fontWeight: 400,
             letterSpacing: "-3px",
             lineHeight: 0.85,
@@ -239,7 +241,7 @@ export function RiksdagPage() {
           <div
             style={{
               fontFamily: "var(--font-serif)",
-              fontSize: 52,
+              fontSize: isMobile ? 28 : 52,
               fontWeight: 400,
               letterSpacing: "-1.5px",
               color: "var(--color-fg)",
@@ -253,6 +255,7 @@ export function RiksdagPage() {
             style={{
               fontSize: 14,
               color: "var(--color-fg-muted)",
+              display: isMobile ? "none" : undefined,
             }}
           >
             Sveriges nationella parlament — 349 ledamöter · Mandatperiod 2022–2026
@@ -265,17 +268,17 @@ export function RiksdagPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
             gap: 1,
             border: "1px solid var(--color-border)",
             background: "var(--color-border)",
-            margin: "22px 32px 0",
+            margin: isMobile ? "14px 14px 0" : "22px 32px 0",
           }}
         >
           {kpis.map((k) => (
             <div
               key={k.label}
-              style={{ background: "var(--color-sdt-surface)", padding: "20px 24px" }}
+              style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 14 : "20px 24px" }}
             >
               <div
                 style={{
@@ -292,7 +295,7 @@ export function RiksdagPage() {
               <div
                 style={{
                   fontFamily: "var(--font-serif)",
-                  fontSize: 30,
+                  fontSize: isMobile ? 24 : 30,
                   fontWeight: 400,
                   color: "var(--color-fg)",
                   lineHeight: 1,
@@ -322,6 +325,7 @@ export function RiksdagPage() {
                     color: "var(--color-fg-muted)",
                     borderTop: "1px solid var(--color-border)",
                     paddingTop: 10,
+                    display: isMobile ? "none" : undefined,
                   }}
                 >
                   {k.description}
@@ -336,10 +340,10 @@ export function RiksdagPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
           gap: 1,
           border: "1px solid var(--color-border)",
-          margin: "22px 32px 0",
+          margin: isMobile ? "14px 14px 0" : "22px 32px 0",
           background: "var(--color-border)",
         }}
       >
@@ -347,7 +351,7 @@ export function RiksdagPage() {
         <div
           style={{
             background: "var(--color-sdt-surface)",
-            padding: 24,
+            padding: isMobile ? 16 : 24,
           }}
         >
           <div
@@ -437,7 +441,7 @@ export function RiksdagPage() {
         <div
           style={{
             background: "var(--color-sdt-surface)",
-            padding: 24,
+            padding: isMobile ? 16 : 24,
           }}
         >
           <div
@@ -451,11 +455,11 @@ export function RiksdagPage() {
           >
             BUDGET {budget.year} · {budget.total}
           </div>
-          <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+          <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
             <Donut
               segments={budgetSegments}
-              size={150}
-              thickness={18}
+              size={isMobile ? 140 : 150}
+              thickness={isMobile ? 16 : 18}
               label={budget.total}
               sublabel={budget.year}
             />
@@ -497,11 +501,11 @@ export function RiksdagPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1.3fr 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1.3fr 1fr",
           gap: 1,
           border: "1px solid var(--color-border)",
           borderTop: "none",
-          margin: "1px 32px 28px",
+          margin: isMobile ? "1px 14px 28px" : "1px 32px 28px",
           background: "var(--color-border)",
         }}
       >
@@ -509,7 +513,7 @@ export function RiksdagPage() {
         <div
           style={{
             background: "var(--color-sdt-surface)",
-            padding: 24,
+            padding: isMobile ? 16 : 24,
           }}
         >
           <div
@@ -550,7 +554,7 @@ export function RiksdagPage() {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "18px 70px minmax(0,1fr) auto auto",
+                    gridTemplateColumns: isMobile ? "18px 60px minmax(0,1fr) auto" : "18px 70px minmax(0,1fr) auto auto",
                     gap: 12,
                     alignItems: "center",
                     cursor: href ? "pointer" : "default",
@@ -606,16 +610,18 @@ export function RiksdagPage() {
                   {/* pill */}
                   <Pill tone={pillTone(v.status)}>{v.status}</Pill>
                   {/* margin */}
-                  <span
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 10,
-                      color: "var(--color-fg-muted)",
-                      textAlign: "right",
-                    }}
-                  >
-                    {v.margin ?? ""}
-                  </span>
+                  {!isMobile && (
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 10,
+                        color: "var(--color-fg-muted)",
+                        textAlign: "right",
+                      }}
+                    >
+                      {v.margin ?? ""}
+                    </span>
+                  )}
                 </div>
               );
               return href ? (
@@ -633,7 +639,7 @@ export function RiksdagPage() {
         <div
           style={{
             background: "var(--color-sdt-surface)",
-            padding: 24,
+            padding: isMobile ? 16 : 24,
           }}
         >
           <div
@@ -664,9 +670,9 @@ export function RiksdagPage() {
             style={{
               border: "1px solid var(--color-border)",
               borderTop: "none",
-              margin: "0 32px 32px",
+              margin: isMobile ? "0 14px 32px" : "0 32px 32px",
               background: "var(--color-sdt-surface)",
-              padding: "24px 28px",
+              padding: isMobile ? "16px" : "24px 28px",
             }}
           >
             {/* Header */}
@@ -683,18 +689,18 @@ export function RiksdagPage() {
             </div>
 
             {/* Two-column: donut left, list right */}
-            <div style={{ display: "flex", gap: 40, alignItems: "flex-start" }}>
+            <div style={{ display: "flex", gap: 40, alignItems: isMobile ? "stretch" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
 
               {/* Left: donut + legend */}
               <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
                 <Donut
                   segments={donutSegments}
-                  size={200}
-                  thickness={32}
+                  size={isMobile ? 160 : 200}
+                  thickness={isMobile ? 24 : 32}
                   label={`${Math.round(totalMdkr)} mdkr`}
                   sublabel="totalt"
                 />
-                <div style={{ display: "flex", flexDirection: "column", gap: 5, width: 200 }}>
+                <div style={{ display: isMobile ? "none" : "flex", flexDirection: "column", gap: 5, width: 200 }}>
                   {authorities.map((a, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <div style={{ width: 8, height: 8, borderRadius: "50%", background: BUDGET_COLORS[i % BUDGET_COLORS.length], flexShrink: 0 }} />
