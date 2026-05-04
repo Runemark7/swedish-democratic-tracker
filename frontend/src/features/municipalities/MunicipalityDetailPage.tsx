@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Hemicycle, Donut, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { useKommun, useKommunList } from "@/hooks/useDemocracy";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { BottomSheet } from "@/components/BottomSheet";
 import type { LiveVote } from "@/types/democracy";
 
 const BUDGET_COLORS = [
@@ -31,6 +34,8 @@ function pillTone(status: LiveVote["status"]): "pass" | "fail" | "pending" | "ne
 export function MunicipalityDetailPage() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const { data, isLoading } = useKommun(code ?? "");
   const { data: allKommuner } = useKommunList();
@@ -136,13 +141,13 @@ export function MunicipalityDetailPage() {
       }}
     >
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <div style={{ padding: "40px 32px 0" }}>
+      <div style={{ padding: isMobile ? "18px 14px 0" : "40px 32px 0" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 20 }}>
           {/* Roman numeral */}
           <span
             style={{
               fontFamily: "var(--font-serif)",
-              fontSize: 88,
+              fontSize: isMobile ? 56 : 88,
               fontWeight: 400,
               letterSpacing: "-3px",
               lineHeight: 0.85,
@@ -171,7 +176,7 @@ export function MunicipalityDetailPage() {
             <h1
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: 52,
+                fontSize: isMobile ? 28 : 52,
                 fontWeight: 400,
                 letterSpacing: "-1.5px",
                 lineHeight: 1,
@@ -211,42 +216,62 @@ export function MunicipalityDetailPage() {
                   · {data.population}
                 </span>
               )}
-              {/* BYT KOMMUN inline select */}
-              <span style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
-                <select
-                  value={code ?? ""}
-                  onChange={(e) => {
-                    if (e.target.value) navigate(`/kommun/${e.target.value}`);
-                  }}
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    opacity: 0,
-                    cursor: "pointer",
-                    width: "100%",
-                  }}
-                  aria-label="Byt kommun"
-                >
-                  {(allKommuner ?? []).map((k) => (
-                    <option key={k.code} value={k.code}>
-                      {k.name}
-                    </option>
-                  ))}
-                </select>
-                <span
+              {/* Desktop: invisible-select overlay */}
+              {!isMobile && (
+                <span style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+                  <select
+                    value={code ?? ""}
+                    onChange={(e) => {
+                      if (e.target.value) navigate(`/kommun/${e.target.value}`);
+                    }}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      opacity: 0,
+                      cursor: "pointer",
+                      width: "100%",
+                    }}
+                    aria-label="Byt kommun"
+                  >
+                    {(allKommuner ?? []).map((k) => (
+                      <option key={k.code} value={k.code}>
+                        {k.name}
+                      </option>
+                    ))}
+                  </select>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 11,
+                      color: "var(--color-accent)",
+                      letterSpacing: "1px",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      textUnderlineOffset: 3,
+                    }}
+                  >
+                    ↓ BYT KOMMUN
+                  </span>
+                </span>
+              )}
+              {/* Mobile: opens BottomSheet */}
+              {isMobile && (
+                <button
+                  onClick={() => setSheetOpen(true)}
                   style={{
                     fontFamily: "var(--font-mono)",
                     fontSize: 11,
                     color: "var(--color-accent)",
-                    letterSpacing: "1px",
+                    background: "none",
+                    border: "none",
                     cursor: "pointer",
-                    textDecoration: "underline",
-                    textUnderlineOffset: 3,
+                    letterSpacing: "0.08em",
+                    padding: 0,
                   }}
                 >
                   ↓ BYT KOMMUN
-                </span>
-              </span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -257,8 +282,8 @@ export function MunicipalityDetailPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            margin: "22px 32px 0",
+            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+            margin: isMobile ? "14px 14px 0" : "22px 32px 0",
             gap: 1,
             background: "var(--color-border)",
             border: "1px solid var(--color-border)",
@@ -269,7 +294,7 @@ export function MunicipalityDetailPage() {
               key={kpi.label}
               style={{
                 background: "var(--color-sdt-surface)",
-                padding: "20px 24px",
+                padding: isMobile ? "14px" : "20px 24px",
               }}
             >
               <div
@@ -287,7 +312,7 @@ export function MunicipalityDetailPage() {
               <div
                 style={{
                   fontFamily: "var(--font-serif)",
-                  fontSize: 30,
+                  fontSize: isMobile ? 24 : 30,
                   fontWeight: 400,
                   color: "var(--color-fg)",
                   lineHeight: 1,
@@ -317,6 +342,7 @@ export function MunicipalityDetailPage() {
                     color: "var(--color-fg-muted)",
                     borderTop: "1px solid var(--color-border)",
                     paddingTop: 10,
+                    display: isMobile ? "none" : undefined,
                   }}
                 >
                   {kpi.description}
@@ -331,15 +357,15 @@ export function MunicipalityDetailPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
           gap: 1,
           background: "var(--color-border)",
           border: "1px solid var(--color-border)",
-          margin: "22px 32px 0",
+          margin: isMobile ? "14px 14px 0" : "22px 32px 0",
         }}
       >
         {/* Left — MANDAT */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: "24px 28px" }}>
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -369,7 +395,7 @@ export function MunicipalityDetailPage() {
                     letterSpacing: "0.15em",
                     color: label === "STYRE" ? "var(--color-accent)" : "var(--color-fg-muted)",
                     opacity: label === "STYRE" ? 1 : 0.7,
-                    minWidth: 64,
+                    minWidth: isMobile ? 48 : 64,
                     flexShrink: 0,
                   }}
                 >
@@ -430,7 +456,7 @@ export function MunicipalityDetailPage() {
         </div>
 
         {/* Right — BUDGET */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: "24px 28px" }}>
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -444,11 +470,11 @@ export function MunicipalityDetailPage() {
             BUDGET {data.budget.year} · {data.budget.total}
           </div>
 
-          <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+          <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
             <Donut
               segments={donutSegments}
-              size={160}
-              thickness={24}
+              size={isMobile ? 140 : 160}
+              thickness={isMobile ? 16 : 24}
               label={data.budget.total}
               sublabel={data.budget.year}
             />
@@ -463,16 +489,16 @@ export function MunicipalityDetailPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1.3fr 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1.3fr 1fr",
           gap: 1,
           background: "var(--color-border)",
           border: "1px solid var(--color-border)",
           borderTop: "none",
-          margin: "1px 32px 28px",
+          margin: isMobile ? "1px 14px 28px" : "1px 32px 28px",
         }}
       >
         {/* Left — PULS */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: "24px 28px" }}>
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -578,7 +604,7 @@ export function MunicipalityDetailPage() {
         </div>
 
         {/* Right — AGENDA */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: "24px 28px" }}>
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -595,6 +621,63 @@ export function MunicipalityDetailPage() {
           <AgendaList items={data.agenda} />
         </div>
       </div>
+
+      {/* Mobile floating BYT KOMMUN button + BottomSheet */}
+      {isMobile && (
+        <>
+          <div style={{ position: "fixed", bottom: 72, left: 14, right: 14, zIndex: 30 }}>
+            <button
+              onClick={() => setSheetOpen(true)}
+              style={{
+                width: "100%",
+                height: 48,
+                borderRadius: 999,
+                border: "1px solid var(--color-border)",
+                background: "var(--color-sdt-surface)",
+                color: "var(--color-fg)",
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                cursor: "pointer",
+              }}
+            >
+              BYT KOMMUN ↓
+            </button>
+          </div>
+          <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Välj kommun">
+            {(allKommuner ?? []).map((k, i) => (
+              <button
+                key={k.code}
+                onClick={() => {
+                  setSheetOpen(false);
+                  navigate(`/kommun/${k.code}`);
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  width: "100%",
+                  height: 56,
+                  padding: "0 20px",
+                  background: "none",
+                  border: "none",
+                  borderBottom: i < (allKommuner?.length ?? 0) - 1 ? "1px solid var(--color-border)" : "none",
+                  cursor: "pointer",
+                  textAlign: "left",
+                }}
+              >
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-accent)", minWidth: 32, letterSpacing: "0.1em" }}>
+                  {k.code.toUpperCase().slice(0, 3)}
+                </span>
+                <span style={{ fontFamily: "var(--font-serif)", fontSize: 16, color: "var(--color-fg)", flex: 1 }}>
+                  {k.name}
+                </span>
+              </button>
+            ))}
+          </BottomSheet>
+        </>
+      )}
     </div>
   );
 }
