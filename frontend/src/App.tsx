@@ -21,6 +21,8 @@ import { RiksdagPage } from "./features/riksdag/RiksdagPage";
 import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { SearchPage } from "./features/search/SearchPage";
 import { useTheme } from "./contexts/ThemeContext";
+import { useMediaQuery } from "./hooks/useMediaQuery";
+import { MobileNav } from "./components/MobileNav";
 
 // ── Section detection ─────────────────────────────────────────────────────
 type NavSection = "start" | "riksdag" | "region" | "kommun" | "sok";
@@ -159,6 +161,7 @@ export default function App() {
     );
   }
 
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const section = sectionFromPath(location.pathname);
   const showRiksdagTabs = isRiksdagSection(location.pathname);
 
@@ -172,8 +175,17 @@ export default function App() {
 
   return (
     <div className="sdt-page">
-      {/* ── Top nav ───────────────────────────────────────────────────── */}
+      {/* ── Mobile nav (≤640 px) ──────────────────────────────────────── */}
+      <MobileNav
+        section={section}
+        isRiksdagSection={showRiksdagTabs}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
+
+      {/* ── Desktop top nav (>640 px) ─────────────────────────────────── */}
       <nav
+        className="desktop-only"
         style={{
           background: "var(--color-bg)",
           borderBottom: "1px solid var(--color-border)",
@@ -303,7 +315,7 @@ export default function App() {
       </nav>
 
       {/* ── Page content ──────────────────────────────────────────────── */}
-      <main style={{ maxWidth: 1280, margin: "0 auto", padding: "32px" }}>
+      <main style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0" : "32px" }}>
         <Routes>
           <Route path="/"                                      element={<HomePage />} />
           <Route path="/riksdag"                               element={<RiksdagPage />} />

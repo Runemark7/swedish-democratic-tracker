@@ -157,3 +157,22 @@ html {
   font-style: italic;
   color: var(--color-accent-2);
 }
+
+/* ── Mobile show/hide helpers ────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .desktop-only { display: none !important; }
+}
+@media (min-width: 641px) {
+  .mobile-only { display: none !important; }
+}
+
+/* ── Mobile: hide scrollbar on horizontal pill rows ─────────────────── */
+.mobile-scroll-pills {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.mobile-scroll-pills::-webkit-scrollbar {
+  display: none;
+}
