@@ -379,10 +379,25 @@ export function MunicipalityDetailPage() {
             MANDAT · KAMMARENS SAMMANSÄTTNING
           </div>
 
-          <Hemicycle groups={allParties.map((p) => ({ color: p.color, count: p.seats }))} width={440} height={150} />
+          {totalSeats === 0 ? (
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                color: "var(--color-fg-muted)",
+                padding: "24px 0",
+                textAlign: "center",
+                lineHeight: 1.5,
+              }}
+            >
+              Mandatdata saknas för denna kommun.
+            </div>
+          ) : (
+            <Hemicycle groups={allParties.map((p) => ({ color: p.color, count: p.seats }))} width={440} height={150} />
+          )}
 
           {/* Party legend — split by governing / opposition */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
+          <div style={{ display: totalSeats === 0 ? "none" : "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
             {[
               { label: "STYRE", parties: governing },
               { label: "OPPOSITION", parties: opposition },
@@ -431,28 +446,30 @@ export function MunicipalityDetailPage() {
           </div>
 
           {/* Coalition name + majority */}
-          <div style={{ marginTop: 14 }}>
-            <span
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontStyle: "italic",
-                fontSize: 14,
-                color: "var(--color-fg-muted)",
-              }}
-            >
-              {data.ruling.type}
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                color: "var(--color-fg-muted)",
-                marginLeft: 12,
-              }}
-            >
-              MAJORITET {govSeats}/{totalSeats}
-            </span>
-          </div>
+          {totalSeats > 0 && (
+            <div style={{ marginTop: 14 }}>
+              <span
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  fontStyle: "italic",
+                  fontSize: 14,
+                  color: "var(--color-fg-muted)",
+                }}
+              >
+                {data.ruling.type}
+              </span>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  color: "var(--color-fg-muted)",
+                  marginLeft: 12,
+                }}
+              >
+                MAJORITET {govSeats}/{totalSeats}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Right — BUDGET */}
@@ -467,21 +484,40 @@ export function MunicipalityDetailPage() {
               marginBottom: 16,
             }}
           >
-            BUDGET {data.budget.year} · {data.budget.total}
+            BUDGET {data.budget.year}
+            {data.budget.total ? ` · ${data.budget.total}` : ""}
           </div>
 
-          <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
-            <Donut
-              segments={donutSegments}
-              size={isMobile ? 140 : 160}
-              thickness={isMobile ? 16 : 24}
-              label={data.budget.total}
-              sublabel={data.budget.year}
-            />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <HBars items={hbarsItems} unit="" height={5} gap={9} />
+          {budgetAreas.length === 0 ? (
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                color: "var(--color-fg-muted)",
+                padding: "24px 0",
+                textAlign: "center",
+                lineHeight: 1.5,
+              }}
+            >
+              Budgetdata saknas för denna kommun.
+              <div style={{ fontSize: 9, marginTop: 6, opacity: 0.7 }}>
+                Källa: Kolada — endast utvalda kommuner stöds f.n.
+              </div>
             </div>
-          </div>
+          ) : (
+            <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
+              <Donut
+                segments={donutSegments}
+                size={isMobile ? 140 : 160}
+                thickness={isMobile ? 16 : 24}
+                label={data.budget.total}
+                sublabel={data.budget.year}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <HBars items={hbarsItems} unit="" height={5} gap={9} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

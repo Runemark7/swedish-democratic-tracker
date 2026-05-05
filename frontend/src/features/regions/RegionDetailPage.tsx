@@ -352,10 +352,25 @@ export function RegionDetailPage() {
               MANDAT · KAMMARENS SAMMANSÄTTNING
             </div>
 
-            <Hemicycle groups={hemicycleGroups} width={440} height={150} />
+            {totalSeats === 0 ? (
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  color: "var(--color-fg-muted)",
+                  padding: "24px 0",
+                  textAlign: "center",
+                  lineHeight: 1.5,
+                }}
+              >
+                Mandatdata saknas för denna region.
+              </div>
+            ) : (
+              <Hemicycle groups={hemicycleGroups} width={440} height={150} />
+            )}
 
             {/* Party legend — split by governing / opposition */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>
+            <div style={{ display: totalSeats === 0 ? "none" : "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>
               {[
                 { label: "STYRE", parties: [...ruling.parties, ...(ruling.support ?? [])] },
                 { label: "OPPOSITION", parties: ruling.opposition },
@@ -407,35 +422,37 @@ export function RegionDetailPage() {
             </div>
 
             {/* Coalition */}
-            <div
-              style={{
-                borderTop: "1px solid var(--color-border)",
-                marginTop: 14,
-                paddingTop: 14,
-              }}
-            >
-              <span
+            {totalSeats > 0 && (
+              <div
                 style={{
-                  fontFamily: "var(--font-serif)",
-                  fontStyle: "italic",
-                  fontSize: 18,
-                  color: "var(--color-fg)",
-                  marginRight: 12,
+                  borderTop: "1px solid var(--color-border)",
+                  marginTop: 14,
+                  paddingTop: 14,
                 }}
               >
-                {ruling.type}
-              </span>
-              <span
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  color: "var(--color-fg-muted)",
-                  letterSpacing: "0.1em",
-                }}
-              >
-                MAJORITET {rulingSeats}/{totalSeats}
-              </span>
-            </div>
+                <span
+                  style={{
+                    fontFamily: "var(--font-serif)",
+                    fontStyle: "italic",
+                    fontSize: 18,
+                    color: "var(--color-fg)",
+                    marginRight: 12,
+                  }}
+                >
+                  {ruling.type}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    color: "var(--color-fg-muted)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  MAJORITET {rulingSeats}/{totalSeats}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Right card — BUDGET */}
@@ -449,25 +466,41 @@ export function RegionDetailPage() {
                 marginBottom: 16,
               }}
             >
-              BUDGET {budget.year} · {budget.total}
+              BUDGET {budget.year}
+              {budget.total ? ` · ${budget.total}` : ""}
             </div>
-            <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
-              <Donut
-                segments={budgetSegments}
-                size={isMobile ? 140 : 150}
-                thickness={isMobile ? 16 : 18}
-                label={donutLabel}
-                sublabel={donutSublabel}
-              />
-              <div style={{ flex: 1, minWidth: 0, paddingTop: 4 }}>
-                <HBars
-                  items={budgetSegments.slice(0, 5)}
-                  height={6}
-                  gap={10}
-                  unit=" mdkr"
-                />
+            {budget.areas.length === 0 ? (
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  color: "var(--color-fg-muted)",
+                  padding: "24px 0",
+                  textAlign: "center",
+                  lineHeight: 1.5,
+                }}
+              >
+                Budgetdata saknas för denna region.
               </div>
-            </div>
+            ) : (
+              <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
+                <Donut
+                  segments={budgetSegments}
+                  size={isMobile ? 140 : 150}
+                  thickness={isMobile ? 16 : 18}
+                  label={donutLabel}
+                  sublabel={donutSublabel}
+                />
+                <div style={{ flex: 1, minWidth: 0, paddingTop: 4 }}>
+                  <HBars
+                    items={budgetSegments.slice(0, 5)}
+                    height={6}
+                    gap={10}
+                    unit=" mdkr"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
