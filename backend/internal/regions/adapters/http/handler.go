@@ -76,15 +76,23 @@ func (h *Handler) getRegionKPI(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) getRegionBudget(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
-	// SCB publishes the previous year's data; try year-1 then year-2 as fallback.
-	year := time.Now().Year() - 1
-	areas, err := h.svc.GetRegionBudget(r.Context(), code, year)
-	if err != nil || len(areas) == 0 {
-		areas, err = h.svc.GetRegionBudget(r.Context(), code, year-1)
-		if err != nil {
-			jsonError(w, err.Error(), http.StatusBadGateway)
-			return
+	// SCB publishes the previous year's data; try year-1, then walk back
+	// up to 4 years. Some regions lag (e.g. preliminary numbers ".." for
+	// recent years).
+	startYear := time.Now().Year() - 1
+	var (
+		areas   []ports.RegionBudgetArea
+		lastErr error
+	)
+	for y := startYear; y >= startYear-4; y-- {
+		areas, lastErr = h.svc.GetRegionBudget(r.Context(), code, y)
+		if lastErr == nil && len(areas) > 0 {
+			break
 		}
+	}
+	if lastErr != nil && len(areas) == 0 {
+		jsonError(w, lastErr.Error(), http.StatusBadGateway)
+		return
 	}
 	if areas == nil {
 		areas = []ports.RegionBudgetArea{}

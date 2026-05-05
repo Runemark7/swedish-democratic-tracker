@@ -42,7 +42,13 @@ var regionBudgetAreas = []struct {
 }
 
 func (c *Client) FetchRegionBudget(ctx context.Context, regionCode string, year int) ([]ports.RegionBudgetArea, error) {
-	scbCode := regionCode + "L" // SCB uses e.g. "06L" for Jönköping
+	// SCB uses e.g. "06L" for Jönköping. Gotland is special: it's both
+	// kommun and region, so SCB uses "0980L" (kommun-style) in the region
+	// budget table.
+	scbCode := regionCode + "L"
+	if regionCode == "09" {
+		scbCode = "0980L"
+	}
 
 	areaCodes := make([]string, len(regionBudgetAreas)+1)
 	for i, a := range regionBudgetAreas {
