@@ -80,17 +80,17 @@ export function BudgetPage() {
 
       {/* Year selectors */}
       {availableYears.length > 0 && (
-        <div className="flex items-center gap-4 mb-6 flex-wrap">
-          <div className="flex items-center gap-2">
+        <div className="flex items-start gap-4 mb-6 flex-wrap" style={{ minWidth: 0 }}>
+          <div className="flex items-center gap-2" style={{ minWidth: 0, maxWidth: "100%" }}>
             <span className="text-xs text-on-surface-variant font-medium uppercase tracking-wider">
               Fr&aring;n
             </span>
-            <div className="flex gap-1">
+            <div className="flex gap-1 overflow-x-auto" style={{ scrollbarWidth: "none", maxWidth: "100%" }}>
               {availableYears.map((y) => (
                 <button
                   key={`base-${y}`}
                   onClick={() => setBaseYear(y)}
-                  className="px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all"
+                  className="px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all shrink-0"
                   style={{
                     background: y === by ? "var(--color-primary)" : "var(--color-surface-low)",
                     color: y === by ? "var(--color-on-primary)" : "var(--color-on-surface)",
@@ -102,16 +102,16 @@ export function BudgetPage() {
             </div>
           </div>
           <span className="text-on-surface-variant">&rarr;</span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" style={{ minWidth: 0, maxWidth: "100%" }}>
             <span className="text-xs text-on-surface-variant font-medium uppercase tracking-wider">
               Till
             </span>
-            <div className="flex gap-1">
+            <div className="flex gap-1 overflow-x-auto" style={{ scrollbarWidth: "none", maxWidth: "100%" }}>
               {availableYears.map((y) => (
                 <button
                   key={`comp-${y}`}
                   onClick={() => setCompareYear(y)}
-                  className="px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all"
+                  className="px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all shrink-0"
                   style={{
                     background: y === cy ? "var(--color-primary)" : "var(--color-surface-low)",
                     color: y === cy ? "var(--color-on-primary)" : "var(--color-on-surface)",
@@ -126,7 +126,7 @@ export function BudgetPage() {
       )}
 
       {/* Sort controls */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
         {([
           { mode: "default" as SortMode, label: "UO-ordning" },
           { mode: "increase" as SortMode, label: "St\u00f6rst \u00f6kning" },

@@ -264,6 +264,8 @@ function StatusCell({ tag, data, to }: StatusCellProps) {
         display: "flex",
         flexDirection: "column",
         gap: 14,
+        minWidth: 0,
+        overflow: "hidden",
       }}
     >
       {/* Header */}
