@@ -111,19 +111,13 @@ func main() {
 	}
 	slog.Info("migrations applied")
 
-	// -- Election seeder (runs in background if SEED_ELECTIONS=true and DB has <100 municipalities) --
+	// -- Election seeder (runs in background if SEED_ELECTIONS=true) --
+	// The seeder is idempotent: per-kommun DELETE+INSERT guarded by total>0,
+	// so transient SCB failures preserve existing data. Running on every
+	// startup fills in any gaps left by previous partial seeds.
 	if envOr("SEED_ELECTIONS", "false") == "true" {
 		go func() {
-			var count int
-			if err := db.QueryRow(context.Background(), "SELECT COUNT(*) FROM municipalities").Scan(&count); err != nil {
-				slog.Error("seeder count check failed", "error", err)
-				return
-			}
-			if count >= 100 {
-				slog.Info("municipalities already seeded, skipping seeder", "count", count)
-				return
-			}
-			slog.Info("running election seeder", "existing_count", count)
+			slog.Info("running election seeder (idempotent fill)")
 			if err := seeder.Run(context.Background(), db); err != nil {
 				slog.Error("election seeder failed", "error", err)
 			}
