@@ -5,7 +5,6 @@ import { votesApi } from "./api";
 import { PartyBadge, VoteBar, ProposalOriginTag } from "@/shared/components";
 import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { PartyVotePosition } from "@/shared/types";
 
 interface CommitteeProposal {
@@ -281,7 +280,6 @@ export function VoteDetailPage() {
       </div>
       {breakdown.length > 0 && (
         <div className="mt-4">
-          <SectionSource sourceIds={["riksdagen"]} />
         </div>
       )}
 

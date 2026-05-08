@@ -10,7 +10,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "license": null,
     "freshness": "deterministisk (rendrar samma resultat för samma input)",
     "lastVerified": "Fri May 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
-    "blurb": "Vi har ingen primärkälla i Sverige som publicerar regeringens / regionstyrets / kommunstyrets faktiska årsplan i strukturerad form. Vi **genererar** därför en agenda från koalitionens partisammansättning genom en hårdkodad lookup."
+    "blurb": "Vi har ingen primärkälla i Sverige som publicerar regeringens / regionstyrets / kommunstyrets faktiska årsplan i strukturerad form. Vi **genererar** därför en agenda från koalitionens partisammansättning."
   },
   "kolada-spending": {
     "id": "kolada-spending",
@@ -86,11 +86,11 @@ export const SOURCES: Record<string, SourceEntry> = {
     "id": "seed-budget-data",
     "name": "Statsbudget (seed)",
     "kind": "seed",
-    "upstream": "https://www.regeringen.se (budgetpropositionerna)",
+    "upstream": "https://www.regeringen.se/rattsliga-dokument/proposition/",
     "license": "Public domain — Regeringskansliet",
     "freshness": "engångs per år; uppdateras vid ny budget",
     "lastVerified": "Fri May 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
-    "blurb": "Hand-kuraterad data från budgetpropositionen för flera år, sparad i `backend/migrations/000005`–`000009`. Innehåller belopp per utgiftsområde (UO 1–27)."
+    "blurb": "Hand-kuraterad data från statens budgetproposition (BP) över flera år. Innehåller anslagna belopp per utgiftsområde (UO 1–27) samt vilken status posten har — föreslagen av regeringen eller beslutad av riksdagen."
   },
   "seed-party-goals": {
     "id": "seed-party-goals",
@@ -98,9 +98,9 @@ export const SOURCES: Record<string, SourceEntry> = {
     "kind": "seed",
     "upstream": null,
     "license": "Sammanställt från partiernas valmanifest 2022",
-    "freshness": "engångs (vid migration); uppdateras manuellt vid nya manifest",
+    "freshness": "engångs (vid antagande); uppdateras manuellt vid nya manifest",
     "lastVerified": "Fri May 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
-    "blurb": "Hand-kuraterade mål från partiernas valmanifest 2022. Varje rad i `backend/migrations/000003_seed_party_goals.sql` har en citation tillbaka till källtexten — vanligtvis en specifik sida i partiets PDF-manifest."
+    "blurb": "Hand-kuraterade mål från partiernas valmanifest 2022. Varje mål har en citation tillbaka till källtexten — vanligtvis en specifik sida i partiets PDF-manifest. På så sätt kan du för varje mål gå tillbaka och verifiera ordagrant vad partiet skrev i sitt manifest."
   },
   "statskontoret-arsutfall": {
     "id": "statskontoret-arsutfall",
@@ -116,11 +116,11 @@ export const SOURCES: Record<string, SourceEntry> = {
     "id": "ted",
     "name": "TED — Tenders Electronic Daily",
     "kind": "api",
-    "upstream": "https://ted.europa.eu/api/v3.0",
+    "upstream": "https://ted.europa.eu/",
     "license": "EU public data",
     "freshness": "löpande",
     "lastVerified": "Fri May 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
-    "blurb": "EU:s officiella databas över alla offentliga upphandlingar över tröskelvärdet. Vi använder den för kommunala kontrakt."
+    "blurb": "EU:s officiella databas över alla offentliga upphandlingar över tröskelvärdet. Vi använder den för att visa kommunala kontrakt på kommunsidor."
   },
   "wikimedia-svg": {
     "id": "wikimedia-svg",
@@ -130,7 +130,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "license": "CC BY-SA 2.5",
     "freshness": "engångs (statiska SVG-banor inkluderade i bundle)",
     "lastVerified": "Fri May 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
-    "blurb": "SVG-paths för Sveriges 21 regioner och 290 kommuner, bundlade direkt i frontend-koden. Ursprungligen från Wikimedia Commons, härlednings- data ursprungligen SCB:s administrativa indelning."
+    "blurb": "SVG-paths för Sveriges 21 regioner och 290 kommuner. De är inbyggda direkt i sidan så kartan kan ritas omedelbart utan extra hämtning. Ursprunget är Wikimedia Commons, baserat på SCB:s administrativa indelning."
   },
 };
 

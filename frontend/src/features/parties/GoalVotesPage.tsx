@@ -7,7 +7,6 @@ import {
 } from "@/shared/components";
 import { PARTY_COLORS, alignmentColor, committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { GoalVoteMatch } from "@/shared/types";
 
 const DIRECTION_STYLES: Record<string, { color: string; bg: string; label: string }> = {
@@ -144,7 +143,6 @@ export function GoalVotesPage() {
       </div>
       {matches.length > 0 && (
         <div className="mt-4">
-          <SectionSource sourceIds={["seed-party-goals", "riksdagen"]} />
         </div>
       )}
 

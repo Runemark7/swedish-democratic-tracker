@@ -5,7 +5,6 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Hemicycle, Donut, HBars, DualLine, Pill, GoalBadge, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { Authority, LiveVote, Party } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -440,7 +439,6 @@ export function RiksdagPage() {
               <SourceMarker sourceId="riksdagen" />
             </span>
           </div>
-          <SectionSource sourceIds={["riksdagen"]} />
         </div>
 
         {/* Right card — BUDGET */}
@@ -483,7 +481,6 @@ export function RiksdagPage() {
               />
             </div>
           </div>
-          <SectionSource sourceIds={["seed-budget-data"]} />
         </div>
       </div>
 
@@ -624,7 +621,6 @@ export function RiksdagPage() {
               );
             })}
           </div>
-          <SectionSource sourceIds={["riksdagen"]} />
         </div>
 
         {/* Right card — AGENDA */}
@@ -646,7 +642,6 @@ export function RiksdagPage() {
             AGENDA · STYRETS PRIORITERINGAR
           </div>
           <AgendaList items={agenda} />
-          <SectionSource sourceIds={["derived-agenda"]} />
         </div>
       </div>
 
@@ -720,7 +715,6 @@ export function RiksdagPage() {
             </div>
 
             {/* Footer with source link */}
-            <SectionSource sourceIds={["statskontoret-arsutfall"]} />
           </div>
         );
       })()}

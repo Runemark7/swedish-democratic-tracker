@@ -1,7 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { riksdagApi } from "./api";
-import { SectionSource } from "@/components/sources/SectionSource";
 
 function Skeleton() {
   return (
@@ -260,7 +259,6 @@ export function AuthorityDetailPage() {
             <div style={{ marginTop: 10, fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--color-fg-muted)", opacity: 0.7 }}>
               Anslag = Statens budget + Ändringsbudgetar
             </div>
-            <SectionSource sourceIds={["statskontoret-arsutfall", "seed-budget-data"]} />
           </div>
         );
       })()}

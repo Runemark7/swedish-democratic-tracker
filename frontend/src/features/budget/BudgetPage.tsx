@@ -7,7 +7,6 @@ import { DeltaIndicator } from "./components/DeltaIndicator";
 import { DocumentLinks } from "./components/DocumentLinks";
 import { formatBudgetAmount } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { BudgetDocumentRef } from "@/shared/types";
 
 function budgetDocRefs(year: number): BudgetDocumentRef[] {
@@ -188,7 +187,6 @@ export function BudgetPage() {
                 K&auml;lldokument
               </div>
               <DocumentLinks documents={budgetDocRefs(cy)} compact />
-              <SectionSource sourceIds={["seed-budget-data"]} />
             </div>
           </div>
 

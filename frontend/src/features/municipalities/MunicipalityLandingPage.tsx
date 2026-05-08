@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { municipalitiesApi } from "./api";
 import { SwedenKommunMap } from "./components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { MunicipalitySummary } from "@/shared/types";
 
@@ -330,7 +329,6 @@ export function MunicipalityLandingPage() {
               <SwedenKommunMap municipalities={municipalities} />
             </div>
             <div style={{ marginTop: 12 }}>
-              <SectionSource sourceIds={["wikimedia-svg", "scb-kfmandat"]} />
             </div>
             {!isMobile && (
               <p

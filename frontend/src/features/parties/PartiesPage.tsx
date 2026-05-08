@@ -3,7 +3,6 @@ import { partiesApi } from "./api";
 import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS, alignmentColor } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 
 export function PartiesPage() {
   const { data, isLoading, error } = useQuery({
@@ -107,7 +106,6 @@ export function PartiesPage() {
                   <SourceMarker sourceId="riksdagen" />
                 </span>
               </div>
-              <SectionSource sourceIds={["seed-party-goals", "riksdagen"]} />
             </div>
           );
         })}

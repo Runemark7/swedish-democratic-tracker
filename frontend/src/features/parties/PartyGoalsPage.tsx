@@ -8,7 +8,6 @@ import {
 } from "@/shared/components";
 import { PARTY_COLORS, goalStatus, TOPIC_LABELS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { GoalWithAlignment } from "@/shared/types";
 
 function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
@@ -163,7 +162,6 @@ export function PartyGoalsPage() {
               <GoalCard key={g.id} goal={g} party={party} />
             ))}
           </div>
-          <SectionSource sourceIds={["seed-party-goals", "riksdagen"]} />
         </section>
       ))}
 

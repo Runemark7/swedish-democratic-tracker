@@ -4,7 +4,6 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Pill } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import { PanelCard } from "./components/PanelCard";
 import { PartySpeechCard } from "./components/PartySpeechCard";
 import type { LiveVote } from "@/types/democracy";
@@ -203,7 +202,6 @@ export function HomePage() {
               <div key={i}>{row}</div>
             );
           })}
-          <SectionSource sourceIds={["riksdagen"]} />
         </PanelCard>
 
         {/* Panel 2 — Aktuella debatter */}
@@ -264,7 +262,6 @@ export function HomePage() {
               </Link>
             );
           })}
-          <SectionSource sourceIds={["riksdagen"]} />
         </PanelCard>
       </div>
 
@@ -323,7 +320,6 @@ export function HomePage() {
               <div key={i}>{row}</div>
             );
           })}
-          <SectionSource sourceIds={["riksdagen"]} />
         </PanelCard>
 
         {/* Panel 5 — Kommande beslut */}
@@ -334,7 +330,6 @@ export function HomePage() {
           emptyText="Ingen agenda publicerad."
         >
           <AgendaList items={agenda.slice(0, 5)} />
-          <SectionSource sourceIds={["derived-agenda"]} />
         </PanelCard>
       </div>
 
@@ -362,7 +357,6 @@ export function HomePage() {
         ))}
       </div>
       <div style={{ margin: isMobile ? "14px 14px 28px" : "22px 32px 28px" }}>
-        <SectionSource sourceIds={["riksdagen"]} />
       </div>
     </div>
   );
