@@ -29,11 +29,12 @@ curl -s -X POST \
 - `data[].values[0]` — antal invånare.
 
 ## Begränsningar och kända problem
-- Endast kommunnivå publiceras direkt; regionsumma räknas i seeder
-  genom att summera ingående kommuner.
-- SCB tillåter ~50 koder per query. Seeder batcher i grupper om 50.
+- Endast kommunnivå publiceras direkt — regionsumma räknas fram av
+  oss genom att summera ingående kommuner.
+- SCB tillåter ~50 koder per query, så hämtningen sker i flera
+  omgångar.
 
 ## Hur vi bearbetar
-- `backend/internal/regions/seeder/seeder.go:288` (`fetchPopulations`)
-  batchar och hämtar.
-- Lagras i `municipalities.population`.
+Vår backend hämtar folkmängd för alla kommuner i batch en gång per
+driftsättning, och lagrar siffran per kommun. Frontend visar den i
+sub-headern på region- och kommunsidan samt på respektive landing-sida.

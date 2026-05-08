@@ -36,9 +36,9 @@ API-referens: <https://github.com/Hypergene/kolada>.
 - `data[].kpi` — KPI-id (N#####).
 - `data[].municipality` — 4-siffrig kommunkod.
 
-KPI-id:n vi läser idag finns i
-`backend/internal/regions/adapters/kolada/` (region) och `municipalities`
-sub-paketet (kommun). Se exempelvis `N60008` (resultat per skattekrona).
+Vi läser ett urval av KPI:n per region och per kommun — t.ex. `N60008`
+(resultat per skattekrona). Listan finns dokumenterad i CLAUDE.md i
+sidans repo.
 
 ## Begränsningar och kända problem
 - Kolada uppdateras typiskt en gång per år. Färska siffror kan saknas
@@ -47,11 +47,8 @@ sub-paketet (kommun). Se exempelvis `N60008` (resultat per skattekrona).
   budgetdata helt.
 
 ## Hur vi bearbetar
-- Backend-handler i
-  `backend/internal/regions/adapters/http/handler.go` proxar Kolada-svar
-  via `KoladaClient` (backend/internal/regions/adapters/kolada/).
-- Frontend-hook
-  `useRegion(code)` / `useKommun(code)` i
-  `frontend/src/hooks/useDemocracy.ts` kallar
-  `regionsApi.getKPIs` / `municipalitiesApi.getMunicipalityKPIs` och
-  mappar via `kpiItemsToStrip`.
+Vår backend agerar proxy mot Kolada — vi cacher resultaten kortvarigt
+för att inte överbelasta deras API, och mappar varje KPI till en
+visningsklar form (siffra, enhet, mål, trendpil). Frontend hämtar
+resultatet via vårt API och visar det på region- och kommunsidans
+KPI-strip.

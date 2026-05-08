@@ -38,17 +38,14 @@ curl -s 'https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat'
 - `data[].values[0]` — antal mandat.
 
 ## Begränsningar och kända problem
-- Partikoden `FP` normaliseras till `L` (Liberalerna) i
-  `backend/internal/regions/seeder/seeder.go:350`.
-- Tidigare seeder hade en gate som hoppade över återkörning ("count >=
-  100"). Den är borttagen — seeder kör nu vid varje uppstart och fyller
-  i luckor idempotent.
-- Värden `..` betyder "data ej publicerad än" — hoppas över.
+- SCB använder fortfarande den gamla partikoden `FP` i datan; vi
+  visar den som `L` (Liberalerna) på sidan.
+- Värden `..` betyder att SCB inte publicerat siffran än och hoppas
+  över i vårt UI.
 
 ## Hur vi bearbetar
-- `backend/internal/regions/seeder/seeder.go:82` (`fetchMandates`) hämtar
-  bulk för alla kommuner.
-- Resultat skrivs till `municipal_election_results` per kommun, med
-  DELETE+INSERT så återkörning är idempotent.
-- Frontend läser via `useKommun(code)` →
-  `electionResultsToParties` i `frontend/src/hooks/useDemocracy.ts`.
+Vår backend hämtar mandaten från SCB och lagrar dem per kommun.
+Frontend läser därefter dessa och renderar en hemicycle (halvrunds-
+diagram), partilegend, samt total mandatsumma på varje kommunsida.
+Hämtningen sker idempotent vid driftsättning så data fylls på vid
+behov utan att skriva över korrekta rader.

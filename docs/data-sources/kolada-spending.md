@@ -47,7 +47,7 @@ KPI:n vi läser:
   visar "Budgetdata saknas..."-meddelande.
 
 ## Hur vi bearbetar
-- `backend/internal/regions/adapters/http/handler.go:138`
-  (`getMunicipalitySpending`) hämtar via `KoladaClient`.
-- Frontend mappar via `spendingToBudget` i
-  `frontend/src/hooks/useDemocracy.ts`.
+Vår backend hämtar de utvalda KPI:erna för varje kommun från Kolada
+och returnerar en lista. Frontend räknar om kr/invånare till totalt
+belopp (kr × kommunens befolkning) och fördelar i en donut +
+horisontella staplar på kommunens budgetkort.
