@@ -215,6 +215,7 @@ func main() {
 	cursorRepo := ingestionPG.NewCursorRepository(db)
 	pollWorker := workers.NewPoliticiansWorker(polSvc)
 	speechWorker := workers.NewSpeechesWorker(speechSvc, cursorRepo)
+	enrichSpeechesWorker := workers.NewEnrichSpeechesWorker(speechSvc, 200)
 	voteWorker := workers.NewVotesWorker(voteSvc, cursorRepo)
 	enrichWorker := workers.NewEnrichOriginsWorker(voteSvc)
 	keywordWorker := workers.NewKeywordMatcherWorker(goalSvc, voteSvc, matchSvc)
@@ -225,6 +226,10 @@ func main() {
 	sched := ingestion.NewScheduler()
 	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker); err != nil {
 		slog.Error("failed to register ingestion workers", "error", err)
+		os.Exit(1)
+	}
+	if err := sched.RegisterSync("@daily", &enrichSpeechesWorker); err != nil {
+		slog.Error("failed to register enrich-speech-text worker", "error", err)
 		os.Exit(1)
 	}
 	if err := sched.RegisterSync("@weekly", &agencyIntelWorker); err != nil {

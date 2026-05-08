@@ -81,3 +81,34 @@ func (c *Client) FetchSpeeches(ctx context.Context, f ports.FetchSpeechesFilter)
 	}
 	return speeches, nil
 }
+
+// FetchSpeechText calls /anforande/{dokID}-{nr}.json and returns the
+// `anforandetext` body. The list endpoint omits the prose, so this is
+// the only way to populate `speeches.speech_text`.
+func (c *Client) FetchSpeechText(ctx context.Context, dokID, anforandeNummer string) (string, error) {
+	url := fmt.Sprintf("%s/anforande/%s-%s.json", baseURL, dokID, anforandeNummer)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return "", err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return "", nil // nothing upstream — caller can mark text empty/sentinel
+	}
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("riksdagen speech text returned %d", resp.StatusCode)
+	}
+	var payload struct {
+		Anforande struct {
+			Anforandetext string `json:"anforandetext"`
+		} `json:"anforande"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+		return "", fmt.Errorf("decode speech text: %w", err)
+	}
+	return payload.Anforande.Anforandetext, nil
+}

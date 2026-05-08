@@ -87,6 +87,26 @@ func (r *Repository) ListRecent(ctx context.Context, limit int) ([]*domain.Speec
 	return scanSpeeches(rows)
 }
 
+func (r *Repository) ListMissingText(ctx context.Context, limit int) ([]*domain.Speech, error) {
+	if limit <= 0 || limit > 500 {
+		limit = 100
+	}
+	q := "SELECT " + selectCols + " FROM speeches " +
+		"WHERE speech_text IS NULL OR speech_text = '' " +
+		"ORDER BY date DESC, id DESC LIMIT $1"
+	rows, err := r.db.Query(ctx, q, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanSpeeches(rows)
+}
+
+func (r *Repository) UpdateText(ctx context.Context, id int, text string) error {
+	_, err := r.db.Exec(ctx, "UPDATE speeches SET speech_text = $1 WHERE id = $2", text, id)
+	return err
+}
+
 func (r *Repository) MarkProcessed(ctx context.Context, id int) error {
 	_, err := r.db.Exec(ctx, "UPDATE speeches SET ai_processed = true WHERE id = $1", id)
 	return err

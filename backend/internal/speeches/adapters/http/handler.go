@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -88,6 +89,12 @@ func (h *Handler) getByID(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) toDTO(ctx context.Context, s *domain.Speech, includeFullText bool) SpeechDTO {
 	name, _ := h.pol.NameByID(ctx, s.PoliticianID)
+	// Enricher writes a single space when upstream returns no body so we
+	// stop retrying. Treat that as empty before serving.
+	text := s.SpeechText
+	if strings.TrimSpace(text) == "" {
+		text = ""
+	}
 	dto := SpeechDTO{
 		ID:              s.ID,
 		DokID:           s.DokID,
@@ -97,10 +104,10 @@ func (h *Handler) toDTO(ctx context.Context, s *domain.Speech, includeFullText b
 		Party:           s.Party,
 		Date:            s.Date,
 		TopicHeading:    s.TopicHeading,
-		Snippet:         snippetFrom(s.SpeechText, 180),
+		Snippet:         snippetFrom(text, 180),
 	}
 	if includeFullText {
-		dto.SpeechText = s.SpeechText
+		dto.SpeechText = text
 	}
 	return dto
 }
