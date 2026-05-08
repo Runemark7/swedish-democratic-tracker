@@ -104,9 +104,13 @@ func (h *Handler) toDTO(ctx context.Context, s *domain.Speech, includeFullText b
 		Party:           s.Party,
 		Date:            s.Date,
 		TopicHeading:    s.TopicHeading,
-		Snippet:         snippetFrom(text, 180),
+		// Snippet is rendered inline as plain text on listing pages —
+		// strip HTML tags so users don't see literal "<p>...".
+		Snippet: snippetFrom(stripHTML(text), 180),
 	}
 	if includeFullText {
+		// Full body keeps the HTML so the detail page can render
+		// paragraph breaks via dangerouslySetInnerHTML.
 		dto.SpeechText = text
 	}
 	return dto
@@ -121,6 +125,25 @@ func snippetFrom(text string, maxRunes int) string {
 		return text
 	}
 	return string(r[:maxRunes]) + "…"
+}
+
+// stripHTML removes <tag>...</tag> markup so the result reads as plain
+// prose. Mirrors the helper in votes/adapters/riksdagen/client.go;
+// kept inline to avoid cross-package coupling on a 15-line utility.
+func stripHTML(s string) string {
+	var b strings.Builder
+	inTag := false
+	for _, r := range s {
+		switch {
+		case r == '<':
+			inTag = true
+		case r == '>':
+			inTag = false
+		case !inTag:
+			b.WriteRune(r)
+		}
+	}
+	return strings.TrimSpace(b.String())
 }
 
 func jsonOK(w http.ResponseWriter, v any) {
