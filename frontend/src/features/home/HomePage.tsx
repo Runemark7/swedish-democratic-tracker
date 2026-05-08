@@ -24,20 +24,6 @@ function beslutHref(v: LiveVote): string | null {
   return `/beslut/${encodeURIComponent(v.beteckning)}?${p}`;
 }
 
-function isToday(time: string): boolean {
-  return time.toLowerCase().startsWith("idag");
-}
-
-function isThisWeek(time: string): boolean {
-  const t = time.toLowerCase();
-  if (t.startsWith("idag") || t.startsWith("igår")) return true;
-  const m = t.match(/^(\d{1,2})\s+(\S+)/);
-  if (!m) return false;
-  const day = Number(m[1]);
-  const now = new Date();
-  const diffDays = Math.abs(now.getDate() - day);
-  return diffDays <= 7;
-}
 
 function pickLatestPerParty(speeches: Speech[]): Record<string, Speech | null> {
   const out: Record<string, Speech | null> = {};
@@ -75,8 +61,12 @@ export function HomePage() {
   const liveVotes = riksdag.liveVotes ?? [];
   const agenda = riksdag.agenda ?? [];
 
-  const todayVotes = liveVotes.filter((v) => isToday(v.time)).slice(0, 5);
-  const weekVotes = liveVotes.filter((v) => isThisWeek(v.time)).slice(0, 5);
+  // Show the 5 most recent decisions on top, the next 5 below.
+  // Riksdagen often goes weeks without votes (recess, summer); strict
+  // "today" / "this week" filters left the panels empty even though
+  // the latest decisions were a few weeks old.
+  const todayVotes = liveVotes.slice(0, 5);
+  const weekVotes = liveVotes.slice(5, 10);
 
   const recentSpeeches = (speeches ?? []).slice(0, 5);
   const latestByParty = pickLatestPerParty(speeches ?? []);
@@ -151,10 +141,10 @@ export function HomePage() {
       <div style={panelGrid}>
         {/* Panel 1 — Beslut idag */}
         <PanelCard
-          title="BESLUT IDAG"
+          title="SENASTE BESLUT"
           showAllHref="/votes"
           isEmpty={todayVotes.length === 0}
-          emptyText="Inga beslut idag — kammaren kan ha sommaruppehåll."
+          emptyText="Inga registrerade beslut än."
         >
           {todayVotes.map((v, i) => {
             const href = beslutHref(v);
@@ -269,10 +259,10 @@ export function HomePage() {
       <div style={{ ...panelGrid, marginTop: 1, borderTop: "none" }}>
         {/* Panel 3 — Veckans omröstningar */}
         <PanelCard
-          title="VECKANS OMRÖSTNINGAR"
+          title="TIDIGARE OMRÖSTNINGAR"
           showAllHref="/votes"
           isEmpty={weekVotes.length === 0}
-          emptyText="Inga omröstningar denna vecka."
+          emptyText="Inga ytterligare omröstningar att visa."
         >
           {weekVotes.map((v, i) => {
             const href = beslutHref(v);
