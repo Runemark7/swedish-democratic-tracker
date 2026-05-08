@@ -36,7 +36,15 @@ function firstParagraph(body) {
 
 async function main() {
   if (!existsSync(SRC_DIR)) {
-    throw new Error(`Source dir not found: ${SRC_DIR}`);
+    // Inside Docker build the repo root isn't in the build context — only
+    // frontend/. CI runs this script explicitly before `docker build` so the
+    // pre-synced files end up inside the context. When the script then runs
+    // again from `prebuild` inside the container, just skip silently and
+    // trust the pre-synced state.
+    console.log(
+      `sync-data-sources: source dir not found (${SRC_DIR}); assuming pre-synced — skipping.`
+    );
+    return;
   }
 
   // Ensure destination exists, then remove only stale .md files so
