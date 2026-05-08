@@ -4,6 +4,8 @@ import { useParams, Link } from "react-router-dom";
 import { politiciansApi } from "./api";
 import { PartyBadge, ProposalOriginTag, TopicTag, SpecificityBadge } from "@/shared/components";
 import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { Vote, PromiseWithMatches } from "@/shared/types";
 
 const VOTE_STYLES: Record<string, { color: string; bg: string }> = {
@@ -26,6 +28,7 @@ function VoteRow({ vote }: { vote: Vote }) {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
           {vote.documentTitle || `${vote.beteckning} punkt ${vote.forslagspunkt}`}
+          <SourceMarker sourceId="riksdagen" />
         </p>
         <div className="flex flex-wrap items-center gap-2 mt-1.5">
           <span className="text-[11px] font-mono text-on-surface-variant">{vote.beteckning}</span>
@@ -179,6 +182,7 @@ export function PoliticianPage() {
               <div key={s.label} className="text-center">
                 <div className="font-mono font-extrabold text-lg" style={{ color: s.color }}>
                   {s.value}
+                  <SourceMarker sourceId="riksdagen" />
                 </div>
                 <div className="text-[10px] text-on-surface-variant uppercase tracking-widest">
                   {s.label}
@@ -188,6 +192,7 @@ export function PoliticianPage() {
             <div className="text-center">
               <div className="font-mono font-extrabold text-lg text-on-surface">
                 {votes.length}
+                <SourceMarker sourceId="riksdagen" />
               </div>
               <div className="text-[10px] text-on-surface-variant uppercase tracking-widest">
                 Totalt
@@ -231,6 +236,11 @@ export function PoliticianPage() {
                 <VoteRow key={v.id} vote={v} />
               ))}
             </div>
+            {votes.length > 0 && (
+              <div className="mt-4">
+                <SectionSource sourceIds={["riksdagen"]} />
+              </div>
+            )}
             {votes.length === 0 && (
               <p className="text-on-surface-variant text-center py-16 text-sm">
                 Inga röstningar hittades.

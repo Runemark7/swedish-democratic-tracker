@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { votesApi } from "./api";
 import { ProposalOriginTag } from "@/shared/components";
 import { committeeFromBeteckning } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 
 export function VotesPage() {
   const [page, setPage] = useState(1);
@@ -48,6 +50,7 @@ export function VotesPage() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
                   {v.documentTitle || `${v.beteckning} punkt ${v.forslagspunkt}`}
+                  <SourceMarker sourceId="riksdagen" />
                 </p>
                 <div className="flex flex-wrap items-center gap-2 mt-1.5">
                   <span className="text-[11px] font-mono text-on-surface-variant">
@@ -65,6 +68,11 @@ export function VotesPage() {
           );
         })}
       </div>
+      {votes.length > 0 && (
+        <div className="mt-4">
+          <SectionSource sourceIds={["riksdagen"]} />
+        </div>
+      )}
 
       {votes.length === 0 && (
         <p className="text-on-surface-variant text-center py-16 text-sm">

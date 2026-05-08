@@ -6,6 +6,8 @@ import {
   ProposalOriginTag,
 } from "@/shared/components";
 import { PARTY_COLORS, alignmentColor, committeeFromBeteckning } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { GoalVoteMatch } from "@/shared/types";
 
 const DIRECTION_STYLES: Record<string, { color: string; bg: string; label: string }> = {
@@ -58,6 +60,7 @@ function VoteMatchCard({ match }: { match: GoalVoteMatch }) {
           </span>
           <span className="text-[10px] font-mono text-on-surface-variant">
             {relevance}% relevans
+            <SourceMarker sourceId="riksdagen" />
           </span>
           {match.partyAlignmentPct != null && (
             <div className="flex items-center gap-1.5">
@@ -113,7 +116,7 @@ export function GoalVotesPage() {
               <p className="text-sm font-semibold text-on-surface leading-snug mb-2">
                 &ldquo;{goal.goalText}&rdquo;
               </p>
-              <p className="text-xs text-on-surface-variant">{goal.sourceDocument}</p>
+              <p className="text-xs text-on-surface-variant">{goal.sourceDocument} <SourceMarker sourceId="seed-party-goals" /></p>
             </div>
             {goal.alignmentPct != null && (
               <AlignmentRing pct={goal.alignmentPct} size={64} color={pc?.bg} />
@@ -139,6 +142,11 @@ export function GoalVotesPage() {
           <VoteMatchCard key={i} match={m} />
         ))}
       </div>
+      {matches.length > 0 && (
+        <div className="mt-4">
+          <SectionSource sourceIds={["seed-party-goals", "riksdagen"]} />
+        </div>
+      )}
 
       {matches.length === 0 && (
         <p className="text-on-surface-variant text-center py-16 text-sm">

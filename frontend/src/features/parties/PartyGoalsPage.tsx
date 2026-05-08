@@ -7,6 +7,8 @@ import {
   SpecificityBadge, TopicTag, ConsequencePanel,
 } from "@/shared/components";
 import { PARTY_COLORS, goalStatus, TOPIC_LABELS } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { GoalWithAlignment } from "@/shared/types";
 
 function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
@@ -39,8 +41,8 @@ function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
               &ldquo;{goal.goalText}&rdquo;
             </p>
             <div className="flex items-center gap-3 mt-2 text-xs text-on-surface-variant">
-              <span>{goal.sourceDocument}</span>
-              <span>{votes} relevanta omröstningar</span>
+              <span>{goal.sourceDocument} <SourceMarker sourceId="seed-party-goals" /></span>
+              <span>{votes} relevanta omröstningar <SourceMarker sourceId="riksdagen" /></span>
             </div>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -161,6 +163,7 @@ export function PartyGoalsPage() {
               <GoalCard key={g.id} goal={g} party={party} />
             ))}
           </div>
+          <SectionSource sourceIds={["seed-party-goals", "riksdagen"]} />
         </section>
       ))}
 
