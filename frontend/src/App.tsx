@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink, useLocation } from "react-router-dom";
+import { Routes, Route, NavLink, useLocation, Link } from "react-router-dom";
 import { PartiesPage } from "./features/parties/PartiesPage";
 import { PartyGoalsPage } from "./features/parties/PartyGoalsPage";
 import { GoalVotesPage } from "./features/parties/GoalVotesPage";
@@ -21,6 +21,8 @@ import { RiksdagPage } from "./features/riksdag/RiksdagPage";
 import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { SearchPage } from "./features/search/SearchPage";
 import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
+import { DataIndexPage } from "./features/data/DataIndexPage";
+import { DataSourcePage } from "./features/data/DataSourcePage";
 import { useTheme } from "./contexts/ThemeContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
 import { MobileNav } from "./components/MobileNav";
@@ -339,8 +341,32 @@ export default function App() {
           <Route path="/kommun/:code"                          element={<MunicipalityDetailPage />} />
           <Route path="/sok"                                   element={<SearchPage />} />
           <Route path="/anforanden/:id"                        element={<SpeechDetailPage />} />
+          <Route path="/data"                                  element={<DataIndexPage />} />
+          <Route path="/data/:id"                              element={<DataSourcePage />} />
         </Routes>
       </main>
+
+      <footer
+        style={{
+          borderTop: "1px solid var(--color-border)",
+          padding: "16px 14px",
+          textAlign: "center",
+        }}
+      >
+        <Link
+          to="/data"
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 11,
+            color: "var(--color-fg-muted)",
+            textDecoration: "none",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+          }}
+        >
+          Datakällor
+        </Link>
+      </footer>
     </div>
   );
 }
