@@ -19,3 +19,7 @@ frontend/dist/
 # Helm
 deploy/charts/riksdagskollen/charts/
 deploy/charts/riksdagskollen/Chart.lock
+
+# Data-source MDs synced from docs/data-sources/ via npm pre{dev,build}
+# (canonical files live in docs/data-sources/)
+frontend/src/data-sources/*.md
