@@ -4,6 +4,8 @@ import { useRiksdag } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Hemicycle, Donut, HBars, DualLine, Pill, GoalBadge, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { Authority, LiveVote, Party } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -96,6 +98,7 @@ function AuthorityRow({
         </span>
         <span style={{ fontSize: 12, color: "var(--color-fg)", fontFamily: "var(--font-mono)", fontVariantNumeric: "tabular-nums", minWidth: 70, textAlign: "right" }}>
           {authority.expenditureMdkr.toFixed(1)} mdkr
+          <SourceMarker sourceId="statskontoret-arsutfall" />
         </span>
         <span style={{ fontSize: 10, color: "var(--color-fg-muted)", marginLeft: 4, flexShrink: 0 }}>
           {isOpen ? "▲" : "▼"}
@@ -303,6 +306,7 @@ export function RiksdagPage() {
                 }}
               >
                 {k.value}
+                <SourceMarker sourceId="seed-budget-data" />
               </div>
               <div style={{ marginBottom: 12 }}>
                 <Trend trend={k.trend} delta={k.delta} worseHigher={k.worseHigher} />
@@ -433,8 +437,10 @@ export function RiksdagPage() {
               }}
             >
               MAJORITET {rulingSeats}/{totalSeats}
+              <SourceMarker sourceId="riksdagen" />
             </span>
           </div>
+          <SectionSource sourceIds={["riksdagen"]} />
         </div>
 
         {/* Right card — BUDGET */}
@@ -454,6 +460,7 @@ export function RiksdagPage() {
             }}
           >
             BUDGET {budget.year} · {budget.total}
+            <SourceMarker sourceId="seed-budget-data" />
           </div>
           <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
             <Donut
@@ -494,6 +501,7 @@ export function RiksdagPage() {
               Källa: Budgetpropositionen 2025/26:1 →
             </a>
           )}
+          <SectionSource sourceIds={["seed-budget-data"]} />
         </div>
       </div>
 
@@ -606,6 +614,7 @@ export function RiksdagPage() {
                         [{v.tag}]
                       </span>
                     )}
+                    <SourceMarker sourceId="riksdagen" />
                   </span>
                   {/* pill */}
                   <Pill tone={pillTone(v.status)}>{v.status}</Pill>
@@ -633,6 +642,7 @@ export function RiksdagPage() {
               );
             })}
           </div>
+          <SectionSource sourceIds={["riksdagen"]} />
         </div>
 
         {/* Right card — AGENDA */}
@@ -654,6 +664,7 @@ export function RiksdagPage() {
             AGENDA · STYRETS PRIORITERINGAR
           </div>
           <AgendaList items={agenda} />
+          <SectionSource sourceIds={["derived-agenda"]} />
         </div>
       </div>
 
@@ -727,28 +738,7 @@ export function RiksdagPage() {
             </div>
 
             {/* Footer with source link */}
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 9,
-                color: "var(--color-fg-muted)",
-                marginTop: 20,
-                opacity: 0.6,
-                display: "flex",
-                gap: 12,
-                alignItems: "center",
-              }}
-            >
-              <span>Källa: Statskontoret årsutfall · driftkostnader exkl. transfereringar</span>
-              <a
-                href="https://www.statskontoret.se/psidata/arsutfall"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "var(--color-accent)", textDecoration: "none", letterSpacing: "0.5px" }}
-              >
-                ↗ öppna datakälla
-              </a>
-            </div>
+            <SectionSource sourceIds={["statskontoret-arsutfall"]} />
           </div>
         );
       })()}
