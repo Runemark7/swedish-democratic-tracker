@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { partiesApi } from "./api";
 import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS, alignmentColor } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 
 export function PartiesPage() {
   const { data, isLoading, error } = useQuery({
@@ -62,6 +64,7 @@ export function PartiesPage() {
                   </span>
                   <span className="text-xs text-on-surface-variant">
                     {p.totalGoals} mål
+                    <SourceMarker sourceId="seed-party-goals" />
                   </span>
                 </div>
 
@@ -101,8 +104,10 @@ export function PartiesPage() {
                   style={{ color: alignmentColor(avg) }}
                 >
                   {avg}%
+                  <SourceMarker sourceId="riksdagen" />
                 </span>
               </div>
+              <SectionSource sourceIds={["seed-party-goals", "riksdagen"]} />
             </div>
           );
         })}

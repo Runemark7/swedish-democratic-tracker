@@ -6,6 +6,8 @@ import { TierNav } from "./components/TierNav";
 import { DeltaIndicator } from "./components/DeltaIndicator";
 import { DocumentLinks } from "./components/DocumentLinks";
 import { formatBudgetAmount } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { BudgetDocumentRef } from "@/shared/types";
 
 function budgetDocRefs(year: number): BudgetDocumentRef[] {
@@ -166,6 +168,7 @@ export function BudgetPage() {
                 </div>
                 <div className="font-mono text-2xl font-extrabold text-on-surface">
                   {formatBudgetAmount(comparison.compareTotalKsek)}
+                  <SourceMarker sourceId="seed-budget-data" />
                 </div>
               </div>
               <div className="text-right">
@@ -176,6 +179,7 @@ export function BudgetPage() {
                 <div className="text-[10px] text-on-surface-variant mt-0.5">
                   {comparison.totalDeltaKsek > 0 ? "+" : ""}
                   {formatBudgetAmount(comparison.totalDeltaKsek)}
+                  <SourceMarker sourceId="seed-budget-data" />
                 </div>
               </div>
             </div>
@@ -184,6 +188,7 @@ export function BudgetPage() {
                 K&auml;lldokument
               </div>
               <DocumentLinks documents={budgetDocRefs(cy)} compact />
+              <SectionSource sourceIds={["seed-budget-data"]} />
             </div>
           </div>
 
@@ -221,9 +226,11 @@ export function BudgetPage() {
                 </div>
                 <div className="w-24 text-right text-xs font-mono text-on-surface-variant">
                   {formatBudgetAmount(row.baseAmountKsek)}
+                  <SourceMarker sourceId="seed-budget-data" />
                 </div>
                 <div className="w-24 text-right text-xs font-mono font-semibold text-on-surface">
                   {formatBudgetAmount(row.compareAmountKsek)}
+                  <SourceMarker sourceId="seed-budget-data" />
                 </div>
                 <div className="w-36 flex justify-end">
                   <DeltaIndicator pct={row.deltaPct} />
@@ -243,9 +250,11 @@ export function BudgetPage() {
               <div className="flex-1 text-sm text-on-surface">TOTALT</div>
               <div className="w-24 text-right text-xs font-mono text-on-surface-variant">
                 {formatBudgetAmount(comparison.baseTotalKsek)}
+                <SourceMarker sourceId="seed-budget-data" />
               </div>
               <div className="w-24 text-right text-xs font-mono text-on-surface">
                 {formatBudgetAmount(comparison.compareTotalKsek)}
+                <SourceMarker sourceId="seed-budget-data" />
               </div>
               <div className="w-36 flex justify-end">
                 <DeltaIndicator pct={comparison.totalDeltaPct} />

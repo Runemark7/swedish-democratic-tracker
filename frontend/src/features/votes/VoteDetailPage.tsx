@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import { votesApi } from "./api";
 import { PartyBadge, VoteBar, ProposalOriginTag } from "@/shared/components";
 import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { PartyVotePosition } from "@/shared/types";
 
 interface CommitteeProposal {
@@ -69,6 +71,12 @@ function PartyBreakdownCard({ pos }: { pos: PartyVotePosition }) {
         total={total}
         partyColor={pc?.bg}
       />
+      <div className="mt-3 text-xs text-on-surface-variant">
+        <span>{pos.jaCount}</span> <SourceMarker sourceId="riksdagen" />
+        <span> Ja, </span>
+        <span>{pos.nejCount}</span> <SourceMarker sourceId="riksdagen" />
+        <span> Nej</span>
+      </div>
     </div>
   );
 }
@@ -271,6 +279,11 @@ export function VoteDetailPage() {
           <PartyBreakdownCard key={pos.party} pos={pos} />
         ))}
       </div>
+      {breakdown.length > 0 && (
+        <div className="mt-4">
+          <SectionSource sourceIds={["riksdagen"]} />
+        </div>
+      )}
 
       {breakdown.length === 0 && (
         <p className="text-on-surface-variant text-center py-16 text-sm">

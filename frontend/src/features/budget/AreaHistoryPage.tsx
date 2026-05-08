@@ -5,6 +5,8 @@ import { TierNav } from "./components/TierNav";
 import { DeltaIndicator } from "./components/DeltaIndicator";
 import { DocumentLinks } from "./components/DocumentLinks";
 import { formatBudgetAmount } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 
 export function AreaHistoryPage() {
   const { code } = useParams<{ code: string }>();
@@ -83,6 +85,7 @@ export function AreaHistoryPage() {
                 <div className="flex-1">
                   <span className="text-sm font-mono font-semibold text-on-surface">
                     {formatBudgetAmount(entry.amountKsek)}
+                    <SourceMarker sourceId="seed-budget-data" />
                   </span>
                 </div>
                 <div className="w-36 flex justify-end">
@@ -99,6 +102,7 @@ export function AreaHistoryPage() {
                   style={{ paddingLeft: "calc(1.25rem + 4rem + 0.75rem)" }}
                 >
                   <DocumentLinks documents={entry.documents} compact />
+                  <SectionSource sourceIds={["seed-budget-data"]} />
                 </div>
               )}
             </div>

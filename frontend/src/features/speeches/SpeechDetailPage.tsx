@@ -2,6 +2,8 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { speechesApi } from "@/features/speeches/api";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 
 export function SpeechDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -49,7 +51,7 @@ export function SpeechDetailPage() {
                   marginBottom: 6,
                 }}
               >
-                ANFÖRANDE · {data.party} · {new Date(data.date).toLocaleDateString("sv-SE")}
+                ANFÖRANDE · {data.party} <SourceMarker sourceId="riksdagen" /> · {new Date(data.date).toLocaleDateString("sv-SE")} <SourceMarker sourceId="riksdagen" />
               </div>
               <h1
                 style={{
@@ -78,6 +80,9 @@ export function SpeechDetailPage() {
             >
               {data.speechText || data.snippet}
             </p>
+            <div style={{ marginTop: 24 }}>
+              <SectionSource sourceIds={["riksdagen"]} />
+            </div>
           </article>
         )}
       </div>

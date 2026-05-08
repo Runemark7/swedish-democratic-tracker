@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { PartyCode } from "@/shared/types";
 
 interface Manifesto {
@@ -104,7 +106,7 @@ function ManifestoCard({ m }: { m: Manifesto }) {
       </div>
 
       <div>
-        <p className="text-[11px] text-on-surface-variant mb-0.5">{TYPE_LABELS[m.type]}</p>
+        <p className="text-[11px] text-on-surface-variant mb-0.5">{TYPE_LABELS[m.type]} <SourceMarker sourceId="seed-party-goals" /></p>
         <p className="text-xs font-medium text-on-surface leading-snug">{m.title}</p>
         {m.summary && (
           <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">{m.summary}</p>
@@ -133,6 +135,7 @@ function ManifestoCard({ m }: { m: Manifesto }) {
           )}
         </div>
       )}
+      <SectionSource sourceIds={["seed-party-goals"]} />
     </div>
   );
 }
