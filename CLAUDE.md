@@ -37,6 +37,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 10. **NO SEMANTIC SEARCH**: When renaming any function/type/variable, search separately for: direct calls, type-level references, string literals, dynamic imports, re-exports, and test files. Do not assume a single grep caught everything.
 
+### Data Source Discipline
+
+11. **DATA SOURCE DISCIPLINE**: Whenever you add, change, or remove an
+    external data source (HTTP API, CSV/ZIP download, scraped feed) or a
+    static seed migration:
+
+    a. Update `CLAUDE.md`'s mermaid architecture diagram (the `ext`
+       subgraph and the service→ext edges).
+
+    b. Add or update a markdown file in `docs/data-sources/<id>.md`
+       using `docs/data-sources/_TEMPLATE.md`. Frontmatter is mandatory;
+       prose sections are mandatory. CSV/ZIP sources MUST include
+       reproducible download steps.
+
+    c. Run `cd frontend && npm run sync:data-sources` to regenerate
+       `frontend/src/components/sources/SourceRegistry.generated.ts`.
+
+    d. Tag every UI value sourced from this data with
+       `<SourceMarker sourceId="...">` and the surrounding card with
+       `<SectionSource sourceIds={[...]}>`.
+
+    e. Verify the new source appears at `/data` and `/data/<id>` renders
+       its MD body.
+
+    Closing the task without these steps is incomplete. See
+    `.claude/skills/add-data-source/SKILL.md` for the guided
+    walk-through.
+
 ---
 
 ## Runtime Versions
