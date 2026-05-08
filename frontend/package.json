@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx",
     "typecheck": "tsc --noEmit",
-    "generate:api": "openapi-typescript ../api/openapi.yaml -o src/shared/api-contract.ts"
+    "generate:api": "openapi-typescript ../api/openapi.yaml -o src/shared/api-contract.ts",
+    "sync:data-sources": "node scripts/sync-data-sources.mjs",
+    "predev": "npm run sync:data-sources",
+    "prebuild": "npm run sync:data-sources"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.74.4",
