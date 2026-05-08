@@ -3,6 +3,8 @@ import { NavLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { municipalitiesApi } from "./api";
 import { SwedenKommunMap } from "./components/SwedenKommunMap";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { MunicipalitySummary } from "@/shared/types";
 
@@ -102,9 +104,13 @@ function MunicipalityCard({ mun }: { mun: MunicipalitySummary }) {
               fontSize: 12,
               fontWeight: 700,
               color: "var(--color-fg)",
+              display: "flex",
+              alignItems: "baseline",
+              gap: 4,
             }}
           >
             {mun.population.toLocaleString("sv-SE")}
+            <SourceMarker sourceId="scb-befolkning" />
           </div>
           <div
             style={{
@@ -125,9 +131,13 @@ function MunicipalityCard({ mun }: { mun: MunicipalitySummary }) {
               fontSize: 12,
               fontWeight: 700,
               color: "var(--color-fg)",
+              display: "flex",
+              alignItems: "baseline",
+              gap: 4,
             }}
           >
             {mun.totalMandates}
+            <SourceMarker sourceId="scb-kfmandat" />
           </div>
           <div
             style={{
@@ -318,6 +328,9 @@ export function MunicipalityLandingPage() {
             </div>
             <div style={{ width: "100%", maxWidth: isMobile ? 320 : "none" }}>
               <SwedenKommunMap municipalities={municipalities} />
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <SectionSource sourceIds={["wikimedia-svg", "scb-kfmandat"]} />
             </div>
             {!isMobile && (
               <p

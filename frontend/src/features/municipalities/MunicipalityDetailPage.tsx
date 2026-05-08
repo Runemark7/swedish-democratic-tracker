@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Hemicycle, Donut, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import { useKommun, useKommunList } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
@@ -279,77 +281,86 @@ export function MunicipalityDetailPage() {
 
       {/* ── KPI strip ──────────────────────────────────────────────────── */}
       {kpis.length > 0 && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-            margin: isMobile ? "14px 14px 0" : "22px 32px 0",
-            gap: 1,
-            background: "var(--color-border)",
-            border: "1px solid var(--color-border)",
-          }}
-        >
-          {kpis.map((kpi) => (
-            <div
-              key={kpi.label}
-              style={{
-                background: "var(--color-sdt-surface)",
-                padding: isMobile ? "14px" : "20px 24px",
-              }}
-            >
+        <div style={{ marginBottom: 0 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+              margin: isMobile ? "14px 14px 0" : "22px 32px 0",
+              gap: 1,
+              background: "var(--color-border)",
+              border: "1px solid var(--color-border)",
+            }}
+          >
+            {kpis.map((kpi) => (
               <div
+                key={kpi.label}
                 style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  letterSpacing: "1.5px",
-                  color: "var(--color-fg-muted)",
-                  textTransform: "uppercase",
-                  marginBottom: 6,
+                  background: "var(--color-sdt-surface)",
+                  padding: isMobile ? "14px" : "20px 24px",
                 }}
               >
-                {kpi.label}
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--font-serif)",
-                  fontSize: isMobile ? 24 : 30,
-                  fontWeight: 400,
-                  color: "var(--color-fg)",
-                  lineHeight: 1,
-                  marginBottom: 8,
-                }}
-              >
-                {kpi.value}
-              </div>
-              <div style={{ marginBottom: 12 }}>
-                <Trend trend={kpi.trend} delta={kpi.delta} worseHigher={kpi.worseHigher} />
-              </div>
-              <GoalBadge
-                raw={kpi.raw}
-                target={kpi.target}
-                worseHigher={kpi.worseHigher}
-                unit={kpi.unit}
-                note={kpi.note}
-                sourceUrl={kpi.sourceUrl}
-              />
-              {kpi.description && (
                 <div
                   style={{
-                    marginTop: 12,
-                    fontFamily: "var(--font-sans)",
-                    fontSize: 11,
-                    lineHeight: 1.5,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    letterSpacing: "1.5px",
                     color: "var(--color-fg-muted)",
-                    borderTop: "1px solid var(--color-border)",
-                    paddingTop: 10,
-                    display: isMobile ? "none" : undefined,
+                    textTransform: "uppercase",
+                    marginBottom: 6,
                   }}
                 >
-                  {kpi.description}
+                  {kpi.label}
                 </div>
-              )}
-            </div>
-          ))}
+                <div
+                  style={{
+                    fontFamily: "var(--font-serif)",
+                    fontSize: isMobile ? 24 : 30,
+                    fontWeight: 400,
+                    color: "var(--color-fg)",
+                    lineHeight: 1,
+                    marginBottom: 8,
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: 4,
+                  }}
+                >
+                  {kpi.value}
+                  <SourceMarker sourceId="kolada" />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <Trend trend={kpi.trend} delta={kpi.delta} worseHigher={kpi.worseHigher} />
+                </div>
+                <GoalBadge
+                  raw={kpi.raw}
+                  target={kpi.target}
+                  worseHigher={kpi.worseHigher}
+                  unit={kpi.unit}
+                  note={kpi.note}
+                  sourceUrl={kpi.sourceUrl}
+                />
+                {kpi.description && (
+                  <div
+                    style={{
+                      marginTop: 12,
+                      fontFamily: "var(--font-sans)",
+                      fontSize: 11,
+                      lineHeight: 1.5,
+                      color: "var(--color-fg-muted)",
+                      borderTop: "1px solid var(--color-border)",
+                      paddingTop: 10,
+                      display: isMobile ? "none" : undefined,
+                    }}
+                  >
+                    {kpi.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div style={{ padding: isMobile ? "0 14px" : "0 32px", paddingTop: 0 }}>
+            <SectionSource sourceIds={["kolada"]} />
+          </div>
         </div>
       )}
 
@@ -464,16 +475,23 @@ export function MunicipalityDetailPage() {
                   fontSize: 10,
                   color: "var(--color-fg-muted)",
                   marginLeft: 12,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
                 }}
               >
                 MAJORITET {govSeats}/{totalSeats}
+                <SourceMarker sourceId="scb-kfmandat" />
               </span>
             </div>
           )}
+          <div style={{ marginTop: 16 }}>
+            <SectionSource sourceIds={["scb-kfmandat"]} />
+          </div>
         </div>
 
         {/* Right — BUDGET */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px", display: "flex", flexDirection: "column" }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -482,42 +500,53 @@ export function MunicipalityDetailPage() {
               color: "var(--color-fg-muted)",
               textTransform: "uppercase",
               marginBottom: 16,
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
             }}
           >
-            BUDGET {data.budget.year}
-            {data.budget.total ? ` · ${data.budget.total}` : ""}
+            <span>
+              BUDGET {data.budget.year}
+              {data.budget.total ? ` · ${data.budget.total}` : ""}
+            </span>
+            <SourceMarker sourceId="kolada-spending" />
           </div>
 
-          {budgetAreas.length === 0 ? (
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                color: "var(--color-fg-muted)",
-                padding: "24px 0",
-                textAlign: "center",
-                lineHeight: 1.5,
-              }}
-            >
-              Budgetdata saknas för denna kommun.
-              <div style={{ fontSize: 9, marginTop: 6, opacity: 0.7 }}>
-                Källa: Kolada — endast utvalda kommuner stöds f.n.
+          <div style={{ flex: 1 }}>
+            {budgetAreas.length === 0 ? (
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  color: "var(--color-fg-muted)",
+                  padding: "24px 0",
+                  textAlign: "center",
+                  lineHeight: 1.5,
+                }}
+              >
+                Budgetdata saknas för denna kommun.
+                <div style={{ fontSize: 9, marginTop: 6, opacity: 0.7 }}>
+                  Källa: Kolada — endast utvalda kommuner stöds f.n.
+                </div>
               </div>
-            </div>
-          ) : (
-            <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
-              <Donut
-                segments={donutSegments}
-                size={isMobile ? 140 : 160}
-                thickness={isMobile ? 16 : 24}
-                label={data.budget.total}
-                sublabel={data.budget.year}
-              />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <HBars items={hbarsItems} unit="" height={5} gap={9} />
+            ) : (
+              <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
+                <Donut
+                  segments={donutSegments}
+                  size={isMobile ? 140 : 160}
+                  thickness={isMobile ? 16 : 24}
+                  label={data.budget.total}
+                  sublabel={data.budget.year}
+                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <HBars items={hbarsItems} unit="" height={5} gap={9} />
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <SectionSource sourceIds={["kolada-spending"]} />
+          </div>
         </div>
       </div>
 
@@ -534,7 +563,7 @@ export function MunicipalityDetailPage() {
         }}
       >
         {/* Left — PULS */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px", display: "flex", flexDirection: "column" }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -575,7 +604,7 @@ export function MunicipalityDetailPage() {
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 0, flex: 1 }}>
             {data.liveVotes.map((vote, i) => {
               const href = beslutHref(vote);
               const row = (
@@ -602,8 +631,9 @@ export function MunicipalityDetailPage() {
                     {vote.time}
                   </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: "var(--color-fg)", marginBottom: 4, lineHeight: 1.35 }}>
+                    <div style={{ fontSize: 13, color: "var(--color-fg)", marginBottom: 4, lineHeight: 1.35, display: "flex", alignItems: "baseline", gap: 4 }}>
                       {vote.title}
+                      <SourceMarker sourceId="riksdagen" />
                     </div>
                     <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                       <span
@@ -637,10 +667,13 @@ export function MunicipalityDetailPage() {
               );
             })}
           </div>
+          <div style={{ marginTop: 16 }}>
+            <SectionSource sourceIds={["riksdagen"]} />
+          </div>
         </div>
 
         {/* Right — AGENDA */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px", display: "flex", flexDirection: "column" }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -654,7 +687,12 @@ export function MunicipalityDetailPage() {
             AGENDA · PRIORITERINGAR
           </div>
 
-          <AgendaList items={data.agenda} />
+          <div style={{ flex: 1 }}>
+            <AgendaList items={data.agenda} />
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <SectionSource sourceIds={["derived-agenda"]} />
+          </div>
         </div>
       </div>
 
