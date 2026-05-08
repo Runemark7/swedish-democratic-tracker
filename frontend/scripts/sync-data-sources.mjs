@@ -39,9 +39,15 @@ async function main() {
     throw new Error(`Source dir not found: ${SRC_DIR}`);
   }
 
-  // Wipe + recreate destination so deletions in docs/ are reflected.
-  await rm(DST_DIR, { recursive: true, force: true });
+  // Ensure destination exists, then remove only stale .md files so
+  // deletions in docs/ are reflected. Preserve .gitkeep and other
+  // non-.md files in the directory.
   await mkdir(DST_DIR, { recursive: true });
+  for (const f of await readdir(DST_DIR)) {
+    if (f.endsWith(".md")) {
+      await rm(path.join(DST_DIR, f), { force: true });
+    }
+  }
 
   const files = (await readdir(SRC_DIR))
     .filter((f) => f.endsWith(".md") && !f.startsWith("_") && f !== "INDEX.md")
