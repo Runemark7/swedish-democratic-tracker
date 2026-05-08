@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { PARTY_COLORS, partyShortToName } from "@/shared/design";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 import type { Speech } from "@/features/speeches/api";
 
 interface PartySpeechCardProps {
@@ -120,6 +121,7 @@ export function PartySpeechCard({ party, speech }: PartySpeechCardProps) {
           >
             {formatStamp(speech.date)}
             {speech.topicHeading ? ` · ${speech.topicHeading}` : ""}
+            <SourceMarker sourceId="riksdagen" />
           </div>
         </>
       ) : (
