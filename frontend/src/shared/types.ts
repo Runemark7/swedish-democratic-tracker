@@ -103,6 +103,10 @@ export interface VoteDetail {
   status?: string;
   subtitle?: string;
   summary?: string;
+  /** Full Riksdagen document body (HTML). Rendered inline on the
+   *  beslut detail page so users can read the proposal, motivation
+   *  and debate transcript without leaving the site. */
+  bodyHtml?: string;
 }
 
 export interface Goal {

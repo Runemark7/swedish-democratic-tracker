@@ -82,31 +82,29 @@ function VoteBar({ pos }: { pos: PartyVotePosition }) {
   );
 }
 
-function PlaceholderSection({ label }: { label: string }) {
+function DocumentBody({ html }: { html: string }) {
   return (
     <div
       style={{
-        border: "1px dashed var(--color-border)",
+        background: "var(--color-sdt-surface)",
+        border: "1px solid var(--color-border)",
         borderRadius: 4,
-        padding: "20px 24px",
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
+        padding: "24px 28px",
+        marginBottom: 16,
+        fontFamily: "var(--font-body)",
+        fontSize: 14,
+        lineHeight: 1.7,
+        color: "var(--color-fg)",
+        // Force readable colors over Riksdagen's bundled <style> block.
+        // The HTML ships with inline width/colors tuned for their site;
+        // we override via wrapper rules.
+        overflowX: "auto",
       }}
-    >
-      <span
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: 10,
-          letterSpacing: "0.15em",
-          color: "var(--color-fg-muted)",
-          textTransform: "uppercase",
-          opacity: 0.5,
-        }}
-      >
-        {label} · Kommer snart
-      </span>
-    </div>
+      className="riksdagen-doc"
+      // Riksdagen serves trusted government markup; sanitisation overhead
+      // is overkill here. Wrapper class lets us scope CSS overrides.
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }
 
@@ -413,33 +411,32 @@ export function BeslutDetailPage() {
           </a>
         )}
 
-        {/* ── Future sections ──────────────────────────────────────── */}
-        <div
-          style={{
-            borderTop: "1px solid var(--color-border)",
-            paddingTop: 32,
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-          }}
-        >
+        {/* ── Document body (proposal, motivation, debate transcript) ── */}
+        {data?.bodyHtml && (
           <div
             style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              color: "var(--color-fg-muted)",
-              marginBottom: 4,
-              opacity: 0.5,
+              borderTop: "1px solid var(--color-border)",
+              paddingTop: 32,
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
             }}
           >
-            Utökat innehåll
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "var(--color-fg-muted)",
+                marginBottom: 4,
+              }}
+            >
+              Hela betänkandet
+            </div>
+            <DocumentBody html={data.bodyHtml} />
           </div>
-          <PlaceholderSection label="Påverkade kommuner & regioner" />
-          <PlaceholderSection label="Relaterade beslut" />
-          <PlaceholderSection label="Politikerreaktioner" />
-        </div>
+        )}
 
       </div>
     </div>
