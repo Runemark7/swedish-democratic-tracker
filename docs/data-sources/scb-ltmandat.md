@@ -36,10 +36,11 @@ Regionkod-format: tvåsiffrig kommunkod-prefix + `L` (t.ex. `01L`,
   gäller mandat. (Gäller även [scb-kostndrlt](./scb-kostndrlt.md).)
 
 ## Hur vi bearbetar
-- `backend/internal/regions/seeder/seeder.go:88` (`fetchMandates` samma
-  funktion, olika URL).
-- Resultat skrivs till `regional_election_results`.
-- Koalitionstyp ("Borgerlig majoritet" / "Rödgrön minoritet" / etc.) härleds
-  från mandatfördelningen i `deriveGoverning()` (`seeder.go:365`). Den
-  härledningen hör hemma här, inte i en egen synthesized-källa, eftersom
-  den är trivial och deterministisk.
+Vår backend hämtar mandaten från SCB en gång per driftsättning och
+lagrar dem per region. Frontend ritar därefter en hemicycle med
+mandatfördelning på varje regionsida.
+
+Koalitionstypen ("Borgerlig majoritet", "Rödgrön minoritet" osv.)
+härleds direkt från mandatfördelningen: räkna mandat per block och
+jämför mot 50%-tröskeln. Härledningen är trivial och deterministisk
+så den dokumenteras här i stället för som en egen källa.

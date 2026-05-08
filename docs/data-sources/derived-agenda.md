@@ -16,38 +16,34 @@ used_by:
 ## Vad det är
 Vi har ingen primärkälla i Sverige som publicerar regeringens /
 regionstyrets / kommunstyrets faktiska årsplan i strukturerad form. Vi
-**genererar** därför en agenda från koalitionens partisammansättning
-genom en hårdkodad lookup.
+**genererar** därför en agenda från koalitionens partisammansättning.
 
-Detta är uppmärkt i UI med `≈`-glyfen så användaren inte tror att det
-är ett officiellt dokument.
+Detta är uppmärkt i UI med `≈`-glyfen så det går att se på en gång att
+det inte är ett officiellt dokument utan en härledning.
 
 ## Hur du själv kommer åt datan
-Logiken finns i `frontend/src/hooks/useDemocracy.ts → generateAgenda()`.
-
-```bash
-# Inspect generation rules
-grep -A50 "function generateAgenda" frontend/src/hooks/useDemocracy.ts
-```
+Det finns ingen att hämta. Datan skapas i webbläsaren från
+mandatfördelningen, alltid med samma resultat för samma kommun eller
+region. Reglerna är dokumenterade nedan i avsnittet "Hur vi bearbetar".
 
 ## Schema/fält vi använder
-Returnerar `AgendaItem[]`:
 - `title` — kort rubrik.
 - `description` — beskrivning.
-- `source` — fast string (t.ex. "Mandatprogrammet M+KD+L 2022–2026").
-- `status` — `active` | `in_progress` | `completed`.
+- `source` — fast etikett (t.ex. "Mandatprogrammet M+KD+L 2022–2026").
+- `status` — `active`, `in_progress`, eller `completed`.
 
 ## Begränsningar och kända problem
 - **Detta är inte officiell data.** Härledningen baseras på vänster-
   vs högerblockslogik och är best-effort.
 - För regionkoalitioner som blandar block (t.ex. M+MP "blågrön" i
   Stockholm) kan agendan se inkonsekvent ut.
-- Rotation av items mellan sidladdningar är deterministisk: samma kod
-  ger samma agenda.
+- Innehållet ändras inte över tid — det är en fast lista per block, inte
+  en spegling av faktiska politiska beslut.
 
 ## Hur vi bearbetar
-Funktionen `generateAgenda(level, governingParties, code)`:
-1. Bestämmer "lean" (left/right) från första partiet i `governingParties`.
-2. Plockar lista från `REGION_LEFT` / `REGION_RIGHT` /
-   `KOMMUN_LEFT` / `KOMMUN_RIGHT`.
-3. Returnerar 4 items (deterministiskt urval baserat på `code`-hash).
+1. Vi tittar på koalitionens första parti och bedömer om koalitionen
+   är vänster- eller högerlutande.
+2. Beroende på lutning + nivå (region eller kommun) plockas en av fyra
+   förskrivna listor.
+3. Fyra punkter från listan väljs deterministiskt baserat på regionens
+   eller kommunens kod, så samma plats alltid får samma agenda.

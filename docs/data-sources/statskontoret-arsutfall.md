@@ -39,18 +39,18 @@ Den primära filen är `myndigheter.csv` med kolumnerna:
 | `antal_anstallda` | Helårsekvivalenter |
 
 ## Schema/fält vi använder
-- `myndighet_namn` → `Authority.name`.
-- `år` + `driftkostnad_mkr` → `Authority.history[].expenditureMdkr`.
-- `år` + `antal_anstallda` → `Authority.headcountHistory[].headcountInt`.
+- `myndighet_namn` — myndighetens namn.
+- `år` + `driftkostnad_mkr` — driftkostnad per år (i miljarder kr i UI).
+- `år` + `antal_anstallda` — antal anställda per år.
 
 ## Begränsningar och kända problem
-- Filformatet ändras ibland mellan år (kolumnnamn, separator). Verifiera
-  schemat efter varje årlig uppdatering.
-- Vissa myndigheter byter namn eller fusioneras — det måste hanteras
-  manuellt i ingestion.
+- Filformatet ändras ibland mellan år (kolumnnamn, separator). Vi
+  verifierar schemat efter varje årlig uppdatering.
+- Vissa myndigheter byter namn eller slås ihop över tid — vi
+  konsoliderar dem manuellt så historiken hålls ihop.
 
 ## Hur vi bearbetar
-- ZIP:en laddas hem och läses i en
-  `backend/internal/riksdag/seeder/` migration (en gång per år).
-- Resultat skrivs till `authorities` och `authority_history` -tabellerna.
-- Frontend läser via `useRiksdag().authorities`.
+ZIP:en laddas hem en gång per år, CSV:erna parseras och skrivs in i
+vår databas. Frontend hämtar listan via vårt API och visar
+Myndigheter-kortet på Riksdag-sidan med donut, lista och en linjegraf
+för kostnad + anställda över tid.

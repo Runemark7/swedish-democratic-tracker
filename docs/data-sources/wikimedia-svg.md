@@ -13,35 +13,35 @@ used_by:
 ---
 
 ## Vad det är
-SVG-paths för Sveriges 21 regioner och 290 kommuner, bundlade direkt i
-frontend-koden. Ursprungligen från Wikimedia Commons, härlednings-
-data ursprungligen SCB:s administrativa indelning.
+SVG-paths för Sveriges 21 regioner och 290 kommuner. De är inbyggda
+direkt i sidan så kartan kan ritas omedelbart utan extra hämtning.
+Ursprunget är Wikimedia Commons, baserat på SCB:s administrativa
+indelning.
 
 ## Hur du själv kommer åt datan
-Källfilerna ligger i:
-- `frontend/src/features/regions/data/sweden-regions-svg.ts`
-- `frontend/src/features/municipalities/data/sweden-kommuner-svg.ts`
+Originalfilerna ligger på Wikimedia Commons och är fria att ladda hem
+och använda under CC BY-SA 2.5:
 
-Original-SVG på Wikimedia: <https://commons.wikimedia.org/wiki/File:Sverigekarta-Landskap.svg>
-(och tillhörande filer för kommun- och regionnivå).
+- Region/landskapskarta: <https://commons.wikimedia.org/wiki/File:Sverigekarta-Landskap.svg>
+- Kommun- och länskartor (kategori): <https://commons.wikimedia.org/wiki/Category:Maps_of_municipalities_of_Sweden>
 
-För att uppdatera (t.ex. vid kommunsammanslagning):
-1. Ladda hem ny SVG från Wikimedia.
-2. Extrahera path-data per kommun/region (kod = `id`-attribut).
-3. Generera `SWEDEN_KOMMUN_PATHS[]` / `SWEDEN_REGION_PATHS[]`.
+Varje kommun/region är en separat `<path>` i SVG-filen, identifierad
+med kommunens eller regionens SCB-kod som `id`-attribut.
 
 ## Schema/fält vi använder
 - `code` — SCB-kod (4 siffror för kommun, 2 för region).
-- `regionCode` — för kommuner: 2-prefix av `code`.
-- `d` — SVG path-data.
+- `regionCode` — för kommuner: de två första siffrorna av kommunkoden.
+- `d` — SVG path-data (geometrin).
 
 ## Begränsningar och kända problem
-- CC BY-SA innebär att vi måste behålla attributionen någonstans synlig
-  (sker via `<SectionSource>` på kart-kortet).
-- Wikimedia-SVG:erna är inte alltid pixelperfekta; små glapp kan synas
-  vid extrem zoom.
+- CC BY-SA innebär att attributionen måste synas — den finns i
+  käll-listan ("Källor: ...") längst ner på kart-kortet.
+- SVG-banorna är inte pixelperfekta; små glapp kan synas vid extrem
+  zoom.
+- När en kommun byter form (sammanslagning, gränsjustering) måste
+  banorna uppdateras manuellt från Wikimedia.
 
 ## Hur vi bearbetar
-- Statiska data laddas direkt; ingen runtime-fetch.
-- Komponenter `SwedenRegionMap` och `SwedenKommunMap` renderar SVG
-  inline.
+Banorna packas in i sidan vid bygge och ritas direkt i webbläsaren —
+ingen runtime-hämtning. Klick på en kommun eller region navigerar
+till motsvarande detaljsida.

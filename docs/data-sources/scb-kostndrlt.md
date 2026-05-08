@@ -30,14 +30,13 @@ curl -s -X POST \
 
 ## Begränsningar och kända problem
 - **Gotland (region 09)**: SCB använder `0980L` här (kommun-style) —
-  inte `09L`. `client.go:45` har en hårdkodad specialregel för det.
-- Aktuella års data är ofta `..` (preliminär). Backend-handlern
-  `getRegionBudget` faller tillbaka från år-1 till år-5 för att hitta
-  publicerade värden.
+  inte `09L`, eftersom Gotland är både region och kommun. Vår backend
+  hanterar specialfallet automatiskt.
+- Aktuella års data är ofta `..` (preliminär). Vår backend faller
+  tillbaka från år-1 till år-5 för att hitta publicerade värden.
 
 ## Hur vi bearbetar
-- `backend/internal/regions/adapters/scb/client.go:44`
-  (`FetchRegionBudget`) hämtar och mappar verksamhetsområden till
-  regionsbudgetnamn.
-- Handler-fallback i
-  `backend/internal/regions/adapters/http/handler.go:77`.
+Vår backend hämtar nettokostnaderna från SCB med automatisk fallback
+över flera år, mappar verksamhetsområdes-koderna till läsbara namn
+(t.ex. `1` → "Hälso- och sjukvård"), och returnerar listan till
+frontend för rendering på regionens budgetkort.

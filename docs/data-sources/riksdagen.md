@@ -54,12 +54,8 @@ Full referens: <https://data.riksdagen.se/dokumentation/>.
 - `dok_datum` är ofta endast datum-precision, inte tid.
 
 ## Hur vi bearbetar
-- `backend/internal/politicians/adapters/riksdagen/client.go` hämtar
-  `personlista`.
-- `backend/internal/speeches/adapters/riksdagen/client.go` hämtar
-  `anforandelista`.
-- `backend/internal/votes/adapters/riksdagen/client.go` hämtar
-  `voteringlista`.
-- Alla resultat upsertas via `UpsertMany` i sina respektive Postgres
-  adapters. Se schedulern i
-  `backend/internal/ingestion/workers/` för cronen.
+Tre parallella jobb hämtar data från Riksdagen varje dygn — ett för
+politikerprofiler (`personlista`), ett för anföranden
+(`anforandelista`), och ett för voteringsresultat (`voteringlista`).
+Allt skrivs in i vår databas och blir tillgängligt via vårt API som
+sedan driver UI:t.

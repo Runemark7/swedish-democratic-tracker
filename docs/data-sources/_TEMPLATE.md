@@ -14,9 +14,9 @@ used_by:
 One paragraph describing what this source is and why it exists upstream.
 
 ## Hur du själv kommer åt datan
-Concrete reproduction steps. Pick the matching pattern:
+Concrete reproduction steps users can follow. Pick the matching pattern:
 
-**For APIs:** include a `curl` example and the response shape:
+**For APIs:** include a `curl` example and a brief shape sketch:
 
 ```bash
 curl -s 'https://api.example.com/foo?bar=1'
@@ -29,14 +29,12 @@ curl -O 'https://example.com/data.zip'
 unzip data.zip
 ```
 
-**For seed migrations:** name the migration file and where citations live:
+**For seed data:** describe what the source documents are (PDF, web
+page, etc.) and where the upstream lives. Do not reference internal
+repo paths — write so a non-developer can follow.
 
-```
-backend/migrations/000003_seed_party_goals.sql — citations in commit
-60ec51a and original PDFs at <upstream URL>
-```
-
-**For synthesized data:** describe the derivation rule and link the code.
+**For synthesized data:** describe the derivation rule in plain
+language. Do not reference function names or file paths.
 
 ## Schema/fält vi använder
 - `field_one` — what it means and how we use it
@@ -47,6 +45,7 @@ backend/migrations/000003_seed_party_goals.sql — citations in commit
 - Dates / years that are still preliminary upstream.
 
 ## Hur vi bearbetar
-Transformations applied between upstream and what users see. Reference the
-backend file or hook that does the transform (e.g.
-`backend/internal/regions/adapters/scb/client.go:44`).
+Transformations between upstream and what users see, written for an
+end-user audience. Describe the data flow without referencing internal
+file paths, function names, or commit hashes — those belong in the
+codebase, not on a public methodology page.

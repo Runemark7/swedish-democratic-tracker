@@ -2,7 +2,7 @@
 id: ted
 name: TED — Tenders Electronic Daily
 kind: api
-upstream: https://ted.europa.eu/api/v3.0
+upstream: https://ted.europa.eu/
 license: EU public data
 freshness: löpande
 last_verified: 2026-05-08
@@ -12,15 +12,19 @@ used_by:
 
 ## Vad det är
 EU:s officiella databas över alla offentliga upphandlingar över
-tröskelvärdet. Vi använder den för kommunala kontrakt.
+tröskelvärdet. Vi använder den för att visa kommunala kontrakt på
+kommunsidor.
 
 ## Hur du själv kommer åt datan
+TED:s sökgränssnitt är publikt och kräver ingen inloggning.
+
 ```bash
 # Sök upphandlingar för en organisation (kommun)
 curl -s 'https://ted.europa.eu/api/v3.0/notices/search?q=BUYER-NAME%3D%22Stockholms%20kommun%22'
 ```
 
-Full referens: <https://ted.europa.eu/TED/misc/aboutTedApi.do>.
+Full API-referens: <https://docs.ted.europa.eu/api/index.html>.
+Webbgränssnitt: <https://ted.europa.eu/>.
 
 ## Schema/fält vi använder
 - `notices[].id` — TED-ID.
@@ -32,7 +36,10 @@ Full referens: <https://ted.europa.eu/TED/misc/aboutTedApi.do>.
 - TED är skrivet för EU-omfattande upphandling, vilket innebär att
   endast kontrakt över tröskelvärdet (~1,5 mkr) syns. Mindre kommunala
   kontrakt fångas inte.
+- Sökningen är text-baserad på köparens namn; namnvarianter (t.ex.
+  "Stockholms kommun" vs "Stockholms stad") kan missas.
 
 ## Hur vi bearbetar
-- `backend/internal/regions/adapters/http/handler.go:164`
-  (`getMunicipalityProcurement`) proxar via en TED-klient.
+Vår backend hämtar resultaten från TED via en proxy-endpoint som
+filtrerar på den valda kommunens namn, och returnerar listan till
+frontend för rendering.
