@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "./api";
 import { SwedenRegionMap } from "./components/SwedenRegionMap";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { RegionSummary } from "@/shared/types";
 
 function RegionCard({ region }: { region: RegionSummary }) {
@@ -102,6 +104,7 @@ function RegionCard({ region }: { region: RegionSummary }) {
             }}
           >
             {region.population.toLocaleString("sv-SE")}
+            <SourceMarker sourceId="scb-befolkning" />
           </div>
           <div
             style={{
@@ -126,6 +129,7 @@ function RegionCard({ region }: { region: RegionSummary }) {
             }}
           >
             {region.totalMandates}
+            <SourceMarker sourceId="scb-ltmandat" />
           </div>
           <div
             style={{
@@ -313,6 +317,7 @@ export function RegionLandingPage() {
               Klicka på en region
             </div>
             <SwedenRegionMap regions={regions} />
+            <SectionSource sourceIds={["wikimedia-svg", "scb-ltmandat"]} />
           </div>
 
           {/* Region cards grid */}
