@@ -54,7 +54,7 @@ export function MobileNav({ section, isRiksdagSection, theme, toggleTheme }: Mob
   };
 
   return (
-    <div className="mobile-only">
+    <div className="mobile-only" style={{ minWidth: 0, overflow: "hidden" }}>
       {/* Row 1 — logo + theme toggle */}
       <div style={topRowStyle}>
         {/* Hamburger stub */}

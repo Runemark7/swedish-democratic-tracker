@@ -142,7 +142,14 @@ export function PartySpeechCard({ party, speech }: PartySpeechCardProps) {
     return (
       <Link
         to={`/anforanden/${speech.id}`}
-        style={{ textDecoration: "none", color: "inherit", display: "block", height: "100%" }}
+        style={{
+          textDecoration: "none",
+          color: "inherit",
+          display: "block",
+          height: "100%",
+          minWidth: 0,
+          overflow: "hidden",
+        }}
       >
         {body}
       </Link>

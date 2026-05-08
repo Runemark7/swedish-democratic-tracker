@@ -83,7 +83,7 @@ export function HomePage() {
   const panelGrid: React.CSSProperties = {
     display: "grid",
     gap: 1,
-    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+    gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)",
     background: "var(--color-border)",
     border: "1px solid var(--color-border)",
     margin: isMobile ? "14px 14px 0" : "22px 32px 0",
@@ -91,7 +91,9 @@ export function HomePage() {
 
   const partyGridStyle: React.CSSProperties = {
     display: "grid",
-    gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+    gridTemplateColumns: isMobile
+      ? "minmax(0, 1fr) minmax(0, 1fr)"
+      : "repeat(4, minmax(0, 1fr))",
     gap: 12,
     margin: isMobile ? "14px 14px 28px" : "22px 32px 28px",
   };
