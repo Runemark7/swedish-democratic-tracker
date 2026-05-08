@@ -56,6 +56,16 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "25"
+
+      - name: Pre-sync data sources into build context
+        working-directory: frontend
+        run: |
+          npm install --no-save gray-matter
+          npm run sync:data-sources
+
       - uses: docker/build-push-action@v6
         with:
           context: ./frontend
