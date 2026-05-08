@@ -27,6 +27,7 @@ import (
 	// Feature: speeches
 	speechesPG "riksdagskollen/internal/speeches/adapters/postgres"
 	speechesRD "riksdagskollen/internal/speeches/adapters/riksdagen"
+	speechesHTTP "riksdagskollen/internal/speeches/adapters/http"
 	"riksdagskollen/internal/speeches"
 
 	// Feature: votes
@@ -133,6 +134,7 @@ func main() {
 	speechRepo := speechesPG.NewRepository(db)
 	speechRD := speechesRD.NewClient()
 	speechSvc := speeches.NewService(speechRepo, speechRD)
+	speechHandler := speechesHTTP.NewHandler(speechSvc, polSvc)
 
 	voteRepo := votesPG.NewRepository(db)
 	voteRD := votesRD.NewClient()
@@ -193,6 +195,7 @@ func main() {
 	r.Route("/api", func(r chi.Router) {
 		polHandler.Routes(r)
 		voteHandler.Routes(r)
+		speechHandler.Routes(r)
 		goalsHandler.Routes(r)
 		promisesHandler.Routes(r)
 		budgetHandler.Routes(r)

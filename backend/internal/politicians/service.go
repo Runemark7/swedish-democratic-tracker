@@ -29,6 +29,17 @@ func (s *Service) GetByID(ctx context.Context, id string) (*domain.Politician, e
 	return s.repo.GetByID(ctx, id)
 }
 
+func (s *Service) NameByID(ctx context.Context, intressentID string) (string, error) {
+	p, err := s.repo.GetByID(ctx, intressentID)
+	if err != nil {
+		return "", err
+	}
+	if p == nil {
+		return "", nil
+	}
+	return p.FullName(), nil
+}
+
 func (s *Service) List(ctx context.Context, f ports.ListFilter) (ports.ListResult, error) {
 	if f.Page == 0 {
 		f.Page = 1

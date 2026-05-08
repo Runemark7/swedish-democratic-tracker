@@ -32,6 +32,10 @@ func (s *Service) ListByPolitician(ctx context.Context, politicianID string) ([]
 	return s.repo.ListByPolitician(ctx, politicianID)
 }
 
+func (s *Service) ListRecent(ctx context.Context, limit int) ([]*domain.Speech, error) {
+	return s.repo.ListRecent(ctx, limit)
+}
+
 func (s *Service) ListUnprocessed(ctx context.Context, limit int) ([]*domain.Speech, error) {
 	return s.repo.ListUnprocessed(ctx, limit)
 }

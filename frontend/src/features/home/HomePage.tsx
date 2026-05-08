@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
-import { useRiksdag } from "@/hooks/useDemocracy";
+import { useRiksdag, useRecentSpeeches } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { mockRegion, mockKommun } from "@/mock/democracy";
-import { StackBar, Pill } from "@/components/charts";
-import type { LevelData, Party } from "@/types/democracy";
+import { Pill } from "@/components/charts";
+import { AgendaList } from "@/components/AgendaList";
+import { PanelCard } from "./components/PanelCard";
+import { PartySpeechCard } from "./components/PartySpeechCard";
+import type { LiveVote } from "@/types/democracy";
+import type { Speech } from "@/features/speeches/api";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+const PARTY_ORDER = ["S", "M", "SD", "C", "V", "KD", "L", "MP"] as const;
 
 function pillTone(status: string): "pass" | "fail" | "pending" | "neutral" {
   if (status === "Bifall") return "pass";
@@ -14,538 +17,46 @@ function pillTone(status: string): "pass" | "fail" | "pending" | "neutral" {
   return "neutral";
 }
 
-function allParties(data: LevelData): Party[] {
-  const ruling = data.ruling.parties ?? [];
-  const support = data.ruling.support ?? [];
-  const opp = data.ruling.opposition ?? [];
-  return [...ruling, ...support, ...opp];
+function beslutHref(v: LiveVote): string | null {
+  if (!v.beteckning) return null;
+  const p = new URLSearchParams({ title: v.title, status: v.status, tag: v.tag, time: v.time });
+  return `/beslut/${encodeURIComponent(v.beteckning)}?${p}`;
 }
 
-// ── ChambersHero ─────────────────────────────────────────────────────────────
-
-const rings = [
-  {
-    tag: "I",
-    label: "Riksdagen",
-    sub: "349 MANDAT · NATIONELLT",
-    inset: 0,
-    pulses: 4,
-    activeToday: 3,
-  },
-  {
-    tag: "II",
-    label: "Regionen",
-    sub: "21 REGIONER · VÅRD & TRAFIK",
-    inset: 52,
-    pulses: 3,
-    activeToday: 1,
-  },
-  {
-    tag: "III",
-    label: "Kommunen",
-    sub: "290 KOMMUNER · SKOLA, OMSORG",
-    inset: 104,
-    pulses: 5,
-    activeToday: 2,
-  },
-] as const;
-
-interface ChambersHeroProps {
-  riksdagParties: Party[];
-  regionParties: Party[];
-  kommunParties: Party[];
+function isToday(time: string): boolean {
+  return time.toLowerCase().startsWith("idag");
 }
 
-function ChambersHero({ riksdagParties, regionParties, kommunParties }: ChambersHeroProps) {
-  const partyStrips = [riksdagParties, regionParties, kommunParties];
-
-  return (
-    <div style={{ position: "relative", height: 320, margin: "0 40px" }}>
-      {rings.map((ring, i) => (
-        <div
-          key={ring.tag}
-          style={{
-            position: "absolute",
-            top: ring.inset,
-            left: ring.inset + 80,
-            right: ring.inset + 80,
-            bottom: ring.inset,
-            border: "1px solid var(--color-border)",
-            borderRadius: 3,
-            ...(i === 2 ? { background: "var(--color-plane)" } : {}),
-            ...(i === 0
-              ? { boxShadow: "0 30px 60px -20px rgba(0,0,0,0.4)" }
-              : {}),
-          }}
-        >
-          {/* Label tab — top-left edge */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 20,
-              transform: "translateY(-50%)",
-              display: "flex",
-              alignItems: "baseline",
-              gap: 8,
-              background: "var(--color-bg)",
-              padding: "0 6px",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontStyle: "italic",
-                color: "var(--color-accent-2)",
-                fontSize: 14,
-                lineHeight: 1,
-              }}
-            >
-              {ring.tag}
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontSize: 18,
-                color: "var(--color-fg)",
-                lineHeight: 1,
-              }}
-            >
-              {ring.label}
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                color: "var(--color-fg-muted)",
-                letterSpacing: "0.12em",
-              }}
-            >
-              {ring.sub}
-            </span>
-          </div>
-
-          {/* Pulse dots — bottom edge */}
-          {Array.from({ length: ring.pulses }).map((_, j) => (
-            <div
-              key={j}
-              className={j < ring.activeToday ? "animate-pulse-dot" : undefined}
-              style={{
-                position: "absolute",
-                bottom: -4,
-                left: `${10 + (j / ring.pulses) * 78}%`,
-                width: 9,
-                height: 9,
-                borderRadius: "50%",
-                background:
-                  j < ring.activeToday
-                    ? "var(--color-pulse)"
-                    : "var(--color-accent)",
-                border: "2px solid var(--color-bg)",
-              }}
-            />
-          ))}
-
-          {/* Ruling-party color strip — top-right */}
-          <div
-            style={{
-              position: "absolute",
-              top: 14,
-              right: 14,
-              display: "flex",
-              gap: 3,
-            }}
-          >
-            {partyStrips[i].slice(0, 2).map((p, k) => (
-              <div
-                key={k}
-                style={{
-                  width: 18,
-                  height: 4,
-                  borderRadius: 1,
-                  background: p.color,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-
-      {/* Center legend */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          textAlign: "center",
-          pointerEvents: "none",
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            letterSpacing: "0.15em",
-            color: "var(--color-fg-muted)",
-            marginBottom: 8,
-          }}
-        >
-          12 PÅGÅENDE · 6 BESLUT IDAG
-        </div>
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", alignItems: "center" }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "var(--color-accent)",
-                display: "inline-block",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 9,
-                color: "var(--color-fg-muted)",
-                letterSpacing: "0.1em",
-              }}
-            >
-              PÅGÅR
-            </span>
-          </span>
-          <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <span
-              className="animate-pulse-dot"
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "var(--color-pulse)",
-                display: "inline-block",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 9,
-                color: "var(--color-fg-muted)",
-                letterSpacing: "0.1em",
-              }}
-            >
-              BESLUT IDAG
-            </span>
-          </span>
-        </div>
-      </div>
-    </div>
-  );
+function isThisWeek(time: string): boolean {
+  const t = time.toLowerCase();
+  if (t.startsWith("idag") || t.startsWith("igår")) return true;
+  const m = t.match(/^(\d{1,2})\s+(\S+)/);
+  if (!m) return false;
+  const day = Number(m[1]);
+  const now = new Date();
+  const diffDays = Math.abs(now.getDate() - day);
+  return diffDays <= 7;
 }
 
-// ── StatusStrip ───────────────────────────────────────────────────────────────
-
-interface StatusCellProps {
-  tag: string;
-  data: LevelData;
-  to: string;
+function pickLatestPerParty(speeches: Speech[]): Record<string, Speech | null> {
+  const out: Record<string, Speech | null> = {};
+  for (const p of PARTY_ORDER) out[p] = null;
+  for (const s of speeches) {
+    if (!(s.party in out)) continue;
+    const existing = out[s.party];
+    if (!existing || s.date > existing.date) out[s.party] = s;
+  }
+  return out;
 }
-
-function StatusCell({ tag, data, to }: StatusCellProps) {
-  const parties = allParties(data);
-  const totalSeats = parties.reduce((s, p) => s + p.seats, 0);
-  const rulingSeats = data.ruling.parties.reduce((s, p) => s + p.seats, 0);
-
-  return (
-    <div
-      style={{
-        background: "var(--color-bg)",
-        padding: 22,
-        display: "flex",
-        flexDirection: "column",
-        gap: 14,
-        minWidth: 0,
-        overflow: "hidden",
-      }}
-    >
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "baseline", gap: 10, minWidth: 0 }}>
-        <span
-          style={{
-            fontFamily: "var(--font-serif)",
-            fontStyle: "italic",
-            color: "var(--color-accent-2)",
-            fontSize: 20,
-            flexShrink: 0,
-          }}
-        >
-          {tag}
-        </span>
-        <span
-          style={{
-            fontFamily: "var(--font-serif)",
-            fontSize: 22,
-            color: "var(--color-fg)",
-            flex: 1,
-            minWidth: 0,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {data.title}
-        </span>
-        <span
-          className="animate-pulse-dot"
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            color: "var(--color-pulse)",
-            letterSpacing: "0.1em",
-            flexShrink: 0,
-          }}
-        >
-          ● {data.liveVotes.filter((v) => v.time.startsWith("Idag")).length} IDAG
-        </span>
-      </div>
-
-      {/* Party stack bar */}
-      <StackBar
-        segments={parties.map((p) => ({ color: p.color, value: p.seats, name: p.name, short: p.short }))}
-        height={8}
-        rounded={false}
-      />
-
-      {/* Styre */}
-      <div>
-        <div
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 9,
-            letterSpacing: "0.15em",
-            color: "var(--color-fg-muted)",
-            marginBottom: 6,
-          }}
-        >
-          STYRE
-        </div>
-        <div
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            color: "var(--color-fg-muted)",
-            marginBottom: 6,
-          }}
-        >
-          {data.ruling.type}
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 6px", marginBottom: 6 }}>
-          {data.ruling.parties.map((p) => (
-            <span
-              key={p.short}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 4,
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                color: "var(--color-fg)",
-              }}
-            >
-              <span
-                style={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: "50%",
-                  background: p.color,
-                  display: "inline-block",
-                  flexShrink: 0,
-                }}
-              />
-              {p.short}{" "}
-              <span style={{ color: "var(--color-fg-muted)" }}>{p.seats}</span>
-            </span>
-          ))}
-        </div>
-        <div
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 9,
-            color: "var(--color-fg-muted)",
-            letterSpacing: "0.12em",
-          }}
-        >
-          MAJORITET {rulingSeats}/{totalSeats}
-        </div>
-      </div>
-
-      {/* 2 latest live votes */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {data.liveVotes.slice(0, 2).map((v, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                color: "var(--color-fg-muted)",
-                flexShrink: 0,
-                minWidth: 60,
-              }}
-            >
-              {v.time}
-            </span>
-            <span
-              style={{
-                fontSize: 12,
-                color: "var(--color-fg)",
-                flex: 1,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {v.title}
-            </span>
-            <Pill tone={pillTone(v.status)}>{v.status}</Pill>
-          </div>
-        ))}
-      </div>
-
-      {/* Footer link */}
-      <Link
-        to={to}
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: 10,
-          letterSpacing: "0.15em",
-          color: "var(--color-accent)",
-          textDecoration: "none",
-          marginTop: 2,
-        }}
-      >
-        GÅ TILL KAMMARE →
-      </Link>
-    </div>
-  );
-}
-
-// ── PulsStrip ────────────────────────────────────────────────────────────────
-
-const PULSE_ACTIVE = new Set([5, 12, 19, 26, 31, 38, 42]);
-const PULSE_LEVELS: Record<number, number> = { 12: 0, 31: 0, 19: 1, 38: 1, 5: 2, 26: 2, 42: 2 };
-const LEVEL_COLORS = [
-  "var(--color-pulse)",
-  "var(--color-accent)",
-  "var(--color-accent-2)",
-];
-
-interface PulseStripProps {
-  compact?: boolean;
-}
-
-function PulseStrip({ compact }: PulseStripProps) {
-  return (
-    <div style={{ padding: compact ? "16px 14px 24px" : "22px 32px 28px" }}>
-      {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 16,
-          marginBottom: 12,
-          flexWrap: "wrap",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            letterSpacing: "0.15em",
-            color: "var(--color-fg-muted)",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: "100%",
-          }}
-        >
-          DYGNETS PULS — 9 BESLUT I 3 KAMMARE
-        </span>
-        <span style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          {(["I", "II", "III"] as const).map((tag, i) => (
-            <span
-              key={tag}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 4,
-                fontFamily: "var(--font-mono)",
-                fontSize: 9,
-                color: "var(--color-fg-muted)",
-              }}
-            >
-              <span
-                style={{
-                  display: "inline-block",
-                  width: 10,
-                  height: 10,
-                  background: LEVEL_COLORS[2 - i],
-                }}
-              />
-              {tag}
-            </span>
-          ))}
-        </span>
-      </div>
-
-      {/* 48 cells */}
-      <div style={{ display: "flex", gap: 2 }}>
-        {Array.from({ length: 48 }).map((_, idx) => {
-          const active = PULSE_ACTIVE.has(idx);
-          const level = PULSE_LEVELS[idx];
-          const bg = active ? LEVEL_COLORS[level] : "var(--color-track)";
-          return (
-            <div
-              key={idx}
-              style={{
-                flex: 1,
-                height: 28,
-                borderRadius: 1,
-                background: bg,
-              }}
-            />
-          );
-        })}
-      </div>
-
-      {/* Time labels */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginTop: 6,
-          fontFamily: "var(--font-mono)",
-          fontSize: 9,
-          color: "var(--color-fg-muted)",
-          letterSpacing: "0.08em",
-        }}
-      >
-        {["00:00", "06:00", "12:00", "18:00", "NU"].map((t) => (
-          <span key={t}>{t}</span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── HomePage ─────────────────────────────────────────────────────────────────
 
 export function HomePage() {
-  const { data: riksdagData, isLoading } = useRiksdag();
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const { data: riksdag, isLoading: riksdagLoading } = useRiksdag();
+  const { data: speeches, isLoading: speechesLoading } = useRecentSpeeches(100);
 
-  if (isLoading || !riksdagData) {
+  if (riksdagLoading || !riksdag) {
     return (
-      <div className="sdt-page" style={{ padding: "80px 32px" }}>
+      <div className="sdt-page" style={{ padding: isMobile ? "20px 14px" : "40px 32px" }}>
         <div
           style={{
             height: 60,
@@ -555,85 +66,290 @@ export function HomePage() {
             maxWidth: 480,
           }}
         />
-        <div
-          style={{
-            height: 320,
-            background: "var(--color-track)",
-            borderRadius: 4,
-          }}
-        />
+        <div style={{ height: 320, background: "var(--color-track)", borderRadius: 4 }} />
       </div>
     );
   }
 
+  const liveVotes = riksdag.liveVotes ?? [];
+  const agenda = riksdag.agenda ?? [];
+
+  const todayVotes = liveVotes.filter((v) => isToday(v.time)).slice(0, 5);
+  const weekVotes = liveVotes.filter((v) => isThisWeek(v.time)).slice(0, 5);
+
+  const recentSpeeches = (speeches ?? []).slice(0, 5);
+  const latestByParty = pickLatestPerParty(speeches ?? []);
+
+  const panelGrid: React.CSSProperties = {
+    display: "grid",
+    gap: 1,
+    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+    background: "var(--color-border)",
+    border: "1px solid var(--color-border)",
+    margin: isMobile ? "14px 14px 0" : "22px 32px 0",
+  };
+
+  const partyGridStyle: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+    gap: 12,
+    margin: isMobile ? "14px 14px 28px" : "22px 32px 28px",
+  };
+
   return (
     <div className="sdt-page">
-      {/* ── Section 1: Hero text ─────────────────────────────────────── */}
-      <div style={{ padding: isMobile ? "40px 14px 20px" : "80px 32px 24px" }}>
+      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      <header
+        style={{
+          padding: isMobile ? "20px 14px 16px" : "40px 32px 24px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+        }}
+      >
         <div
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: 10,
-            letterSpacing: "2.5px",
+            letterSpacing: "2px",
             color: "var(--color-fg-muted)",
             textTransform: "uppercase",
-            marginBottom: 16,
           }}
         >
-          VEM BESTÄMMER · VAR · JUST NU
+          KAMMARE ETT · RIKSDAGEN
         </div>
         <h1
           style={{
             fontFamily: "var(--font-serif)",
-            fontSize: isMobile ? 36 : 60,
+            fontSize: isMobile ? 28 : 44,
             fontWeight: 400,
-            letterSpacing: "-1.8px",
+            letterSpacing: "-1.2px",
             color: "var(--color-fg)",
             margin: 0,
             lineHeight: 1.05,
           }}
         >
-          Tre{" "}
-          <em
-            style={{
-              fontStyle: "italic",
-              color: "var(--color-accent-2)",
-            }}
-          >
-            kammare
-          </em>
-          , ett samhälle.
+          Vad fokuserar riksdagen på?
         </h1>
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: 13,
+            color: "var(--color-fg-muted)",
+            margin: 0,
+            maxWidth: 540,
+          }}
+        >
+          Beslut, debatter och vad partierna driver — i realtid.
+        </p>
+      </header>
+
+      {/* ── Panels 1 + 2 (row) ───────────────────────────────────────── */}
+      <div style={panelGrid}>
+        {/* Panel 1 — Beslut idag */}
+        <PanelCard
+          title="BESLUT IDAG"
+          showAllHref="/votes"
+          isEmpty={todayVotes.length === 0}
+          emptyText="Inga beslut idag — kammaren kan ha sommaruppehåll."
+        >
+          {todayVotes.map((v, i) => {
+            const href = beslutHref(v);
+            const row = (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "12px 1fr auto",
+                  gap: 10,
+                  alignItems: "center",
+                  minWidth: 0,
+                }}
+              >
+                <span
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    background: i < 2 ? "var(--color-pulse)" : "var(--color-accent)",
+                    display: "inline-block",
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: 13,
+                    color: "var(--color-fg)",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    minWidth: 0,
+                  }}
+                  title={v.title}
+                >
+                  {v.title}
+                </span>
+                <Pill tone={pillTone(v.status)}>{v.status}</Pill>
+              </div>
+            );
+            return href ? (
+              <Link key={i} to={href} style={{ textDecoration: "none", color: "inherit" }}>
+                {row}
+              </Link>
+            ) : (
+              <div key={i}>{row}</div>
+            );
+          })}
+        </PanelCard>
+
+        {/* Panel 2 — Aktuella debatter */}
+        <PanelCard
+          title="AKTUELLA DEBATTER"
+          showAllHref="/politicians"
+          isEmpty={!speechesLoading && recentSpeeches.length === 0}
+          emptyText="Inga registrerade debatter ännu."
+        >
+          {recentSpeeches.map((s) => {
+            const date = new Date(s.date);
+            const stamp = `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}`;
+            return (
+              <Link
+                key={s.id}
+                to={`/anforanden/${s.id}`}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "44px 1fr",
+                  gap: 10,
+                  alignItems: "baseline",
+                  textDecoration: "none",
+                  color: "inherit",
+                  minWidth: 0,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    color: "var(--color-fg-muted)",
+                  }}
+                >
+                  {stamp}
+                </span>
+                <span
+                  style={{
+                    fontSize: 13,
+                    color: "var(--color-fg)",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    minWidth: 0,
+                  }}
+                  title={s.politicianName}
+                >
+                  <strong style={{ fontWeight: 600 }}>{s.politicianName || "Anonym"}</strong>
+                  <span style={{ color: "var(--color-fg-muted)", marginLeft: 6 }}>
+                    [{s.party}]
+                  </span>
+                  {s.topicHeading && (
+                    <span style={{ marginLeft: 8, color: "var(--color-fg-muted)" }}>
+                      · {s.topicHeading}
+                    </span>
+                  )}
+                </span>
+              </Link>
+            );
+          })}
+        </PanelCard>
       </div>
 
-      {/* ── Section 2: ChambersHero ──────────────────────────────────── */}
-      {!isMobile && (
-        <ChambersHero
-          riksdagParties={riksdagData.ruling.parties}
-          regionParties={mockRegion.ruling.parties.slice(0, 2)}
-          kommunParties={mockKommun.ruling.parties.slice(0, 2)}
-        />
-      )}
+      {/* ── Panels 3 + 5 (row) ───────────────────────────────────────── */}
+      <div style={{ ...panelGrid, marginTop: 1, borderTop: "none" }}>
+        {/* Panel 3 — Veckans omröstningar */}
+        <PanelCard
+          title="VECKANS OMRÖSTNINGAR"
+          showAllHref="/votes"
+          isEmpty={weekVotes.length === 0}
+          emptyText="Inga omröstningar denna vecka."
+        >
+          {weekVotes.map((v, i) => {
+            const href = beslutHref(v);
+            const row = (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "60px 1fr auto",
+                  gap: 10,
+                  alignItems: "center",
+                  minWidth: 0,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    color: "var(--color-fg-muted)",
+                  }}
+                >
+                  {v.time}
+                </span>
+                <span
+                  style={{
+                    fontSize: 13,
+                    color: "var(--color-fg)",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    minWidth: 0,
+                  }}
+                  title={v.title}
+                >
+                  {v.title}
+                </span>
+                <Pill tone={pillTone(v.status)}>{v.status}</Pill>
+              </div>
+            );
+            return href ? (
+              <Link key={i} to={href} style={{ textDecoration: "none", color: "inherit" }}>
+                {row}
+              </Link>
+            ) : (
+              <div key={i}>{row}</div>
+            );
+          })}
+        </PanelCard>
 
-      {/* ── Section 3: Three-column status strip ─────────────────────── */}
-      <div
+        {/* Panel 5 — Kommande beslut */}
+        <PanelCard
+          title="KOMMANDE BESLUT"
+          showAllHref="/votes"
+          isEmpty={agenda.length === 0}
+          emptyText="Ingen agenda publicerad."
+        >
+          <AgendaList items={agenda.slice(0, 5)} />
+        </PanelCard>
+      </div>
+
+      {/* ── Panel 4 — Vad partierna säger (full width) ───────────────── */}
+      <section
         style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-          gap: 1,
-          background: "var(--color-border)",
-          margin: isMobile ? "14px 14px 0" : "24px 32px 0",
-          borderTop: "1px solid var(--color-border)",
-          borderBottom: "1px solid var(--color-border)",
+          margin: isMobile ? "14px 14px 6px" : "22px 32px 6px",
         }}
       >
-        <StatusCell tag="I" data={riksdagData} to="/riksdag" />
-        <StatusCell tag="II" data={mockRegion} to="/region" />
-        <StatusCell tag="III" data={mockKommun} to="/kommun" />
+        <header
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 10,
+            letterSpacing: "0.15em",
+            color: "var(--color-fg-muted)",
+            textTransform: "uppercase",
+          }}
+        >
+          VAD PARTIERNA SÄGER
+        </header>
+      </section>
+      <div style={partyGridStyle}>
+        {PARTY_ORDER.map((p) => (
+          <PartySpeechCard key={p} party={p} speech={latestByParty[p]} />
+        ))}
       </div>
-
-      {/* ── Section 4: 24h pulse strip ───────────────────────────────── */}
-      <PulseStrip compact={isMobile} />
     </div>
   );
 }

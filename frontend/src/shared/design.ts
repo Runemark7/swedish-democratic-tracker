@@ -21,6 +21,21 @@ export const PARTY_COLORS: Record<string, PartyStyle> = {
   MP: { bg: "#83CF39", text: "#1a1a1a", light: "#f0fae6", tw: "bg-party-mp" },
 };
 
+const PARTY_NAMES: Record<string, string> = {
+  S: "Socialdemokraterna",
+  M: "Moderaterna",
+  SD: "Sverigedemokraterna",
+  C: "Centerpartiet",
+  V: "Vänsterpartiet",
+  KD: "Kristdemokraterna",
+  L: "Liberalerna",
+  MP: "Miljöpartiet",
+};
+
+export function partyShortToName(short: string): string {
+  return PARTY_NAMES[short] ?? short;
+}
+
 // ── Status Configuration ──────────────────────────────────────────────
 export type GoalStatus = "aligned" | "partial" | "contradiction" | "no_vote";
 

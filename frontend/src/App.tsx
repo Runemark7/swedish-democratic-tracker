@@ -20,6 +20,7 @@ import { HomePage } from "./features/home/HomePage";
 import { RiksdagPage } from "./features/riksdag/RiksdagPage";
 import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { SearchPage } from "./features/search/SearchPage";
+import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
 import { useTheme } from "./contexts/ThemeContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
 import { MobileNav } from "./components/MobileNav";
@@ -337,6 +338,7 @@ export default function App() {
           <Route path="/kommun/jämför"                         element={<MunicipalityComparePage />} />
           <Route path="/kommun/:code"                          element={<MunicipalityDetailPage />} />
           <Route path="/sok"                                   element={<SearchPage />} />
+          <Route path="/anforanden/:id"                        element={<SpeechDetailPage />} />
         </Routes>
       </main>
     </div>
