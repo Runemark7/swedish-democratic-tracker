@@ -176,6 +176,7 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		if ds, err := h.svc.GetDocumentStatus(r.Context(), info.DokID); err == nil && ds != nil {
 			resp["subtitle"] = ds.Subtitle
 			resp["summary"] = ds.Summary
+			resp["bodyHtml"] = ds.BodyHTML
 		}
 		jsonOK(w, resp)
 		return
@@ -206,6 +207,7 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		resp["date"] = ds.Date
 		resp["subtitle"] = ds.Subtitle
 		resp["summary"] = ds.Summary
+		resp["bodyHtml"] = ds.BodyHTML
 	}
 	jsonOK(w, resp)
 }

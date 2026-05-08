@@ -51,6 +51,10 @@ type DocumentStatus struct {
 	Date       string
 	Subtitle   string
 	Summary    string
+	// BodyHTML is the full document content from /dokumentstatus.dokument.html.
+	// Inline-rendered on the BeslutDetailPage so users see the proposal,
+	// motivation and debate transcript without leaving the site.
+	BodyHTML   string `json:"bodyHtml,omitempty"`
 }
 
 type DocumentReference struct {
