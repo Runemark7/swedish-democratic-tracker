@@ -6,6 +6,8 @@ import { AgendaList } from "@/components/AgendaList";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { LiveVote, Party } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -243,22 +245,24 @@ export function RegionDetailPage() {
                 {regionKommuner.length} kommuner
               </div>
             )}
+            <SectionSource sourceIds={["wikimedia-svg", "scb-kfmandat"]} />
           </div>
         )}
 
         {/* ── KPI strip ────────────────────────────────────────────────── */}
         {kpis && kpis.length > 0 && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-              gap: 1,
-              border: "1px solid var(--color-border)",
-              background: "var(--color-border)",
-              margin: isMobile ? "14px 14px 0" : "22px 32px 0",
-            }}
-          >
-            {kpis.map((k) => (
+          <>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+                gap: 1,
+                border: "1px solid var(--color-border)",
+                background: "var(--color-border)",
+                margin: isMobile ? "14px 14px 0" : "22px 32px 0",
+              }}
+            >
+              {kpis.map((k) => (
               <div
                 key={k.label}
                 style={{
@@ -296,6 +300,7 @@ export function RegionDetailPage() {
                   >
                     {k.value}
                   </span>
+                  <SourceMarker sourceId="kolada" />
                   <Trend trend={k.trend} delta={k.delta} worseHigher={k.worseHigher} />
                 </div>
                 <GoalBadge
@@ -323,8 +328,10 @@ export function RegionDetailPage() {
                   </div>
                 )}
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            <SectionSource sourceIds={["kolada"]} />
+          </>
         )}
 
         {/* ── Main grid ────────────────────────────────────────────────── */}
@@ -451,8 +458,10 @@ export function RegionDetailPage() {
                 >
                   MAJORITET {rulingSeats}/{totalSeats}
                 </span>
+                <SourceMarker sourceId="scb-ltmandat" />
               </div>
             )}
+            <SectionSource sourceIds={["scb-ltmandat"]} />
           </div>
 
           {/* Right card — BUDGET */}
@@ -468,6 +477,7 @@ export function RegionDetailPage() {
             >
               BUDGET {budget.year}
               {budget.total ? ` · ${budget.total}` : ""}
+              <SourceMarker sourceId="scb-kostndrlt" />
             </div>
             {budget.areas.length === 0 ? (
               <div
@@ -501,6 +511,7 @@ export function RegionDetailPage() {
                 </div>
               </div>
             )}
+            <SectionSource sourceIds={["scb-kostndrlt"]} />
           </div>
         </div>
 
@@ -594,6 +605,7 @@ export function RegionDetailPage() {
                       title={v.title}
                     >
                       {v.title}
+                      <SourceMarker sourceId="riksdagen" />
                       {v.tag && (
                         <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", marginLeft: 6, verticalAlign: "middle" }}>
                           [{v.tag}]
@@ -612,6 +624,7 @@ export function RegionDetailPage() {
                 );
               })}
             </div>
+            <SectionSource sourceIds={["riksdagen"]} />
           </div>
 
           {/* Right card — AGENDA */}
@@ -628,6 +641,7 @@ export function RegionDetailPage() {
               AGENDA · STYRETS PRIORITERINGAR
             </div>
             <AgendaList items={agenda} />
+            <SectionSource sourceIds={["derived-agenda"]} />
           </div>
         </div>
       </div>
