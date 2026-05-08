@@ -463,6 +463,89 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/speeches/recent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Recent speeches across all politicians */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of recent speeches */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Speech"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/speeches/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Single speech by id (full text) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Full speech detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Speech"];
+                    };
+                };
+                /** @description Speech not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1027,6 +1110,20 @@ export interface components {
             mandateUrl?: string;
             regleringsbrev: components["schemas"]["AgencyRegleringsbrev"][];
             recentDecisions: components["schemas"]["AgencyDecision"][];
+        };
+        Speech: {
+            id: number;
+            dokId: string;
+            anforandeNummer?: string;
+            politicianId: string;
+            politicianName: string;
+            party: string;
+            /** Format: date-time */
+            date: string;
+            topicHeading?: string;
+            snippet: string;
+            /** @description Full text — only included on /speeches/{id}, omitted from /speeches/recent */
+            speechText?: string;
         };
     };
     responses: {

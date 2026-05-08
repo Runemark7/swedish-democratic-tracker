@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
 import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type RiksdagGovernment, type RiksdagAgendaItem, type RiksdagLiveVote } from "@/features/riksdag/api";
+import { speechesApi, type Speech } from "@/features/speeches/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
 import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem } from "@/shared/types";
 
@@ -553,5 +554,14 @@ export function useKommun(code: string) {
     },
     staleTime: 30_000,
     enabled: !!code,
+  });
+}
+
+// ── Recent speeches ───────────────────────────────────────────────────────────
+export function useRecentSpeeches(limit = 100) {
+  return useQuery<Speech[]>({
+    queryKey: ["speeches-recent", limit],
+    queryFn: () => speechesApi.listRecent(limit),
+    staleTime: 60_000,
   });
 }

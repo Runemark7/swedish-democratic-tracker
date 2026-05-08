@@ -627,6 +627,47 @@ paths:
         "502":
           description: Upstream SCB API error
 
+  /speeches/recent:
+    get:
+      summary: Recent speeches across all politicians
+      tags: [speeches]
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 200
+      responses:
+        "200":
+          description: List of recent speeches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Speech"
+  /speeches/{id}:
+    get:
+      summary: Single speech by id (full text)
+      tags: [speeches]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Full speech detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Speech"
+        "404":
+          description: Speech not found
+
 components:
   parameters:
     PartyParam:
@@ -1627,3 +1668,30 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/AgencyDecision"
+
+    Speech:
+      type: object
+      required: [id, dokId, politicianId, politicianName, party, date, snippet]
+      properties:
+        id:
+          type: integer
+        dokId:
+          type: string
+        anforandeNummer:
+          type: string
+        politicianId:
+          type: string
+        politicianName:
+          type: string
+        party:
+          type: string
+        date:
+          type: string
+          format: date-time
+        topicHeading:
+          type: string
+        snippet:
+          type: string
+        speechText:
+          type: string
+          description: Full text — only included on /speeches/{id}, omitted from /speeches/recent
