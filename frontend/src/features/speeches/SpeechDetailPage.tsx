@@ -69,18 +69,31 @@ export function SpeechDetailPage() {
                 </div>
               )}
             </header>
-            <p
-              style={{
-                fontSize: 15,
-                lineHeight: 1.7,
-                color: "var(--color-fg)",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {data.speechText || data.snippet}
-            </p>
-            <div style={{ marginTop: 24 }}>
-            </div>
+            {data.speechText ? (
+              <div
+                className="riksdagen-doc"
+                style={{
+                  fontSize: 15,
+                  lineHeight: 1.7,
+                  color: "var(--color-fg)",
+                }}
+                // Speech bodies from data.riksdagen.se ship as HTML
+                // (mostly <p> blocks). Render markup inline so paragraph
+                // breaks display correctly. Trusted government source.
+                dangerouslySetInnerHTML={{ __html: data.speechText }}
+              />
+            ) : (
+              <p
+                style={{
+                  fontSize: 15,
+                  lineHeight: 1.7,
+                  color: "var(--color-fg-muted)",
+                  fontStyle: "italic",
+                }}
+              >
+                {data.snippet || "Anförandetexten är inte tillgänglig."}
+              </p>
+            )}
           </article>
         )}
       </div>
