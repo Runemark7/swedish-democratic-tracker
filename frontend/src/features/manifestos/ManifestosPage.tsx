@@ -2,7 +2,6 @@ import { useState } from "react";
 import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { PartyCode } from "@/shared/types";
 
 interface Manifesto {
@@ -135,7 +134,6 @@ function ManifestoCard({ m }: { m: Manifesto }) {
           )}
         </div>
       )}
-      <SectionSource sourceIds={["seed-party-goals"]} />
     </div>
   );
 }

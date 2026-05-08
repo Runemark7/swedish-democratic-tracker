@@ -7,7 +7,6 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { LiveVote, Party } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -245,7 +244,6 @@ export function RegionDetailPage() {
                 {regionKommuner.length} kommuner
               </div>
             )}
-            <SectionSource sourceIds={["wikimedia-svg", "scb-kfmandat"]} />
           </div>
         )}
 
@@ -330,7 +328,6 @@ export function RegionDetailPage() {
               </div>
               ))}
             </div>
-            <SectionSource sourceIds={["kolada"]} />
           </>
         )}
 
@@ -461,7 +458,6 @@ export function RegionDetailPage() {
                 <SourceMarker sourceId="scb-ltmandat" />
               </div>
             )}
-            <SectionSource sourceIds={["scb-ltmandat"]} />
           </div>
 
           {/* Right card — BUDGET */}
@@ -511,7 +507,6 @@ export function RegionDetailPage() {
                 </div>
               </div>
             )}
-            <SectionSource sourceIds={["scb-kostndrlt"]} />
           </div>
         </div>
 
@@ -624,7 +619,6 @@ export function RegionDetailPage() {
                 );
               })}
             </div>
-            <SectionSource sourceIds={["riksdagen"]} />
           </div>
 
           {/* Right card — AGENDA */}
@@ -641,7 +635,6 @@ export function RegionDetailPage() {
               AGENDA · STYRETS PRIORITERINGAR
             </div>
             <AgendaList items={agenda} />
-            <SectionSource sourceIds={["derived-agenda"]} />
           </div>
         </div>
       </div>

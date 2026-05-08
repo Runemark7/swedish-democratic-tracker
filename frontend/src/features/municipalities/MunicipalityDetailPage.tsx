@@ -3,7 +3,6 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { Hemicycle, Donut, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import { useKommun, useKommunList } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
@@ -359,7 +358,6 @@ export function MunicipalityDetailPage() {
             ))}
           </div>
           <div style={{ padding: isMobile ? "0 14px" : "0 32px", paddingTop: 0 }}>
-            <SectionSource sourceIds={["kolada"]} />
           </div>
         </div>
       )}
@@ -486,7 +484,6 @@ export function MunicipalityDetailPage() {
             </div>
           )}
           <div style={{ marginTop: 16 }}>
-            <SectionSource sourceIds={["scb-kfmandat"]} />
           </div>
         </div>
 
@@ -545,7 +542,6 @@ export function MunicipalityDetailPage() {
             )}
           </div>
           <div style={{ marginTop: 16 }}>
-            <SectionSource sourceIds={["kolada-spending"]} />
           </div>
         </div>
       </div>
@@ -668,7 +664,6 @@ export function MunicipalityDetailPage() {
             })}
           </div>
           <div style={{ marginTop: 16 }}>
-            <SectionSource sourceIds={["riksdagen"]} />
           </div>
         </div>
 
@@ -691,7 +686,6 @@ export function MunicipalityDetailPage() {
             <AgendaList items={data.agenda} />
           </div>
           <div style={{ marginTop: 16 }}>
-            <SectionSource sourceIds={["derived-agenda"]} />
           </div>
         </div>
       </div>

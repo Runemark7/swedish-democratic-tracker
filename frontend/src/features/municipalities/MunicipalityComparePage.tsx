@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { municipalitiesApi } from "./api";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { MunicipalityKPIItem } from "@/shared/types";
 
 const ALL_KPI_LABELS: Record<string, string> = {
@@ -231,7 +230,6 @@ export function MunicipalityComparePage() {
             Hämtas live · osäkra värden markeras med{" "}
             <span className="text-amber-500 font-bold">*</span>
           </p>
-          <SectionSource sourceIds={["kolada"]} />
         </div>
       )}
 

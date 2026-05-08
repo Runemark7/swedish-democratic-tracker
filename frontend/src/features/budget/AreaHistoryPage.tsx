@@ -6,7 +6,6 @@ import { DeltaIndicator } from "./components/DeltaIndicator";
 import { DocumentLinks } from "./components/DocumentLinks";
 import { formatBudgetAmount } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 
 export function AreaHistoryPage() {
   const { code } = useParams<{ code: string }>();
@@ -102,7 +101,6 @@ export function AreaHistoryPage() {
                   style={{ paddingLeft: "calc(1.25rem + 4rem + 0.75rem)" }}
                 >
                   <DocumentLinks documents={entry.documents} compact />
-                  <SectionSource sourceIds={["seed-budget-data"]} />
                 </div>
               )}
             </div>

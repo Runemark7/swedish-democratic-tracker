@@ -5,7 +5,6 @@ import { votesApi } from "./api";
 import { ProposalOriginTag } from "@/shared/components";
 import { committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 
 export function VotesPage() {
   const [page, setPage] = useState(1);
@@ -70,7 +69,6 @@ export function VotesPage() {
       </div>
       {votes.length > 0 && (
         <div className="mt-4">
-          <SectionSource sourceIds={["riksdagen"]} />
         </div>
       )}
 

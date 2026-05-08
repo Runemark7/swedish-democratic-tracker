@@ -5,7 +5,6 @@ import { politiciansApi } from "./api";
 import { PartyBadge, ProposalOriginTag, TopicTag, SpecificityBadge } from "@/shared/components";
 import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { SectionSource } from "@/components/sources/SectionSource";
 import type { Vote, PromiseWithMatches } from "@/shared/types";
 
 const VOTE_STYLES: Record<string, { color: string; bg: string }> = {
@@ -238,7 +237,6 @@ export function PoliticianPage() {
             </div>
             {votes.length > 0 && (
               <div className="mt-4">
-                <SectionSource sourceIds={["riksdagen"]} />
               </div>
             )}
             {votes.length === 0 && (
