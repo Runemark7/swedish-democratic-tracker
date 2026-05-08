@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { politiciansApi } from "./api";
 import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
+import { SectionSource } from "@/components/sources/SectionSource";
 import type { PoliticianSummary } from "@/shared/types";
 
 function PoliticianCard({ p }: { p: PoliticianSummary }) {
@@ -104,6 +105,8 @@ export function PoliticiansPage() {
               Inga politiker hittades.
             </p>
           )}
+
+          <SectionSource sourceIds={["riksdagen"]} />
 
           {/* Pagination — hidden when searching */}
           {!isSearching && totalPages > 1 && (
