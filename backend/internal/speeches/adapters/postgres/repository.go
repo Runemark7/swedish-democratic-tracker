@@ -107,6 +107,39 @@ func (r *Repository) UpdateText(ctx context.Context, id int, text string) error 
 	return err
 }
 
+func (r *Repository) ListByDocument(ctx context.Context, dokID string) ([]*domain.Speech, error) {
+	if dokID == "" {
+		return []*domain.Speech{}, nil
+	}
+	q := "SELECT " + selectCols + " FROM speeches " +
+		"WHERE related_dok_id = $1 " +
+		"ORDER BY anforande_nummer::int ASC, id ASC"
+	rows, err := r.db.Query(ctx, q, dokID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanSpeeches(rows)
+}
+
+func (r *Repository) ListByParty(ctx context.Context, party string, limit int) ([]*domain.Speech, error) {
+	if limit <= 0 || limit > 200 {
+		limit = 50
+	}
+	if party == "" {
+		return []*domain.Speech{}, nil
+	}
+	q := "SELECT " + selectCols + " FROM speeches " +
+		"WHERE party = $1 " +
+		"ORDER BY date DESC, id DESC LIMIT $2"
+	rows, err := r.db.Query(ctx, q, party, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanSpeeches(rows)
+}
+
 func (r *Repository) MarkProcessed(ctx context.Context, id int) error {
 	_, err := r.db.Exec(ctx, "UPDATE speeches SET ai_processed = true WHERE id = $1", id)
 	return err
