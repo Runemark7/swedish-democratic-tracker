@@ -40,6 +40,17 @@ func (s *Service) NameByID(ctx context.Context, intressentID string) (string, er
 	return p.FullName(), nil
 }
 
+func (s *Service) ImageURLByID(ctx context.Context, intressentID string) (string, error) {
+	p, err := s.repo.GetByID(ctx, intressentID)
+	if err != nil {
+		return "", err
+	}
+	if p == nil {
+		return "", nil
+	}
+	return p.ImageURL, nil
+}
+
 func (s *Service) List(ctx context.Context, f ports.ListFilter) (ports.ListResult, error) {
 	if f.Page == 0 {
 		f.Page = 1
