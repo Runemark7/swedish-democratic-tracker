@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { votesApi } from "./api";
 import { PARTY_COLORS } from "@/shared/design";
+import { useSpeechesByDocument } from "@/hooks/useDemocracy";
+import { SpeechRow } from "@/features/speeches/SpeechRow";
 import type { PartyVotePosition } from "@/shared/types";
 
 // Derive a human-readable committee name from the beteckning prefix.
@@ -124,6 +127,10 @@ export function BeslutDetailPage() {
     enabled: !!beteckning,
     retry: false,
   });
+
+  const dokIdForSpeeches = data?.dokId;
+  const { data: speeches } = useSpeechesByDocument(dokIdForSpeeches);
+  const [expandSpeakers, setExpandSpeakers] = useState(false);
 
   const title    = data?.documentTitle ?? fallbackTitle;
   const session  = data?.session ?? "";
@@ -297,21 +304,54 @@ export function BeslutDetailPage() {
           </span>
         </div>
 
-        {data?.summary && (
-          <div style={{
+        {/* ── SAMMANFATTNING ──────────────────────────────────────── */}
+        <section
+          style={{
             background: "var(--color-sdt-surface)",
             border: "1px solid var(--color-border)",
             borderRadius: 4,
             padding: "16px 20px",
             marginBottom: 16,
-            fontFamily: "var(--font-body)",
-            fontSize: 14,
-            lineHeight: 1.6,
-            color: "var(--color-fg-muted)",
-          }}>
-            {data.summary}
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "var(--color-fg-muted)",
+              marginBottom: 8,
+            }}
+          >
+            Sammanfattning
           </div>
-        )}
+          {data?.summary ? (
+            <p
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 14,
+                lineHeight: 1.6,
+                color: "var(--color-fg)",
+                margin: 0,
+              }}
+            >
+              {data.summary}
+            </p>
+          ) : (
+            <p
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 13,
+                fontStyle: "italic",
+                color: "var(--color-fg-muted)",
+                margin: 0,
+              }}
+            >
+              Riksdagen har inte publicerat någon sammanfattning för det här beslutet.
+            </p>
+          )}
+        </section>
 
         {/* ── Party breakdown ──────────────────────────────────────── */}
         <div
@@ -388,6 +428,68 @@ export function BeslutDetailPage() {
             </div>
           )}
         </div>
+
+        {/* ── DEBATTEN — speakers ─────────────────────────────────── */}
+        <section
+          style={{
+            background: "var(--color-sdt-surface)",
+            border: "1px solid var(--color-border)",
+            borderRadius: 4,
+            padding: "20px 24px",
+            marginBottom: 16,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "var(--color-fg-muted)",
+              marginBottom: 12,
+            }}
+          >
+            Debatten {speeches && speeches.length > 0 ? `· ${speeches.length} talare` : ""}
+          </div>
+          {(!speeches || speeches.length === 0) && (
+            <p
+              style={{
+                fontFamily: "var(--font-body)",
+                fontStyle: "italic",
+                fontSize: 13,
+                color: "var(--color-fg-muted)",
+                margin: 0,
+              }}
+            >
+              Inga registrerade anföranden för det här beslutet ännu.
+            </p>
+          )}
+          {speeches && speeches.length > 0 && (
+            <>
+              {(expandSpeakers ? speeches : speeches.slice(0, 5)).map((s) => (
+                <SpeechRow key={s.id} speech={s} />
+              ))}
+              {speeches.length > 5 && !expandSpeakers && (
+                <button
+                  onClick={() => setExpandSpeakers(true)}
+                  style={{
+                    marginTop: 12,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 11,
+                    color: "var(--color-accent)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    letterSpacing: "0.05em",
+                    padding: 0,
+                  }}
+                >
+                  Visa alla {speeches.length} anföranden →
+                </button>
+              )}
+            </>
+          )}
+        </section>
 
         {/* ── Riksdagen link ───────────────────────────────────────── */}
         {dokId && (
