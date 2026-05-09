@@ -19,6 +19,7 @@ import (
 // service) to stay decoupled.
 type PoliticianLookup interface {
 	NameByID(ctx context.Context, intressentID string) (string, error)
+	ImageURLByID(ctx context.Context, intressentID string) (string, error)
 }
 
 type Handler struct {
@@ -33,20 +34,24 @@ func NewHandler(svc *speeches.Service, pol PoliticianLookup) *Handler {
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/speeches/recent", h.listRecent)
 	r.Get("/speeches/{id}", h.getByID)
+	r.Get("/speeches/by-document/{dokId}", h.listByDocument)
+	r.Get("/speeches/by-politician/{intressentId}", h.listByPolitician)
+	r.Get("/speeches/by-party/{party}", h.listByParty)
 }
 
 // SpeechDTO is the JSON shape returned to the frontend.
 type SpeechDTO struct {
-	ID              int       `json:"id"`
-	DokID           string    `json:"dokId"`
-	AnforandeNummer string    `json:"anforandeNummer"`
-	PoliticianID    string    `json:"politicianId"`
-	PoliticianName  string    `json:"politicianName"`
-	Party           string    `json:"party"`
-	Date            time.Time `json:"date"`
-	TopicHeading    string    `json:"topicHeading"`
-	Snippet         string    `json:"snippet"`
-	SpeechText      string    `json:"speechText,omitempty"`
+	ID                 int       `json:"id"`
+	DokID              string    `json:"dokId"`
+	AnforandeNummer    string    `json:"anforandeNummer"`
+	PoliticianID       string    `json:"politicianId"`
+	PoliticianName     string    `json:"politicianName"`
+	PoliticianImageURL string    `json:"politicianImageUrl,omitempty"`
+	Party              string    `json:"party"`
+	Date               time.Time `json:"date"`
+	TopicHeading       string    `json:"topicHeading"`
+	Snippet            string    `json:"snippet"`
+	SpeechText         string    `json:"speechText,omitempty"`
 }
 
 func (h *Handler) listRecent(w http.ResponseWriter, r *http.Request) {
@@ -87,30 +92,83 @@ func (h *Handler) getByID(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, h.toDTO(r.Context(), s, true))
 }
 
+func (h *Handler) listByDocument(w http.ResponseWriter, r *http.Request) {
+	dokID := chi.URLParam(r, "dokId")
+	ss, err := h.svc.ListByDocument(r.Context(), dokID)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	out := make([]SpeechDTO, 0, len(ss))
+	for _, s := range ss {
+		out = append(out, h.toDTO(r.Context(), s, false))
+	}
+	jsonOK(w, out)
+}
+
+func (h *Handler) listByPolitician(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "intressentId")
+	ss, err := h.svc.ListByPolitician(r.Context(), id)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	limit := 20
+	if q := r.URL.Query().Get("limit"); q != "" {
+		if n, err := strconv.Atoi(q); err == nil && n > 0 && n <= 200 {
+			limit = n
+		}
+	}
+	if len(ss) > limit {
+		ss = ss[:limit]
+	}
+	out := make([]SpeechDTO, 0, len(ss))
+	for _, s := range ss {
+		out = append(out, h.toDTO(r.Context(), s, false))
+	}
+	jsonOK(w, out)
+}
+
+func (h *Handler) listByParty(w http.ResponseWriter, r *http.Request) {
+	party := chi.URLParam(r, "party")
+	limit := 50
+	if q := r.URL.Query().Get("limit"); q != "" {
+		if n, err := strconv.Atoi(q); err == nil {
+			limit = n
+		}
+	}
+	ss, err := h.svc.ListByParty(r.Context(), party, limit)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	out := make([]SpeechDTO, 0, len(ss))
+	for _, s := range ss {
+		out = append(out, h.toDTO(r.Context(), s, false))
+	}
+	jsonOK(w, out)
+}
+
 func (h *Handler) toDTO(ctx context.Context, s *domain.Speech, includeFullText bool) SpeechDTO {
 	name, _ := h.pol.NameByID(ctx, s.PoliticianID)
-	// Enricher writes a single space when upstream returns no body so we
-	// stop retrying. Treat that as empty before serving.
+	imageURL, _ := h.pol.ImageURLByID(ctx, s.PoliticianID)
 	text := s.SpeechText
 	if strings.TrimSpace(text) == "" {
 		text = ""
 	}
 	dto := SpeechDTO{
-		ID:              s.ID,
-		DokID:           s.DokID,
-		AnforandeNummer: s.AnforandeNummer,
-		PoliticianID:    s.PoliticianID,
-		PoliticianName:  name,
-		Party:           s.Party,
-		Date:            s.Date,
-		TopicHeading:    s.TopicHeading,
-		// Snippet is rendered inline as plain text on listing pages —
-		// strip HTML tags so users don't see literal "<p>...".
-		Snippet: snippetFrom(stripHTML(text), 180),
+		ID:                 s.ID,
+		DokID:              s.DokID,
+		AnforandeNummer:    s.AnforandeNummer,
+		PoliticianID:       s.PoliticianID,
+		PoliticianName:     name,
+		PoliticianImageURL: imageURL,
+		Party:              s.Party,
+		Date:               s.Date,
+		TopicHeading:       s.TopicHeading,
+		Snippet:            snippetFrom(stripHTML(text), 180),
 	}
 	if includeFullText {
-		// Full body keeps the HTML so the detail page can render
-		// paragraph breaks via dangerouslySetInnerHTML.
 		dto.SpeechText = text
 	}
 	return dto
