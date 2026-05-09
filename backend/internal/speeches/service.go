@@ -68,6 +68,14 @@ func (s *Service) EnrichMissingText(ctx context.Context, limit int) (enriched, s
 	return enriched, skipped, nil
 }
 
+func (s *Service) ListByDocument(ctx context.Context, dokID string) ([]*domain.Speech, error) {
+	return s.repo.ListByDocument(ctx, dokID)
+}
+
+func (s *Service) ListByParty(ctx context.Context, party string, limit int) ([]*domain.Speech, error) {
+	return s.repo.ListByParty(ctx, party, limit)
+}
+
 func (s *Service) ListUnprocessed(ctx context.Context, limit int) ([]*domain.Speech, error) {
 	return s.repo.ListUnprocessed(ctx, limit)
 }
