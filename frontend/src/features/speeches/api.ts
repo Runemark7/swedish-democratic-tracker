@@ -6,6 +6,7 @@ export interface Speech {
   anforandeNummer?: string;
   politicianId: string;
   politicianName: string;
+  politicianImageUrl?: string;
   party: string;
   date: string; // ISO date-time
   topicHeading?: string;
@@ -18,4 +19,10 @@ export const speechesApi = {
     api.get<Speech[]>(`/speeches/recent?limit=${limit}`),
   getById: (id: number) =>
     api.get<Speech>(`/speeches/${id}`),
+  listByDocument: (dokId: string) =>
+    api.get<Speech[]>(`/speeches/by-document/${encodeURIComponent(dokId)}`),
+  listByPolitician: (intressentId: string, limit = 20) =>
+    api.get<Speech[]>(`/speeches/by-politician/${encodeURIComponent(intressentId)}?limit=${limit}`),
+  listByParty: (party: string, limit = 50) =>
+    api.get<Speech[]>(`/speeches/by-party/${encodeURIComponent(party)}?limit=${limit}`),
 };
