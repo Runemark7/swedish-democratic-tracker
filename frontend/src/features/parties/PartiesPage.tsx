@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { partiesApi } from "./api";
 import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS, alignmentColor } from "@/shared/design";
@@ -49,19 +50,34 @@ export function PartiesPage() {
           const topics = p.topicBreakdown ?? [];
 
           return (
-            <div
+            <Link
               key={p.party}
-              className="flex items-center gap-4 px-5 py-4"
-              style={{ borderTop: i > 0 ? "1px solid var(--color-surface-high)" : undefined }}
+              to={`/parties/${p.party}`}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                padding: "16px 20px",
+                borderTop: i > 0 ? "1px solid var(--color-surface-high)" : undefined,
+                textDecoration: "none",
+                color: "inherit",
+                transition: "background 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--color-surface-high)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
             >
               <PartyBadge party={p.party} size="lg" />
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-semibold text-on-surface">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-fg)" }}>
                     {p.party}
                   </span>
-                  <span className="text-xs text-on-surface-variant">
+                  <span style={{ fontSize: 12, color: "var(--color-fg-muted)" }}>
                     {p.totalGoals} mål
                     <SourceMarker sourceId="seed-party-goals" />
                   </span>
@@ -69,17 +85,24 @@ export function PartiesPage() {
 
                 {/* Topic tags */}
                 {topics.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                     {topics.slice(0, 4).map((t) => (
                       <span
                         key={t.topic}
-                        className="text-[10px] text-on-surface-variant capitalize px-1.5 py-0.5 rounded bg-surface-low"
+                        style={{
+                          fontSize: 10,
+                          color: "var(--color-fg-muted)",
+                          textTransform: "capitalize",
+                          padding: "2px 6px",
+                          borderRadius: 3,
+                          background: "var(--color-surface-low)",
+                        }}
                       >
                         {t.topic}
                       </span>
                     ))}
                     {topics.length > 4 && (
-                      <span className="text-[10px] text-on-surface-variant px-1.5 py-0.5">
+                      <span style={{ fontSize: 10, color: "var(--color-fg-muted)", padding: "2px 6px" }}>
                         +{topics.length - 4}
                       </span>
                     )}
@@ -88,25 +111,33 @@ export function PartiesPage() {
               </div>
 
               {/* Alignment bar */}
-              <div className="flex items-center gap-3 shrink-0 w-[140px]">
-                <div className="flex-1 h-2 rounded-full bg-surface-high overflow-hidden">
+              <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0, width: 140 }}>
+                <div style={{ flex: 1, height: 8, borderRadius: 4, background: "var(--color-surface-high)", overflow: "hidden" }}>
                   <div
-                    className="h-full rounded-full transition-all duration-700"
                     style={{
+                      height: "100%",
+                      borderRadius: 4,
                       width: `${Math.min(avg, 100)}%`,
                       background: pc?.bg ?? "#666",
+                      transition: "width 0.7s",
                     }}
                   />
                 </div>
                 <span
-                  className="text-sm font-mono font-extrabold min-w-[36px] text-right"
-                  style={{ color: alignmentColor(avg) }}
+                  style={{
+                    fontSize: 14,
+                    fontFamily: "var(--font-mono)",
+                    fontWeight: 700,
+                    minWidth: 36,
+                    textAlign: "right",
+                    color: alignmentColor(avg),
+                  }}
                 >
                   {avg}%
                   <SourceMarker sourceId="riksdagen" />
                 </span>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

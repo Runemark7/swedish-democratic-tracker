@@ -1,5 +1,6 @@
 import { Routes, Route, NavLink, useLocation, Link } from "react-router-dom";
 import { PartiesPage } from "./features/parties/PartiesPage";
+import { PartyDetailPage } from "./features/parties/PartyDetailPage";
 import { PartyGoalsPage } from "./features/parties/PartyGoalsPage";
 import { GoalVotesPage } from "./features/parties/GoalVotesPage";
 import { PoliticiansPage } from "./features/politicians/PoliticiansPage";
@@ -324,6 +325,7 @@ export default function App() {
           <Route path="/riksdag"                               element={<RiksdagPage />} />
           <Route path="/riksdag/myndigheter/:slug"             element={<AuthorityDetailPage />} />
           <Route path="/parties"                               element={<PartiesPage />} />
+          <Route path="/parties/:party"                        element={<PartyDetailPage />} />
           <Route path="/parties/:party/goals"                  element={<PartyGoalsPage />} />
           <Route path="/parties/:party/goals/:goalId/votes"    element={<GoalVotesPage />} />
           <Route path="/politicians"                           element={<PoliticiansPage />} />
