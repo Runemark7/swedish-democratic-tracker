@@ -565,3 +565,36 @@ export function useRecentSpeeches(limit = 100) {
     staleTime: 60_000,
   });
 }
+
+export function useSpeechesByDocument(dokId: string | undefined) {
+  return useQuery<Speech[]>({
+    queryKey: ["speeches-by-document", dokId],
+    queryFn: () => speechesApi.listByDocument(dokId ?? ""),
+    enabled: !!dokId,
+    staleTime: 60_000,
+  });
+}
+
+export function useSpeechesByPolitician(
+  intressentId: string | undefined,
+  limit = 20,
+) {
+  return useQuery<Speech[]>({
+    queryKey: ["speeches-by-politician", intressentId, limit],
+    queryFn: () => speechesApi.listByPolitician(intressentId ?? "", limit),
+    enabled: !!intressentId,
+    staleTime: 60_000,
+  });
+}
+
+export function useSpeechesByParty(
+  party: string | undefined,
+  limit = 50,
+) {
+  return useQuery<Speech[]>({
+    queryKey: ["speeches-by-party", party, limit],
+    queryFn: () => speechesApi.listByParty(party ?? "", limit),
+    enabled: !!party,
+    staleTime: 60_000,
+  });
+}
