@@ -5,6 +5,8 @@ import { politiciansApi } from "./api";
 import { PartyBadge, ProposalOriginTag, TopicTag, SpecificityBadge } from "@/shared/components";
 import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { useSpeechesByPolitician } from "@/hooks/useDemocracy";
+import { SpeechRow } from "@/features/speeches/SpeechRow";
 import type { Vote, PromiseWithMatches } from "@/shared/types";
 
 const VOTE_STYLES: Record<string, { color: string; bg: string }> = {
@@ -98,7 +100,7 @@ function PromiseCard({ promise }: { promise: PromiseWithMatches }) {
 
 export function PoliticianPage() {
   const { id = "" } = useParams();
-  const [activeTab, setActiveTab] = useState<"votes" | "promises">("votes");
+  const [activeTab, setActiveTab] = useState<"votes" | "promises" | "anforanden">("votes");
 
   const { data: politician, isLoading: loadingPolitician } = useQuery({
     queryKey: ["politician", id],
@@ -117,6 +119,11 @@ export function PoliticianPage() {
     queryFn: () => politiciansApi.listPromises(id),
     enabled: !!id && activeTab === "promises",
   });
+
+  const { data: speeches, isLoading: loadingSpeeches } = useSpeechesByPolitician(
+    id,
+    50,
+  );
 
   if (loadingPolitician) {
     return <div className="text-on-surface-variant py-16 text-center text-sm">Laddar...</div>;
@@ -203,8 +210,11 @@ export function PoliticianPage() {
 
       {/* ── Tabs ───────────────────────────────────────────────────── */}
       <div className="flex gap-1 mb-5" style={{ borderBottom: "1px solid var(--color-surface-high)" }}>
-        {(["votes", "promises"] as const).map((tab) => {
-          const label = tab === "votes" ? "Röstningshistorik" : "Löften";
+        {(["votes", "promises", "anforanden"] as const).map((tab) => {
+          const label =
+            tab === "votes" ? "Röstningshistorik"
+            : tab === "promises" ? "Löften"
+            : "Anföranden";
           const active = activeTab === tab;
           return (
             <button
@@ -266,6 +276,30 @@ export function PoliticianPage() {
             )}
           </>
         )
+      )}
+
+      {/* ── Anföranden ───────────────────────────────────────────────── */}
+      {activeTab === "anforanden" && (
+        <div className="rounded-xl p-4" style={{ background: "var(--color-surface-lowest)" }}>
+          <div className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant mb-3">
+            Senaste anföranden i kammaren
+          </div>
+          {loadingSpeeches && (
+            <div className="text-on-surface-variant text-sm py-6 text-center">Laddar...</div>
+          )}
+          {!loadingSpeeches && (!speeches || speeches.length === 0) && (
+            <p className="text-sm italic text-on-surface-variant py-4">
+              Inga registrerade anföranden ännu.
+            </p>
+          )}
+          {speeches && speeches.length > 0 && (
+            <div>
+              {speeches.map((s) => (
+                <SpeechRow key={s.id} speech={s} hidePolitician />
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
