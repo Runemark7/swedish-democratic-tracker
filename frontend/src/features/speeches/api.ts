@@ -12,6 +12,7 @@ export interface Speech {
   topicHeading?: string;
   snippet: string;
   speechText?: string;
+  relatedDokId?: string;
 }
 
 export const speechesApi = {
