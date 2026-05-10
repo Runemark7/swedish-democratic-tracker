@@ -1,55 +1,13 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { politiciansApi } from "./api";
-import { PartyBadge, ProposalOriginTag, TopicTag, SpecificityBadge } from "@/shared/components";
-import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
+import { PartyBadge, TopicTag, SpecificityBadge } from "@/shared/components";
+import { PARTY_COLORS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { useSpeechesByPolitician } from "@/hooks/useDemocracy";
+import { useSpeechesByPolitician, useDocument } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import type { Vote, PromiseWithMatches } from "@/shared/types";
-
-const VOTE_STYLES: Record<string, { color: string; bg: string }> = {
-  Ja:          { color: "#16a34a", bg: "#f0fdf4" },
-  Nej:         { color: "#dc2626", bg: "#fef2f2" },
-  "Avstår":    { color: "#d97706", bg: "#fffbeb" },
-  Frånvarande: { color: "#9ca3af", bg: "#f9fafb" },
-};
-
-function VoteRow({ vote }: { vote: Vote }) {
-  const style = VOTE_STYLES[vote.voteResult] ?? VOTE_STYLES.Frånvarande;
-  const committee = committeeFromBeteckning(vote.beteckning);
-
-  return (
-    <Link
-      to={`/votes/${vote.beteckning}/${vote.forslagspunkt}`}
-      className="flex items-start justify-between gap-4 py-3.5 px-4 rounded-lg transition-all hover:shadow-ambient group"
-      style={{ background: "var(--color-surface-lowest)" }}
-    >
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
-          {vote.documentTitle || `${vote.beteckning} punkt ${vote.forslagspunkt}`}
-          <SourceMarker sourceId="riksdagen" />
-        </p>
-        <div className="flex flex-wrap items-center gap-2 mt-1.5">
-          <span className="text-[11px] font-mono text-on-surface-variant">{vote.beteckning}</span>
-          {committee && (
-            <span className="text-[11px] text-on-surface-variant">· {committee}</span>
-          )}
-          {(vote.proposedByParty || vote.proposalType) && (
-            <ProposalOriginTag proposedBy={vote.proposedByParty} proposalType={vote.proposalType} />
-          )}
-        </div>
-      </div>
-      <span
-        className="text-xs font-extrabold px-2.5 py-1 rounded shrink-0"
-        style={{ background: style.bg, color: style.color }}
-      >
-        {vote.voteResult}
-      </span>
-    </Link>
-  );
-}
+import type { Speech } from "@/features/speeches/api";
 
 const ALIGNMENT_STYLES: Record<string, { color: string; bg: string; label: string }> = {
   supports:    { color: "#16a34a", bg: "#f0fdf4", label: "Stödjer" },
@@ -98,9 +56,308 @@ function PromiseCard({ promise }: { promise: PromiseWithMatches }) {
   );
 }
 
+type ActivityEvent =
+  | { kind: "vote"; date: string; vote: Vote }
+  | { kind: "speech"; date: string; speech: Speech };
+
+function buildActivity(votes: Vote[], speeches: Speech[]): ActivityEvent[] {
+  const events: ActivityEvent[] = [];
+  for (const v of votes) {
+    events.push({ kind: "vote", date: v.date ?? "", vote: v });
+  }
+  for (const s of speeches) {
+    events.push({ kind: "speech", date: s.date, speech: s });
+  }
+  events.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  return events.slice(0, 50);
+}
+
+function ActivityFeed({
+  votes,
+  speeches,
+  loading,
+}: {
+  votes: Vote[];
+  speeches: Speech[];
+  loading: boolean;
+}) {
+  if (loading) {
+    return <div className="text-on-surface-variant text-sm py-6 text-center">Laddar...</div>;
+  }
+  const events = buildActivity(votes, speeches);
+  if (events.length === 0) {
+    return (
+      <p className="text-sm italic text-on-surface-variant py-4">
+        Ingen registrerad aktivitet ännu.
+      </p>
+    );
+  }
+  return (
+    <div className="rounded-xl p-4" style={{ background: "var(--color-surface-lowest)" }}>
+      <div className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant mb-3">
+        Senaste 50 händelser
+      </div>
+      <div>
+        {events.map((e, i) =>
+          e.kind === "speech" ? (
+            <SpeechRow key={`s-${e.speech.id}`} speech={e.speech} hidePolitician />
+          ) : (
+            <ActivityVoteRow key={`v-${i}`} vote={e.vote} />
+          ),
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ActivityVoteRow({ vote }: { vote: Vote }) {
+  return (
+    <Link
+      to={`/votes/${vote.beteckning}/${vote.forslagspunkt}`}
+      style={{
+        display: "flex",
+        gap: 12,
+        padding: "12px 0",
+        borderBottom: "1px solid var(--color-border)",
+        alignItems: "flex-start",
+        textDecoration: "none",
+        color: "inherit",
+        minWidth: 0,
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 9,
+          letterSpacing: "0.05em",
+          background: "var(--color-track)",
+          color: "var(--color-fg-muted)",
+          padding: "2px 6px",
+          flexShrink: 0,
+          height: 18,
+        }}
+      >
+        RÖST
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: 13,
+            color: "var(--color-fg)",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            marginBottom: 4,
+          }}
+          title={vote.documentTitle ?? `${vote.beteckning} punkt ${vote.forslagspunkt}`}
+        >
+          {vote.documentTitle || `${vote.beteckning} punkt ${vote.forslagspunkt}`}
+        </div>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
+          {vote.beteckning} · {vote.voteResult}
+          {vote.date ? ` · ${vote.date}` : ""}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function DebatterPanel({ speeches, loading }: { speeches: Speech[]; loading: boolean }) {
+  // Group by relatedDokId, sort by count desc, take top 20.
+  const groups = new Map<string, { count: number; minDate: string; maxDate: string }>();
+  for (const s of speeches) {
+    if (!s.relatedDokId) continue;
+    const g = groups.get(s.relatedDokId);
+    if (!g) {
+      groups.set(s.relatedDokId, { count: 1, minDate: s.date, maxDate: s.date });
+    } else {
+      g.count++;
+      if (s.date < g.minDate) g.minDate = s.date;
+      if (s.date > g.maxDate) g.maxDate = s.date;
+    }
+  }
+  const top = Array.from(groups.entries())
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 20);
+
+  if (loading) {
+    return <div className="text-on-surface-variant text-sm py-6 text-center">Laddar...</div>;
+  }
+  if (top.length === 0) {
+    return (
+      <p className="text-sm italic text-on-surface-variant py-4">
+        Inga debatter har kopplats till anförandena ännu.
+      </p>
+    );
+  }
+  return (
+    <div className="rounded-xl p-4" style={{ background: "var(--color-surface-lowest)" }}>
+      <div className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant mb-3">
+        {top.length} aktiva debatter
+      </div>
+      <div>
+        {top.map(([dokId, info]) => (
+          <DebatterRow key={dokId} dokId={dokId} count={info.count} minDate={info.minDate} maxDate={info.maxDate} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DebatterRow({
+  dokId,
+  count,
+  minDate,
+  maxDate,
+}: {
+  dokId: string;
+  count: number;
+  minDate: string;
+  maxDate: string;
+}) {
+  const { data: doc } = useDocument(dokId);
+  const title = doc?.title || dokId;
+  const typeLabel = doc?.type ? doc.type.toUpperCase() : "";
+  const link = doc?.type === "bet" && doc.beteckning ? `/beslut/${encodeURIComponent(doc.beteckning)}` : null;
+  const range = minDate === maxDate ? minDate.slice(0, 10) : `${minDate.slice(0, 10)} → ${maxDate.slice(0, 10)}`;
+
+  const body = (
+    <div
+      style={{
+        display: "flex",
+        gap: 12,
+        padding: "12px 0",
+        borderBottom: "1px solid var(--color-border)",
+        alignItems: "flex-start",
+        minWidth: 0,
+      }}
+    >
+      {typeLabel && (
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 9,
+            letterSpacing: "0.05em",
+            background: "var(--color-track)",
+            color: "var(--color-fg-muted)",
+            padding: "2px 6px",
+            flexShrink: 0,
+            height: 18,
+          }}
+        >
+          {typeLabel}
+        </span>
+      )}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: 14,
+            color: "var(--color-fg)",
+            fontFamily: "var(--font-serif)",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            marginBottom: 4,
+          }}
+          title={title}
+        >
+          {title}
+        </div>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
+          {count} anförande{count === 1 ? "" : "n"} · {range}
+        </div>
+      </div>
+    </div>
+  );
+
+  return link ? (
+    <Link to={link} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+      {body}
+    </Link>
+  ) : (
+    body
+  );
+}
+
+function AmnenPanel({ speeches, loading }: { speeches: Speech[]; loading: boolean }) {
+  const counts = new Map<string, { count: number; lastDate: string }>();
+  for (const s of speeches) {
+    const t = (s.topicHeading ?? "").trim();
+    if (!t) continue;
+    const c = counts.get(t);
+    if (!c) {
+      counts.set(t, { count: 1, lastDate: s.date });
+    } else {
+      c.count++;
+      if (s.date > c.lastDate) c.lastDate = s.date;
+    }
+  }
+  const top = Array.from(counts.entries())
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 10);
+
+  if (loading) {
+    return <div className="text-on-surface-variant text-sm py-6 text-center">Laddar...</div>;
+  }
+  if (top.length === 0) {
+    return (
+      <p className="text-sm italic text-on-surface-variant py-4">
+        Inga teman går att utläsa ännu.
+      </p>
+    );
+  }
+  return (
+    <div className="rounded-xl p-4" style={{ background: "var(--color-surface-lowest)" }}>
+      <div className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant mb-3">
+        Återkommande teman
+      </div>
+      <div>
+        {top.map(([topic, info]) => (
+          <div
+            key={topic}
+            style={{
+              padding: "10px 0",
+              borderBottom: "1px solid var(--color-border)",
+              minWidth: 0,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 13,
+                color: "var(--color-fg)",
+                marginBottom: 4,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+              title={topic}
+            >
+              {topic}
+            </div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
+              {info.count} anförande{info.count === 1 ? "" : "n"} · senast {info.lastDate.slice(0, 10)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type Tab = "aktivitet" | "debatter" | "amnen" | "loften";
+const ALL_TABS: Tab[] = ["aktivitet", "debatter", "amnen", "loften"];
+
 export function PoliticianPage() {
   const { id = "" } = useParams();
-  const [activeTab, setActiveTab] = useState<"votes" | "promises" | "anforanden">("votes");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab") as Tab | null;
+  const activeTab: Tab = tabParam && ALL_TABS.includes(tabParam) ? tabParam : "aktivitet";
+  const setActiveTab = (next: Tab) => {
+    const params = new URLSearchParams(searchParams);
+    if (next === "aktivitet") params.delete("tab");
+    else params.set("tab", next);
+    setSearchParams(params, { replace: true });
+  };
 
   const { data: politician, isLoading: loadingPolitician } = useQuery({
     queryKey: ["politician", id],
@@ -117,12 +374,12 @@ export function PoliticianPage() {
   const { data: promises, isLoading: loadingPromises } = useQuery({
     queryKey: ["politician-promises", id],
     queryFn: () => politiciansApi.listPromises(id),
-    enabled: !!id && activeTab === "promises",
+    enabled: !!id && activeTab === "loften",
   });
 
   const { data: speeches, isLoading: loadingSpeeches } = useSpeechesByPolitician(
     id,
-    50,
+    200,
   );
 
   if (loadingPolitician) {
@@ -210,11 +467,12 @@ export function PoliticianPage() {
 
       {/* ── Tabs ───────────────────────────────────────────────────── */}
       <div className="flex gap-1 mb-5" style={{ borderBottom: "1px solid var(--color-surface-high)" }}>
-        {(["votes", "promises", "anforanden"] as const).map((tab) => {
+        {ALL_TABS.map((tab) => {
           const label =
-            tab === "votes" ? "Röstningshistorik"
-            : tab === "promises" ? "Löften"
-            : "Anföranden";
+            tab === "aktivitet" ? "Aktivitet"
+            : tab === "debatter" ? "Debatter"
+            : tab === "amnen" ? "Ämnen"
+            : "Löften";
           const active = activeTab === tab;
           return (
             <button
@@ -234,32 +492,23 @@ export function PoliticianPage() {
         })}
       </div>
 
-      {/* ── Vote history ───────────────────────────────────────────── */}
-      {activeTab === "votes" && (
-        loadingVotes ? (
-          <div className="text-on-surface-variant text-center py-12 text-sm">Laddar röstningar...</div>
-        ) : (
-          <>
-            <div className="space-y-2">
-              {votes.map((v) => (
-                <VoteRow key={v.id} vote={v} />
-              ))}
-            </div>
-            {votes.length > 0 && (
-              <div className="mt-4">
-              </div>
-            )}
-            {votes.length === 0 && (
-              <p className="text-on-surface-variant text-center py-16 text-sm">
-                Inga röstningar hittades.
-              </p>
-            )}
-          </>
-        )
+      {/* ── Aktivitet ───────────────────────────────────────────────── */}
+      {activeTab === "aktivitet" && (
+        <ActivityFeed votes={votes} speeches={speeches ?? []} loading={loadingVotes || loadingSpeeches} />
       )}
 
-      {/* ── Promises ───────────────────────────────────────────────── */}
-      {activeTab === "promises" && (
+      {/* ── Debatter ────────────────────────────────────────────────── */}
+      {activeTab === "debatter" && (
+        <DebatterPanel speeches={speeches ?? []} loading={loadingSpeeches} />
+      )}
+
+      {/* ── Ämnen ───────────────────────────────────────────────────── */}
+      {activeTab === "amnen" && (
+        <AmnenPanel speeches={speeches ?? []} loading={loadingSpeeches} />
+      )}
+
+      {/* ── Löften ──────────────────────────────────────────────────── */}
+      {activeTab === "loften" && (
         loadingPromises ? (
           <div className="text-on-surface-variant text-center py-12 text-sm">Laddar löften...</div>
         ) : (
@@ -276,30 +525,6 @@ export function PoliticianPage() {
             )}
           </>
         )
-      )}
-
-      {/* ── Anföranden ───────────────────────────────────────────────── */}
-      {activeTab === "anforanden" && (
-        <div className="rounded-xl p-4" style={{ background: "var(--color-surface-lowest)" }}>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant mb-3">
-            Senaste anföranden i kammaren
-          </div>
-          {loadingSpeeches && (
-            <div className="text-on-surface-variant text-sm py-6 text-center">Laddar...</div>
-          )}
-          {!loadingSpeeches && (!speeches || speeches.length === 0) && (
-            <p className="text-sm italic text-on-surface-variant py-4">
-              Inga registrerade anföranden ännu.
-            </p>
-          )}
-          {speeches && speeches.length > 0 && (
-            <div>
-              {speeches.map((s) => (
-                <SpeechRow key={s.id} speech={s} hidePolitician />
-              ))}
-            </div>
-          )}
-        </div>
       )}
     </div>
   );
