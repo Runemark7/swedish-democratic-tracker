@@ -310,6 +310,27 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /documents/{dokId}:
+    get:
+      operationId: getDocument
+      tags: [votes]
+      summary: Riksdagen document metadata (no body HTML)
+      parameters:
+        - name: dokId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Parsed dokumentstatus metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiksdagDocument"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /budget/years:
     get:
       operationId: listBudgetYears
@@ -1498,6 +1519,27 @@ components:
         beteckning:
           type: string
           example: "SoU2425:12"
+
+    RiksdagDocument:
+      type: object
+      required: [dokId, type, title]
+      properties:
+        dokId:
+          type: string
+        type:
+          type: string
+          description: Riksdagen document type (bet, ip, mot, prop, etc.)
+        title:
+          type: string
+        subtitle:
+          type: string
+        summary:
+          type: string
+        date:
+          type: string
+        beteckning:
+          type: string
+          description: Present for betänkanden and motions
 
     RegionBudgetArea:
       type: object

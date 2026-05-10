@@ -208,6 +208,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/documents/{dokId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Riksdagen document metadata (no body HTML) */
+        get: operations["getDocument"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/budget/years": {
         parameters: {
             query?: never;
@@ -1048,6 +1065,17 @@ export interface components {
             /** @example SoU2425:12 */
             beteckning?: string;
         };
+        RiksdagDocument: {
+            dokId: string;
+            /** @description Riksdagen document type (bet, ip, mot, prop, etc.) */
+            type: string;
+            title: string;
+            subtitle?: string;
+            summary?: string;
+            date?: string;
+            /** @description Present for betänkanden and motions */
+            beteckning?: string;
+        };
         RegionBudgetArea: {
             /** @example Primärvård */
             name: string;
@@ -1572,6 +1600,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VoteDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getDocument: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dokId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Parsed dokumentstatus metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiksdagDocument"];
                 };
             };
             404: components["responses"]["NotFound"];
