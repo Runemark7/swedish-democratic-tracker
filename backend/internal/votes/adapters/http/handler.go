@@ -25,6 +25,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/votes", h.listAll)
 	r.Get("/votes/riksdag-feed", h.riksdagFeed)
 	r.Get("/votes/{beteckning}/{punkt}", h.getDetail)
+	r.Get("/documents/{dokId}", h.getDocument)
 }
 
 func (h *Handler) listByPolitician(w http.ResponseWriter, r *http.Request) {
@@ -252,6 +253,34 @@ func (h *Handler) riksdagFeed(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 	jsonOK(w, items)
+}
+
+func (h *Handler) getDocument(w http.ResponseWriter, r *http.Request) {
+	dokID := chi.URLParam(r, "dokId")
+	if dokID == "" {
+		jsonError(w, "dokId required", http.StatusBadRequest)
+		return
+	}
+	ds, err := h.svc.GetDocumentStatus(r.Context(), dokID)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if ds == nil {
+		jsonError(w, "document not found", http.StatusNotFound)
+		return
+	}
+	// Strip the heavy bodyHtml — only the beslut detail page needs it.
+	resp := map[string]any{
+		"dokId":      ds.DokID,
+		"type":       ds.Type,
+		"title":      ds.Title,
+		"subtitle":   ds.Subtitle,
+		"summary":    ds.Summary,
+		"date":       ds.Date,
+		"beteckning": ds.Beteckning,
+	}
+	jsonOK(w, resp)
 }
 
 func jsonOK(w http.ResponseWriter, v any) {
