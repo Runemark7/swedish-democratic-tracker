@@ -1,5 +1,5 @@
 import { api } from "@/shared/api-client";
-import type { VoteDetail, VoteSummaryListResponse } from "@/shared/types";
+import type { VoteDetail, VoteSummaryListResponse, RiksdagDocument } from "@/shared/types";
 
 export const votesApi = {
   list: (params: { page?: number; pageSize?: number } = {}) =>
@@ -8,4 +8,6 @@ export const votesApi = {
     ),
   getDetail: (beteckning: string, punkt: string) =>
     api.get<VoteDetail>(`/votes/${beteckning}/${punkt}`),
+  getDocument: (dokId: string) =>
+    api.get<RiksdagDocument>(`/documents/${encodeURIComponent(dokId)}`),
 };
