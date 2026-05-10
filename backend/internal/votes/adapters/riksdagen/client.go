@@ -164,6 +164,7 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 				Undertitel string `json:"undertitel"`
 				Summary    string `json:"summary"`
 				HTML       string `json:"html"`
+				Beteckning string `json:"beteckning"`
 			} `json:"dokument"`
 			Dokreferens struct {
 				Referens []struct {
@@ -184,13 +185,14 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 
 	ds := payload.Dokumentstatus
 	status := &domain.DocumentStatus{
-		DokID:    ds.Dokument.DokID,
-		Title:    ds.Dokument.Titel,
-		Type:     ds.Dokument.Typ,
-		Date:     ds.Dokument.Datum,
-		Subtitle: ds.Dokument.Undertitel,
-		Summary:  stripHTML(ds.Dokument.Summary),
-		BodyHTML: ds.Dokument.HTML,
+		DokID:      ds.Dokument.DokID,
+		Title:      ds.Dokument.Titel,
+		Type:       ds.Dokument.Typ,
+		Date:       ds.Dokument.Datum,
+		Subtitle:   ds.Dokument.Undertitel,
+		Summary:    stripHTML(ds.Dokument.Summary),
+		Beteckning: ds.Dokument.Beteckning,
+		BodyHTML:   ds.Dokument.HTML,
 	}
 	for _, ref := range ds.Dokreferens.Referens {
 		r := domain.DocumentReference{
