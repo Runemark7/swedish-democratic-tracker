@@ -355,3 +355,13 @@ export interface ProcurementCategorySummary {
   count: number;
 }
 
+export interface RiksdagDocument {
+  dokId: string;
+  type: string;
+  title: string;
+  subtitle?: string;
+  summary?: string;
+  date?: string;
+  beteckning?: string;
+}
+
