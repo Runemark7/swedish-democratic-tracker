@@ -55,6 +55,7 @@ export interface Vote {
   proposedByParty?: PartyCode;
   proposalType?: ProposalType;
   documentTitle?: string;
+  date?: string;
   createdAt: string;
 }
 
