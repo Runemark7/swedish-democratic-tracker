@@ -238,7 +238,7 @@ func main() {
 		os.Exit(1)
 	}
 	regionBudgetWorker := workers.NewRegionBudgetWorker(regionsSvc, ingestionRunsRepo)
-	if err := sched.Register("@weekly", &regionBudgetWorker); err != nil {
+	if err := sched.RegisterSync("@weekly", &regionBudgetWorker); err != nil {
 		slog.Error("failed to register region-budget worker", "error", err)
 		os.Exit(1)
 	}
