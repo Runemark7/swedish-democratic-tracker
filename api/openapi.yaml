@@ -1564,7 +1564,7 @@ components:
 
     Intressent:
       type: object
-      required: [intressentId, name, party, role]
+      required: [intressentId, name, party]
       properties:
         intressentId:
           type: string
@@ -1861,3 +1861,6 @@ components:
         speechText:
           type: string
           description: Full text — only included on /speeches/{id}, omitted from /speeches/recent
+        relatedDokId:
+          type: string
+          description: Dok ID of the related document (interpellation, betänkande, etc.)

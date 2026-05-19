@@ -1099,7 +1099,7 @@ export interface components {
             /** @description Party abbreviation from Riksdagen API (may be outside the PartyCode enum for historical parties, e.g. FP) */
             party: string;
             /** @description Role in this document (e.g. "Upphovsman", "Svar") */
-            role: string;
+            role?: string;
         };
         RiksdagDocumentFull: components["schemas"]["RiksdagDocument"] & {
             /** @description Full document body from riksdagen dokumentstatus HTML field */
@@ -1302,6 +1302,8 @@ export interface components {
             snippet: string;
             /** @description Full text — only included on /speeches/{id}, omitted from /speeches/recent */
             speechText?: string;
+            /** @description Dok ID of the related document (interpellation, betänkande, etc.) */
+            relatedDokId?: string;
         };
     };
     responses: {

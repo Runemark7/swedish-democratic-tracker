@@ -52,6 +52,7 @@ type SpeechDTO struct {
 	TopicHeading       string    `json:"topicHeading"`
 	Snippet            string    `json:"snippet"`
 	SpeechText         string    `json:"speechText,omitempty"`
+	RelatedDokID       string    `json:"relatedDokId,omitempty"`
 }
 
 func (h *Handler) listRecent(w http.ResponseWriter, r *http.Request) {
@@ -168,6 +169,7 @@ func (h *Handler) toDTO(ctx context.Context, s *domain.Speech, includeFullText b
 		TopicHeading:       s.TopicHeading,
 		Snippet:            snippetFrom(stripHTML(text), 180),
 	}
+	dto.RelatedDokID = s.RelatedDokID
 	if includeFullText {
 		dto.SpeechText = text
 	}

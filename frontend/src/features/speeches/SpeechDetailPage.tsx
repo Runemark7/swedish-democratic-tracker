@@ -296,7 +296,7 @@ export function SpeechDetailPage() {
                 → Läs hela betänkandet
               </Link>
             )}
-            {relDokId && (
+            {relDokId && docToShow?.type !== "bet" && (
               <Link
                 to={`/debatt/${encodeURIComponent(relDokId)}`}
                 style={{

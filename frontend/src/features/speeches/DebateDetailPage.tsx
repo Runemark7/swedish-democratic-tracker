@@ -288,7 +288,7 @@ export function DebateDetailPage() {
         {/* Source */}
         <div style={{ borderTop: "1px solid var(--color-border)", paddingTop: 16 }}>
           <a
-            href={`https://www.riksdagen.se/sv/dokument-och-lagar/dokument/${encodeURIComponent(doc.type)}/${encodeURIComponent(doc.dokId)}/`}
+            href={`https://data.riksdagen.se/dokument/${doc.dokId}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{
