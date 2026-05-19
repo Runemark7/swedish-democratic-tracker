@@ -10,6 +10,8 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/jackc/pgx/v5"
+
 	"riksdagskollen/internal/riksdag/domain"
 	"riksdagskollen/internal/riksdag/ports"
 )
@@ -17,13 +19,13 @@ import (
 var ErrNotFound = errors.New("authority not found")
 
 type Service struct {
-	primary        ports.AuthorityClient
-	fallback       ports.AuthorityClient
-	headcount      ports.HeadcountClient     // optional; nil means use static data
-	kpiRepo        ports.KpiRepository       // optional
-	govRepo        ports.GovRepository       // optional
-	agendaRepo     ports.AgendaRepository    // optional
-	liveVotesRepo  ports.LiveVotesRepository // optional
+	primary         ports.AuthorityClient
+	fallback        ports.AuthorityClient
+	headcount       ports.HeadcountClient       // optional; nil means use static data
+	kpiRepo         ports.KpiRepository         // optional
+	govRepo         ports.GovRepository         // optional
+	agendaRepo      ports.AgendaRepository      // optional
+	liveVotesRepo   ports.LiveVotesRepository   // optional
 	agencyIntelRepo ports.AgencyIntelRepository // optional
 }
 
@@ -52,6 +54,20 @@ func (s *Service) ListAgenda(ctx context.Context) ([]domain.AgendaItem, error) {
 		return nil, errors.New("agenda repository not configured")
 	}
 	return s.agendaRepo.ListAgenda(ctx)
+}
+
+func (s *Service) GetAgendaItem(ctx context.Context, id int) (*domain.AgendaItem, error) {
+	if s.agendaRepo == nil {
+		return nil, errors.New("agenda repository not configured")
+	}
+	item, err := s.agendaRepo.GetAgendaItem(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrNotFound
+		}
+		return nil, err
+	}
+	return item, nil
 }
 
 func (s *Service) ListLiveVotes(ctx context.Context, limit int) ([]domain.LiveVote, error) {

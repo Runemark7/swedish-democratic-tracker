@@ -14,22 +14,22 @@ type YearlyExpenditure struct {
 }
 
 type AuthorityData struct {
-	Name             string
-	Role             string
-	Ministry         string
-	Headcount        string
-	HeadcountInt     int
-	Description      string
-	Mandate          string
-	MandateURL       string
-	StatsliggarenID  int // numeric ID in statskontoret.se/statsliggaren
-	ActiveSince      int // first year with regleringsbrev in Statsliggaren
-	WebsiteURL       string
-	AnnualReportURL  string
-	ExpenditureMdkr  float64
-	BudgetMdkr       float64
-	Year             int
-	History          []YearlyExpenditure
+	Name            string
+	Role            string
+	Ministry        string
+	Headcount       string
+	HeadcountInt    int
+	Description     string
+	Mandate         string
+	MandateURL      string
+	StatsliggarenID int // numeric ID in statskontoret.se/statsliggaren
+	ActiveSince     int // first year with regleringsbrev in Statsliggaren
+	WebsiteURL      string
+	AnnualReportURL string
+	ExpenditureMdkr float64
+	BudgetMdkr      float64
+	Year            int
+	History         []YearlyExpenditure
 }
 
 type AuthorityClient interface {
@@ -84,6 +84,7 @@ type GovRepository interface {
 
 type AgendaRepository interface {
 	ListAgenda(ctx context.Context) ([]domain.AgendaItem, error)
+	GetAgendaItem(ctx context.Context, id int) (*domain.AgendaItem, error)
 }
 
 type LiveVotesRepository interface {

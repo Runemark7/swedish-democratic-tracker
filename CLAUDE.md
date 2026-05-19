@@ -289,3 +289,19 @@ postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable
 - `ReadOnlyRootFilesystem: true` on all pods; drop ALL capabilities.
 - DB password via k8s Secret only — never in ConfigMap or `values.yaml`.
 - CORS: explicit origin allowlist, never `*`.
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (`Runemark7/swedish-democratic-tracker`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default mattpocock/skills label vocabulary (no overrides). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context repo — one `CONTEXT.md` + `docs/adr/` at root. See `docs/agents/domain.md`.
