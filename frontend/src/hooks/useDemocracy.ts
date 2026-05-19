@@ -5,7 +5,7 @@ import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type Rik
 import { speechesApi, type Speech } from "@/features/speeches/api";
 import { votesApi } from "@/features/votes/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
-import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument } from "@/shared/types";
+import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull } from "@/shared/types";
 
 const EMPTY_BUDGET: Budget = { total: "–", year: "–", areas: [] };
 const EMPTY_RULING: Ruling = { type: "–", parties: [], opposition: [] };
@@ -604,6 +604,15 @@ export function useDocument(dokId: string | undefined) {
   return useQuery<RiksdagDocument>({
     queryKey: ["document", dokId],
     queryFn: () => votesApi.getDocument(dokId ?? ""),
+    enabled: !!dokId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useDocumentFull(dokId: string | undefined) {
+  return useQuery<RiksdagDocumentFull>({
+    queryKey: ["document-full", dokId],
+    queryFn: () => votesApi.getDocumentFull(dokId ?? ""),
     enabled: !!dokId,
     staleTime: 5 * 60 * 1000,
   });
