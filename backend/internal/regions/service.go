@@ -107,6 +107,14 @@ func (s *Service) GetRegionBudget(ctx context.Context, regionCode string, year i
 	return s.scb.FetchRegionBudget(ctx, regionCode, year)
 }
 
+func (s *Service) GetRegionBudgetMultiYear(ctx context.Context, regionCode string, years []int) ([]ports.RegionBudgetSnapshot, error) {
+	return s.scb.FetchRegionBudgetMultiYear(ctx, regionCode, years)
+}
+
+func (s *Service) UpsertRegionBudgetSnapshots(ctx context.Context, snapshots []ports.RegionBudgetSnapshot) (int, error) {
+	return s.repo.UpsertRegionBudgetSnapshots(ctx, snapshots)
+}
+
 func (s *Service) GetMunicipalityKPIs(ctx context.Context, munCode string) ([]ports.KPIValue, error) {
 	return s.kolada.FetchKPIs(ctx, munCode, defaultKPIs, rollingYears(5))
 }
