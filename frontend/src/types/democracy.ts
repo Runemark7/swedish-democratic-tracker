@@ -100,6 +100,7 @@ export interface AuthorityDetail extends Authority {
 }
 
 export interface AgendaItem {
+  id: number;
   title: string;
   description: string;
   source: string;
