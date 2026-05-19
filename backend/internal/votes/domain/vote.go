@@ -42,20 +42,29 @@ type Vote struct {
 	CreatedAt      time.Time      `json:"createdAt"`
 }
 
+// Intressent is a politician formally attached to a Riksdagen document.
+type Intressent struct {
+	IntressentID string `json:"intressentId"`
+	Name         string `json:"name"`
+	Party        string `json:"party"`
+	Role         string `json:"role"`
+}
+
 // DocumentStatus represents the parsed response from /dokumentstatus/{dok_id}.json.
 type DocumentStatus struct {
-	DokID      string              `json:"dokId"`
-	Title      string              `json:"title"`
-	Type       string              `json:"type"`
-	References []DocumentReference `json:"references"`
-	Date       string
-	Subtitle   string
-	Summary    string
-	Beteckning string
+	DokID        string              `json:"dokId"`
+	Title        string              `json:"title"`
+	Type         string              `json:"type"`
+	References   []DocumentReference `json:"references"`
+	Intressenter []Intressent        `json:"intressenter,omitempty"`
+	Date         string
+	Subtitle     string
+	Summary      string
+	Beteckning   string
 	// BodyHTML is the full document content from /dokumentstatus.dokument.html.
 	// Inline-rendered on the BeslutDetailPage so users see the proposal,
 	// motivation and debate transcript without leaving the site.
-	BodyHTML   string `json:"bodyHtml,omitempty"`
+	BodyHTML string `json:"bodyHtml,omitempty"`
 }
 
 type DocumentReference struct {

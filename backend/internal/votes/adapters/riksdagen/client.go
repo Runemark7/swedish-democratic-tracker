@@ -174,7 +174,10 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 			} `json:"dokreferens"`
 			Dokintressent struct {
 				Intressent []struct {
-					Partibet string `json:"partibet"`
+					IntressentID string `json:"intressent_id"`
+					Namn         string `json:"namn"`
+					Partibet     string `json:"partibet"`
+					Roll         string `json:"roll"`
 				} `json:"intressent"`
 			} `json:"dokintressent"`
 		} `json:"dokumentstatus"`
@@ -202,7 +205,15 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 		// For motions, fetch the party from the referencing document's intressent
 		status.References = append(status.References, r)
 	}
-	// Primary author party (used when the doc itself is a motion)
+	for _, i := range ds.Dokintressent.Intressent {
+		status.Intressenter = append(status.Intressenter, domain.Intressent{
+			IntressentID: i.IntressentID,
+			Name:         i.Namn,
+			Party:        i.Partibet,
+			Role:         i.Roll,
+		})
+	}
+	// Preserve existing behaviour: first intressent's party feeds proposal-origin tracing via References.
 	if len(ds.Dokintressent.Intressent) > 0 {
 		status.References = append(status.References, domain.DocumentReference{
 			RefDokTyp: ds.Dokument.Typ,
