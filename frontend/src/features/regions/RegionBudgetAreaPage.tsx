@@ -188,24 +188,21 @@ export function RegionBudgetAreaPage() {
     .map((s: RegionBudgetSnapshot) => ({ year: s.year, value: s.value_mnkr }))
     .sort((a, b) => a.year - b.year);
 
-  // ── Cross-region comparison ───────────────────────────────────────────────
-  const sortedPoints = [...areaPoints].sort(
-    (a, b) => b.value_mnkr - a.value_mnkr
-  );
+  // ── Cross-region comparison (% of total budget) ──────────────────────────
+  const sortedPoints = [...areaPoints].sort((a, b) => b.pct - a.pct);
   const mean =
     areaPoints.length > 0
-      ? areaPoints.reduce((s, p) => s + p.value_mnkr, 0) / areaPoints.length
+      ? areaPoints.reduce((s, p) => s + p.pct, 0) / areaPoints.length
       : 0;
-  const maxValue = sortedPoints[0]?.value_mnkr ?? 1;
+  const maxValue = sortedPoints[0]?.pct ?? 1;
 
   const hbarItems = sortedPoints.map((p) => ({
     name: codeToName.get(p.region_code) ?? p.region_code,
-    value: Math.round(p.value_mnkr * 10) / 10,
+    value: Math.round(p.pct * 10) / 10,
     color:
       p.region_code === code
         ? "var(--color-accent, #0b3d7a)"
         : "var(--color-fg-muted, #7a8390)",
-    pct: p.total_mnkr > 0 ? Math.round((p.value_mnkr / p.total_mnkr) * 1000) / 10 : p.pct,
   }));
 
   if (isLoading) return <Skeleton />;
@@ -333,7 +330,7 @@ export function RegionBudgetAreaPage() {
             opacity: 0.7,
           }}
         >
-          Mnkr, senaste år · {regionName} markerad
+          % av total budget, senaste år · {regionName} markerad
         </div>
 
         {areaPoints.length === 0 ? (
@@ -353,10 +350,9 @@ export function RegionBudgetAreaPage() {
             <HBars
               items={hbarItems}
               max={maxValue}
-              unit=" mnkr"
               height={6}
               gap={8}
-              formatValue={(v) => `${v.toLocaleString("sv-SE")} mnkr`}
+              formatValue={(v) => `${v.toFixed(1)}%`}
             />
 
             {/* Mean annotation */}
@@ -388,7 +384,7 @@ export function RegionBudgetAreaPage() {
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {Math.round(mean).toLocaleString("sv-SE")} mnkr
+                {mean.toFixed(1)}%
               </span>
               {/* Visual mean bar */}
               <div
