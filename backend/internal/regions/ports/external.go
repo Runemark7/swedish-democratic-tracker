@@ -16,6 +16,24 @@ type KPIValue struct {
 type SCBClient interface {
 	FetchPopulationTrend(ctx context.Context, munCode string, years []int) ([]PopulationEntry, error)
 	FetchRegionBudget(ctx context.Context, regionCode string, year int) ([]RegionBudgetArea, error)
+	FetchRegionBudgetMultiYear(ctx context.Context, regionCode string, years []int) ([]RegionBudgetSnapshot, error)
+	FetchAreaAcrossRegions(ctx context.Context, areaName string, regionCodes []string, year int) ([]RegionAreaDataPoint, error)
+}
+
+type RegionBudgetSnapshot struct {
+	RegionCode string
+	AreaName   string
+	Year       int
+	ValueMnkr  float64
+	TotalMnkr  float64
+	Pct        float64
+}
+
+type RegionAreaDataPoint struct {
+	RegionCode string
+	ValueMnkr  float64
+	TotalMnkr  float64
+	Pct        float64
 }
 
 type PopulationEntry struct {

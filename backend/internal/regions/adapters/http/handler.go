@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -23,8 +24,10 @@ func NewHandler(svc *regions.Service) *Handler {
 
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/regions", h.listRegions)
+	r.Get("/regions/budget/area/{areaName}", h.getAreaAcrossRegions)
 	r.Get("/regions/{code}", h.getRegion)
 	r.Get("/regions/{code}/budget", h.getRegionBudget)
+	r.Get("/regions/{code}/budget/history", h.getRegionBudgetHistory)
 	r.Get("/regions/{code}/kpi", h.getRegionKPI)
 	r.Get("/municipalities", h.listMunicipalities)
 	r.Get("/municipalities/{code}", h.getMunicipality)
@@ -98,6 +101,51 @@ func (h *Handler) getRegionBudget(w http.ResponseWriter, r *http.Request) {
 		areas = []ports.RegionBudgetArea{}
 	}
 	jsonOK(w, areas)
+}
+
+func (h *Handler) getRegionBudgetHistory(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	yearsParam := r.URL.Query().Get("years")
+	n := 4
+	if yearsParam != "" {
+		if parsed, err := strconv.Atoi(yearsParam); err == nil && parsed > 0 {
+			n = parsed
+		}
+	}
+	current := time.Now().Year()
+	years := make([]int, n)
+	for i := range years {
+		years[i] = current - 1 - i
+	}
+	snapshots, err := h.svc.GetRegionBudgetHistory(r.Context(), code, years)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if snapshots == nil {
+		snapshots = []ports.RegionBudgetSnapshot{}
+	}
+	jsonOK(w, snapshots)
+}
+
+func (h *Handler) getAreaAcrossRegions(w http.ResponseWriter, r *http.Request) {
+	areaName := chi.URLParam(r, "areaName")
+	yearParam := r.URL.Query().Get("year")
+	year := time.Now().Year() - 1 // default: last completed year
+	if yearParam != "" {
+		if parsed, err := strconv.Atoi(yearParam); err == nil {
+			year = parsed
+		}
+	}
+	points, err := h.svc.GetAreaAcrossRegions(r.Context(), areaName, year)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if points == nil {
+		points = []ports.RegionAreaDataPoint{}
+	}
+	jsonOK(w, points)
 }
 
 func (h *Handler) listMunicipalities(w http.ResponseWriter, r *http.Request) {

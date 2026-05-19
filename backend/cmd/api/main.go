@@ -213,6 +213,7 @@ func main() {
 
 	// -- Ingestion scheduler --
 	cursorRepo := ingestionPG.NewCursorRepository(db)
+	ingestionRunsRepo := ingestionPG.NewIngestionRunRepository(db)
 	pollWorker := workers.NewPoliticiansWorker(polSvc)
 	speechWorker := workers.NewSpeechesWorker(speechSvc, cursorRepo)
 	enrichSpeechesWorker := workers.NewEnrichSpeechesWorker(speechSvc, 200)
@@ -234,6 +235,11 @@ func main() {
 	}
 	if err := sched.RegisterSync("@weekly", &agencyIntelWorker); err != nil {
 		slog.Error("failed to register agency-intel worker", "error", err)
+		os.Exit(1)
+	}
+	regionBudgetWorker := workers.NewRegionBudgetWorker(regionsSvc, ingestionRunsRepo)
+	if err := sched.Register("@weekly", &regionBudgetWorker); err != nil {
+		slog.Error("failed to register region-budget worker", "error", err)
 		os.Exit(1)
 	}
 	sched.Start()
