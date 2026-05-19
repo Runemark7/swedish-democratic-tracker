@@ -549,6 +549,57 @@ paths:
         "502":
           description: Upstream SCB API error
 
+  /regions/{code}/budget/history:
+    get:
+      operationId: getRegionBudgetHistory
+      tags: [regions]
+      summary: Multi-year budget history for a region
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: years
+          in: query
+          schema:
+            type: integer
+            default: 4
+      responses:
+        "200":
+          description: Array of budget snapshots across years
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegionBudgetSnapshot"
+
+  /regions/budget/area/{areaName}:
+    get:
+      operationId: getRegionAreaAcrossRegions
+      tags: [regions]
+      summary: Budget data for one area across all regions
+      parameters:
+        - name: areaName
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: year
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Array of data points, one per region
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegionAreaDataPoint"
+
   /municipalities:
     get:
       operationId: listMunicipalities
@@ -1629,6 +1680,36 @@ components:
           format: float
           description: Share of total regional nettokostnad
           example: 18.9
+
+    RegionBudgetSnapshot:
+      type: object
+      required: [region_code, area_name, year, value_mnkr, total_mnkr, pct]
+      properties:
+        region_code:
+          type: string
+        area_name:
+          type: string
+        year:
+          type: integer
+        value_mnkr:
+          type: number
+        total_mnkr:
+          type: number
+        pct:
+          type: number
+
+    RegionAreaDataPoint:
+      type: object
+      required: [region_code, value_mnkr, total_mnkr, pct]
+      properties:
+        region_code:
+          type: string
+        value_mnkr:
+          type: number
+        total_mnkr:
+          type: number
+        pct:
+          type: number
 
     MunicipalitySummary:
       type: object

@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/riksdag/agenda/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a single agenda item */
+        get: operations["getRiksdagAgendaItem"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/healthz": {
         parameters: {
             query?: never;
@@ -387,6 +404,40 @@ export interface paths {
         };
         /** Real budget breakdown for a region from SCB (nettokostnader by verksamhetsområde) */
         get: operations["getRegionBudget"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/regions/{code}/budget/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Multi-year budget history for a region */
+        get: operations["getRegionBudgetHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/regions/budget/area/{areaName}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Budget data for one area across all regions */
+        get: operations["getRegionAreaAcrossRegions"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1122,6 +1173,20 @@ export interface components {
              */
             pct: number;
         };
+        RegionBudgetSnapshot: {
+            region_code: string;
+            area_name: string;
+            year: number;
+            value_mnkr: number;
+            total_mnkr: number;
+            pct: number;
+        };
+        RegionAreaDataPoint: {
+            region_code: string;
+            value_mnkr: number;
+            total_mnkr: number;
+            pct: number;
+        };
         MunicipalitySummary: {
             /**
              * @description Four-digit SCB municipality code
@@ -1305,6 +1370,14 @@ export interface components {
             /** @description Dok ID of the related document (interpellation, betänkande, etc.) */
             relatedDokId?: string;
         };
+        RiksdagAgendaItem: {
+            id: number;
+            title: string;
+            description: string;
+            source: string;
+            /** @enum {string} */
+            status: "active" | "in_progress" | "completed";
+        };
     };
     responses: {
         /** @description Resource not found */
@@ -1394,6 +1467,35 @@ export interface operations {
             };
             /** @description Upstream data source unavailable */
             502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getRiksdagAgendaItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Agenda item details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiksdagAgendaItem"];
+                };
+            };
+            /** @description Agenda item not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1885,6 +1987,54 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getRegionBudgetHistory: {
+        parameters: {
+            query?: {
+                years?: number;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of budget snapshots across years */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionBudgetSnapshot"][];
+                };
+            };
+        };
+    };
+    getRegionAreaAcrossRegions: {
+        parameters: {
+            query?: {
+                year?: number;
+            };
+            header?: never;
+            path: {
+                areaName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of data points, one per region */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionAreaDataPoint"][];
+                };
             };
         };
     };

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useRegion, useRegionList, useKommunList } from "@/hooks/useDemocracy";
-import { Hemicycle, Donut, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
+import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory } from "@/hooks/useDemocracy";
+import { Hemicycle, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import type { LiveVote, Party } from "@/types/democracy";
+import type { RegionBudgetSnapshot } from "@/shared/types";
 
 function beslutHref(v: LiveVote): string | null {
   if (!v.beteckning) return null;
@@ -63,14 +64,25 @@ export function RegionDetailPage() {
   const [selectOpen, setSelectOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [budgetTab, setBudgetTab] = useState<number | null>(null);
 
   const { data, isLoading } = useRegion(code ?? "");
   const { data: regionList } = useRegionList();
   const { data: regionKommuner } = useKommunList(code);
+  const { data: budgetHistory = [] } = useRegionBudgetHistory(code ?? "");
 
   if (isLoading || !data) return <Skeleton />;
 
-  const { title, subtitle, ruling, liveVotes, budget, agenda, kpis } = data;
+  const { title, subtitle, ruling, liveVotes, agenda, kpis } = data;
+
+  // ── Budget history: group snapshots by year ────────────────────────────────
+  const historyByYear = new Map<number, RegionBudgetSnapshot[]>();
+  for (const snap of budgetHistory) {
+    const list = historyByYear.get(snap.year) ?? [];
+    list.push(snap);
+    historyByYear.set(snap.year, list);
+  }
+  const sortedYears = Array.from(historyByYear.keys()).sort((a, b) => b - a);
 
   // Build hemicycle groups: opposition left → support → governing right
   const hemicycleGroups = [
@@ -87,17 +99,8 @@ export function RegionDetailPage() {
   const totalSeats = allParties.reduce((s, p) => s + p.seats, 0);
   const rulingSeats = ruling.parties.reduce((s, p) => s + p.seats, 0);
 
-  const budgetSegments = budget.areas.map((a, i) => ({
-    name: a.name,
-    value: a.value,
-    color: BUDGET_COLORS[i % BUDGET_COLORS.length],
-    pct: a.pct,
-  }));
-
-  // Donut label: first word + rest split
-  const totalParts = budget.total.split(" ");
-  const donutLabel = totalParts[0];
-  const donutSublabel = totalParts.slice(1).join(" ");
+  // Active budget tab: use state if set, otherwise most recent year with data
+  const activeBudgetYear = budgetTab ?? sortedYears[0] ?? null;
 
   return (
     <>
@@ -460,7 +463,7 @@ export function RegionDetailPage() {
             )}
           </div>
 
-          {/* Right card — BUDGET */}
+          {/* Right card — BUDGET history tab strip */}
           <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
             <div
               style={{
@@ -468,14 +471,14 @@ export function RegionDetailPage() {
                 fontSize: 10,
                 letterSpacing: "0.15em",
                 color: "var(--color-fg-muted)",
-                marginBottom: 16,
+                marginBottom: 12,
               }}
             >
-              BUDGET {budget.year}
-              {budget.total ? ` · ${budget.total}` : ""}
+              BUDGET · HISTORIK
               <SourceMarker sourceId="scb-kostndrlt" />
             </div>
-            {budget.areas.length === 0 ? (
+
+            {sortedYears.length === 0 ? (
               <div
                 style={{
                   fontFamily: "var(--font-mono)",
@@ -489,23 +492,91 @@ export function RegionDetailPage() {
                 Budgetdata saknas för denna region.
               </div>
             ) : (
-              <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
-                <Donut
-                  segments={budgetSegments}
-                  size={isMobile ? 140 : 150}
-                  thickness={isMobile ? 16 : 18}
-                  label={donutLabel}
-                  sublabel={donutSublabel}
-                />
-                <div style={{ flex: 1, minWidth: 0, paddingTop: 4 }}>
-                  <HBars
-                    items={budgetSegments.slice(0, 5)}
-                    height={6}
-                    gap={10}
-                    unit=" mdkr"
-                  />
+              <>
+                {/* Year tab strip */}
+                <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 16 }}>
+                  {sortedYears.map((yr, idx) => {
+                    const prevYear = sortedYears[idx + 1] ?? null;
+                    const prevSnaps = prevYear != null ? historyByYear.get(prevYear) : null;
+                    const curTotal = (historyByYear.get(yr) ?? []).reduce((s, a) => s + a.total_mnkr, 0);
+                    const prevTotal = prevSnaps ? prevSnaps.reduce((s, a) => s + a.total_mnkr, 0) : null;
+                    const delta = prevTotal != null && prevTotal > 0
+                      ? ((curTotal - prevTotal) / prevTotal) * 100
+                      : null;
+                    const isActive = yr === activeBudgetYear;
+                    const deltaColor = delta == null
+                      ? "var(--color-fg-muted)"
+                      : delta >= 0 ? "#4caf7d" : "#e05c5c";
+
+                    return (
+                      <button
+                        key={yr}
+                        onClick={() => setBudgetTab(yr)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                          fontFamily: "var(--font-mono)",
+                          fontSize: 10,
+                          letterSpacing: "0.08em",
+                          padding: "4px 8px",
+                          border: isActive
+                            ? "1px solid var(--color-accent)"
+                            : "1px solid var(--color-border)",
+                          background: isActive ? "var(--color-accent)" : "transparent",
+                          color: isActive ? "var(--color-bg)" : "var(--color-fg-muted)",
+                          cursor: "pointer",
+                          borderRadius: 2,
+                        }}
+                      >
+                        {yr}
+                        {delta != null && (
+                          <span
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: 9,
+                              color: isActive ? "var(--color-bg)" : deltaColor,
+                              opacity: 0.9,
+                            }}
+                          >
+                            {delta >= 0 ? "+" : ""}{delta.toFixed(1)}%
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
+
+                {/* Active year areas as clickable HBar rows */}
+                {activeBudgetYear != null && (() => {
+                  const areas = historyByYear.get(activeBudgetYear) ?? [];
+                  const totalMnkr = areas.reduce((s, a) => s + a.value_mnkr, 0);
+                  const hbarItems = areas.map((a, i) => ({
+                    name: a.area_name,
+                    value: Math.round(a.value_mnkr * 10) / 10,
+                    color: BUDGET_COLORS[i % BUDGET_COLORS.length],
+                    pct: totalMnkr > 0 ? (a.value_mnkr / totalMnkr) * 100 : a.pct,
+                  }));
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      {hbarItems.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={`/region/${code}/budget/${encodeURIComponent(item.name)}`}
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          <HBars
+                            items={[item]}
+                            height={6}
+                            gap={6}
+                            unit=" mnkr"
+                          />
+                        </Link>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </>
             )}
           </div>
         </div>

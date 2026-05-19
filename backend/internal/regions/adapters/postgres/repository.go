@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"riksdagskollen/internal/regions/domain"
+	"riksdagskollen/internal/regions/ports"
 )
 
 type Repository struct {
@@ -131,6 +132,76 @@ func scanMunicipalities(rows pgx.Rows) ([]*domain.Municipality, error) {
 		municipalities = append(municipalities, mun)
 	}
 	return municipalities, rows.Err()
+}
+
+func (r *Repository) UpsertRegionBudgetSnapshots(ctx context.Context, snapshots []ports.RegionBudgetSnapshot) (int, error) {
+	if len(snapshots) == 0 {
+		return 0, nil
+	}
+	const q = `
+		INSERT INTO region_budget_snapshots (region_code, area_name, year, value_mnkr, total_mnkr, pct, fetched_at)
+		VALUES ($1, $2, $3, $4, $5, $6, NOW())
+		ON CONFLICT (region_code, area_name, year) DO UPDATE SET
+			value_mnkr = EXCLUDED.value_mnkr,
+			total_mnkr = EXCLUDED.total_mnkr,
+			pct        = EXCLUDED.pct,
+			fetched_at = NOW()
+	`
+	var count int
+	for _, s := range snapshots {
+		tag, err := r.db.Exec(ctx, q, s.RegionCode, s.AreaName, s.Year, s.ValueMnkr, s.TotalMnkr, s.Pct)
+		if err != nil {
+			return count, err
+		}
+		count += int(tag.RowsAffected())
+	}
+	return count, nil
+}
+
+func (r *Repository) GetRegionBudgetHistory(ctx context.Context, regionCode string, years []int) ([]ports.RegionBudgetSnapshot, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT region_code, area_name, year, value_mnkr, total_mnkr, pct
+		FROM region_budget_snapshots
+		WHERE region_code = $1 AND year = ANY($2)
+		ORDER BY year, area_name
+	`, regionCode, years)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []ports.RegionBudgetSnapshot
+	for rows.Next() {
+		var s ports.RegionBudgetSnapshot
+		if err := rows.Scan(&s.RegionCode, &s.AreaName, &s.Year, &s.ValueMnkr, &s.TotalMnkr, &s.Pct); err != nil {
+			return nil, err
+		}
+		result = append(result, s)
+	}
+	return result, rows.Err()
+}
+
+func (r *Repository) GetAreaAcrossRegions(ctx context.Context, areaName string, year int) ([]ports.RegionAreaDataPoint, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT region_code, value_mnkr, total_mnkr, pct
+		FROM region_budget_snapshots
+		WHERE area_name = $1 AND year = $2
+		ORDER BY region_code
+	`, areaName, year)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []ports.RegionAreaDataPoint
+	for rows.Next() {
+		var d ports.RegionAreaDataPoint
+		if err := rows.Scan(&d.RegionCode, &d.ValueMnkr, &d.TotalMnkr, &d.Pct); err != nil {
+			return nil, err
+		}
+		result = append(result, d)
+	}
+	return result, rows.Err()
 }
 
 func (r *Repository) GetMunicipality(ctx context.Context, code string) (*domain.MunicipalityDetail, error) {
