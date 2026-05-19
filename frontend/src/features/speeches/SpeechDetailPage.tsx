@@ -296,6 +296,20 @@ export function SpeechDetailPage() {
                 → Läs hela betänkandet
               </Link>
             )}
+            {relDokId && (
+              <Link
+                to={`/debatt/${encodeURIComponent(relDokId)}`}
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  color: "var(--color-accent)",
+                  textDecoration: "none",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                → Se hela debatten
+              </Link>
+            )}
           </section>
         )}
 
