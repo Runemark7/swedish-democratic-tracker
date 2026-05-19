@@ -3,8 +3,6 @@ import type { BudgetTier } from "@/shared/types";
 
 const TIERS: { key: BudgetTier; enabled: boolean }[] = [
   { key: "national", enabled: true },
-  { key: "regional", enabled: false },
-  { key: "municipality", enabled: false },
 ];
 
 export function TierNav({ active }: { active: BudgetTier }) {
