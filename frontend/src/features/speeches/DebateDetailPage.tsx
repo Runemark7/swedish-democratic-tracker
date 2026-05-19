@@ -1,18 +1,8 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useDocumentFull, useSpeechesByDocument } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { PARTY_COLORS } from "@/shared/design";
-
-const TYPE_LABEL: Record<string, string> = {
-  bet: "Betänkande",
-  ip: "Interpellation",
-  mot: "Motion",
-  prop: "Proposition",
-  prot: "Protokoll",
-  fr: "Skriftlig fråga",
-};
+import { PARTY_COLORS, DOC_TYPE_LABEL } from "@/shared/design";
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -53,20 +43,20 @@ export function DebateDetailPage() {
   if (error || !doc) {
     return (
       <div className="sdt-page" style={{ padding: isMobile ? "20px 14px" : "32px" }}>
-        <button onClick={() => navigate(-1)} style={backBtnStyle}>← Tillbaka</button>
+        <button onClick={() => { if (window.history.length > 1) { navigate(-1); } else { navigate("/"); } }} style={backBtnStyle}>← Tillbaka</button>
         <div style={{ marginTop: 24, color: "var(--color-pulse)" }}>Kunde inte hämta debatten.</div>
       </div>
     );
   }
 
-  const typeLabel = TYPE_LABEL[doc.type] ?? doc.type.toUpperCase();
+  const typeLabel = DOC_TYPE_LABEL[doc.type] ?? doc.type.toUpperCase();
   const intressenter = doc.intressenter ?? [];
 
   return (
     <div className="sdt-page" style={{ paddingBottom: 64 }}>
       <div style={{ padding: isMobile ? "16px 14px 0" : "32px 32px 0", maxWidth: 880 }}>
         {/* Back */}
-        <button onClick={() => navigate(-1)} style={backBtnStyle}>← Tillbaka</button>
+        <button onClick={() => { if (window.history.length > 1) { navigate(-1); } else { navigate("/"); } }} style={backBtnStyle}>← Tillbaka</button>
 
         {/* Header */}
         <div style={{ marginTop: 16, marginBottom: 24 }}>
@@ -253,7 +243,7 @@ export function DebateDetailPage() {
         )}
 
         {/* Alla anföranden */}
-        {speeches && speeches.length > 0 && (
+        {speeches && speeches.length > 0 ? (
           <section
             style={{
               borderTop: "1px solid var(--color-border)",
@@ -279,12 +269,26 @@ export function DebateDetailPage() {
               ))}
             </div>
           </section>
-        )}
+        ) : speeches !== undefined ? (
+          <div
+            style={{
+              borderTop: "1px solid var(--color-border)",
+              paddingTop: 16,
+              marginBottom: 32,
+              fontFamily: "var(--font-body)",
+              fontSize: 13,
+              color: "var(--color-fg-muted)",
+              fontStyle: "italic",
+            }}
+          >
+            Inga registrerade anföranden för denna debatt.
+          </div>
+        ) : null}
 
         {/* Source */}
         <div style={{ borderTop: "1px solid var(--color-border)", paddingTop: 16 }}>
           <a
-            href={`https://data.riksdagen.se/dokument/${doc.dokId}`}
+            href={`https://www.riksdagen.se/sv/dokument-och-lagar/dokument/${encodeURIComponent(doc.type)}/${encodeURIComponent(doc.dokId)}/`}
             target="_blank"
             rel="noopener noreferrer"
             style={{

@@ -68,6 +68,16 @@ export const TOPIC_LABELS: Record<string, string> = {
   other:      "Övrigt",
 };
 
+// ── Document Type Labels ──────────────────────────────────────────────
+export const DOC_TYPE_LABEL: Record<string, string> = {
+  bet: "Betänkande",
+  ip: "Interpellation",
+  mot: "Motion",
+  prop: "Proposition",
+  prot: "Protokoll",
+  fr: "Skriftlig fråga",
+};
+
 // ── Budget Tier Labels ────────────────────────────────────────────────
 export const TIER_LABELS: Record<string, string> = {
   national:     "Nationellt",

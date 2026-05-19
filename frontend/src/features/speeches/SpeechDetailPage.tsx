@@ -6,7 +6,7 @@ import { useDocument } from "@/hooks/useDemocracy";
 import { useSpeechesByDocument } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { PARTY_COLORS, partyShortToName } from "@/shared/design";
+import { PARTY_COLORS, partyShortToName, DOC_TYPE_LABEL } from "@/shared/design";
 
 const WEEKDAY = ["sön", "mån", "tis", "ons", "tor", "fre", "lör"];
 
@@ -19,15 +19,6 @@ function formatLongStamp(iso: string): string {
   const yyyy = d.getFullYear();
   return `${wd} ${dd}/${mm}/${yyyy}`;
 }
-
-const TYPE_LABEL: Record<string, string> = {
-  bet: "Betänkande",
-  ip: "Interpellation",
-  mot: "Motion",
-  prop: "Proposition",
-  prot: "Protokoll",
-  fr: "Skriftlig fråga",
-};
 
 export function SpeechDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -82,7 +73,7 @@ export function SpeechDetailPage() {
       .join("") || "?";
 
   const otherSpeeches = (siblingSpeeches ?? []).filter((s) => s.id !== speech.id);
-  const docTypeLabel = docToShow ? TYPE_LABEL[docToShow.type] ?? docToShow.type.toUpperCase() : null;
+  const docTypeLabel = docToShow ? DOC_TYPE_LABEL[docToShow.type] ?? docToShow.type.toUpperCase() : null;
   const docLink =
     docToShow?.type === "bet" && docToShow.beteckning
       ? `/beslut/${encodeURIComponent(docToShow.beteckning)}`
