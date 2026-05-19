@@ -1,0 +1,181 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "Tre Kammare" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e11]:
+          - text: Tre
+          - emphasis [ref=e12]: Kammare
+      - generic [ref=e13]:
+        - link "◆ START" [ref=e14] [cursor=pointer]:
+          - /url: /
+        - link "I RIKSDAG" [ref=e15] [cursor=pointer]:
+          - /url: /riksdag
+        - link "II REGION" [ref=e16] [cursor=pointer]:
+          - /url: /region
+        - link "III KOMMUN" [ref=e17] [cursor=pointer]:
+          - /url: /kommun
+        - link "⌕ SÖK" [ref=e18] [cursor=pointer]:
+          - /url: /sok
+      - generic [ref=e19]:
+        - generic [ref=e20]: LIVE · 24.04.2026
+        - button "Byt till mörkt läge" [ref=e22] [cursor=pointer]: ☽
+  - main [ref=e23]:
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: II
+        - generic [ref=e27]:
+          - generic [ref=e28]: KAMMARE TVÅ
+          - generic [ref=e29]: Region Stockholm
+          - generic [ref=e30]:
+            - generic [ref=e31]: Regional nivå — hälso- och sjukvård, kollektivtrafik
+            - button "↓ BYT REGION" [ref=e32] [cursor=pointer]
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]: Väntetid akut
+          - generic [ref=e36]:
+            - generic [ref=e37]: 3 h 12 min
+            - generic [ref=e38]: ↑ +8 min
+          - 'meter "Below target: current value 3.2h, target 3h" [ref=e39]':
+            - generic [ref=e40]: "Below target: current value 3.2h, target 3h"
+            - generic:
+              - generic: 2.5h
+              - generic: Mål 3h
+              - generic: 3.7h
+        - generic [ref=e45]:
+          - generic [ref=e46]: Bedömning inom 3 mån
+          - generic [ref=e47]:
+            - generic [ref=e48]: 78 %
+            - generic [ref=e49]: ↑ +2 pp
+          - 'meter "Below target: current value 78%, target 80%" [ref=e50]':
+            - generic [ref=e51]: "Below target: current value 78%, target 80%"
+            - generic:
+              - generic: 66.3%
+              - generic: Mål 80%
+              - generic: 92%
+        - generic [ref=e56]:
+          - generic [ref=e57]: Punktlighet SL
+          - generic [ref=e58]:
+            - generic [ref=e59]: 94,2 %
+            - generic [ref=e60]: ↓ −0,5 pp
+          - 'meter "Below target: current value 94.2%, target 95%" [ref=e61]':
+            - generic [ref=e62]: "Below target: current value 94.2%, target 95%"
+            - generic:
+              - generic: 80.1%
+              - generic: Mål 95%
+              - generic: 109.2%
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]: MANDAT · KAMMARENS SAMMANSÄTTNING
+          - img "Parlamentssäten Halvrundsdiagram som visar fördelning av 149 parlamentssäten" [ref=e70]
+          - generic [ref=e220]:
+            - generic [ref=e221]:
+              - generic [ref=e222]: STYRE
+              - generic [ref=e223]:
+                - generic [ref=e224]:
+                  - text: S
+                  - generic [ref=e226]: "50"
+                - generic [ref=e227]:
+                  - text: V
+                  - generic [ref=e229]: "18"
+                - generic [ref=e230]:
+                  - text: MP
+                  - generic [ref=e232]: "6"
+            - generic [ref=e233]:
+              - generic [ref=e234]: OPPOSITION
+              - generic [ref=e235]:
+                - generic [ref=e236]:
+                  - text: M
+                  - generic [ref=e238]: "31"
+                - generic [ref=e239]:
+                  - text: SD
+                  - generic [ref=e241]: "16"
+                - generic [ref=e242]:
+                  - text: KD
+                  - generic [ref=e244]: "10"
+                - generic [ref=e245]:
+                  - text: C
+                  - generic [ref=e247]: "9"
+                - generic [ref=e248]:
+                  - text: L
+                  - generic [ref=e250]: "9"
+          - generic [ref=e251]:
+            - text: Blågrön majoritet
+            - generic [ref=e252]: MAJORITET 74/149
+        - generic [ref=e253]:
+          - generic [ref=e254]: BUDGET 2026 · 118 mdkr
+          - generic [ref=e255]:
+            - generic [ref=e256]:
+              - 'img "Hälso- och sjukvård: 82, Kollektivtrafik: 22, Regional utveckling: 6, Administration: 4, Övrigt: 4" [ref=e257]':
+                - 'generic "Hälso- och sjukvård: 82" [ref=e259]'
+                - 'generic "Kollektivtrafik: 22" [ref=e260]'
+                - 'generic "Regional utveckling: 6" [ref=e261]'
+                - 'generic "Administration: 4" [ref=e262]'
+                - 'generic "Övrigt: 4" [ref=e263]'
+              - generic:
+                - generic: "118"
+                - generic: mdkr
+            - generic [ref=e265]:
+              - generic [ref=e267]:
+                - generic [ref=e268]: Hälso- och sjukvård
+                - generic [ref=e269]: 69.5%
+              - generic [ref=e273]:
+                - generic [ref=e274]: Kollektivtrafik
+                - generic [ref=e275]: 18.6%
+              - generic [ref=e279]:
+                - generic [ref=e280]: Regional utveckling
+                - generic [ref=e281]: 5.1%
+              - generic [ref=e285]:
+                - generic [ref=e286]: Administration
+                - generic [ref=e287]: 3.4%
+              - generic [ref=e291]:
+                - generic [ref=e292]: Övrigt
+                - generic [ref=e293]: 3.4%
+      - generic [ref=e296]:
+        - generic [ref=e297]:
+          - generic [ref=e300]:
+            - generic [ref=e301]: RIKSDAG · RELEVANTA BESLUT
+            - generic [ref=e302]: Riksdagsbeslut som berör regional nivå
+          - generic [ref=e303]:
+            - generic [ref=e304]:
+              - generic [ref=e306]: Idag
+              - generic "Stärkta insatser för äldre och för de som vårdar eller stöder närstående" [ref=e307]:
+                - text: Stärkta insatser för äldre och för de som vårdar eller stöder närstående
+                - generic [ref=e308]: "[Vård]"
+              - generic [ref=e309]: Bifall
+            - generic [ref=e310]:
+              - generic [ref=e312]: Igår
+              - generic "Bättre migrationsrättsliga regler för forskare och doktorander samt åtgärder för att motverka missbruk av uppehållstillstånd för studier" [ref=e313]
+              - generic [ref=e314]: Bifall
+            - generic [ref=e315]:
+              - generic [ref=e317]: Igår
+              - generic "Riksbankens verksamhet och förvaltning 2025" [ref=e318]
+              - generic [ref=e319]: Bifall
+            - generic [ref=e320]:
+              - generic [ref=e322]: Igår
+              - generic "Ökade möjligheter till hemmaladdning av elfordon" [ref=e323]:
+                - text: Ökade möjligheter till hemmaladdning av elfordon
+                - generic [ref=e324]: "[Plan]"
+              - generic [ref=e325]: Bifall
+            - generic [ref=e326]:
+              - generic [ref=e328]: Igår
+              - generic "En snabbare utbyggnad av kriminalvårdsanstalter och häkten" [ref=e329]:
+                - text: En snabbare utbyggnad av kriminalvårdsanstalter och häkten
+                - generic [ref=e330]: "[Plan]"
+              - generic [ref=e331]: Bifall
+        - generic [ref=e332]:
+          - generic [ref=e333]: AGENDA · STYRETS PRIORITERINGAR
+          - list [ref=e334]:
+            - listitem [ref=e335]:
+              - generic [ref=e336]: "1"
+              - generic [ref=e337]: Stärkt psykiatrisk vård
+            - listitem [ref=e338]:
+              - generic [ref=e339]: "2"
+              - generic [ref=e340]: Grön omställning av kollektivtrafik
+            - listitem [ref=e341]:
+              - generic [ref=e342]: "3"
+              - generic [ref=e343]: Utökad hemsjukvård i hela regionen
+            - listitem [ref=e344]:
+              - generic [ref=e345]: "4"
+              - generic [ref=e346]: Avgiftsfri tandvård upp till 25 år

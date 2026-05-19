@@ -1,0 +1,737 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - link "Hoppa till huvudinnehåll" [ref=e3] [cursor=pointer]:
+      - /url: "#content"
+    - generic [ref=e5]:
+      - link "Gå till startsidan" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Regeringskansliet" [ref=e7]
+      - button "Meny " [ref=e9] [cursor=pointer]:
+        - generic [ref=e10]: Meny
+        - generic [ref=e11]: 
+        - text: 
+      - search [ref=e13]:
+        - generic [ref=e14]:
+          - generic "Sök" [ref=e15]: När du börjar skriva så framträder en lista med sökförslag
+          - searchbox "Sök" [ref=e16]
+          - generic: När du börjar skriva så framträder en lista med sökförslag
+          - searchbox "När du börjar skriva så framträder en lista med sökförslag" [ref=e17]
+          - button "Sök" [ref=e18] [cursor=pointer]:
+            - generic [ref=e19]: 
+            - generic [ref=e20]: Sök
+        - status
+  - generic [ref=e21]:
+    - main "Statens budget" [ref=e22]:
+      - generic [ref=e25]:
+        - heading "Statens budget" [level=1] [ref=e26]
+        - paragraph [ref=e28]: En viktig del i regeringens arbete med att förverkliga sin politik är att utforma förslag om statens budget. Förslagen lämnas i propositioner till riksdagen. Vårpropositionen för 2026 överlämnades den 13 april 2026. Budgetpropositionen för 2026 överlämnades den 22 september 2025.
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - term [ref=e31]: Ansvariga statsråd
+            - definition [ref=e32]:
+              - link " Elisabeth Svantesson" [ref=e33] [cursor=pointer]:
+                - /url: /sveriges-regering/finansdepartementet/elisabeth-svantesson/
+            - term [ref=e34]: Ansvariga departement
+            - definition [ref=e35]:
+              - link " Finansdepartementet" [ref=e36] [cursor=pointer]:
+                - /url: /sveriges-regering/finansdepartementet/
+          - button "Relaterade länkar" [ref=e38] [cursor=pointer]:
+            - text: Relaterade länkar
+            - generic [ref=e39]: +
+      - generic [ref=e40]:
+        - generic [ref=e42]:
+          - generic:
+            - list [ref=e44]:
+              - listitem [ref=e45]:
+                - generic [ref=e46]:
+                  - heading "Vårbudgeten 2026 på fem minuter" [level=3] [ref=e47]
+                  - list [ref=e48]:
+                    - listitem [ref=e49]:
+                      - iframe [ref=e52]:
+                        - generic [ref=f1e3]:
+                          - generic:
+                            - generic [ref=f1e4]:
+                              - generic [ref=f1e6]:
+                                - generic:
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - status
+                              - img
+                            - 'button "Spela, videolängd: 1 minut 52 sekunder" [ref=f1e8] [cursor=pointer]':
+                              - img [ref=f1e10]
+                              - generic [ref=f1e12]: 01:52
+                  - paragraph [ref=e53]: Den 13 april presenterade regeringen sin vårbudget. Sverige står fortsatt starkt i det osäkra omvärldsläget med en ekonomi som är i återhämtning. Budgeten innehåller åtgärder för 7,7 miljarder kronor för 2026 och fokuserar på att bygga ett starkare och tryggare Sverige.
+                  - list [ref=e54]:
+                    - listitem [ref=e55]:
+                      - 'link " Artikel: Vårbudgeten 2026 på fem minuter Webb-TV" [ref=e56] [cursor=pointer]':
+                        - /url: /artiklar/2026/04/varbudgeten-2026-pa-fem-minuter/
+                        - text: " Artikel: Vårbudgeten 2026 på fem minuter"
+                        - generic [ref=e57]:
+                          - generic [ref=e58]: 
+                          - text: Webb-TV
+                    - listitem [ref=e59]:
+                      - 'link " Pressmeddelande: En vårbudget för att stärka och skydda svensk ekonomi Webb-TV" [ref=e60] [cursor=pointer]':
+                        - /url: /pressmeddelanden/2026/04/en-varbudget-for-att-starka-och-skydda-svensk-ekonomi/
+                        - text: " Pressmeddelande: En vårbudget för att stärka och skydda svensk ekonomi"
+                        - generic [ref=e61]:
+                          - generic [ref=e62]: 
+                          - text: Webb-TV
+                    - listitem [ref=e63]:
+                      - link " Prop. 2025/26:100 2026 års ekonomiska vårproposition" [ref=e64] [cursor=pointer]:
+                        - /url: /rattsliga-dokument/proposition/2026/04/prop.-202526100
+                    - listitem [ref=e65]:
+                      - link " Prop. 2025/26:99 Vårändringsbudget för 2026" [ref=e66] [cursor=pointer]:
+                        - /url: /rattsliga-dokument/proposition/2026/04/prop.-20252699
+                    - listitem [ref=e67]:
+                      - link " Prop. 2025/26:236 Extra ändringsbudget för 2026 – Sänkt skatt på drivmedel samt el- och gasprisstöd" [ref=e68] [cursor=pointer]:
+                        - /url: /rattsliga-dokument/proposition/2026/04/prop.-202526236
+                    - listitem [ref=e69]:
+                      - link " Mer om statens budget" [ref=e70] [cursor=pointer]:
+                        - /url: /sveriges-regering/finansdepartementet/statens-budget/
+            - generic [ref=e72]:
+              - generic [ref=e74]:
+                - heading "Genvägar" [level=2] [ref=e75]
+                - list [ref=e76]:
+                  - listitem [ref=e77]:
+                    - link " Budgetförslag per budgetår" [ref=e78] [cursor=pointer]:
+                      - /url: /sveriges-regering/finansdepartementet/statens-budget/budgetpropositioner-per-budgetar/
+                  - listitem [ref=e79]:
+                    - link " Prognoser för den ekonomiska utvecklingen" [ref=e80] [cursor=pointer]:
+                      - /url: /sveriges-regering/finansdepartementet/statens-budget/prognoser/
+              - generic [ref=e82]:
+                - heading "Skatteförslag som remitterats inför höstbudgeten" [level=2] [ref=e83]
+                - paragraph [ref=e84]: Om de förslag som remitterats kommer att presenteras i regeringens höstbudget beror på det ekonomiska läget, reformutrymmet och finansieringsbehovet samt de överläggningar som förs i det slutliga arbetet med höstbudgeten.
+                - 'link " Promemoria: Slopad indexering av energiskatten på el" [ref=e87] [cursor=pointer]':
+                  - /url: /rattsliga-dokument/departementsserien-och-promemorior/2026/03/slopad-indexering-av-energiskatten-pa-el/
+              - generic [ref=e89]:
+                - heading "När överlämnas regeringens budgetproposition till riksdagen?" [level=2] [ref=e90]
+                - paragraph [ref=e91]:
+                  - text: På våren överlämnar finansministern regeringens ekonomiska vårproposition samt en vårändringsbudget till riksdagen. 2026 års ekonomiska vårproposition överlämnades den 13 april 2026.
+                  - text: På hösten lämnas den mer omfattande budgetpropositionen samt en höständringsbudget. Regeringens budgetproposition för 2026 överlämnades till riksdagen den 22 september 2025.
+        - generic [ref=e94]:
+          - generic [ref=e96]:
+            - 'figure "Illustration: Regeringskansliet" [ref=e97]':
+              - generic [ref=e99]: "Illustration: Regeringskansliet"
+            - heading "Förslag och beslut om statens budget" [level=3] [ref=e100]
+            - paragraph [ref=e101]: Här hittar du propositioner och skrivelser om statens budget som har lämnats till riksdagen sedan år 2000. Budgetförslagen är sorterade per budgetår.
+            - link " Budgetförslag per budgetår" [ref=e104] [cursor=pointer]:
+              - /url: /sveriges-regering/finansdepartementet/statens-budget/budgetpropositioner-per-budgetar/
+          - generic [ref=e106]:
+            - 'figure "Illustration: Regeringskansliet" [ref=e107]':
+              - generic [ref=e109]: "Illustration: Regeringskansliet"
+            - heading "Ekonomiska prognoser och statens budget i siffror" [level=3] [ref=e110]
+            - paragraph [ref=e111]: Här hittar du ekonomiska prognoser och aktuella siffror för statens budget.
+            - list [ref=e112]:
+              - listitem [ref=e113]:
+                - link " Ekonomiska prognoser" [ref=e114] [cursor=pointer]:
+                  - /url: /sveriges-regering/finansdepartementet/statens-budget/prognoser/
+              - listitem [ref=e115]:
+                - link " Statens budget i siffror" [ref=e116] [cursor=pointer]:
+                  - /url: /sveriges-regering/finansdepartementet/statens-budget/statens-budget-i-siffror/
+              - listitem [ref=e117]:
+                - link " Statens budget som excel" [ref=e118] [cursor=pointer]:
+                  - /url: /sveriges-regering/finansdepartementet/statens-budget/statens-budget-som-excel/
+          - generic [ref=e120]:
+            - 'figure "Illustration: Regeringskansliet" [ref=e121]':
+              - generic [ref=e123]: "Illustration: Regeringskansliet"
+            - heading "Mer om budgetprocessen" [level=3] [ref=e124]
+            - paragraph [ref=e125]: Här kan du läsa om den statliga budgetprocessen och hur ett vanligt budgetår ser ut samt om det finanspolitiska ramverket.
+            - list [ref=e126]:
+              - listitem [ref=e127]:
+                - link " Om budgetprocessen" [ref=e128] [cursor=pointer]:
+                  - /url: /sveriges-regering/finansdepartementet/statens-budget/om-budgetprocessen/
+              - listitem [ref=e129]:
+                - link " Det finanspolitiska ramverket" [ref=e130] [cursor=pointer]:
+                  - /url: /sveriges-regering/finansdepartementet/statens-budget/det-finanspolitiska-ramverket/
+      - region "Sökresultat och filtrering" [ref=e131]:
+        - generic [ref=e133]:
+          - heading "Innehåll om statens budget" [level=2] [ref=e134]
+          - generic "Sökfiltrering":
+            - generic [ref=e135]:
+              - button "Stäng filter\" " [ref=e136] [cursor=pointer]:
+                - generic [ref=e137]: Stäng filter"
+                - generic [ref=e138]: 
+              - generic [ref=e139]:
+                - heading "Du kan filtrera innehållet" [level=2] [ref=e140]
+                - generic [ref=e143]:
+                  - button "Innehållstyper" [ref=e145] [cursor=pointer]:
+                    - text: Innehållstyper
+                    - generic [ref=e146]: +
+                  - button "Områden" [ref=e148] [cursor=pointer]:
+                    - text: Områden
+                    - generic [ref=e149]: +
+                  - button "Statsråd" [ref=e151] [cursor=pointer]:
+                    - text: Statsråd
+                    - generic [ref=e152]: +
+                  - button "Departement/Övriga avsändare" [ref=e154] [cursor=pointer]:
+                    - text: Departement/Övriga avsändare
+                    - generic [ref=e155]: +
+                  - button "Datum" [ref=e157] [cursor=pointer]:
+                    - text: Datum
+                    - generic [ref=e158]: +
+                  - button "Riksdagsår" [ref=e160] [cursor=pointer]:
+                    - text: Riksdagsår
+                    - generic [ref=e161]: +
+              - button "Använd filter" [ref=e163] [cursor=pointer]
+          - region [ref=e164]:
+            - generic [ref=e167]:
+              - generic [ref=e168]:
+                - button "Filtrera" [ref=e169] [cursor=pointer]:
+                  - text: Filtrera
+                  - generic [ref=e170]: 
+                - link "RSS E-post Prenumerera" [ref=e171] [cursor=pointer]:
+                  - /url: /prenumerera-via-e-post/
+                  - generic [ref=e172]:
+                    - img "RSS"
+                    - img "E-post"
+                  - text: Prenumerera
+              - generic [ref=e174]:
+                - paragraph [ref=e175]:
+                  - generic [ref=e176]:
+                    - text: Ditt urval ger
+                    - strong [ref=e177]: "909"
+                    - text: träffar av totalt
+                    - strong [ref=e178]: "909"
+                    - text: .
+                - generic [ref=e179]:
+                  - generic:
+                    - list
+                - generic [ref=e180]:
+                  - list [ref=e181]:
+                    - listitem [ref=e182]:
+                      - generic [ref=e183]:
+                        - link " Regeringen satsar på utbildning och kompetens i tandvården" [ref=e184] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/regeringen-satsar-pa-utbildning-och-kompetens-i-tandvarden/
+                        - paragraph [ref=e185]: Regeringen satsar för att säkerställa tillgången till verksamhetsförlagd utbildning, handledning samt specialisttjänstgöring i tandvården. Målet är att säkra den kliniska träningen för tandvårdsstudenter i hela landet.
+                        - paragraph [ref=e187]:
+                          - text: Publicerad
+                          - time [ref=e188]: 21 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e189] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Jakob Forssmed" [ref=e190] [cursor=pointer]:
+                            - /url: /tx/2616
+                          - text: ","
+                          - link "Socialdepartementet" [ref=e191] [cursor=pointer]:
+                            - /url: /tx/1292
+                    - listitem [ref=e192]:
+                      - generic [ref=e193]:
+                        - link " Regeringen stärker service och gemenskap i landsbygder" [ref=e194] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/regeringen-starker-service-och-gemenskap-i-landsbygder/
+                        - paragraph [ref=e195]: I vårändringsbudgeten för 2026 stärker regeringen tillgången till apotek och lokala samlingslokaler i landsbygder. Glesbygdsbidraget till apotek höjs för att motverka nedläggningar och stödet till Bygdegårdarnas Riksförbund förstärks för att säkra lokala samlingslokaler i hela landet.
+                        - paragraph [ref=e197]:
+                          - text: Publicerad
+                          - time [ref=e198]: 17 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e199] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Jakob Forssmed" [ref=e200] [cursor=pointer]:
+                            - /url: /tx/2616
+                          - text: ","
+                          - link "Peter Kullgren" [ref=e201] [cursor=pointer]:
+                            - /url: /tx/2626
+                          - text: ","
+                          - link "Landsbygds- och infrastrukturdepartementet" [ref=e202] [cursor=pointer]:
+                            - /url: /tx/2425
+                          - text: ","
+                          - link "Socialdepartementet" [ref=e203] [cursor=pointer]:
+                            - /url: /tx/1292
+                    - listitem [ref=e204]:
+                      - generic [ref=e205]:
+                        - link " IVO ska förbereda arbetet med tillstånd för familjehem" [ref=e206] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/ivo-ska-forbereda-arbetet-med-tillstand-for-familjehem/
+                        - paragraph [ref=e207]: (Ny version) Regeringen avser gå vidare med förslag om krav på tillstånd för familjehem och jourhem. I vårändringsbudgeten för 2026 föreslår regeringen att IVO får fem miljoner kronor för att kunna förbereda det nya systemet med tillståndsprövning.
+                        - paragraph [ref=e209]:
+                          - text: Publicerad
+                          - time [ref=e210]: 14 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e211] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Camilla Waltersson Grönvall" [ref=e212] [cursor=pointer]:
+                            - /url: /tx/2610
+                          - text: ","
+                          - link "Socialdepartementet" [ref=e213] [cursor=pointer]:
+                            - /url: /tx/1292
+                    - listitem [ref=e214]:
+                      - generic [ref=e215]:
+                        - link " Lokal fördelning av satsningar i vårbudgeten för 2026" [ref=e216] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/lokal-fordelning-av-satsningar-i-varbudgeten-for-2026/
+                        - paragraph [ref=e217]: Den 13 april överlämnade regeringen vårbudgeten för 2026 till riksdagen. Här presenteras en lokal fördelning av satsningarna i budgeten. Fördelningen redovisas per län.
+                        - paragraph [ref=e219]:
+                          - text: Publicerad
+                          - time [ref=e220]: 14 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e221] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Finansdepartementet" [ref=e222] [cursor=pointer]:
+                            - /url: /tx/1285
+                    - listitem [ref=e223]:
+                      - generic [ref=e224]:
+                        - link " Regeringen tar nästa steg i avvecklingen av kostnadshyran i vårändringsbudgeten" [ref=e225] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/regeringen-tar-nasta-steg-i-avvecklingen-av-kostnadshyran-i-varandringsbudgeten/
+                        - paragraph [ref=e226]: I vårändringsbudgeten 2026 bedömer regeringen att en intäktsjusterad hyra bör införas för Operan, Dramaten, Historiska museet, Nationalmuseum och Naturhistoriska riksmuseet. Regeringen tar därmed nästa steg i avvecklingen av kostnadshyresmodellen för de berörda fastigheterna. Regeringen för också upp ett nytt anslag på statens budget för att möjliggöra en renovering av operabyggnaden i Stockholm.
+                        - paragraph [ref=e228]:
+                          - text: Publicerad
+                          - time [ref=e229]: 13 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e230] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Parisa Liljestrand" [ref=e231] [cursor=pointer]:
+                            - /url: /tx/2624
+                          - text: ","
+                          - link "Kulturdepartementet" [ref=e232] [cursor=pointer]:
+                            - /url: /tx/1288
+                    - listitem [ref=e233]:
+                      - generic [ref=e234]:
+                        - link " Extra ändringsbudget för 2026 – Sänkt skatt på drivmedel samt el- och gasprisstöd, Prop. 2025/26:236" [ref=e235] [cursor=pointer]:
+                          - /url: /rattsliga-dokument/proposition/2026/04/prop.-202526236
+                        - paragraph [ref=e236]: I denna proposition lämnar regeringen förslag till ändringar i statens budget för 2026. Förslagen är en följd av konflikten i Mellanöstern, vilken påverkar drivmedelspriserna, samt de höga elpriserna och den stränga kyla som har gjort att hushållens kostnader för uppvärmning varit höga under inledningen av 2026.
+                        - paragraph [ref=e238]:
+                          - text: Publicerad
+                          - time [ref=e239]: 13 april 2026
+                          - text: ·
+                          - link "Proposition" [ref=e240] [cursor=pointer]:
+                            - /url: /tx/1329
+                          - text: ","
+                          - link "Rättsliga dokument" [ref=e241] [cursor=pointer]:
+                            - /url: /tx/1324
+                          - text: från
+                          - link "Finansdepartementet" [ref=e242] [cursor=pointer]:
+                            - /url: /tx/1285
+                          - text: ","
+                          - link "Regeringen" [ref=e243] [cursor=pointer]:
+                            - /url: /tx/1296
+                    - listitem [ref=e244]:
+                      - generic [ref=e245]:
+                        - link " En vårbudget för att stärka och skydda svensk ekonomi" [ref=e246] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/en-varbudget-for-att-starka-och-skydda-svensk-ekonomi/
+                        - paragraph [ref=e247]: I dag överlämnas vårbudgeten för 2026 till riksdagen. I ett prövande och oförutsägbart omvärldsläge står Sverige starkt, och återhämtningen i svensk ekonomi har påbörjats. Regeringen fortsätter nu bygga ett starkare och tryggare Sverige. Vårbudgeten innehåller åtgärder för 7,7 miljarder kronor för 2026.
+                        - paragraph [ref=e249]:
+                          - text: Publicerad
+                          - time [ref=e250]: 13 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e251] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: ","
+                          - link "Webb-tv" [ref=e252] [cursor=pointer]:
+                            - /url: /tx/1343
+                          - text: från
+                          - link "Elisabeth Svantesson" [ref=e253] [cursor=pointer]:
+                            - /url: /tx/2613
+                          - text: ","
+                          - link "Finansdepartementet" [ref=e254] [cursor=pointer]:
+                            - /url: /tx/1285
+                    - listitem [ref=e255]:
+                      - generic [ref=e256]:
+                        - link " 2026 års ekonomiska vårproposition, Prop. 2025/26:100" [ref=e257] [cursor=pointer]:
+                          - /url: /rattsliga-dokument/proposition/2026/04/prop.-202526100
+                        - paragraph [ref=e258]: Propositionen innehåller regeringens förslag till riktlinjer för den ekonomiska politiken och budgetpolitiken. Riktlinjernas syfte är att ange politikens inriktning inför budgetpropositionen för 2027.
+                        - paragraph [ref=e260]:
+                          - text: Publicerad
+                          - time [ref=e261]: 13 april 2026
+                          - text: ·
+                          - link "Proposition" [ref=e262] [cursor=pointer]:
+                            - /url: /tx/1329
+                          - text: ","
+                          - link "Rättsliga dokument" [ref=e263] [cursor=pointer]:
+                            - /url: /tx/1324
+                          - text: från
+                          - link "Finansdepartementet" [ref=e264] [cursor=pointer]:
+                            - /url: /tx/1285
+                          - text: ","
+                          - link "Regeringen" [ref=e265] [cursor=pointer]:
+                            - /url: /tx/1296
+                    - listitem [ref=e266]:
+                      - generic [ref=e267]:
+                        - link " Vårbudgeten 2026 på fem minuter" [ref=e268] [cursor=pointer]:
+                          - /url: /artiklar/2026/04/varbudgeten-2026-pa-fem-minuter/
+                        - paragraph [ref=e269]: Den 13 april presenterade regeringen sin vårbudget. Sverige står fortsatt starkt i det osäkra omvärldsläget med en ekonomi som är i återhämtning. Budgeten innehåller åtgärder för 7,7 miljarder kronor för 2026 och fokuserar på att bygga ett starkare och tryggare Sverige.
+                        - paragraph [ref=e271]:
+                          - text: Publicerad
+                          - time [ref=e272]: 13 april 2026
+                          - text: ·
+                          - link "Artikel" [ref=e273] [cursor=pointer]:
+                            - /url: /tx/2097
+                          - text: ","
+                          - link "Webb-tv" [ref=e274] [cursor=pointer]:
+                            - /url: /tx/1343
+                          - text: från
+                          - link "Elisabeth Svantesson" [ref=e275] [cursor=pointer]:
+                            - /url: /tx/2613
+                          - text: ","
+                          - link "Finansdepartementet" [ref=e276] [cursor=pointer]:
+                            - /url: /tx/1285
+                    - listitem [ref=e277]:
+                      - generic [ref=e278]:
+                        - link " Metod för regeringens bedömning av finanspolitikens långsiktiga hållbarhet" [ref=e279] [cursor=pointer]:
+                          - /url: /rapporter/2026/04/metod-for-regeringens-bedomning-av-finanspolitikens-langsiktiga-hallbarhet-april-2026/
+                        - paragraph [ref=e280]: Regeringen ska årligen bedöma finanspolitikens långsiktiga hållbarhet. Det följer både av budgetlagen och den Europeiska kommissionens krav på medlemsstaternas budgetramverk. I den ekonomiska vårpropositionen presenteras en sådan bedömning. I denna promemoria beskrivs den metod och de antaganden som ligger till grund för bedömningen.
+                        - paragraph [ref=e282]:
+                          - text: Publicerad
+                          - time [ref=e283]: 13 april 2026
+                          - text: ·
+                          - link "Rapport" [ref=e284] [cursor=pointer]:
+                            - /url: /tx/1341
+                          - text: från
+                          - link "Finansdepartementet" [ref=e285] [cursor=pointer]:
+                            - /url: /tx/1285
+                    - listitem [ref=e286]:
+                      - generic [ref=e287]:
+                        - link " Vårändringsbudget för 2026, Prop. 2025/26:99" [ref=e288] [cursor=pointer]:
+                          - /url: /rattsliga-dokument/proposition/2026/04/prop.-20252699
+                        - paragraph [ref=e289]: Propositionen innehåller förslag till ändringar som avser statens utgifter för budgetåret 2026.
+                        - paragraph [ref=e291]:
+                          - text: Publicerad
+                          - time [ref=e292]: 13 april 2026
+                          - text: ·
+                          - link "Proposition" [ref=e293] [cursor=pointer]:
+                            - /url: /tx/1329
+                          - text: ","
+                          - link "Rättsliga dokument" [ref=e294] [cursor=pointer]:
+                            - /url: /tx/1324
+                          - text: från
+                          - link "Finansdepartementet" [ref=e295] [cursor=pointer]:
+                            - /url: /tx/1285
+                          - text: ","
+                          - link "Regeringen" [ref=e296] [cursor=pointer]:
+                            - /url: /tx/1296
+                    - listitem [ref=e297]:
+                      - generic [ref=e298]:
+                        - link " Redovisning av skatteutgifter 2026, Skr. 2025/26:98" [ref=e299] [cursor=pointer]:
+                          - /url: /rattsliga-dokument/skrivelse/2026/04/skr.-20252698
+                        - paragraph [ref=e300]: I denna skrivelse redogör regeringen för skatteutgifterna, det vill säga de effekter på skatteintäkterna som uppstår till följd av särregler i skattelagstiftningen. Redovisningen syftar bland annat till att ge ett bredare underlag för prioritering mellan olika stöd och satsningar i statsbudgeten.
+                        - paragraph [ref=e302]:
+                          - text: Publicerad
+                          - time [ref=e303]: 13 april 2026
+                          - text: ·
+                          - link "Rättsliga dokument" [ref=e304] [cursor=pointer]:
+                            - /url: /tx/1324
+                          - text: ","
+                          - link "Skrivelse" [ref=e305] [cursor=pointer]:
+                            - /url: /tx/1330
+                          - text: från
+                          - link "Finansdepartementet" [ref=e306] [cursor=pointer]:
+                            - /url: /tx/1285
+                          - text: ","
+                          - link "Regeringen" [ref=e307] [cursor=pointer]:
+                            - /url: /tx/1296
+                    - listitem [ref=e308]:
+                      - generic [ref=e309]:
+                        - link " Årsredovisning för staten 2025, Skr. 2025/26:101" [ref=e310] [cursor=pointer]:
+                          - /url: /rattsliga-dokument/skrivelse/2026/04/skr.-202526101
+                        - paragraph [ref=e311]: I skrivelsen lämnar regeringen en redogörelse för det ekonomiska utfallet i staten 2025. Skrivelsen omfattar en uppföljning av de budgetpolitiska målen, utfallet på budgetens inkomsttitlar och anslag samt övriga finansiella befogenheter, resultaträkning, balansräkning och finansieringsanalys, utvecklingen av statsskulden, redovisning och riskanalys av statliga garantier och utlåning samt nationellt intygande och avgifter till och bidrag från EU.
+                        - paragraph [ref=e313]:
+                          - text: Publicerad
+                          - time [ref=e314]: 13 april 2026
+                          - text: ·
+                          - link "Rättsliga dokument" [ref=e315] [cursor=pointer]:
+                            - /url: /tx/1324
+                          - text: ","
+                          - link "Skrivelse" [ref=e316] [cursor=pointer]:
+                            - /url: /tx/1330
+                          - text: från
+                          - link "Finansdepartementet" [ref=e317] [cursor=pointer]:
+                            - /url: /tx/1285
+                          - text: ","
+                          - link "Regeringen" [ref=e318] [cursor=pointer]:
+                            - /url: /tx/1296
+                    - listitem [ref=e319]:
+                      - generic [ref=e320]:
+                        - link " Teknisk bilaga till Fördelningspolitisk redogörelse april 2026" [ref=e321] [cursor=pointer]:
+                          - /url: /rapporter/2026/04/teknisk-bilaga-till-fordelningspolitisk-redogorelse-april-2026/
+                        - paragraph [ref=e322]: Denna bilaga innehåller en beskrivning av de datamaterial, modeller, metoder, begrepp och definitioner som används i 2026 års fördelningspolitiska redogörelse (prop. 2025/26:100 bilaga 2).
+                        - paragraph [ref=e324]:
+                          - text: Publicerad
+                          - time [ref=e325]: 13 april 2026
+                          - text: ·
+                          - link "Rapport" [ref=e326] [cursor=pointer]:
+                            - /url: /tx/1341
+                          - text: från
+                          - link "Finansdepartementet" [ref=e327] [cursor=pointer]:
+                            - /url: /tx/1285
+                          - text: ","
+                          - link "Regeringen" [ref=e328] [cursor=pointer]:
+                            - /url: /tx/1296
+                    - listitem [ref=e329]:
+                      - generic [ref=e330]:
+                        - link " Fördelningspolitisk redogörelse april 2026" [ref=e331] [cursor=pointer]:
+                          - /url: /informationsmaterial/2026/04/fordelningspolitisk-redogorelse-april-2026/
+                        - paragraph [ref=e332]: På uppdrag av riksdagen lämnar regeringen sedan 1994 en fördelningspolitisk redogörelse. I redogörelsen analyseras bland annat inkomstfördelningen i ett historiskt perspektiv och i vilken utsträckning den förda politiken bidrar till att utjämna levnadsvillkoren i Sverige.
+                        - paragraph [ref=e334]:
+                          - text: Publicerad
+                          - time [ref=e335]: 13 april 2026
+                          - text: ·
+                          - link "Informationsmaterial" [ref=e336] [cursor=pointer]:
+                            - /url: /tx/1339
+                          - text: från
+                          - link "Finansdepartementet" [ref=e337] [cursor=pointer]:
+                            - /url: /tx/1285
+                          - text: ","
+                          - link "Regeringen" [ref=e338] [cursor=pointer]:
+                            - /url: /tx/1296
+                    - listitem [ref=e339]:
+                      - generic [ref=e340]:
+                        - 'link " Pressinbjudan: Infrastruktur- och bostadsminister Andreas Carlson besöker Värmland" [ref=e341] [cursor=pointer]':
+                          - /url: /pressmeddelanden/2026/04/infrastruktur--och-bostadsminister-andreas-carlson-besoker-varmland/
+                        - paragraph [ref=e342]: Måndagen den 13 april besöker infrastruktur- och bostadsminister Andreas Carlson Karlstad och Karlskoga. Under besöket kommer statsrådet besöka lokala företag, samt delta vid Tillväxtdagen i Karlstad. Utöver företagsbesök kommer Andreas Carlson även hålla en pressträff i Karlstad för att presentera några av regeringens prioriteringar i vårändringsbudgeten.
+                        - paragraph [ref=e344]:
+                          - text: Publicerad
+                          - time [ref=e345]: 13 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e346] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Andreas Carlson" [ref=e347] [cursor=pointer]:
+                            - /url: /tx/2608
+                          - text: ","
+                          - link "Landsbygds- och infrastrukturdepartementet" [ref=e348] [cursor=pointer]:
+                            - /url: /tx/2425
+                    - listitem [ref=e349]:
+                      - generic [ref=e350]:
+                        - link " Satsningar för en fortsatt offensiv omläggning av kriminalpolitiken" [ref=e351] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/satsningar-for-en-fortsatt-offensiv-omlaggning-av-kriminalpolitiken/
+                        - paragraph [ref=e352]: Under mandatperioden har omfattande steg tagits i omläggningen av kriminalpolitiken och rättsväsendet tillförts stora resurser. I vårändringsbudgeten för 2026 föreslås ytterligare 270 miljoner kronor för detta arbete. Det handlar om medel till Polismyndigheten för stärkt teknisk förmåga, till Statens institutionsstyrelse (SiS) för att förbereda för elektronisk övervakning av barn och unga samt till anslaget för brottsskadeersättning för att säkerställa att brottsoffer får sin berättigade ersättning utan onödiga dröjsmål.
+                        - paragraph [ref=e354]:
+                          - text: Publicerad
+                          - time [ref=e355]: 10 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e356] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Camilla Waltersson Grönvall" [ref=e357] [cursor=pointer]:
+                            - /url: /tx/2610
+                          - text: ","
+                          - link "Gunnar Strömmer" [ref=e358] [cursor=pointer]:
+                            - /url: /tx/2615
+                          - text: ","
+                          - link "Justitiedepartementet" [ref=e359] [cursor=pointer]:
+                            - /url: /tx/1287
+                          - text: ","
+                          - link "Socialdepartementet" [ref=e360] [cursor=pointer]:
+                            - /url: /tx/1292
+                    - listitem [ref=e361]:
+                      - generic [ref=e362]:
+                        - link " Ny kärnkraft är en samhällsinvestering som förutsätter en ny roll för staten" [ref=e363] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/ny-karnkraft-ar-en-samhallsinvestering-som-forutsatter-en-ny-roll-for-staten/
+                        - paragraph [ref=e364]: Ny kärnkraft innebär ett långsiktigt åtagande för samhället. Den kräver privata investeringar såväl som insatser från statens sida. Regeringen föreslår nu i vårändringsbudgeten för 2026 dels ett statligt majoritetsägande i Videberg Kraft AB, dels att staten tar en roll i finansieringen av det framtida systemet för omhändertagandet av radioaktivt avfall och använt kärnbränsle genom att lyfta av risk för den som gör de första investeringarna. Den som producerar avfallet ska även fortsatt stå för sin del av kostnaderna.
+                        - paragraph [ref=e366]:
+                          - text: Publicerad
+                          - time [ref=e367]: 10 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e368] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Ebba Busch" [ref=e369] [cursor=pointer]:
+                            - /url: /tx/2612
+                          - text: ","
+                          - link "Johan Britz" [ref=e370] [cursor=pointer]:
+                            - /url: /tx/2792
+                          - text: ","
+                          - link "Niklas Wykman" [ref=e371] [cursor=pointer]:
+                            - /url: /tx/2623
+                          - text: ","
+                          - link "Finansdepartementet" [ref=e372] [cursor=pointer]:
+                            - /url: /tx/1285
+                          - text: ","
+                          - link "Klimat- och näringslivsdepartementet" [ref=e373] [cursor=pointer]:
+                            - /url: /tx/1291
+                    - listitem [ref=e374]:
+                      - generic [ref=e375]:
+                        - link " Satsningar inom Socialdepartementets områden – Vårbudgeten 2026" [ref=e376] [cursor=pointer]:
+                          - /url: /artiklar/2026/04/reformer-inom-socialdepartementets-omraden---varbudgeten-2026/
+                        - paragraph [ref=e377]: Regeringen avser i vårbudgeten för 2026 lägga fram en rad förslag inom Socialdepartementets områden. På denna sida länkas de nyheter från budgeten som regeringen hittills har aviserat inom Socialdepartementets områden. Förslagen bygger på en överenskommelse mellan regeringen och Sverigedemokraterna. Den 13 april överlämnas regeringens vårbudget för 2026 till riksdagen.
+                        - paragraph [ref=e379]:
+                          - text: Publicerad
+                          - time [ref=e380]: 10 april 2026
+                          - text: ·
+                          - link "Artikel" [ref=e381] [cursor=pointer]:
+                            - /url: /tx/2097
+                          - text: från
+                          - link "Anna Tenje" [ref=e382] [cursor=pointer]:
+                            - /url: /tx/2609
+                          - text: ","
+                          - link "Camilla Waltersson Grönvall" [ref=e383] [cursor=pointer]:
+                            - /url: /tx/2610
+                          - text: ","
+                          - link "Elisabet Lann" [ref=e384] [cursor=pointer]:
+                            - /url: /tx/2795
+                          - text: ","
+                          - link "Jakob Forssmed" [ref=e385] [cursor=pointer]:
+                            - /url: /tx/2616
+                          - text: ","
+                          - link "Socialdepartementet" [ref=e386] [cursor=pointer]:
+                            - /url: /tx/1292
+                    - listitem [ref=e387]:
+                      - generic [ref=e388]:
+                        - link " Biståndet återförs medel på grund av lägre asylkostnader" [ref=e389] [cursor=pointer]:
+                          - /url: /pressmeddelanden/2026/04/bistandet-aterfors-medel-pa-grund-av-lagre-asylkostnader/
+                        - paragraph [ref=e390]: Utfallet för asylkostnader 2025 blev lägre än beräknat. Regeringen föreslår därför att 1 668 miljoner kronor återförs biståndet i vårändringsbudgeten för 2026. Medlen ska användas för fortsatt genomförande av regeringens reformagenda för biståndet.
+                        - paragraph [ref=e392]:
+                          - text: Publicerad
+                          - time [ref=e393]: 09 april 2026
+                          - text: ·
+                          - link "Pressmeddelande" [ref=e394] [cursor=pointer]:
+                            - /url: /tx/1334
+                          - text: från
+                          - link "Benjamin Dousa" [ref=e395] [cursor=pointer]:
+                            - /url: /tx/2756
+                          - text: ","
+                          - link "Utrikesdepartementet" [ref=e396] [cursor=pointer]:
+                            - /url: /tx/1295
+                  - navigation "Sidor i sök och filtrering.":
+                    - list [ref=e397]:
+                      - listitem [ref=e398]:
+                        - link "Träff 1 till 20" [ref=e399] [cursor=pointer]:
+                          - /url: "?p=1#result"
+                          - text: 1 - 20
+                      - listitem [ref=e400]:
+                        - link "Träff 21 till 40" [ref=e401] [cursor=pointer]:
+                          - /url: "?p=2#result"
+                          - text: 21 - 40
+                      - listitem [ref=e402]:
+                        - link "Träff 41 till 60" [ref=e403] [cursor=pointer]:
+                          - /url: "?p=3#result"
+                          - text: 41 - 60
+                      - listitem [ref=e404]:
+                        - link "Träff 61 till 80" [ref=e405] [cursor=pointer]:
+                          - /url: "?p=4#result"
+                          - text: 61 - 80
+                      - listitem [ref=e406]:
+                        - link "Träff 81 till 100" [ref=e407] [cursor=pointer]:
+                          - /url: "?p=5#result"
+                          - text: 81 - 100
+                      - listitem [ref=e408]:
+                        - link "Nästa 20 träffar" [ref=e409] [cursor=pointer]:
+                          - /url: "?p=2#result"
+                          - text: Nästa
+                          - generic [ref=e410]: 
+    - contentinfo [ref=e411]:
+      - generic [ref=e414]:
+        - generic [ref=e416]:
+          - heading "Innehåll på regeringen.se" [level=2] [ref=e417]
+          - text: +
+          - list [ref=e420]:
+            - listitem [ref=e421]:
+              - link " Sveriges regering" [ref=e422] [cursor=pointer]:
+                - /url: /sveriges-regering/
+            - listitem [ref=e423]:
+              - link " Regeringens politik" [ref=e424] [cursor=pointer]:
+                - /url: /regeringens-politik/
+            - listitem [ref=e425]:
+              - link " Sverige i EU" [ref=e426] [cursor=pointer]:
+                - /url: /sverige-i-eu/
+            - listitem [ref=e427]:
+              - link " Så styrs Sverige" [ref=e428] [cursor=pointer]:
+                - /url: /sa-styrs-sverige/
+            - listitem [ref=e429]:
+              - link " Press" [ref=e430] [cursor=pointer]:
+                - /url: /press/
+            - listitem [ref=e431]:
+              - link " Kontakt" [ref=e432] [cursor=pointer]:
+                - /url: /kontakt/
+            - listitem [ref=e433]:
+              - link " Jobba hos oss" [ref=e434] [cursor=pointer]:
+                - /url: /jobba-hos-oss/
+            - listitem [ref=e435]:
+              - link " Kalendarium" [ref=e436] [cursor=pointer]:
+                - /url: /kalendarium/
+            - listitem [ref=e437]:
+              - link " Om Regeringskansliet" [ref=e438] [cursor=pointer]:
+                - /url: /regeringskansliet/
+            - listitem [ref=e439]:
+              - link " Om webbplatsen" [ref=e440] [cursor=pointer]:
+                - /url: /om-webbplatsen/
+            - listitem [ref=e441]:
+              - link " Other languages" [ref=e442] [cursor=pointer]:
+                - /url: /other-languages/
+            - listitem [ref=e443]:
+              - link " Prenumerera via e-post" [ref=e444] [cursor=pointer]:
+                - /url: /prenumerera-via-e-post/
+            - listitem [ref=e445]:
+              - link " Regeringens utlysningar" [ref=e446] [cursor=pointer]:
+                - /url: /regeringens-utlysningar/
+            - listitem [ref=e447]:
+              - link " Rättsliga dokument" [ref=e448] [cursor=pointer]:
+                - /url: /rattsliga-dokument/
+            - listitem [ref=e449]:
+              - link " Tillgänglighetsredogörelse" [ref=e450] [cursor=pointer]:
+                - /url: /om-webbplatsen/tillganglighetsredogorelse/
+            - listitem [ref=e451]:
+              - link " Veckans regeringssammanträde" [ref=e452] [cursor=pointer]:
+                - /url: /regeringsarenden/
+        - generic [ref=e454]:
+          - heading "Departement" [level=2] [ref=e455]
+          - text: +
+          - list [ref=e457]:
+            - listitem [ref=e458]:
+              - link " Statsrådsberedningen" [ref=e459] [cursor=pointer]:
+                - /url: /sveriges-regering/statsradsberedningen/
+            - listitem [ref=e460]:
+              - link " Arbetsmarknadsdepartementet" [ref=e461] [cursor=pointer]:
+                - /url: /sveriges-regering/arbetsmarknadsdepartementet/
+            - listitem [ref=e462]:
+              - link " Finansdepartementet" [ref=e463] [cursor=pointer]:
+                - /url: /sveriges-regering/finansdepartementet/
+            - listitem [ref=e464]:
+              - link " Försvarsdepartementet" [ref=e465] [cursor=pointer]:
+                - /url: /sveriges-regering/forsvarsdepartementet/
+            - listitem [ref=e466]:
+              - link " Justitiedepartementet" [ref=e467] [cursor=pointer]:
+                - /url: /sveriges-regering/justitiedepartementet/
+            - listitem [ref=e468]:
+              - link " Klimat- och näringslivsdepartementet" [ref=e469] [cursor=pointer]:
+                - /url: /sveriges-regering/klimat--och-naringslivsdepartementet/
+            - listitem [ref=e470]:
+              - link " Kulturdepartementet" [ref=e471] [cursor=pointer]:
+                - /url: /sveriges-regering/kulturdepartementet/
+            - listitem [ref=e472]:
+              - link " Landsbygds- och infrastrukturdepartementet" [ref=e473] [cursor=pointer]:
+                - /url: /sveriges-regering/landsbygds--och-infrastrukturdepartementet/
+            - listitem [ref=e474]:
+              - link " Socialdepartementet" [ref=e475] [cursor=pointer]:
+                - /url: /sveriges-regering/socialdepartementet/
+            - listitem [ref=e476]:
+              - link " Utbildningsdepartementet" [ref=e477] [cursor=pointer]:
+                - /url: /sveriges-regering/utbildningsdepartementet/
+            - listitem [ref=e478]:
+              - link " Utrikesdepartementet" [ref=e479] [cursor=pointer]:
+                - /url: /sveriges-regering/utrikesdepartementet/
+        - generic [ref=e480]:
+          - heading "Kontakt" [level=2] [ref=e481]
+          - paragraph [ref=e483]:
+            - text: Regeringskansliet
+            - text: 103 33 Stockholm
+            - text: Växel 08-405 10 00
+          - link " Kontakt" [ref=e486] [cursor=pointer]:
+            - /url: /kontakt/
+      - generic [ref=e487]:
+        - generic:
+          - link "Gå till startsidan" [ref=e489] [cursor=pointer]:
+            - /url: /
+            - img "Regeringskansliet" [ref=e490]
+          - generic [ref=e491]:
+            - paragraph [ref=e492]: Det här är regeringens och Regeringskansliets gemensamma webbplats.
+            - list [ref=e493]:
+              - listitem [ref=e494]:
+                - link "Om Regeringskansliet" [ref=e495] [cursor=pointer]:
+                  - /url: /regeringskansliet/
+              - listitem [ref=e496]:
+                - button "Inställningar av kakor" [ref=e497] [cursor=pointer]
+  - dialog "Inställningar för kakor" [ref=e498]:
+    - generic [active] [ref=e499]:
+      - generic [ref=e500]:
+        - heading "Inställningar för kakor" [level=1] [ref=e501]
+        - paragraph [ref=e503]: Regeringen.se sparar information på din enhet för att kunna erbjuda anpassad funktionalitet och samla in besöksstatistik. Du väljer om du accepterar besöksstatistik utöver de nödvändiga kakor som behövs för att webbplatsen ska fungera.
+        - generic [ref=e504]:
+          - button "Acceptera alla" [ref=e506] [cursor=pointer]
+          - button "Endast nödvändiga" [ref=e508] [cursor=pointer]
+      - region "Om våra kakor" [ref=e509]:
+        - button "Om våra kakor" [ref=e510] [cursor=pointer]:
+          - generic [ref=e511]: Om våra kakor

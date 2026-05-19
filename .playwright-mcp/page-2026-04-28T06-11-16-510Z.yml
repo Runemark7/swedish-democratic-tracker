@@ -1,0 +1,144 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - generic:
+      - generic [active] [ref=e6]: "404"
+      - link "Till innehåll på sidan" [ref=e7] [cursor=pointer]:
+        - /url: "#content"
+    - banner [ref=e8]:
+      - link "Sveriges Riksdags logotyp, tillbaka till startsidan" [ref=e11] [cursor=pointer]:
+        - /url: https://www.riksdagen.se/sv/
+        - img "Sveriges Riksdags logotyp, tillbaka till startsidan" [ref=e12]
+  - main [ref=e15]:
+    - generic [ref=e17]:
+      - heading "Den här sidan kan inte visas" [level=1] [ref=e18]
+      - paragraph [ref=e19]: Den efterfrågade sidan kan inte visas på riksdagen.se.
+      - generic [ref=e20]:
+        - paragraph [ref=e21]: Om du skrev in adressen för hand, kontrollera stavningen och försök igen.
+        - paragraph [ref=e22]: "Om du klickade på en länk på webbplatsen och fick upp den här sidan, kontakta riksdagsinformation:"
+        - list [ref=e23]:
+          - listitem [ref=e24]: "Telefon: 020-349 000"
+          - listitem [ref=e25]:
+            - text: "E-post:"
+            - link "riksdagsinformation@riksdagen.se" [ref=e26] [cursor=pointer]:
+              - /url: mailto:riksdagsinformation@riksdagen.se
+              - generic [ref=e28]: riksdagsinformation@riksdagen.se
+        - paragraph [ref=e29]: Ange vilken länk du klickade på och att du fick felkoden 404.
+  - contentinfo [ref=e30]:
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - link "Sveriges Riksdags logotyp, tillbaka till startsidan" [ref=e35] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/
+          - img "Sveriges Riksdags logotyp, tillbaka till startsidan" [ref=e36]
+        - paragraph [ref=e37]: All offentlig makt i Sverige utgår från folket och riksdagen är folkets främsta företrädare.
+      - link "Till toppen" [ref=e38] [cursor=pointer]:
+        - /url: "#top"
+        - img [ref=e39]
+        - generic [ref=e41]: Till toppen
+    - generic [ref=e43]:
+      - generic [ref=e44]:
+        - heading "Kontakt" [level=1] [ref=e45]
+        - generic [ref=e46]:
+          - text: Växel
+          - generic [ref=e47]:
+            - img [ref=e48]
+            - link "08-786 40 00" [ref=e51] [cursor=pointer]:
+              - /url: tel:087864000
+        - generic [ref=e52]:
+          - heading "Faktafrågor om riksdagen och EU" [level=2] [ref=e53]
+          - text: Riksdagsinformation
+          - generic [ref=e54]:
+            - img [ref=e55]
+            - link "020-349 000" [ref=e58] [cursor=pointer]:
+              - /url: tel:020349000
+          - generic [ref=e59]:
+            - img [ref=e60]
+            - link "riksdagsinformation@riksdagen.se" [ref=e63] [cursor=pointer]:
+              - /url: mailto:riksdagsinformation@riksdagen.se
+        - heading "Kontakta ledamöter" [level=2] [ref=e65]:
+          - link "Kontakta ledamöter" [ref=e66] [cursor=pointer]:
+            - /url: https://www.riksdagen.se/sv/ledamoter-och-partier/ledamoterna/
+            - generic [ref=e68]: Kontakta ledamöter
+        - generic [ref=e69]:
+          - heading "Frågor om Riksdagsförvaltningens diarium" [level=2] [ref=e70]
+          - generic [ref=e71]:
+            - img [ref=e72]
+            - link "registrator.riksdagsforvaltningen@riksdagen.se" [ref=e75] [cursor=pointer]:
+              - /url: mailto:registrator.riksdagsforvaltningen@riksdagen.se
+      - generic [ref=e76]:
+        - heading "Genvägar" [level=1] [ref=e77]
+        - list [ref=e78]:
+          - listitem [ref=e79]:
+            - link "Arbeta hos oss" [ref=e80] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/kontakt-och-besok/arbeta-hos-oss/
+              - generic [ref=e82]: Arbeta hos oss
+          - listitem [ref=e83]:
+            - link "Beställ och ladda ner" [ref=e84] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/dokument-och-lagar/bestall-och-ladda-ner/
+              - generic [ref=e86]: Beställ och ladda ner
+          - listitem [ref=e87]:
+            - link "För lärare" [ref=e88] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/kontakt-och-besok/for-larare/
+              - generic [ref=e90]: För lärare
+          - listitem [ref=e91]:
+            - link "Press" [ref=e92] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/kontakt-och-besok/press/
+              - generic [ref=e94]: Press
+          - listitem [ref=e95]:
+            - link "Riksdagens öppna data" [ref=e96] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/dokument-och-lagar/riksdagens-oppna-data/
+              - generic [ref=e98]: Riksdagens öppna data
+          - listitem [ref=e99]:
+            - link "Riksdagsbiblioteket" [ref=e100] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/kontakt-och-besok/riksdagsbiblioteket/
+              - generic [ref=e102]: Riksdagsbiblioteket
+          - listitem [ref=e103]:
+            - link "Riksdagsförvaltningens diarium" [ref=e104] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/dokument-och-lagar/riksdagsforvaltningens-diarium/
+              - generic [ref=e106]: Riksdagsförvaltningens diarium
+      - generic [ref=e107]:
+        - heading "Följ Sveriges riksdag" [level=1] [ref=e108]
+        - list [ref=e109]:
+          - listitem [ref=e110]:
+            - link "Bluesky" [ref=e111] [cursor=pointer]:
+              - /url: https://bsky.app/profile/sverigesriksdag.bsky.social
+              - generic [ref=e112]: Bluesky
+          - listitem [ref=e115]:
+            - link "Instagram" [ref=e116] [cursor=pointer]:
+              - /url: https://www.instagram.com/sveriges_riksdag/
+              - generic [ref=e117]: Instagram
+          - listitem [ref=e120]:
+            - link "Linkedin" [ref=e121] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/riksdagen-se/?originalSubdomain=se
+              - generic [ref=e122]: Linkedin
+          - listitem [ref=e125]:
+            - link "X" [ref=e126] [cursor=pointer]:
+              - /url: https://twitter.com/Sverigesriksdag
+              - generic [ref=e127]: X
+          - listitem [ref=e130]:
+            - link "Youtube" [ref=e131] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCmyMhyy_FHtwui-3dsu-K8g
+              - generic [ref=e132]: Youtube
+          - listitem [ref=e135]:
+            - link "Talmannen på X" [ref=e136] [cursor=pointer]:
+              - /url: https://twitter.com/andreasostgote
+              - generic [ref=e137]: Talmannen på X
+          - listitem [ref=e140]:
+            - link "Talmannen på Instagram" [ref=e141] [cursor=pointer]:
+              - /url: https://www.instagram.com/talman.andreas.norlen/
+              - generic [ref=e142]: Talmannen på Instagram
+        - generic [ref=e145]:
+          - heading "Prenumerera" [level=1] [ref=e146]
+          - paragraph [ref=e148]: För dig som vill bevaka arbetet i kammaren och utskotten finns det flera olika sätt att välja mellan.
+          - link "Följ och prenumerera" [ref=e149] [cursor=pointer]:
+            - /url: https://www.riksdagen.se/sv/aktuellt/folj-och-prenumerera/
+            - generic [ref=e151]: Följ och prenumerera
+      - generic [ref=e153]:
+        - link "Om webbplatsen" [ref=e154] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/om-webbplatsen/
+          - generic [ref=e156]: Om webbplatsen
+        - link "Kakor" [ref=e157] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/om-webbplatsen/kakor/
+          - generic [ref=e159]: Kakor
+        - link "Tillgänglighet" [ref=e160] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/om-webbplatsen/tillganglighet-for-riksdagens-webbplats/
+          - generic [ref=e162]: Tillgänglighet

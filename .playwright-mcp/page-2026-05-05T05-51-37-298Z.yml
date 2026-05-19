@@ -1,0 +1,36 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - button "Meny" [ref=e6] [cursor=pointer]
+      - link "Tre Kammare" [ref=e10] [cursor=pointer]:
+        - /url: /
+        - img [ref=e11]
+        - generic [ref=e15]:
+          - text: Tre
+          - emphasis [ref=e16]: Kammare
+      - button "Byt till mörkt läge" [ref=e17] [cursor=pointer]: ☽
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - link "◆ START" [ref=e20] [cursor=pointer]:
+          - /url: /
+        - link "I RIKSDAG" [ref=e21] [cursor=pointer]:
+          - /url: /riksdag
+        - link "II REGION" [ref=e22] [cursor=pointer]:
+          - /url: /region
+        - link "III KOMMUN" [ref=e23] [cursor=pointer]:
+          - /url: /kommun
+        - link "⌕ SÖK" [ref=e24] [cursor=pointer]:
+          - /url: /sok
+      - generic [ref=e25]:
+        - link "Partier" [ref=e26] [cursor=pointer]:
+          - /url: /
+        - link "Omröstningar" [ref=e27] [cursor=pointer]:
+          - /url: /votes
+        - link "Budget" [ref=e28] [cursor=pointer]:
+          - /url: /budget
+        - link "Politiker" [ref=e29] [cursor=pointer]:
+          - /url: /politicians
+        - link "Manifest" [ref=e30] [cursor=pointer]:
+          - /url: /manifestos
+  - main [ref=e31]:
+    - generic [ref=e32]: Laddar...

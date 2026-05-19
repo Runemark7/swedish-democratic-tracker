@@ -1,0 +1,172 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "Tre Kammare" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e11]:
+          - text: Tre
+          - emphasis [ref=e12]: Kammare
+      - generic [ref=e13]:
+        - link "◆ START" [ref=e14] [cursor=pointer]:
+          - /url: /
+        - link "I RIKSDAG" [ref=e15] [cursor=pointer]:
+          - /url: /riksdag
+        - link "II REGION" [ref=e16] [cursor=pointer]:
+          - /url: /region
+        - link "III KOMMUN" [ref=e17] [cursor=pointer]:
+          - /url: /kommun
+        - link "⌕ SÖK" [ref=e18] [cursor=pointer]:
+          - /url: /sok
+      - generic [ref=e19]:
+        - generic [ref=e20]: LIVE · 24.04.2026
+        - button "Byt till mörkt läge" [ref=e22] [cursor=pointer]: ☽
+    - generic [ref=e23]:
+      - link "Partimål & röstning" [ref=e24] [cursor=pointer]:
+        - /url: /
+      - link "Omröstningar" [ref=e25] [cursor=pointer]:
+        - /url: /votes
+      - link "Statsbudget" [ref=e26] [cursor=pointer]:
+        - /url: /budget
+      - link "Enskilda politiker" [ref=e27] [cursor=pointer]:
+        - /url: /politicians
+      - link "Manifest" [ref=e28] [cursor=pointer]:
+        - /url: /manifestos
+  - main [ref=e29]:
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: I
+        - generic [ref=e33]:
+          - generic [ref=e34]: KAMMARE ETT
+          - generic [ref=e35]: Riksdagen
+          - generic [ref=e36]: Sveriges nationella parlament — 349 ledamöter · Mandatperiod 2022–2026
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - generic [ref=e39]: MANDAT · KAMMARENS SAMMANSÄTTNING
+          - img "Parlamentssäten Halvrundsdiagram som visar fördelning av 349 parlamentssäten" [ref=e40]
+          - generic [ref=e390]:
+            - generic [ref=e391]:
+              - text: M
+              - generic [ref=e393]: "68"
+            - generic [ref=e394]:
+              - text: KD
+              - generic [ref=e396]: "19"
+            - generic [ref=e397]:
+              - text: L
+              - generic [ref=e399]: "16"
+            - generic [ref=e400]:
+              - text: SD
+              - generic [ref=e402]: "73"
+            - generic [ref=e403]:
+              - text: S
+              - generic [ref=e405]: "107"
+            - generic [ref=e406]:
+              - text: V
+              - generic [ref=e408]: "24"
+            - generic [ref=e409]:
+              - text: C
+              - generic [ref=e411]: "24"
+            - generic [ref=e412]:
+              - text: MP
+              - generic [ref=e414]: "18"
+          - generic [ref=e415]:
+            - text: Regeringskoalition (stöd av SD)
+            - generic [ref=e416]: MAJORITET 103/349
+        - generic [ref=e417]:
+          - generic [ref=e418]: BUDGET 2026 · 1 389 mdkr
+          - generic [ref=e419]:
+            - generic [ref=e420]:
+              - 'img "Socialförsäkring: 316, Hälsovård: 97, Utbildning: 99, Försvar: 143, Rättsväsen: 64, Infrastruktur: 78, Statsskuld & räntor: 34, Övrigt: 558" [ref=e421]':
+                - 'generic "Socialförsäkring: 316" [ref=e423]'
+                - 'generic "Hälsovård: 97" [ref=e424]'
+                - 'generic "Utbildning: 99" [ref=e425]'
+                - 'generic "Försvar: 143" [ref=e426]'
+                - 'generic "Rättsväsen: 64" [ref=e427]'
+                - 'generic "Infrastruktur: 78" [ref=e428]'
+                - 'generic "Statsskuld & räntor: 34" [ref=e429]'
+                - 'generic "Övrigt: 558" [ref=e430]'
+              - generic:
+                - generic: 1 389 mdkr
+                - generic: "2026"
+            - generic [ref=e432]:
+              - generic [ref=e434]:
+                - generic [ref=e435]: Socialförsäkring
+                - generic [ref=e436]: 22.7%
+              - generic [ref=e440]:
+                - generic [ref=e441]: Hälsovård
+                - generic [ref=e442]: 7%
+              - generic [ref=e446]:
+                - generic [ref=e447]: Utbildning
+                - generic [ref=e448]: 7.1%
+              - generic [ref=e452]:
+                - generic [ref=e453]: Försvar
+                - generic [ref=e454]: 10.3%
+              - generic [ref=e458]:
+                - generic [ref=e459]: Rättsväsen
+                - generic [ref=e460]: 4.6%
+              - generic [ref=e464]:
+                - generic [ref=e465]: Infrastruktur
+                - generic [ref=e466]: 5.6%
+              - generic [ref=e470]:
+                - generic [ref=e471]: Statsskuld & räntor
+                - generic [ref=e472]: 2.4%
+              - generic [ref=e476]:
+                - generic [ref=e477]: Övrigt
+                - generic [ref=e478]: 40.3%
+      - generic [ref=e481]:
+        - generic [ref=e482]:
+          - generic [ref=e485]: PULS · AKTUELLA BESLUT
+          - generic [ref=e486]:
+            - generic [ref=e487]:
+              - generic [ref=e489]: Idag 14:20
+              - generic "Ändring i socialförsäkringsbalken" [ref=e490]:
+                - text: Ändring i socialförsäkringsbalken
+                - generic [ref=e491]: "[Välfärd]"
+              - generic [ref=e492]: Bifall
+              - generic [ref=e493]: 196–149
+            - generic [ref=e494]:
+              - generic [ref=e496]: Idag 11:05
+              - generic "Höjda pensioner 2026" [ref=e497]:
+                - text: Höjda pensioner 2026
+                - generic [ref=e498]: "[Pension]"
+              - generic [ref=e499]: Bifall
+              - generic [ref=e500]: 245–98
+            - generic [ref=e501]:
+              - generic [ref=e503]: Igår 16:40
+              - generic "Skärpt straff för narkotikabrott" [ref=e504]:
+                - text: Skärpt straff för narkotikabrott
+                - generic [ref=e505]: "[Rättsväsen]"
+              - generic [ref=e506]: Bifall
+              - generic [ref=e507]: 203–142
+            - generic [ref=e508]:
+              - generic [ref=e510]: Igår 10:15
+              - generic "Sänkt bensinskatt" [ref=e511]:
+                - text: Sänkt bensinskatt
+                - generic [ref=e512]: "[Skatt]"
+              - generic [ref=e513]: Avslag
+              - generic [ref=e514]: 149–196
+            - generic [ref=e515]:
+              - generic [ref=e517]: 17 apr
+              - generic "Utökad försvarsbudget" [ref=e518]:
+                - text: Utökad försvarsbudget
+                - generic [ref=e519]: "[Försvar]"
+              - generic [ref=e520]: Bifall
+              - generic [ref=e521]: 289–54
+        - generic [ref=e522]:
+          - generic [ref=e523]: AGENDA · STYRETS PRIORITERINGAR
+          - list [ref=e524]:
+            - listitem [ref=e525]:
+              - generic [ref=e526]: "1"
+              - generic [ref=e527]: Reformerad arbetslöshetsförsäkring
+            - listitem [ref=e528]:
+              - generic [ref=e529]: "2"
+              - generic [ref=e530]: Ny migrationslagstiftning
+            - listitem [ref=e531]:
+              - generic [ref=e532]: "3"
+              - generic [ref=e533]: Skattesänkningar för arbete
+            - listitem [ref=e534]:
+              - generic [ref=e535]: "4"
+              - generic [ref=e536]: Höjd pensionsålder utreds
+            - listitem [ref=e537]:
+              - generic [ref=e538]: "5"
+              - generic [ref=e539]: Stärkt försvar mot 2030
