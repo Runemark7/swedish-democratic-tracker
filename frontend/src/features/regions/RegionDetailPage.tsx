@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory } from "@/hooks/useDemocracy";
-import { Hemicycle, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
+import { Hemicycle, Pill, Trend, GoalBadge } from "@/components/charts";
+import { DeltaIndicator } from "@/features/budget/components/DeltaIndicator";
 import { AgendaList } from "@/components/AgendaList";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
@@ -504,7 +505,7 @@ export function RegionDetailPage() {
                       ? ((curTotal - prevTotal) / prevTotal) * 100
                       : null;
                     const isActive = yr === activeBudgetYear;
-                    const deltaColor = delta == null
+                    const tabDeltaColor = delta == null
                       ? "var(--color-fg-muted)"
                       : delta >= 0 ? "#4caf7d" : "#e05c5c";
 
@@ -512,33 +513,15 @@ export function RegionDetailPage() {
                       <button
                         key={yr}
                         onClick={() => setBudgetTab(yr)}
+                        className="px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all"
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 4,
-                          fontFamily: "var(--font-mono)",
-                          fontSize: 10,
-                          letterSpacing: "0.08em",
-                          padding: "4px 8px",
-                          border: isActive
-                            ? "1px solid var(--color-accent)"
-                            : "1px solid var(--color-border)",
-                          background: isActive ? "var(--color-accent)" : "transparent",
-                          color: isActive ? "var(--color-bg)" : "var(--color-fg-muted)",
-                          cursor: "pointer",
-                          borderRadius: 2,
+                          background: isActive ? "var(--color-primary)" : "var(--color-surface-low)",
+                          color: isActive ? "var(--color-on-primary)" : "var(--color-on-surface)",
                         }}
                       >
                         {yr}
                         {delta != null && (
-                          <span
-                            style={{
-                              fontFamily: "var(--font-mono)",
-                              fontSize: 9,
-                              color: isActive ? "var(--color-bg)" : deltaColor,
-                              opacity: 0.9,
-                            }}
-                          >
+                          <span style={{ marginLeft: 4, fontSize: 10, color: isActive ? "var(--color-on-primary)" : tabDeltaColor }}>
                             {delta >= 0 ? "+" : ""}{delta.toFixed(1)}%
                           </span>
                         )}
@@ -547,32 +530,101 @@ export function RegionDetailPage() {
                   })}
                 </div>
 
-                {/* Active year areas as clickable HBar rows */}
+                {/* Active year — table layout matching /budget */}
                 {activeBudgetYear != null && (() => {
                   const areas = historyByYear.get(activeBudgetYear) ?? [];
-                  const totalMnkr = areas.reduce((s, a) => s + a.value_mnkr, 0);
-                  const hbarItems = areas.map((a, i) => ({
-                    name: a.area_name,
-                    value: Math.round(a.value_mnkr * 10) / 10,
-                    color: BUDGET_COLORS[i % BUDGET_COLORS.length],
-                    pct: totalMnkr > 0 ? (a.value_mnkr / totalMnkr) * 100 : a.pct,
-                  }));
+                  const prevYear = sortedYears[sortedYears.indexOf(activeBudgetYear) + 1] ?? null;
+                  const prevAreas = prevYear != null ? (historyByYear.get(prevYear) ?? []) : [];
+                  const prevByName = new Map(prevAreas.map(a => [a.area_name, a]));
+
                   return (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                      {hbarItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          to={`/region/${code}/budget/${encodeURIComponent(item.name)}`}
-                          style={{ textDecoration: "none", color: "inherit" }}
-                        >
-                          <HBars
-                            items={[item]}
-                            height={6}
-                            gap={6}
-                            unit=" mnkr"
-                          />
-                        </Link>
-                      ))}
+                    <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--color-surface-high)" }}>
+                      {/* Header */}
+                      <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto auto",
+                        gap: 8,
+                        padding: "6px 12px",
+                        background: "var(--color-surface-low)",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 9,
+                        letterSpacing: "0.12em",
+                        color: "var(--color-on-surface-variant)",
+                        textTransform: "uppercase",
+                      }}>
+                        <span>Område</span>
+                        <span style={{ textAlign: "right", minWidth: 60 }}>{prevYear ?? "—"}</span>
+                        <span style={{ textAlign: "right", minWidth: 80 }}>Förändring</span>
+                      </div>
+
+                      {areas.map((a, i) => {
+                        const prev = prevByName.get(a.area_name);
+                        const deltaPct = prev && prev.value_mnkr > 0
+                          ? ((a.value_mnkr - prev.value_mnkr) / prev.value_mnkr) * 100
+                          : null;
+                        return (
+                          <Link
+                            key={a.area_name}
+                            to={`/region/${code}/budget/${encodeURIComponent(a.area_name)}`}
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr auto auto",
+                              gap: 8,
+                              alignItems: "center",
+                              padding: "8px 12px",
+                              textDecoration: "none",
+                              color: "inherit",
+                              borderTop: "1px solid var(--color-surface-high)",
+                              background: "var(--color-sdt-surface)",
+                            }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                              <div style={{
+                                width: 10, height: 10, borderRadius: 2, flexShrink: 0,
+                                background: BUDGET_COLORS[i % BUDGET_COLORS.length],
+                              }} />
+                              <span style={{ fontSize: 12, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {a.area_name}
+                              </span>
+                            </div>
+                            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)", textAlign: "right", minWidth: 60 }}>
+                              {prev ? `${Math.round(prev.value_mnkr)} mnkr` : "—"}
+                            </span>
+                            <div style={{ minWidth: 80, display: "flex", justifyContent: "flex-end" }}>
+                              {deltaPct != null
+                                ? <DeltaIndicator pct={Math.round(deltaPct * 10) / 10} showBar={false} />
+                                : <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)" }}>—</span>
+                              }
+                            </div>
+                          </Link>
+                        );
+                      })}
+
+                      {/* Total row */}
+                      <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto auto",
+                        gap: 8,
+                        alignItems: "center",
+                        padding: "8px 12px",
+                        borderTop: "2px solid var(--color-surface-highest)",
+                        background: "var(--color-surface-low)",
+                        fontWeight: 700,
+                      }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11 }}>TOTALT</span>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)", textAlign: "right", minWidth: 60 }}>
+                          {prevAreas.length > 0 ? `${Math.round(prevAreas.reduce((s, a) => s + a.value_mnkr, 0))} mnkr` : "—"}
+                        </span>
+                        <div style={{ minWidth: 80, display: "flex", justifyContent: "flex-end" }}>
+                          {(() => {
+                            const curTot = areas.reduce((s, a) => s + a.value_mnkr, 0);
+                            const prevTot = prevAreas.reduce((s, a) => s + a.value_mnkr, 0);
+                            return prevTot > 0
+                              ? <DeltaIndicator pct={Math.round(((curTot - prevTot) / prevTot) * 1000) / 10} showBar={false} />
+                              : <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)" }}>—</span>;
+                          })()}
+                        </div>
+                      </div>
                     </div>
                   );
                 })()}
