@@ -22,6 +22,7 @@ import { RiksdagPage } from "./features/riksdag/RiksdagPage";
 import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { SearchPage } from "./features/search/SearchPage";
 import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
+import { DebateDetailPage } from "./features/speeches/DebateDetailPage";
 import { DataIndexPage } from "./features/data/DataIndexPage";
 import { DataSourcePage } from "./features/data/DataSourcePage";
 import { useTheme } from "./contexts/ThemeContext";
@@ -343,6 +344,7 @@ export default function App() {
           <Route path="/kommun/:code"                          element={<MunicipalityDetailPage />} />
           <Route path="/sok"                                   element={<SearchPage />} />
           <Route path="/anforanden/:id"                        element={<SpeechDetailPage />} />
+          <Route path="/debatt/:dokId"                         element={<DebateDetailPage />} />
           <Route path="/data"                                  element={<DataIndexPage />} />
           <Route path="/data/:id"                              element={<DataSourcePage />} />
         </Routes>
