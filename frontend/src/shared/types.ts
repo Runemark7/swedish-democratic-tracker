@@ -370,7 +370,7 @@ export interface Intressent {
   intressentId: string;
   name: string;
   party: string;
-  role: string;
+  role?: string;
 }
 
 export interface RiksdagDocumentFull extends RiksdagDocument {
