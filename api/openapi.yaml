@@ -310,6 +310,27 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /documents/{dokId}/full:
+    get:
+      operationId: getDocumentFull
+      tags: [votes]
+      summary: Full Riksdagen document — body HTML + intressenter list
+      parameters:
+        - name: dokId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Full document with body and participants
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiksdagDocumentFull"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /documents/{dokId}:
     get:
       operationId: getDocument
@@ -1540,6 +1561,48 @@ components:
         beteckning:
           type: string
           description: Present for betänkanden and motions
+
+    Intressent:
+      type: object
+      required: [intressentId, name, party, role]
+      properties:
+        intressentId:
+          type: string
+        name:
+          type: string
+        party:
+          type: string
+          description: Party abbreviation (e.g. "S", "M")
+        role:
+          type: string
+          description: Role in this document (e.g. "Upphovsman", "Svar")
+
+    RiksdagDocumentFull:
+      type: object
+      required: [dokId, type, title, intressenter]
+      properties:
+        dokId:
+          type: string
+        type:
+          type: string
+          description: Riksdagen document type (bet, ip, mot, prop, etc.)
+        title:
+          type: string
+        subtitle:
+          type: string
+        summary:
+          type: string
+        date:
+          type: string
+        beteckning:
+          type: string
+        bodyHtml:
+          type: string
+          description: Full document body from riksdagen dokumentstatus HTML field
+        intressenter:
+          type: array
+          items:
+            $ref: "#/components/schemas/Intressent"
 
     RegionBudgetArea:
       type: object
