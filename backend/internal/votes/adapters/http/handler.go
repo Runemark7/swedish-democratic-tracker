@@ -25,6 +25,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/votes", h.listAll)
 	r.Get("/votes/riksdag-feed", h.riksdagFeed)
 	r.Get("/votes/{beteckning}/{punkt}", h.getDetail)
+	r.Get("/documents/{dokId}/full", h.getDocumentFull)
 	r.Get("/documents/{dokId}", h.getDocument)
 }
 
@@ -279,6 +280,39 @@ func (h *Handler) getDocument(w http.ResponseWriter, r *http.Request) {
 		"summary":    ds.Summary,
 		"date":       ds.Date,
 		"beteckning": ds.Beteckning,
+	}
+	jsonOK(w, resp)
+}
+
+func (h *Handler) getDocumentFull(w http.ResponseWriter, r *http.Request) {
+	dokID := chi.URLParam(r, "dokId")
+	if dokID == "" {
+		jsonError(w, "dokId required", http.StatusBadRequest)
+		return
+	}
+	ds, err := h.svc.GetDocumentStatus(r.Context(), dokID)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if ds == nil {
+		jsonError(w, "document not found", http.StatusNotFound)
+		return
+	}
+	intressenter := ds.Intressenter
+	if intressenter == nil {
+		intressenter = []domain.Intressent{}
+	}
+	resp := map[string]any{
+		"dokId":        ds.DokID,
+		"type":         ds.Type,
+		"title":        ds.Title,
+		"subtitle":     ds.Subtitle,
+		"summary":      ds.Summary,
+		"date":         ds.Date,
+		"beteckning":   ds.Beteckning,
+		"bodyHtml":     ds.BodyHTML,
+		"intressenter": intressenter,
 	}
 	jsonOK(w, resp)
 }
