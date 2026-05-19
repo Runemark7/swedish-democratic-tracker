@@ -21,19 +21,19 @@ type SCBClient interface {
 }
 
 type RegionBudgetSnapshot struct {
-	RegionCode string
-	AreaName   string
-	Year       int
-	ValueMnkr  float64
-	TotalMnkr  float64
-	Pct        float64
+	RegionCode string  `json:"region_code"`
+	AreaName   string  `json:"area_name"`
+	Year       int     `json:"year"`
+	ValueMnkr  float64 `json:"value_mnkr"`
+	TotalMnkr  float64 `json:"total_mnkr"`
+	Pct        float64 `json:"pct"`
 }
 
 type RegionAreaDataPoint struct {
-	RegionCode string
-	ValueMnkr  float64
-	TotalMnkr  float64
-	Pct        float64
+	RegionCode string  `json:"region_code"`
+	ValueMnkr  float64 `json:"value_mnkr"`
+	TotalMnkr  float64 `json:"total_mnkr"`
+	Pct        float64 `json:"pct"`
 }
 
 type PopulationEntry struct {
