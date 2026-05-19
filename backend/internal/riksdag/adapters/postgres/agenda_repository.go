@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"riksdagskollen/internal/riksdag/domain"
@@ -37,4 +39,21 @@ func (r *AgendaRepository) ListAgenda(ctx context.Context) ([]domain.AgendaItem,
 		items = append(items, a)
 	}
 	return items, rows.Err()
+}
+
+func (r *AgendaRepository) GetAgendaItem(ctx context.Context, id int) (*domain.AgendaItem, error) {
+	const q = `
+		SELECT id, title, description, source, status
+		FROM riksdag_agenda
+		WHERE id = $1
+	`
+	var a domain.AgendaItem
+	err := r.db.QueryRow(ctx, q, id).Scan(&a.ID, &a.Title, &a.Description, &a.Source, &a.Status)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, pgx.ErrNoRows
+		}
+		return nil, err
+	}
+	return &a, nil
 }

@@ -72,6 +72,27 @@ paths:
         "502":
           description: Upstream data source unavailable
 
+  /riksdag/agenda/{id}:
+    get:
+      operationId: getRiksdagAgendaItem
+      tags: [riksdag]
+      summary: Get a single agenda item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Agenda item details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiksdagAgendaItem"
+        "404":
+          description: Agenda item not found
+
   /healthz:
     get:
       operationId: getHealth
@@ -1864,3 +1885,19 @@ components:
         relatedDokId:
           type: string
           description: Dok ID of the related document (interpellation, betänkande, etc.)
+
+    RiksdagAgendaItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        source:
+          type: string
+        status:
+          type: string
+          enum: [active, in_progress, completed]
+      required: [id, title, description, source, status]
