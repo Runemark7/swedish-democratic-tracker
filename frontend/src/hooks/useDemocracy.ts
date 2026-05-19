@@ -92,36 +92,36 @@ function generateAgenda(
   const mandate = "Mandatprogrammet " + govLabel + " 2022–2026";
 
   const REGION_LEFT: AgendaItem[] = [
-    { title: "Kortare köer utan privatiseringar", description: "Målet är att halvera vårdköerna inom nuvarande offentliga system genom att anställa fler och omfördela resurser dit trycket är störst.", source: mandate, status: "in_progress" },
-    { title: "Stärkt psykiatrisk vård", description: "Utöka antalet psykiatriplatser och tillföra 200 nya tjänster inom barn- och ungdomspsykiatrin (BUP) under mandatperioden.", source: mandate, status: "active" },
-    { title: "Grön omställning av kollektivtrafik", description: "Hela regionens bussflotta ska vara fossilfri senast 2027 och spårtrafiken utvidgas med tre nya hållplatser.", source: mandate, status: "in_progress" },
-    { title: "Utökad hemsjukvård i hela regionen", description: "Tillgängliggöra avancerad hemsjukvård i alla kommundelar, oavsett tätortsnärhet, för att minska onödig sjukhustid.", source: mandate, status: "active" },
-    { title: "Avgiftsfri tandvård upp till 25 år", description: "Utvidga det regionala tandvårdsstödet så att alla invånare till och med 24 år får tandvård utan egenavgift.", source: mandate, status: "active" },
-    { title: "Tillgänglig vård nära befolkningen", description: "Öppna tio nya närvårdsenheter i glesbygd och förorter under perioden, med tydliga öppettider och fast läkarkontakt.", source: mandate, status: "in_progress" },
+    { id: 1, title: "Kortare köer utan privatiseringar", description: "Målet är att halvera vårdköerna inom nuvarande offentliga system genom att anställa fler och omfördela resurser dit trycket är störst.", source: mandate, status: "in_progress" },
+    { id: 2, title: "Stärkt psykiatrisk vård", description: "Utöka antalet psykiatriplatser och tillföra 200 nya tjänster inom barn- och ungdomspsykiatrin (BUP) under mandatperioden.", source: mandate, status: "active" },
+    { id: 3, title: "Grön omställning av kollektivtrafik", description: "Hela regionens bussflotta ska vara fossilfri senast 2027 och spårtrafiken utvidgas med tre nya hållplatser.", source: mandate, status: "in_progress" },
+    { id: 4, title: "Utökad hemsjukvård i hela regionen", description: "Tillgängliggöra avancerad hemsjukvård i alla kommundelar, oavsett tätortsnärhet, för att minska onödig sjukhustid.", source: mandate, status: "active" },
+    { id: 5, title: "Avgiftsfri tandvård upp till 25 år", description: "Utvidga det regionala tandvårdsstödet så att alla invånare till och med 24 år får tandvård utan egenavgift.", source: mandate, status: "active" },
+    { id: 6, title: "Tillgänglig vård nära befolkningen", description: "Öppna tio nya närvårdsenheter i glesbygd och förorter under perioden, med tydliga öppettider och fast läkarkontakt.", source: mandate, status: "in_progress" },
   ];
   const REGION_RIGHT: AgendaItem[] = [
-    { title: "Fler privata vårdgivare i systemet", description: "Öka valfriheten för patienterna genom att upphandla fler specialistmottagningar och ge invånarna fritt val av utförare.", source: mandate, status: "active" },
-    { title: "Snabbare diagnoser via digitala tjänster", description: "Rulla ut AI-stödda triageverktyg och videomöten i primärvården för att korta ledtiderna från symptom till rätt vård.", source: mandate, status: "in_progress" },
-    { title: "Effektivisering av regionadministrationen", description: "Minska administrativ overhead med 15 % genom digitalisering och samlokalisering av stödfunktioner, utan att röra klinisk personal.", source: mandate, status: "active" },
-    { title: "Utökad nattrafik i storstadsregioner", description: "Förlänga kollektivtrafikens drifttider på nätter och helger med målsättningen att halvera behovet av nattaxiresor.", source: mandate, status: "in_progress" },
-    { title: "Skärpt uppföljning av vårdens kostnader", description: "Inrätta ett oberoende granskningsorgan som kvartalsvis rapporterar kostnadsutveckling per verksamhetsgren till fullmäktige.", source: mandate, status: "active" },
-    { title: "Valfrihet i primärvården", description: "Alla invånare ska ha rätt att lista sig hos valfri vårdcentral oavsett geografisk hemhörighet och byta fritt utan avgift.", source: mandate, status: "active" },
+    { id: 1, title: "Fler privata vårdgivare i systemet", description: "Öka valfriheten för patienterna genom att upphandla fler specialistmottagningar och ge invånarna fritt val av utförare.", source: mandate, status: "active" },
+    { id: 2, title: "Snabbare diagnoser via digitala tjänster", description: "Rulla ut AI-stödda triageverktyg och videomöten i primärvården för att korta ledtiderna från symptom till rätt vård.", source: mandate, status: "in_progress" },
+    { id: 3, title: "Effektivisering av regionadministrationen", description: "Minska administrativ overhead med 15 % genom digitalisering och samlokalisering av stödfunktioner, utan att röra klinisk personal.", source: mandate, status: "active" },
+    { id: 4, title: "Utökad nattrafik i storstadsregioner", description: "Förlänga kollektivtrafikens drifttider på nätter och helger med målsättningen att halvera behovet av nattaxiresor.", source: mandate, status: "in_progress" },
+    { id: 5, title: "Skärpt uppföljning av vårdens kostnader", description: "Inrätta ett oberoende granskningsorgan som kvartalsvis rapporterar kostnadsutveckling per verksamhetsgren till fullmäktige.", source: mandate, status: "active" },
+    { id: 6, title: "Valfrihet i primärvården", description: "Alla invånare ska ha rätt att lista sig hos valfri vårdcentral oavsett geografisk hemhörighet och byta fritt utan avgift.", source: mandate, status: "active" },
   ];
   const KOMMUN_LEFT: AgendaItem[] = [
-    { title: "Fler lärare per elev i grundskolan", description: "Rekrytera 80 nya lärartjänster och minska den genomsnittliga klasstorleken från 26 till 22 elever per klass under mandatperioden.", source: mandate, status: "in_progress" },
-    { title: "Ökat socialt stöd i utsatta områden", description: "Tredubbla antalet fältarbetare och öppna två nya familjecentraler i de stadsdelar som identifieras som prioriterade i kommunens trygghetsindex.", source: mandate, status: "active" },
-    { title: "Gratis fritidsaktiviteter för unga", description: "Subventionera föreningsavgifter fullt ut för barn och ungdomar 6–18 år i hushåll under garantinivån, i samarbete med idrotts- och kulturföreningar.", source: mandate, status: "active" },
-    { title: "Klimatneutral kommun 2030", description: "Klimatplan antagen av fullmäktige ställer krav på fossilfri fordonsflotta 2026, solceller på alla kommunala tak 2028 och nettopositiv koldioxidbalans 2030.", source: "Kommunens klimatplan 2023–2030", status: "in_progress" },
-    { title: "Fler hyresrätter via kommunalt bolag", description: "Det kommunala bostadsbolaget ges direktiv om 400 nya hyresrätter med hyressättning under marknadsnivå, fördelade på tre stadsdelar.", source: mandate, status: "active" },
-    { title: "Utbyggd nattomsorgskapacitet", description: "Utöka nattpatruller och bemanning vid kommunens äldreboenden för att klara medarbetartätheten enligt Socialstyrelsens rekommendationer.", source: mandate, status: "active" },
+    { id: 1, title: "Fler lärare per elev i grundskolan", description: "Rekrytera 80 nya lärartjänster och minska den genomsnittliga klasstorleken från 26 till 22 elever per klass under mandatperioden.", source: mandate, status: "in_progress" },
+    { id: 2, title: "Ökat socialt stöd i utsatta områden", description: "Tredubbla antalet fältarbetare och öppna två nya familjecentraler i de stadsdelar som identifieras som prioriterade i kommunens trygghetsindex.", source: mandate, status: "active" },
+    { id: 3, title: "Gratis fritidsaktiviteter för unga", description: "Subventionera föreningsavgifter fullt ut för barn och ungdomar 6–18 år i hushåll under garantinivån, i samarbete med idrotts- och kulturföreningar.", source: mandate, status: "active" },
+    { id: 4, title: "Klimatneutral kommun 2030", description: "Klimatplan antagen av fullmäktige ställer krav på fossilfri fordonsflotta 2026, solceller på alla kommunala tak 2028 och nettopositiv koldioxidbalans 2030.", source: "Kommunens klimatplan 2023–2030", status: "in_progress" },
+    { id: 5, title: "Fler hyresrätter via kommunalt bolag", description: "Det kommunala bostadsbolaget ges direktiv om 400 nya hyresrätter med hyressättning under marknadsnivå, fördelade på tre stadsdelar.", source: mandate, status: "active" },
+    { id: 6, title: "Utbyggd nattomsorgskapacitet", description: "Utöka nattpatruller och bemanning vid kommunens äldreboenden för att klara medarbetartätheten enligt Socialstyrelsens rekommendationer.", source: mandate, status: "active" },
   ];
   const KOMMUN_RIGHT: AgendaItem[] = [
-    { title: "Sänkt kommunalskatt steg för steg", description: "Successiv sänkning med 0,25 öre per år under mandatperioden, finansierad genom effektiviseringsvinster i administrationen och upphandling.", source: mandate, status: "active" },
-    { title: "Ordning och reda i skolan", description: "Inför ordningsregler med tydliga konsekvenser, fler speciallärare och mentorprogram för att förbättra studiero och kunskapsresultaten i grundskolan.", source: mandate, status: "in_progress" },
-    { title: "Snabbare bygglov för bostäder", description: "Handläggningstiden för standardärenden ska kortas från 11 till 6 veckor genom digitalt handläggningsstöd och utökad bemanning på plan- och byggavdelningen.", source: mandate, status: "in_progress" },
-    { title: "Fler privata utförare i äldreomsorgen", description: "Öppna för LOV (lagen om valfrihetssystem) i hemtjänsten och upphandla drift av ytterligare ett äldreboende för att öka valfriheten.", source: mandate, status: "active" },
-    { title: "Effektivare kommunal upphandling", description: "Centralisera upphandlingsfunktionen, inrätta ramavtal för de 50 vanligaste produktkategorierna och minska inköpskostnaderna med 12 %.", source: mandate, status: "active" },
-    { title: "Trygghetskameror i offentliga miljöer", description: "Installera 120 övervakningskameror på prioriterade platser i samråd med polisen, med tydliga regler för lagring och tillgång till material.", source: mandate, status: "in_progress" },
+    { id: 1, title: "Sänkt kommunalskatt steg för steg", description: "Successiv sänkning med 0,25 öre per år under mandatperioden, finansierad genom effektiviseringsvinster i administrationen och upphandling.", source: mandate, status: "active" },
+    { id: 2, title: "Ordning och reda i skolan", description: "Inför ordningsregler med tydliga konsekvenser, fler speciallärare och mentorprogram för att förbättra studiero och kunskapsresultaten i grundskolan.", source: mandate, status: "in_progress" },
+    { id: 3, title: "Snabbare bygglov för bostäder", description: "Handläggningstiden för standardärenden ska kortas från 11 till 6 veckor genom digitalt handläggningsstöd och utökad bemanning på plan- och byggavdelningen.", source: mandate, status: "in_progress" },
+    { id: 4, title: "Fler privata utförare i äldreomsorgen", description: "Öppna för LOV (lagen om valfrihetssystem) i hemtjänsten och upphandla drift av ytterligare ett äldreboende för att öka valfriheten.", source: mandate, status: "active" },
+    { id: 5, title: "Effektivare kommunal upphandling", description: "Centralisera upphandlingsfunktionen, inrätta ramavtal för de 50 vanligaste produktkategorierna och minska inköpskostnaderna med 12 %.", source: mandate, status: "active" },
+    { id: 6, title: "Trygghetskameror i offentliga miljöer", description: "Installera 120 övervakningskameror på prioriterade platser i samråd med polisen, med tydliga regler för lagring och tillgång till material.", source: mandate, status: "in_progress" },
   ];
 
   const pool =
@@ -391,7 +391,7 @@ function mapGovernment(gov: RiksdagGovernment): LevelData["ruling"] {
 }
 
 function mapAgenda(items: RiksdagAgendaItem[]): AgendaItem[] {
-  return items.map(i => ({ title: i.title, description: i.description, source: i.source, status: i.status as AgendaItem["status"] }));
+  return items.map(i => ({ id: i.id, title: i.title, description: i.description, source: i.source, status: i.status as AgendaItem["status"] }));
 }
 
 function mapLiveVotes(votes: RiksdagLiveVote[]): LiveVote[] {

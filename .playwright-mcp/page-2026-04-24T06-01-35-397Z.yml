@@ -1,0 +1,187 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "Tre Kammare" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e7]
+        - generic [ref=e11]:
+          - text: Tre
+          - emphasis [ref=e12]: Kammare
+      - generic [ref=e13]:
+        - link "◆ START" [ref=e14] [cursor=pointer]:
+          - /url: /
+        - link "I RIKSDAG" [ref=e15] [cursor=pointer]:
+          - /url: /riksdag
+        - link "II REGION" [ref=e16] [cursor=pointer]:
+          - /url: /region
+        - link "III KOMMUN" [ref=e17] [cursor=pointer]:
+          - /url: /kommun
+        - link "⌕ SÖK" [ref=e18] [cursor=pointer]:
+          - /url: /sok
+      - generic [ref=e19]:
+        - generic [ref=e20]: LIVE · 24.04.2026
+        - button "Byt till mörkt läge" [ref=e22] [cursor=pointer]: ☽
+  - main [ref=e23]:
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: VEM BESTÄMMER · VAR · JUST NU
+        - heading "Tre kammare, ett samhälle." [level=1] [ref=e27]:
+          - text: Tre
+          - emphasis [ref=e28]: kammare
+          - text: ", ett samhälle."
+      - generic [ref=e29]:
+        - generic [ref=e31]:
+          - generic [ref=e32]: I
+          - generic [ref=e33]: Riksdagen
+          - generic [ref=e34]: 349 MANDAT · NATIONELLT
+        - generic [ref=e43]:
+          - generic [ref=e44]: II
+          - generic [ref=e45]: Regionen
+          - generic [ref=e46]: 21 REGIONER · VÅRD & TRAFIK
+        - generic [ref=e54]:
+          - generic [ref=e55]: III
+          - generic [ref=e56]: Kommunen
+          - generic [ref=e57]: 290 KOMMUNER · SKOLA, OMSORG
+        - generic:
+          - generic: 12 PÅGÅENDE · 6 BESLUT IDAG
+          - generic:
+            - generic:
+              - generic: PÅGÅR
+            - generic:
+              - generic: BESLUT IDAG
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - generic [ref=e69]: I
+            - generic [ref=e70]: Riksdagen
+            - generic [ref=e71]: ● 2 IDAG
+          - generic [ref=e73]:
+            - generic "Moderaterna" [ref=e74]
+            - generic "Kristdemokraterna" [ref=e75]
+            - generic "Liberalerna" [ref=e76]
+            - generic "Sverigedemokraterna" [ref=e77]
+            - generic "Socialdemokraterna" [ref=e78]
+            - generic "Vänsterpartiet" [ref=e79]
+            - generic "Centerpartiet" [ref=e80]
+            - generic "Miljöpartiet" [ref=e81]
+          - generic [ref=e82]:
+            - generic [ref=e83]: STYRE
+            - generic [ref=e84]: Regeringskoalition (stöd av SD)
+            - generic [ref=e85]:
+              - generic [ref=e86]:
+                - text: M
+                - generic [ref=e88]: "68"
+              - generic [ref=e89]:
+                - text: KD
+                - generic [ref=e91]: "19"
+              - generic [ref=e92]:
+                - text: L
+                - generic [ref=e94]: "16"
+            - generic [ref=e95]: MAJORITET 103/349
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - generic [ref=e98]: Idag 14:20
+              - generic [ref=e99]: Ändring i socialförsäkringsbalken
+              - generic [ref=e100]: Bifall
+            - generic [ref=e101]:
+              - generic [ref=e102]: Idag 11:05
+              - generic [ref=e103]: Höjda pensioner 2026
+              - generic [ref=e104]: Bifall
+          - link "GÅ TILL KAMMARE →" [ref=e105] [cursor=pointer]:
+            - /url: /riksdag
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - generic [ref=e108]: II
+            - generic [ref=e109]: Region Stockholm
+            - generic [ref=e110]: ● 1 IDAG
+          - generic [ref=e112]:
+            - generic "Moderaterna" [ref=e113]
+            - generic "Miljöpartiet" [ref=e114]
+            - generic "Liberalerna" [ref=e115]
+            - generic "Kristdemokraterna" [ref=e116]
+            - generic "Centerpartiet" [ref=e117]
+            - generic "Socialdemokraterna" [ref=e118]
+            - generic "Sverigedemokraterna" [ref=e119]
+            - generic "Vänsterpartiet" [ref=e120]
+          - generic [ref=e121]:
+            - generic [ref=e122]: STYRE
+            - generic [ref=e123]: Blågrön majoritet
+            - generic [ref=e124]:
+              - generic [ref=e125]:
+                - text: M
+                - generic [ref=e127]: "42"
+              - generic [ref=e128]:
+                - text: MP
+                - generic [ref=e130]: "12"
+              - generic [ref=e131]:
+                - text: L
+                - generic [ref=e133]: "8"
+              - generic [ref=e134]:
+                - text: KD
+                - generic [ref=e136]: "6"
+              - generic [ref=e137]:
+                - text: C
+                - generic [ref=e139]: "5"
+            - generic [ref=e140]: MAJORITET 73/139
+          - generic [ref=e141]:
+            - generic [ref=e142]:
+              - generic [ref=e143]: Idag 09:30
+              - generic [ref=e144]: Ny vårdcentral i Norrtälje
+              - generic [ref=e145]: Bifall
+            - generic [ref=e146]:
+              - generic [ref=e147]: Igår 15:00
+              - generic [ref=e148]: Biljettprishöjning SL 2026
+              - generic [ref=e149]: Bifall
+          - link "GÅ TILL KAMMARE →" [ref=e150] [cursor=pointer]:
+            - /url: /region
+        - generic [ref=e151]:
+          - generic [ref=e152]:
+            - generic [ref=e153]: III
+            - generic [ref=e154]: Malmö kommun
+            - generic [ref=e155]: ● 2 IDAG
+          - generic [ref=e157]:
+            - generic "Socialdemokraterna" [ref=e158]
+            - generic "Miljöpartiet" [ref=e159]
+            - generic "Vänsterpartiet" [ref=e160]
+            - generic "Moderaterna" [ref=e161]
+            - generic "Sverigedemokraterna" [ref=e162]
+            - generic "Liberalerna" [ref=e163]
+            - generic "Centerpartiet" [ref=e164]
+          - generic [ref=e165]:
+            - generic [ref=e166]: STYRE
+            - generic [ref=e167]: Rödgrön minoritet
+            - generic [ref=e168]:
+              - generic [ref=e169]:
+                - text: S
+                - generic [ref=e171]: "20"
+              - generic [ref=e172]:
+                - text: MP
+                - generic [ref=e174]: "5"
+              - generic [ref=e175]:
+                - text: V
+                - generic [ref=e177]: "5"
+            - generic [ref=e178]: MAJORITET 30/61
+          - generic [ref=e179]:
+            - generic [ref=e180]:
+              - generic [ref=e181]: Idag 13:15
+              - generic [ref=e182]: Ny förskola i Sofielund
+              - generic [ref=e183]: Bifall
+            - generic [ref=e184]:
+              - generic [ref=e185]: Idag 10:40
+              - generic [ref=e186]: Parkeringsavgifter innerstaden
+              - generic [ref=e187]: Bifall
+          - link "GÅ TILL KAMMARE →" [ref=e188] [cursor=pointer]:
+            - /url: /kommun
+      - generic [ref=e189]:
+        - generic [ref=e190]:
+          - generic [ref=e191]: DYGNETS PULS — 9 BESLUT I 3 KAMMARE
+          - generic [ref=e192]:
+            - generic [ref=e193]: I
+            - generic [ref=e195]: II
+            - generic [ref=e197]: III
+        - generic [ref=e248]:
+          - generic [ref=e249]: 00:00
+          - generic [ref=e250]: 06:00
+          - generic [ref=e251]: 12:00
+          - generic [ref=e252]: 18:00
+          - generic [ref=e253]: NU

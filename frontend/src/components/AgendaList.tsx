@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { AgendaItem } from "@/types/democracy";
 
 const STATUS_LABEL: Record<AgendaItem["status"], string> = {
@@ -51,7 +52,9 @@ export function AgendaList({ items }: { items: AgendaItem[] }) {
                 {i + 1}
               </span>
               <span style={{ flex: 1, fontSize: 14, color: "var(--color-fg)", lineHeight: 1.4 }}>
-                {item.title}
+                <Link to={`/agenda/${item.id}`} style={{ color: "inherit", textDecoration: "none", borderBottom: "1px dotted var(--color-border)" }}>
+                  {item.title}
+                </Link>
               </span>
               <span style={{ fontSize: 11, color: "var(--color-fg-muted)", marginLeft: 8, flexShrink: 0 }}>
                 {isOpen ? "▲" : "▼"}

@@ -1,0 +1,13 @@
+[     619ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'document-domain'. @ :0
+[     619ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'web-share'. @ :0
+[     857ms] Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at rR (https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:39899)
+    at rO (https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:41267)
+    at https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:124237
+    at ik (https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:129114)
+    at ib (https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:120904)
+    at https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:120688
+    at iv (https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:120696)
+    at io (https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:116071)
+    at iX (https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:139203)
+    at MessagePort.R (https://www.riksdagen.se/_next/static/chunks/33e5d5afd423390b.js:1:3083)
