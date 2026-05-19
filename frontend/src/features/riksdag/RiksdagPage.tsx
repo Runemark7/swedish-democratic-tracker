@@ -481,6 +481,11 @@ export function RiksdagPage() {
               />
             </div>
           </div>
+          <div style={{ marginTop: 16, textAlign: "right" }}>
+            <Link to="/budget" style={{ fontSize: 13, color: "var(--color-accent-2)", textDecoration: "none", borderBottom: "1px dotted var(--color-border)" }}>
+              Se detaljerad budget →
+            </Link>
+          </div>
         </div>
       </div>
 

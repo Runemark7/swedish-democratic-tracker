@@ -114,6 +114,12 @@ export const riksdagApi = {
       return r.json();
     }),
 
+  getAgendaItem: (id: number): Promise<RiksdagAgendaItem> =>
+    fetch(`/api/riksdag/agenda/${id}`).then((r) => {
+      if (!r.ok) throw new Error(`riksdag/agenda/${id}: ${r.status}`);
+      return r.json();
+    }),
+
   getLiveVotes: (): Promise<RiksdagLiveVote[]> =>
     fetch("/api/riksdag/live-votes").then((r) => {
       if (!r.ok) throw new Error(`riksdag/live-votes: ${r.status}`);
