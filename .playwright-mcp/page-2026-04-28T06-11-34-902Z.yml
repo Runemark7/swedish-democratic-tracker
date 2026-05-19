@@ -1,0 +1,280 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - generic:
+      - generic [active] [ref=e6]: Budgetpropositionen för 2025 Proposition 2024/25:1
+      - link "Till innehåll på sidan" [ref=e7] [cursor=pointer]:
+        - /url: "#content"
+    - banner [ref=e8]:
+      - link "Sveriges Riksdags logotyp, tillbaka till startsidan" [ref=e11] [cursor=pointer]:
+        - /url: https://www.riksdagen.se/sv/
+        - img "Sveriges Riksdags logotyp, tillbaka till startsidan" [ref=e12]
+  - navigation "Brödsmulor" [ref=e14]:
+    - list [ref=e16]:
+      - listitem [ref=e17]:
+        - link "Start" [ref=e18] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/
+        - img [ref=e19]
+      - listitem [ref=e21]:
+        - link "Dokument & lagar" [ref=e22] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/dokument-och-lagar/
+        - img [ref=e23]
+      - listitem [ref=e25]:
+        - generic [ref=e26]: Budgetpropositionen för 2025 (Proposition 2024/25:1)
+  - main [ref=e28]:
+    - group [ref=e30]:
+      - heading "Budgetpropositionen för 2025" [level=1] [ref=e31]
+      - paragraph [ref=e32]: Proposition 2024/25:1
+    - generic [ref=e36]:
+      - heading "Ärendet är avslutat" [level=2] [ref=e37]
+      - generic [ref=e39]:
+        - term [ref=e40]: "Inlämnat av:"
+        - definition [ref=e41]: Finansdepartementet
+        - term [ref=e42]: "Tilldelat:"
+        - definition [ref=e43]: Finansutskottet
+      - heading "Händelser" [level=2] [ref=e44]
+      - generic [ref=e45]:
+        - term [ref=e46]: "Bordlagd:"
+        - definition [ref=e47]: 2024-09-19
+        - term [ref=e48]: "Inlämnad:"
+        - definition [ref=e49]: 2024-09-19
+        - term [ref=e50]: "Hänvisad:"
+        - definition [ref=e51]: 2024-09-20
+        - term [ref=e52]: "Motionstid slutar:"
+        - definition [ref=e53]: 2024-10-04
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - generic [ref=e56]:
+          - generic [ref=e58]:
+            - img [ref=e59]
+            - generic [ref=e63]: PDF
+          - generic [ref=e64]: Budgetpropositionen för 2025
+          - generic [ref=e65]: PDF (7 MB)
+          - link "Budgetpropositionen för 2025(pdf, 7 MB)" [ref=e67] [cursor=pointer]:
+            - /url: https://data.riksdagen.se/fil/6273D06F-DEA3-4229-B804-CC0F52EF1378
+            - img [ref=e68]
+            - generic [ref=e70]: Budgetpropositionen för 2025(pdf, 7 MB)
+        - generic [ref=e71]:
+          - generic [ref=e73]:
+            - img [ref=e74]
+            - generic [ref=e78]: PDF
+          - generic [ref=e79]: "Bilaga: prop_202425__1_rättelseblad-UO22-sidor-44och56"
+          - generic [ref=e80]: PDF (154 KB)
+          - 'link "Bilaga: prop_202425__1_rättelseblad-UO22-sidor-44och56(pdf, 154 KB)" [ref=e82] [cursor=pointer]':
+            - /url: https://data.riksdagen.se/fil/8CBA6133-A03E-46EF-AAC3-9727504D2C27
+            - img [ref=e83]
+            - generic [ref=e85]: "Bilaga: prop_202425__1_rättelseblad-UO22-sidor-44och56(pdf, 154 KB)"
+        - generic [ref=e86]:
+          - generic [ref=e88]:
+            - img [ref=e89]
+            - generic [ref=e93]: PDF
+          - generic [ref=e94]: "Bilaga: prop_202425__1_rättelseblad-vol1-sidor-202och424"
+          - generic [ref=e95]: PDF (120 KB)
+          - 'link "Bilaga: prop_202425__1_rättelseblad-vol1-sidor-202och424(pdf, 120 KB)" [ref=e97] [cursor=pointer]':
+            - /url: https://data.riksdagen.se/fil/2F1A9E8F-AA15-4C25-AB0D-3AD852DE5EA1
+            - img [ref=e98]
+            - generic [ref=e100]: "Bilaga: prop_202425__1_rättelseblad-vol1-sidor-202och424(pdf, 120 KB)"
+        - generic [ref=e101]:
+          - generic [ref=e103]:
+            - img [ref=e104]
+            - generic [ref=e108]: PDF
+          - generic [ref=e109]: "Bilaga: prop_202425__1_rättelseblad-vol1-sidor-90-91"
+          - generic [ref=e110]: PDF (107 KB)
+          - 'link "Bilaga: prop_202425__1_rättelseblad-vol1-sidor-90-91(pdf, 107 KB)" [ref=e112] [cursor=pointer]':
+            - /url: https://data.riksdagen.se/fil/1A9451F3-523C-402C-9214-45A07B6D064B
+            - img [ref=e113]
+            - generic [ref=e115]: "Bilaga: prop_202425__1_rättelseblad-vol1-sidor-90-91(pdf, 107 KB)"
+        - generic [ref=e116]:
+          - generic [ref=e118]:
+            - img [ref=e119]
+            - generic [ref=e123]: Webbsida
+          - link "Visa hela dokumentet för Proposition 2024/25:1 Budgetpropositionen för 2025" [ref=e124] [cursor=pointer]:
+            - /url: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/proposition/budgetpropositionen-for-2025_hc031/html/
+            - generic [ref=e126]:
+              - generic [ref=e127]: Visa hela dokumentet för
+              - text: Proposition 2024/25:1 Budgetpropositionen för 2025
+          - generic [ref=e128]: Visa hela dokumentet
+      - generic [ref=e130]:
+        - text: Budgetpropositionen för 2025
+        - text: Regeringens proposition 2024/25:1
+        - text: Budgetpropositionen för 2025
+        - text: Regeringen överlämnar härmed enligt 9 kap. 2 § regeringsformen budgetpropositionen för 2025.
+        - text: Stockholm den 13 september 2024
+        - text: Elisabeth Svantesson
+        - text: Erik Slottner (Finansdepartementet)
+        - text: Propositionens huvudsakliga innehåll
+        - text: Budgetpropositionen innehåller regeringens förslag till statens budget för 2025 samt de övriga förslag och bedömningar som följer av riksdagsordningen och budgetlagen (2011:203).
+        - text: Prop. 2024/25:1
+        - text: Översikt av innehåll i volym 1
+        - text: Volym 1a
+        - text: Finansplan
+        - text: Förslag till riksdagsbeslut
+        - text: Den makroekonomiska utvecklingen
+        - text: De budgetpolitiska målen
+        - text: Inkomster
+        - text: Utgifter
+        - text: Statens budgetsaldo och statsskulden
+        - text: Den offentliga
+      - link "Visa hela dokumentet" [ref=e132] [cursor=pointer]:
+        - /url: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/proposition/budgetpropositionen-for-2025_hc031/html/
+        - generic [ref=e134]: Visa hela dokumentet
+    - generic [ref=e135]:
+      - generic [ref=e136]:
+        - generic [ref=e138] [cursor=pointer]:
+          - heading "Förslagspunkter (174)" [level=3] [ref=e140]
+          - button "Förslagspunkter (174)" [ref=e141]:
+            - generic [ref=e142]: Förslagspunkter (174)
+            - img [ref=e143]
+        - generic: ": : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :"
+      - generic [ref=e147] [cursor=pointer]:
+        - heading "Bilagor (28)" [level=3] [ref=e149]
+        - button "Bilagor (28)" [ref=e150]:
+          - generic [ref=e151]: Bilagor (28)
+          - img [ref=e152]
+      - generic [ref=e156] [cursor=pointer]:
+        - heading "Behandlas i betänkande (28)" [level=3] [ref=e158]
+        - button "Behandlas i betänkande (28)" [ref=e159]:
+          - generic [ref=e160]: Behandlas i betänkande (28)
+          - img [ref=e161]
+      - generic [ref=e163]:
+        - generic [ref=e165] [cursor=pointer]:
+          - heading "Intressenter" [level=3] [ref=e167]
+          - button "Intressenter" [expanded] [ref=e168]:
+            - generic [ref=e169]: Intressenter
+            - img [ref=e170]
+        - generic [ref=e174]:
+          - generic [ref=e177]:
+            - img "Elisabeth Svantesson" [ref=e181]
+            - link "Elisabeth Svantesson Moderaterna" [ref=e186] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/ledamoter-och-partier/ledamot/elisabeth-svantesson_0899112324519/
+              - generic [ref=e187]:
+                - generic [ref=e188]: Elisabeth Svantesson
+                - text: Moderaterna
+          - generic [ref=e191]:
+            - img "Erik Slottner" [ref=e195]
+            - link "Erik Slottner Kristdemokraterna" [ref=e200] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/ledamoter-och-partier/ledamot/erik-slottner_0767167947420/
+              - generic [ref=e201]:
+                - generic [ref=e202]: Erik Slottner
+                - text: Kristdemokraterna
+    - generic [ref=e204]:
+      - heading "Propositioner och skrivelser" [level=2] [ref=e205]
+      - paragraph [ref=e207]: Propositioner är förslag till nya lagar och lagändringar som regeringen lämnar till riksdagen. Regeringen lämnar också skrivelser, som har en mer redogörande karaktär och inte innehåller förslag till riksdagsbeslut.
+  - contentinfo [ref=e208]:
+    - generic [ref=e211]:
+      - generic [ref=e212]:
+        - link "Sveriges Riksdags logotyp, tillbaka till startsidan" [ref=e213] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/
+          - img "Sveriges Riksdags logotyp, tillbaka till startsidan" [ref=e214]
+        - paragraph [ref=e215]: All offentlig makt i Sverige utgår från folket och riksdagen är folkets främsta företrädare.
+      - link "Till toppen" [ref=e216] [cursor=pointer]:
+        - /url: "#top"
+        - img [ref=e217]
+        - generic [ref=e219]: Till toppen
+    - generic [ref=e221]:
+      - generic [ref=e222]:
+        - heading "Kontakt" [level=1] [ref=e223]
+        - generic [ref=e224]:
+          - text: Växel
+          - generic [ref=e225]:
+            - img [ref=e226]
+            - link "08-786 40 00" [ref=e229] [cursor=pointer]:
+              - /url: tel:087864000
+        - generic [ref=e230]:
+          - heading "Faktafrågor om riksdagen och EU" [level=2] [ref=e231]
+          - text: Riksdagsinformation
+          - generic [ref=e232]:
+            - img [ref=e233]
+            - link "020-349 000" [ref=e236] [cursor=pointer]:
+              - /url: tel:020349000
+          - generic [ref=e237]:
+            - img [ref=e238]
+            - link "riksdagsinformation@riksdagen.se" [ref=e241] [cursor=pointer]:
+              - /url: mailto:riksdagsinformation@riksdagen.se
+        - heading "Kontakta ledamöter" [level=2] [ref=e243]:
+          - link "Kontakta ledamöter" [ref=e244] [cursor=pointer]:
+            - /url: https://www.riksdagen.se/sv/ledamoter-och-partier/ledamoterna/
+            - generic [ref=e246]: Kontakta ledamöter
+        - generic [ref=e247]:
+          - heading "Frågor om Riksdagsförvaltningens diarium" [level=2] [ref=e248]
+          - generic [ref=e249]:
+            - img [ref=e250]
+            - link "registrator.riksdagsforvaltningen@riksdagen.se" [ref=e253] [cursor=pointer]:
+              - /url: mailto:registrator.riksdagsforvaltningen@riksdagen.se
+      - generic [ref=e254]:
+        - heading "Genvägar" [level=1] [ref=e255]
+        - list [ref=e256]:
+          - listitem [ref=e257]:
+            - link "Arbeta hos oss" [ref=e258] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/kontakt-och-besok/arbeta-hos-oss/
+              - generic [ref=e260]: Arbeta hos oss
+          - listitem [ref=e261]:
+            - link "Beställ och ladda ner" [ref=e262] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/dokument-och-lagar/bestall-och-ladda-ner/
+              - generic [ref=e264]: Beställ och ladda ner
+          - listitem [ref=e265]:
+            - link "För lärare" [ref=e266] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/kontakt-och-besok/for-larare/
+              - generic [ref=e268]: För lärare
+          - listitem [ref=e269]:
+            - link "Press" [ref=e270] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/kontakt-och-besok/press/
+              - generic [ref=e272]: Press
+          - listitem [ref=e273]:
+            - link "Riksdagens öppna data" [ref=e274] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/dokument-och-lagar/riksdagens-oppna-data/
+              - generic [ref=e276]: Riksdagens öppna data
+          - listitem [ref=e277]:
+            - link "Riksdagsbiblioteket" [ref=e278] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/kontakt-och-besok/riksdagsbiblioteket/
+              - generic [ref=e280]: Riksdagsbiblioteket
+          - listitem [ref=e281]:
+            - link "Riksdagsförvaltningens diarium" [ref=e282] [cursor=pointer]:
+              - /url: https://www.riksdagen.se/sv/dokument-och-lagar/riksdagsforvaltningens-diarium/
+              - generic [ref=e284]: Riksdagsförvaltningens diarium
+      - generic [ref=e285]:
+        - heading "Följ Sveriges riksdag" [level=1] [ref=e286]
+        - list [ref=e287]:
+          - listitem [ref=e288]:
+            - link "Bluesky" [ref=e289] [cursor=pointer]:
+              - /url: https://bsky.app/profile/sverigesriksdag.bsky.social
+              - generic [ref=e290]: Bluesky
+          - listitem [ref=e293]:
+            - link "Instagram" [ref=e294] [cursor=pointer]:
+              - /url: https://www.instagram.com/sveriges_riksdag/
+              - generic [ref=e295]: Instagram
+          - listitem [ref=e298]:
+            - link "Linkedin" [ref=e299] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/riksdagen-se/?originalSubdomain=se
+              - generic [ref=e300]: Linkedin
+          - listitem [ref=e303]:
+            - link "X" [ref=e304] [cursor=pointer]:
+              - /url: https://twitter.com/Sverigesriksdag
+              - generic [ref=e305]: X
+          - listitem [ref=e308]:
+            - link "Youtube" [ref=e309] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCmyMhyy_FHtwui-3dsu-K8g
+              - generic [ref=e310]: Youtube
+          - listitem [ref=e313]:
+            - link "Talmannen på X" [ref=e314] [cursor=pointer]:
+              - /url: https://twitter.com/andreasostgote
+              - generic [ref=e315]: Talmannen på X
+          - listitem [ref=e318]:
+            - link "Talmannen på Instagram" [ref=e319] [cursor=pointer]:
+              - /url: https://www.instagram.com/talman.andreas.norlen/
+              - generic [ref=e320]: Talmannen på Instagram
+        - generic [ref=e323]:
+          - heading "Prenumerera" [level=1] [ref=e324]
+          - paragraph [ref=e326]: För dig som vill bevaka arbetet i kammaren och utskotten finns det flera olika sätt att välja mellan.
+          - link "Följ och prenumerera" [ref=e327] [cursor=pointer]:
+            - /url: https://www.riksdagen.se/sv/aktuellt/folj-och-prenumerera/
+            - generic [ref=e329]: Följ och prenumerera
+      - generic [ref=e331]:
+        - link "Om webbplatsen" [ref=e332] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/om-webbplatsen/
+          - generic [ref=e334]: Om webbplatsen
+        - link "Kakor" [ref=e335] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/om-webbplatsen/kakor/
+          - generic [ref=e337]: Kakor
+        - link "Tillgänglighet" [ref=e338] [cursor=pointer]:
+          - /url: https://www.riksdagen.se/sv/om-webbplatsen/tillganglighet-for-riksdagens-webbplats/
+          - generic [ref=e340]: Tillgänglighet

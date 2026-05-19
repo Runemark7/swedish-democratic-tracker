@@ -1,0 +1,112 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - button "Meny" [ref=e6] [cursor=pointer]
+      - link "Tre Kammare" [ref=e10] [cursor=pointer]:
+        - /url: /
+        - img [ref=e11]
+        - generic [ref=e15]:
+          - text: Tre
+          - emphasis [ref=e16]: Kammare
+      - button "Byt till mörkt läge" [ref=e17] [cursor=pointer]: ☽
+    - generic [ref=e19]:
+      - link "◆ START" [ref=e20] [cursor=pointer]:
+        - /url: /
+      - link "I RIKSDAG" [ref=e21] [cursor=pointer]:
+        - /url: /riksdag
+      - link "II REGION" [ref=e22] [cursor=pointer]:
+        - /url: /region
+      - link "III KOMMUN" [ref=e23] [cursor=pointer]:
+        - /url: /kommun
+      - link "⌕ SÖK" [ref=e24] [cursor=pointer]:
+        - /url: /sok
+  - main [ref=e25]:
+    - generic [ref=e27]:
+      - paragraph [ref=e28]: SÖK · UTFORSKA
+      - heading "Vad händer om…" [level=1] [ref=e29]:
+        - text: Vad
+        - emphasis [ref=e30]: händer
+        - text: om…
+      - generic [ref=e31]:
+        - textbox "Sök parti, politiker, ämne eller fråga…" [ref=e32]
+        - generic: ⌕
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - paragraph [ref=e35]: Ämnen
+          - generic [ref=e36]:
+            - button "Skola & utbildning 24 frågor · I III" [ref=e37] [cursor=pointer]:
+              - generic [ref=e38]: Skola & utbildning
+              - generic [ref=e39]:
+                - generic [ref=e40]: 24 frågor
+                - generic [ref=e41]: ·
+                - emphasis [ref=e42]: I
+                - emphasis [ref=e43]: III
+            - button "Vård & omsorg 31 frågor · I II" [ref=e44] [cursor=pointer]:
+              - generic [ref=e45]: Vård & omsorg
+              - generic [ref=e46]:
+                - generic [ref=e47]: 31 frågor
+                - generic [ref=e48]: ·
+                - emphasis [ref=e49]: I
+                - emphasis [ref=e50]: II
+            - button "Kollektivtrafik 12 frågor · II III" [ref=e51] [cursor=pointer]:
+              - generic [ref=e52]: Kollektivtrafik
+              - generic [ref=e53]:
+                - generic [ref=e54]: 12 frågor
+                - generic [ref=e55]: ·
+                - emphasis [ref=e56]: II
+                - emphasis [ref=e57]: III
+            - button "Bostad & planering 18 frågor · I III" [ref=e58] [cursor=pointer]:
+              - generic [ref=e59]: Bostad & planering
+              - generic [ref=e60]:
+                - generic [ref=e61]: 18 frågor
+                - generic [ref=e62]: ·
+                - emphasis [ref=e63]: I
+                - emphasis [ref=e64]: III
+            - button "Skatt & ekonomi 22 frågor · I" [ref=e65] [cursor=pointer]:
+              - generic [ref=e66]: Skatt & ekonomi
+              - generic [ref=e67]:
+                - generic [ref=e68]: 22 frågor
+                - generic [ref=e69]: ·
+                - emphasis [ref=e70]: I
+            - button "Miljö & klimat 15 frågor · I II III" [ref=e71] [cursor=pointer]:
+              - generic [ref=e72]: Miljö & klimat
+              - generic [ref=e73]:
+                - generic [ref=e74]: 15 frågor
+                - generic [ref=e75]: ·
+                - emphasis [ref=e76]: I
+                - emphasis [ref=e77]: II
+                - emphasis [ref=e78]: III
+            - button "Arbetsmarknad 9 frågor · I" [ref=e79] [cursor=pointer]:
+              - generic [ref=e80]: Arbetsmarknad
+              - generic [ref=e81]:
+                - generic [ref=e82]: 9 frågor
+                - generic [ref=e83]: ·
+                - emphasis [ref=e84]: I
+            - button "Trygghet & brott 14 frågor · I III" [ref=e85] [cursor=pointer]:
+              - generic [ref=e86]: Trygghet & brott
+              - generic [ref=e87]:
+                - generic [ref=e88]: 14 frågor
+                - generic [ref=e89]: ·
+                - emphasis [ref=e90]: I
+                - emphasis [ref=e91]: III
+        - generic [ref=e92]:
+          - generic [ref=e93]:
+            - paragraph [ref=e94]: Partier
+            - generic [ref=e95]:
+              - button "S" [ref=e96] [cursor=pointer]:
+                - generic [ref=e98]: S
+              - button "M" [ref=e99] [cursor=pointer]:
+                - generic [ref=e101]: M
+              - button "SD" [ref=e102] [cursor=pointer]:
+                - generic [ref=e104]: SD
+              - button "V" [ref=e105] [cursor=pointer]:
+                - generic [ref=e107]: V
+              - button "C" [ref=e108] [cursor=pointer]:
+                - generic [ref=e110]: C
+              - button "KD" [ref=e111] [cursor=pointer]:
+                - generic [ref=e113]: KD
+              - button "L" [ref=e114] [cursor=pointer]:
+                - generic [ref=e116]: L
+              - button "MP" [ref=e117] [cursor=pointer]:
+                - generic [ref=e119]: MP
+          - paragraph [ref=e121]: Senaste beslut

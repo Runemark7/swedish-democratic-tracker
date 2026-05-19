@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swedish Democratic Tracker — Tre Kammare</title>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #0a0e14; overflow: hidden; }
+    * { box-sizing: border-box; }
+    #tweaks-panel {
+      position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+      background: #10151d; color: #eef1f5; border: 1px solid rgba(238,241,245,0.18); border-radius: 6px;
+      padding: 16px; font-family: -apple-system, system-ui, sans-serif;
+      font-size: 13px; min-width: 240px; box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      display: none;
+    }
+    #tweaks-panel.open { display: block; }
+    #tweaks-panel h3 { margin: 0 0 12px; font-size: 11px; letter-spacing: 1.8px; text-transform: uppercase; color: #7c8896; font-weight: 500; }
+    #tweaks-panel .row { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; gap: 12px; }
+    #tweaks-panel .seg { display: flex; gap: 1px; background: rgba(238,241,245,0.08); border-radius: 4px; overflow: hidden; }
+    #tweaks-panel .seg button { border: none; background: transparent; padding: 6px 10px; font-size: 12px; cursor: pointer; font-family: inherit; color: #7c8896; }
+    #tweaks-panel .seg button.on { background: #eef1f5; color: #0a0e14; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <div id="tweaks-panel">
+    <h3>Tweaks</h3>
+    <div class="row">
+      <span>Tema</span>
+      <div class="seg" id="theme-seg">
+        <button data-v="dark" class="on">Mörkt</button>
+        <button data-v="light">Ljust</button>
+      </div>
+    </div>
+    <div class="row">
+      <span>Visa</span>
+      <div class="seg" id="view-seg">
+        <button data-v="all" class="on">Allt</button>
+        <button data-v="home">Hem</button>
+        <button data-v="levels">Nivåer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="design-canvas.jsx" type="text/babel"></script>
+  <script src="data.jsx" type="text/babel"></script>
+  <script src="charts.jsx" type="text/babel"></script>
+  <script src="direction3-novel.jsx" type="text/babel"></script>
+
+  <script type="text/babel">
+    const TWEAKS = /*EDITMODE-BEGIN*/{
+      "theme": "dark",
+      "view": "all"
+    }/*EDITMODE-END*/;
+
+    function App() {
+      const [theme, setTheme] = React.useState(TWEAKS.theme);
+      const [view, setView] = React.useState(TWEAKS.view);
+
+      React.useEffect(() => {
+        const setupSeg = (id, cur, onChange) => {
+          const seg = document.getElementById(id);
+          if (!seg) return;
+          seg.querySelectorAll('button').forEach(btn => {
+            btn.classList.toggle('on', btn.dataset.v === cur);
+            btn.onclick = () => { onChange(btn.dataset.v); };
+          });
+        };
+        setupSeg('theme-seg', theme, v => {
+          setTheme(v);
+          window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { theme: v } }, '*');
+        });
+        setupSeg('view-seg', view, v => {
+          setView(v);
+          window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { view: v } }, '*');
+        });
+      }, [theme, view]);
+
+      React.useEffect(() => {
+        const onMsg = (e) => {
+          if (!e.data) return;
+          if (e.data.type === '__activate_edit_mode') document.getElementById('tweaks-panel').classList.add('open');
+          else if (e.data.type === '__deactivate_edit_mode') document.getElementById('tweaks-panel').classList.remove('open');
+        };
+        window.addEventListener('message', onMsg);
+        window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+        return () => window.removeEventListener('message', onMsg);
+      }, []);
+
+      const showHome = view === 'all' || view === 'home';
+      const showLevels = view === 'all' || view === 'levels';
+
+      const W = 1280, H = 880;
+
+      return (
+        <DesignCanvas>
+          <div style={{ padding: '20px 60px 36px', maxWidth: 1200 }}>
+            <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: 2, color: 'rgba(60,50,40,0.7)', marginBottom: 8 }}>
+              SWEDISH DEMOCRATIC TRACKER · TRE KAMMARE
+            </div>
+            <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: -0.8, color: '#2a241e', maxWidth: 900, lineHeight: 1.1, marginBottom: 12 }}>
+              Tre kammare, ett samhälle. — den valda riktningen.
+            </div>
+            <div style={{ fontSize: 15, color: 'rgba(60,50,40,0.7)', maxWidth: 820, lineHeight: 1.55 }}>
+              En spatial metafor: Riksdag <i>innehåller</i> Region <i>innehåller</i> Kommun. Varje kammare har egen puls — pågående ärenden (blå) och beslut idag (röd). Mörkt tema som default, ljust via Tweaks.
+              <br /><br />
+              <span style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12 }}>
+                Sidor: <b>Start</b> · <b>Kammare I–III</b> · <b>Sök</b>.
+              </span>
+            </div>
+          </div>
+
+          {showHome && (
+            <DCSection title="Start" subtitle="Landningssidan — den koncentriska kammar-hjärtan, status per nivå, dygnets puls.">
+              <DCArtboard label="Start · Tre kammare" width={W} height={H}>
+                <D3Frame theme={theme} width={W} height={H}><D3Home /></D3Frame>
+              </DCArtboard>
+            </DCSection>
+          )}
+
+          {showLevels && (
+            <DCSection title="Kamrarna" subtitle="En sida per nivå · samma struktur: mandat, budget, puls, agenda.">
+              <DCArtboard label="Kammare I · Riksdag" width={W} height={H}>
+                <D3Frame theme={theme} width={W} height={H}><D3Riksdag /></D3Frame>
+              </DCArtboard>
+              <DCArtboard label="Kammare II · Region" width={W} height={H}>
+                <D3Frame theme={theme} width={W} height={H}><D3Region /></D3Frame>
+              </DCArtboard>
+              <DCArtboard label="Kammare III · Kommun" width={W} height={H}>
+                <D3Frame theme={theme} width={W} height={H}><D3Kommun /></D3Frame>
+              </DCArtboard>
+            </DCSection>
+          )}
+
+          {showHome && (
+            <DCSection title="Sök · Utforska" subtitle="Tvärsnitt — hoppa mellan nivåer via ämne eller parti.">
+              <DCArtboard label="Sök & utforska" width={W} height={H}>
+                <D3Frame theme={theme} width={W} height={H}><D3Search /></D3Frame>
+              </DCArtboard>
+            </DCSection>
+          )}
+
+          <div style={{ padding: '20px 60px 80px', fontSize: 13, color: 'rgba(60,50,40,0.65)', maxWidth: 900, lineHeight: 1.6 }}>
+            <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: 2, marginBottom: 8 }}>NÄSTA STEG</div>
+            • Myndighetssida (Försäkringskassan, Arbetsförmedlingen…) i samma stil.
+            <br />• Kommun-/regionväljare med riktig geografi.
+            <br />• Koppling till Riksdagens öppna data + SCB + kommun-API:er.
+            <br />• Interaktiv drill-down: klicka en puls → landa direkt på beslutet.
+          </div>
+        </DesignCanvas>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
