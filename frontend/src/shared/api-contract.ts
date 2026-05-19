@@ -1096,20 +1096,12 @@ export interface components {
         Intressent: {
             intressentId: string;
             name: string;
-            /** @description Party abbreviation (e.g. "S", "M") */
+            /** @description Party abbreviation from Riksdagen API (may be outside the PartyCode enum for historical parties, e.g. FP) */
             party: string;
             /** @description Role in this document (e.g. "Upphovsman", "Svar") */
             role: string;
         };
-        RiksdagDocumentFull: {
-            dokId: string;
-            /** @description Riksdagen document type (bet, ip, mot, prop, etc.) */
-            type: string;
-            title: string;
-            subtitle?: string;
-            summary?: string;
-            date?: string;
-            beteckning?: string;
+        RiksdagDocumentFull: components["schemas"]["RiksdagDocument"] & {
             /** @description Full document body from riksdagen dokumentstatus HTML field */
             bodyHtml?: string;
             intressenter: components["schemas"]["Intressent"][];
