@@ -366,3 +366,15 @@ export interface RiksdagDocument {
   beteckning?: string;
 }
 
+export interface Intressent {
+  intressentId: string;
+  name: string;
+  party: string;
+  role: string;
+}
+
+export interface RiksdagDocumentFull extends RiksdagDocument {
+  bodyHtml?: string;
+  intressenter: Intressent[];
+}
+

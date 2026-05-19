@@ -208,6 +208,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/documents/{dokId}/full": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Full Riksdagen document — body HTML + intressenter list */
+        get: operations["getDocumentFull"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/documents/{dokId}": {
         parameters: {
             query?: never;
@@ -1076,6 +1093,27 @@ export interface components {
             /** @description Present for betänkanden and motions */
             beteckning?: string;
         };
+        Intressent: {
+            intressentId: string;
+            name: string;
+            /** @description Party abbreviation (e.g. "S", "M") */
+            party: string;
+            /** @description Role in this document (e.g. "Upphovsman", "Svar") */
+            role: string;
+        };
+        RiksdagDocumentFull: {
+            dokId: string;
+            /** @description Riksdagen document type (bet, ip, mot, prop, etc.) */
+            type: string;
+            title: string;
+            subtitle?: string;
+            summary?: string;
+            date?: string;
+            beteckning?: string;
+            /** @description Full document body from riksdagen dokumentstatus HTML field */
+            bodyHtml?: string;
+            intressenter: components["schemas"]["Intressent"][];
+        };
         RegionBudgetArea: {
             /** @example Primärvård */
             name: string;
@@ -1600,6 +1638,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VoteDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getDocumentFull: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dokId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Full document with body and participants */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiksdagDocumentFull"];
                 };
             };
             404: components["responses"]["NotFound"];
