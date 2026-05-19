@@ -111,6 +111,14 @@ func (s *Service) GetRegionBudgetMultiYear(ctx context.Context, regionCode strin
 	return s.scb.FetchRegionBudgetMultiYear(ctx, regionCode, years)
 }
 
+func (s *Service) GetRegionBudgetHistory(ctx context.Context, regionCode string, years []int) ([]ports.RegionBudgetSnapshot, error) {
+	return s.repo.GetRegionBudgetHistory(ctx, regionCode, years)
+}
+
+func (s *Service) GetAreaAcrossRegions(ctx context.Context, areaName string, year int) ([]ports.RegionAreaDataPoint, error) {
+	return s.repo.GetAreaAcrossRegions(ctx, areaName, year)
+}
+
 func (s *Service) UpsertRegionBudgetSnapshots(ctx context.Context, snapshots []ports.RegionBudgetSnapshot) (int, error) {
 	return s.repo.UpsertRegionBudgetSnapshots(ctx, snapshots)
 }

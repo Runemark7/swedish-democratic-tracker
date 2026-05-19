@@ -242,7 +242,11 @@
       "Bash(node_modules/.bin/vite *)",
       "Bash(npm ci *)",
       "Bash(mgrep Intressent domain type or struct usage in HTTP handlers or OpenAPI spec *)",
-      "Bash(npx --prefix frontend openapi-typescript api/openapi.yaml --dry-run)"
+      "Bash(npx --prefix frontend openapi-typescript api/openapi.yaml --dry-run)",
+      "Bash(gh issue *)",
+      "Bash(gh label *)",
+      "Bash(go test *)",
+      "Bash(TEST_DATABASE_URL=postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable go test *)"
     ]
   }
 }
