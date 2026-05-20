@@ -3,8 +3,15 @@ backend/vendor/
 backend/*.out
 
 # Node
-frontend/node_modules/
+node_modules/
+node_modules.bak/
 frontend/dist/
+*.tsbuildinfo
+
+# Tooling / scratch
+.playwright-mcp/
+.claude/worktrees/
+.claude/scheduled_tasks.lock
 
 # Environment
 .env
