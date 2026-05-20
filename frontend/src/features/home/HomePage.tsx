@@ -130,16 +130,69 @@ export function HomePage() {
             fontSize: 13,
             color: "var(--color-fg-muted)",
             margin: 0,
-            maxWidth: 560,
-            lineHeight: 1.6,
           }}
         >
-          Sverige publicerar allt — röstningar, beslut, myndighetsrapporter. Men
-          offentlig information är sällan begriplig. Riksdagskollen stänger det
-          gapet: beslut, debatter och vallöften samlade i ett neutralt gränssnitt
-          med källhänvisning. Ingen agenda. Tolkningen är din.
+          Röster, löften och beslut — med källa, utan vinkel.
         </p>
       </header>
+
+      {/* ── Mission banner ───────────────────────────────────────────── */}
+      <div
+        style={{
+          margin: isMobile ? "0 14px 20px" : "0 32px 20px",
+          borderLeft: "3px solid var(--color-accent)",
+          background: "var(--color-sdt-surface)",
+          padding: isMobile ? "16px 16px" : "20px 28px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: isMobile ? 13 : 14,
+            color: "var(--color-fg)",
+            margin: 0,
+            lineHeight: 1.7,
+          }}
+        >
+          Demokrati kräver att du vet vad dina folkvalda gör. Den informationen
+          finns — men ingen serverar den åt dig, och de som borde går inte att
+          lita på. Partierna är partiska i sin natur; deras jobb är att vinna
+          din röst, inte att upplysa dig. Public service jagar ofta det som ger
+          rubriker, inte det som är viktigt men tråkigt. Kvar finns ett tomrum:
+          den oglamorösa, avgörande informationen om vad som faktiskt händer —
+          den som ingen tjänar på att ge dig.
+        </p>
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: isMobile ? 13 : 14,
+            color: "var(--color-fg)",
+            margin: 0,
+            lineHeight: 1.7,
+          }}
+        >
+          Det tomrummet finns Riksdagskollen för att fylla. Vi samlar vad dina
+          representanter faktiskt gör — röster, löften, beslut — och visar det
+          med källa, utan att vinkla. Ingen agenda. Ingen knuff åt något håll.
+          Bara fakta, framlagda så att du själv kan döma.
+        </p>
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: isMobile ? 12 : 13,
+            color: "var(--color-fg-muted)",
+            margin: 0,
+            lineHeight: 1.7,
+            fontStyle: "italic",
+          }}
+        >
+          Ansvaret att förstå landar på dig. Vi gör det möjligt att bära. Läs
+          på, dra dina egna slutsatser. Det är så det ska gå till.
+        </p>
+      </div>
 
       {/* ── Panels 1 + 2 (row) ───────────────────────────────────────── */}
       <div style={panelGrid}>

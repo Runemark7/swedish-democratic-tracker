@@ -305,3 +305,81 @@ Default mattpocock/skills label vocabulary (no overrides). See `docs/agents/tria
 ### Domain docs
 
 Single-context repo — one `CONTEXT.md` + `docs/adr/` at root. See `docs/agents/domain.md`.
+
+
+## Riksdagskollen — Project Context
+
+### Why this project exists
+
+Riksdagskollen exists to close a specific gap in Swedish democracy: the
+distance between political information that is *available* and information
+that is *understandable*.
+
+In Sweden, the state and public institutions publish almost everything they
+do — votes, bills, government reports — fully and openly. But their
+responsibility effectively ends at availability, not comprehensibility. The
+material is written in dense bureaucratic language that an ordinary citizen
+has neither the time nor the specialist knowledge to decode. No single actor
+is responsible for making it genuinely understandable: parties are biased by
+design (their job is to persuade, not inform), authorities stop at publishing,
+schools teach the skill once, and journalists do it under pressure and with
+contested trust.
+
+The result is a structural asymmetry. Concentrated interests (employers,
+lobbies, organized groups) can afford professionals who follow every issue
+full-time. Diffuse interests — ordinary citizens and voters — cannot. For each
+individual, engaging deeply is irrational: the time cost is enormous and one
+person's effort changes almost nothing. So people disengage, and the
+concentrated side wins by default.
+
+Riksdagskollen is built for the citizen on the diffuse side of that
+asymmetry — the person who is rightly distrustful of the systems meant to
+represent them, who has no time to read in-depth, but who still wants to make
+an informed choice.
+
+### The goal
+
+To be a neutral surface where verifiable information about Swedish politics
+(parliament, government, agencies, regions, municipalities) is made available
+and understandable, so that citizens can reach their own conclusions —
+whether they lean right or left.
+
+The tool points you toward where *you* want to go. It never says "choose A"
+or "choose B." It is an impartial hand: "here is the information, here is the
+source, read it yourself."
+
+### Core design principle — read this before building anything
+
+Strictly separate FACT from INTERPRETATION.
+
+- **FACT layer**: actions, votes, promises, and records shown as raw data,
+  always with a source and date, presented neutrally. "This member voted X
+  on date Y, source: [link]." This is nearly impossible to accuse of bias and
+  is the foundation of the project's legitimacy.
+
+- **INTERPRETATION layer**: always left to the user. The site never draws the
+  conclusion for them.
+
+#### The central tension to handle consciously
+
+A common piece of feedback is "numbers don't tell the whole story — actions
+say more." This is true but dangerous. Bias does not enter through the raw
+number; it enters through the *selection* of which actions get highlighted and
+how they are framed.
+
+The discipline: do not avoid actions — show *more* types of verifiable action
+(attendance in votes, what someone pushed in committee, promises kept or
+broken). But show them as raw, sourced data placed side by side, and let the
+reader judge. The difference between "this member broke their election promise"
+and placing the promise next to the actual vote and letting the reader draw
+the conclusion is the difference between an activist site and an impartial
+hand. Always choose the latter — in every feature, without exception.
+
+### UI implication
+
+The fact/interpretation separation must be *visible in the interface*, not
+just present in the code. The user should be able to see a clear fact layer
+(source, date, raw data) and understand that interpretation is theirs. A
+"source" link next to every claim does more for credibility — especially with
+a distrustful audience — than any amount of stated commitment to neutrality.
+Make neutrality verifiable, not merely asserted.
