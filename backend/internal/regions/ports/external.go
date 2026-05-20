@@ -29,6 +29,15 @@ type RegionBudgetSnapshot struct {
 	Pct        float64 `json:"pct"`
 }
 
+type MunicipalityBudgetSnapshot struct {
+	MunCode   string  `json:"mun_code"`
+	AreaName  string  `json:"area_name"`
+	Year      int     `json:"year"`
+	ValueMnkr float64 `json:"value_mnkr"`
+	TotalMnkr float64 `json:"total_mnkr"`
+	Pct       float64 `json:"pct"`
+}
+
 type RegionAreaDataPoint struct {
 	RegionCode string  `json:"region_code"`
 	ValueMnkr  float64 `json:"value_mnkr"`
