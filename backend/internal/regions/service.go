@@ -2,6 +2,7 @@ package regions
 
 import (
 	"context"
+	"math"
 	"sort"
 	"time"
 
@@ -76,6 +77,19 @@ var spendingKPIs = []string{
 	"N45014", // Nettokostnad VA (vatten och avlopp), kr/inv — kolada.se/kpi/N45014
 }
 
+// spendingKPINames maps Kolada KPI codes to human-readable Swedish area names.
+var spendingKPINames = map[string]string{
+	"N11004": "Förskola",
+	"N15028": "Grundskola",
+	"N17014": "Gymnasieskola",
+	"N20014": "Äldreomsorg",
+	"N30005": "Individ & familj",
+	"N07037": "Gata, park, plan",
+	"N09022": "Fritid & kultur",
+	"N05011": "Politisk verksamhet",
+	"N45014": "Vatten & avlopp",
+}
+
 type Service struct {
 	repo   ports.RegionRepository
 	kolada ports.KoladaClient
@@ -137,6 +151,66 @@ func (s *Service) GetPopulationTrend(ctx context.Context, munCode string) ([]por
 
 func (s *Service) GetMunicipalitySpending(ctx context.Context, munCode string) ([]ports.KPIValue, error) {
 	return s.kolada.FetchKPIs(ctx, munCode, spendingKPIs, rollingYears(5))
+}
+
+// GetMunicipalityBudgetMultiYear fetches Kolada spending KPIs for multiple years,
+// multiplies kr/inv by population to derive mnkr totals, and returns snapshots.
+func (s *Service) GetMunicipalityBudgetMultiYear(ctx context.Context, munCode string, population int, years []int) ([]ports.MunicipalityBudgetSnapshot, error) {
+	kpis, err := s.kolada.FetchKPIs(ctx, munCode, spendingKPIs, years)
+	if err != nil {
+		return nil, err
+	}
+
+	// Group by year → kpiCode → value.
+	byYear := map[int]map[string]float64{}
+	for _, k := range kpis {
+		if byYear[k.Year] == nil {
+			byYear[k.Year] = map[string]float64{}
+		}
+		byYear[k.Year][k.KPI] = k.Value
+	}
+
+	var snapshots []ports.MunicipalityBudgetSnapshot
+	for _, year := range years {
+		kpiMap, ok := byYear[year]
+		if !ok {
+			continue
+		}
+		var totalMnkr float64
+		type pair struct{ code, name string }
+		var areas []pair
+		for _, code := range spendingKPIs {
+			if v, ok := kpiMap[code]; ok && v > 0 {
+				areas = append(areas, pair{code, spendingKPINames[code]})
+				totalMnkr += (v * float64(population)) / 1_000_000
+			}
+		}
+		if totalMnkr == 0 {
+			continue
+		}
+		for _, a := range areas {
+			v := kpiMap[a.code]
+			valueMnkr := (v * float64(population)) / 1_000_000
+			pct := math.Round((valueMnkr/totalMnkr)*1000) / 10
+			snapshots = append(snapshots, ports.MunicipalityBudgetSnapshot{
+				MunCode:   munCode,
+				AreaName:  a.name,
+				Year:      year,
+				ValueMnkr: math.Round(valueMnkr*10) / 10,
+				TotalMnkr: math.Round(totalMnkr*10) / 10,
+				Pct:       pct,
+			})
+		}
+	}
+	return snapshots, nil
+}
+
+func (s *Service) UpsertMunicipalityBudgetSnapshots(ctx context.Context, snapshots []ports.MunicipalityBudgetSnapshot) (int, error) {
+	return s.repo.UpsertMunicipalityBudgetSnapshots(ctx, snapshots)
+}
+
+func (s *Service) GetMunicipalityBudgetHistory(ctx context.Context, munCode string, years []int) ([]ports.MunicipalityBudgetSnapshot, error) {
+	return s.repo.GetMunicipalityBudgetHistory(ctx, munCode, years)
 }
 
 func (s *Service) GetMunicipalityProcurement(ctx context.Context, munCode string) ([]ports.ProcurementCategorySummary, error) {
