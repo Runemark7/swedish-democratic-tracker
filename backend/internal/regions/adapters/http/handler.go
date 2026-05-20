@@ -33,6 +33,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/municipalities/{code}", h.getMunicipality)
 	r.Get("/municipalities/{code}/kpi", h.getMunicipalityKPI)
 	r.Get("/municipalities/{code}/spending", h.getMunicipalitySpending)
+	r.Get("/municipalities/{code}/budget/history", h.getMunicipalityBudgetHistory)
 	r.Get("/municipalities/{code}/population-trend", h.getPopulationTrend)
 	r.Get("/municipalities/{code}/procurement", h.getMunicipalityProcurement)
 }
@@ -226,6 +227,31 @@ func (h *Handler) getMunicipalityProcurement(w http.ResponseWriter, r *http.Requ
 		result = []ports.ProcurementCategorySummary{}
 	}
 	jsonOK(w, result)
+}
+
+func (h *Handler) getMunicipalityBudgetHistory(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	yearsParam := r.URL.Query().Get("years")
+	n := 4
+	if yearsParam != "" {
+		if parsed, err := strconv.Atoi(yearsParam); err == nil && parsed > 0 {
+			n = parsed
+		}
+	}
+	current := time.Now().Year()
+	years := make([]int, n)
+	for i := range years {
+		years[i] = current - 1 - i
+	}
+	snapshots, err := h.svc.GetMunicipalityBudgetHistory(r.Context(), code, years)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if snapshots == nil {
+		snapshots = []ports.MunicipalityBudgetSnapshot{}
+	}
+	jsonOK(w, snapshots)
 }
 
 func jsonOK(w http.ResponseWriter, v any) {
