@@ -514,6 +514,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/municipalities/{code}/budget/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Multi-year budget history for a municipality */
+        get: operations["getMunicipalityBudgetHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/municipalities/{code}/procurement": {
         parameters: {
             query?: never;
@@ -1175,6 +1192,14 @@ export interface components {
         };
         RegionBudgetSnapshot: {
             region_code: string;
+            area_name: string;
+            year: number;
+            value_mnkr: number;
+            total_mnkr: number;
+            pct: number;
+        };
+        MunicipalityBudgetSnapshot: {
+            mun_code: string;
             area_name: string;
             year: number;
             value_mnkr: number;
@@ -2139,6 +2164,30 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getMunicipalityBudgetHistory: {
+        parameters: {
+            query?: {
+                years?: number;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of budget snapshots across years */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MunicipalityBudgetSnapshot"][];
+                };
             };
         };
     };
