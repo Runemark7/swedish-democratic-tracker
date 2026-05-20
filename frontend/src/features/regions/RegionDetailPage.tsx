@@ -2,14 +2,13 @@ import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory } from "@/hooks/useDemocracy";
 import { Hemicycle, Pill, Trend, GoalBadge } from "@/components/charts";
-import { DeltaIndicator } from "@/features/budget/components/DeltaIndicator";
+import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { AgendaList } from "@/components/AgendaList";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import type { LiveVote, Party } from "@/types/democracy";
-import type { RegionBudgetSnapshot } from "@/shared/types";
 
 function beslutHref(v: LiveVote): string | null {
   if (!v.beteckning) return null;
@@ -25,17 +24,6 @@ function pillTone(status: string): "pass" | "fail" | "pending" | "neutral" {
   if (status === "Återremiss") return "pending";
   return "neutral";
 }
-
-const BUDGET_COLORS = [
-  "#0b3d7a",
-  "#2d6fa8",
-  "#5a9fd0",
-  "#8bc0e0",
-  "#c8a13b",
-  "#d0533f",
-  "#7a8390",
-  "#b3bcc5",
-];
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
@@ -65,7 +53,6 @@ export function RegionDetailPage() {
   const [selectOpen, setSelectOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [budgetTab, setBudgetTab] = useState<number | null>(null);
 
   const { data, isLoading } = useRegion(code ?? "");
   const { data: regionList } = useRegionList();
@@ -75,15 +62,6 @@ export function RegionDetailPage() {
   if (isLoading || !data) return <Skeleton />;
 
   const { title, subtitle, ruling, liveVotes, agenda, kpis } = data;
-
-  // ── Budget history: group snapshots by year ────────────────────────────────
-  const historyByYear = new Map<number, RegionBudgetSnapshot[]>();
-  for (const snap of budgetHistory) {
-    const list = historyByYear.get(snap.year) ?? [];
-    list.push(snap);
-    historyByYear.set(snap.year, list);
-  }
-  const sortedYears = Array.from(historyByYear.keys()).sort((a, b) => b - a);
 
   // Build hemicycle groups: opposition left → support → governing right
   const hemicycleGroups = [
@@ -99,9 +77,6 @@ export function RegionDetailPage() {
   ];
   const totalSeats = allParties.reduce((s, p) => s + p.seats, 0);
   const rulingSeats = ruling.parties.reduce((s, p) => s + p.seats, 0);
-
-  // Active budget tab: use state if set, otherwise most recent year with data
-  const activeBudgetYear = budgetTab ?? sortedYears[0] ?? null;
 
   return (
     <>
@@ -339,7 +314,7 @@ export function RegionDetailPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gridTemplateColumns: "1fr",
             gap: 1,
             border: "1px solid var(--color-border)",
             background: "var(--color-border)",
@@ -464,173 +439,22 @@ export function RegionDetailPage() {
             )}
           </div>
 
-          {/* Right card — BUDGET history tab strip */}
-          <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                letterSpacing: "0.15em",
-                color: "var(--color-fg-muted)",
-                marginBottom: 12,
-              }}
-            >
-              BUDGET · HISTORIK
-              <SourceMarker sourceId="scb-kostndrlt" />
-            </div>
+        </div>
 
-            {sortedYears.length === 0 ? (
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 11,
-                  color: "var(--color-fg-muted)",
-                  padding: "24px 0",
-                  textAlign: "center",
-                  lineHeight: 1.5,
-                }}
-              >
-                Budgetdata saknas för denna region.
-              </div>
-            ) : (
-              <>
-                {/* Year tab strip */}
-                <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 16 }}>
-                  {sortedYears.map((yr, idx) => {
-                    const prevYear = sortedYears[idx + 1] ?? null;
-                    const prevSnaps = prevYear != null ? historyByYear.get(prevYear) : null;
-                    const curTotal = (historyByYear.get(yr) ?? []).reduce((s, a) => s + a.total_mnkr, 0);
-                    const prevTotal = prevSnaps ? prevSnaps.reduce((s, a) => s + a.total_mnkr, 0) : null;
-                    const delta = prevTotal != null && prevTotal > 0
-                      ? ((curTotal - prevTotal) / prevTotal) * 100
-                      : null;
-                    const isActive = yr === activeBudgetYear;
-                    const tabDeltaColor = delta == null
-                      ? "var(--color-fg-muted)"
-                      : delta >= 0 ? "#4caf7d" : "#e05c5c";
-
-                    return (
-                      <button
-                        key={yr}
-                        onClick={() => setBudgetTab(yr)}
-                        className="px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all"
-                        style={{
-                          background: isActive ? "var(--color-primary)" : "var(--color-surface-low)",
-                          color: isActive ? "var(--color-on-primary)" : "var(--color-on-surface)",
-                        }}
-                      >
-                        {yr}
-                        {delta != null && (
-                          <span style={{ marginLeft: 4, fontSize: 10, color: isActive ? "var(--color-on-primary)" : tabDeltaColor }}>
-                            {delta >= 0 ? "+" : ""}{delta.toFixed(1)}%
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Active year — table layout matching /budget */}
-                {activeBudgetYear != null && (() => {
-                  const areas = historyByYear.get(activeBudgetYear) ?? [];
-                  const prevYear = sortedYears[sortedYears.indexOf(activeBudgetYear) + 1] ?? null;
-                  const prevAreas = prevYear != null ? (historyByYear.get(prevYear) ?? []) : [];
-                  const prevByName = new Map(prevAreas.map(a => [a.area_name, a]));
-
-                  return (
-                    <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--color-surface-high)" }}>
-                      {/* Header */}
-                      <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr auto auto",
-                        gap: 8,
-                        padding: "6px 12px",
-                        background: "var(--color-surface-low)",
-                        fontFamily: "var(--font-mono)",
-                        fontSize: 9,
-                        letterSpacing: "0.12em",
-                        color: "var(--color-on-surface-variant)",
-                        textTransform: "uppercase",
-                      }}>
-                        <span>Område</span>
-                        <span style={{ textAlign: "right", minWidth: 60 }}>{prevYear ?? "—"}</span>
-                        <span style={{ textAlign: "right", minWidth: 80 }}>Förändring</span>
-                      </div>
-
-                      {areas.map((a, i) => {
-                        const prev = prevByName.get(a.area_name);
-                        const deltaPct = prev && prev.value_mnkr > 0
-                          ? ((a.value_mnkr - prev.value_mnkr) / prev.value_mnkr) * 100
-                          : null;
-                        return (
-                          <Link
-                            key={a.area_name}
-                            to={`/region/${code}/budget/${encodeURIComponent(a.area_name)}`}
-                            style={{
-                              display: "grid",
-                              gridTemplateColumns: "1fr auto auto",
-                              gap: 8,
-                              alignItems: "center",
-                              padding: "8px 12px",
-                              textDecoration: "none",
-                              color: "inherit",
-                              borderTop: "1px solid var(--color-surface-high)",
-                              background: "var(--color-sdt-surface)",
-                            }}
-                          >
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                              <div style={{
-                                width: 10, height: 10, borderRadius: 2, flexShrink: 0,
-                                background: BUDGET_COLORS[i % BUDGET_COLORS.length],
-                              }} />
-                              <span style={{ fontSize: 12, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                {a.area_name}
-                              </span>
-                            </div>
-                            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)", textAlign: "right", minWidth: 60 }}>
-                              {prev ? `${Math.round(prev.value_mnkr)} mnkr` : "—"}
-                            </span>
-                            <div style={{ minWidth: 80, display: "flex", justifyContent: "flex-end" }}>
-                              {deltaPct != null
-                                ? <DeltaIndicator pct={Math.round(deltaPct * 10) / 10} showBar={false} />
-                                : <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)" }}>—</span>
-                              }
-                            </div>
-                          </Link>
-                        );
-                      })}
-
-                      {/* Total row */}
-                      <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr auto auto",
-                        gap: 8,
-                        alignItems: "center",
-                        padding: "8px 12px",
-                        borderTop: "2px solid var(--color-surface-highest)",
-                        background: "var(--color-surface-low)",
-                        fontWeight: 700,
-                      }}>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11 }}>TOTALT</span>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)", textAlign: "right", minWidth: 60 }}>
-                          {prevAreas.length > 0 ? `${Math.round(prevAreas.reduce((s, a) => s + a.value_mnkr, 0))} mnkr` : "—"}
-                        </span>
-                        <div style={{ minWidth: 80, display: "flex", justifyContent: "flex-end" }}>
-                          {(() => {
-                            const curTot = areas.reduce((s, a) => s + a.value_mnkr, 0);
-                            const prevTot = prevAreas.reduce((s, a) => s + a.value_mnkr, 0);
-                            return prevTot > 0
-                              ? <DeltaIndicator pct={Math.round(((curTot - prevTot) / prevTot) * 1000) / 10} showBar={false} />
-                              : <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)" }}>—</span>;
-                          })()}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </>
-            )}
-          </div>
+        {/* ── Budget history ──────────────────────────────────────────────── */}
+        <div
+          style={{
+            border: "1px solid var(--color-border)",
+            borderTop: "none",
+            margin: isMobile ? "1px 14px 0" : "1px 32px 0",
+          }}
+        >
+          <BudgetHistorySection
+            snapshots={budgetHistory}
+            makeAreaLink={(a) => `/region/${code}/budget/${encodeURIComponent(a)}`}
+            emptyMessage="Budgetdata saknas för denna region."
+            sourceId="scb-kostndrlt"
+          />
         </div>
 
         {/* ── Bottom grid ──────────────────────────────────────────────── */}
