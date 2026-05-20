@@ -20,6 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Typecheck
+        working-directory: backend
+        run: go build ./...
+
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -48,6 +57,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "25"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+      - name: Sync data sources
+        working-directory: frontend
+        run: npm run sync:data-sources
+
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -55,16 +82,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: docker/setup-buildx-action@v3
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "25"
-
-      - name: Pre-sync data sources into build context
-        working-directory: frontend
-        run: |
-          npm install --no-save gray-matter
-          npm run sync:data-sources
 
       - uses: docker/build-push-action@v6
         with:
