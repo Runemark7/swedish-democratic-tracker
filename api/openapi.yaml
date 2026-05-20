@@ -693,6 +693,32 @@ paths:
         "502":
           description: Upstream Kolada API error
 
+  /municipalities/{code}/budget/history:
+    get:
+      operationId: getMunicipalityBudgetHistory
+      tags: [municipalities]
+      summary: Multi-year budget history for a municipality
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: years
+          in: query
+          schema:
+            type: integer
+            default: 4
+      responses:
+        "200":
+          description: Array of budget snapshots across years
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MunicipalityBudgetSnapshot"
+
   /municipalities/{code}/procurement:
     get:
       operationId: getMunicipalityProcurement
@@ -1686,6 +1712,23 @@ components:
       required: [region_code, area_name, year, value_mnkr, total_mnkr, pct]
       properties:
         region_code:
+          type: string
+        area_name:
+          type: string
+        year:
+          type: integer
+        value_mnkr:
+          type: number
+        total_mnkr:
+          type: number
+        pct:
+          type: number
+
+    MunicipalityBudgetSnapshot:
+      type: object
+      required: [mun_code, area_name, year, value_mnkr, total_mnkr, pct]
+      properties:
+        mun_code:
           type: string
         area_name:
           type: string

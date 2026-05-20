@@ -330,6 +330,23 @@ export interface RegionBudgetSnapshot {
   pct: number;
 }
 
+export interface MunicipalityBudgetSnapshot {
+  mun_code: string;
+  area_name: string;
+  year: number;
+  value_mnkr: number;
+  total_mnkr: number;
+  pct: number;
+}
+
+export interface BudgetSnapshot {
+  area_name: string;
+  year: number;
+  value_mnkr: number;
+  total_mnkr: number;
+  pct: number;
+}
+
 export interface RegionAreaDataPoint {
   region_code: string;
   value_mnkr: number;
