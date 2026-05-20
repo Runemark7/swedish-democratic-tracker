@@ -109,7 +109,7 @@ export function HomePage() {
             textTransform: "uppercase",
           }}
         >
-          KAMMARE ETT · RIKSDAGEN
+          RIKSDAGSKOLLEN · ÖPPEN DEMOKRATI
         </div>
         <h1
           style={{
@@ -122,7 +122,7 @@ export function HomePage() {
             lineHeight: 1.05,
           }}
         >
-          Vad fokuserar riksdagen på?
+          Vad beslutar riksdagen — och håller de vad de lovar?
         </h1>
         <p
           style={{
@@ -130,10 +130,14 @@ export function HomePage() {
             fontSize: 13,
             color: "var(--color-fg-muted)",
             margin: 0,
-            maxWidth: 540,
+            maxWidth: 560,
+            lineHeight: 1.6,
           }}
         >
-          Beslut, debatter och vad partierna driver — i realtid.
+          Sverige publicerar allt — röstningar, beslut, myndighetsrapporter. Men
+          offentlig information är sällan begriplig. Riksdagskollen stänger det
+          gapet: beslut, debatter och vallöften samlade i ett neutralt gränssnitt
+          med källhänvisning. Ingen agenda. Tolkningen är din.
         </p>
       </header>
 
