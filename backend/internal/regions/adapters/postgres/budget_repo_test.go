@@ -162,3 +162,63 @@ func TestGetAreaAcrossRegions(t *testing.T) {
 		t.Errorf("expected 3 datapoints for 2023, got %d (total returned: %d)", found, len(datapoints))
 	}
 }
+
+func cleanMunBudgetSnapshots(t *testing.T, pool *pgxpool.Pool) {
+	t.Helper()
+	_, err := pool.Exec(context.Background(), `DELETE FROM municipality_budget_snapshots WHERE mun_code LIKE 'ZZ%'`)
+	if err != nil {
+		t.Fatalf("clean mun snapshots: %v", err)
+	}
+}
+
+func TestUpsertMunicipalityBudgetSnapshots_Idempotency(t *testing.T) {
+	pool := connectTestDB(t)
+	cleanMunBudgetSnapshots(t, pool)
+	t.Cleanup(func() { cleanMunBudgetSnapshots(t, pool) })
+
+	repo := regionsPG.NewRepository(pool)
+	snaps := []ports.MunicipalityBudgetSnapshot{
+		{MunCode: "ZZ00", AreaName: "Grundskola", Year: 2023, ValueMnkr: 500, TotalMnkr: 2000, Pct: 25.0},
+		{MunCode: "ZZ00", AreaName: "Förskola", Year: 2023, ValueMnkr: 300, TotalMnkr: 2000, Pct: 15.0},
+	}
+
+	n, err := repo.UpsertMunicipalityBudgetSnapshots(context.Background(), snaps)
+	if err != nil {
+		t.Fatalf("first upsert: %v", err)
+	}
+	if n != 2 {
+		t.Fatalf("expected 2 rows, got %d", n)
+	}
+
+	// Second upsert with changed value — should update, not duplicate.
+	snaps[0].ValueMnkr = 510
+	n2, err := repo.UpsertMunicipalityBudgetSnapshots(context.Background(), snaps)
+	if err != nil {
+		t.Fatalf("second upsert: %v", err)
+	}
+	if n2 != 2 {
+		t.Fatalf("expected 2 rows on re-upsert, got %d", n2)
+	}
+
+	history, err := repo.GetMunicipalityBudgetHistory(context.Background(), "ZZ00", []int{2023})
+	if err != nil {
+		t.Fatalf("get history: %v", err)
+	}
+	if len(history) != 2 {
+		t.Fatalf("expected 2 history rows, got %d", len(history))
+	}
+	// ORDER BY year, area_name: "Förskola" < "Grundskola" alphabetically.
+	var grundskola *ports.MunicipalityBudgetSnapshot
+	for i := range history {
+		if history[i].AreaName == "Grundskola" {
+			grundskola = &history[i]
+			break
+		}
+	}
+	if grundskola == nil {
+		t.Fatal("Grundskola row not found in history")
+	}
+	if grundskola.ValueMnkr != 510 {
+		t.Errorf("expected updated ValueMnkr=510, got %v", grundskola.ValueMnkr)
+	}
+}

@@ -204,6 +204,53 @@ func (r *Repository) GetAreaAcrossRegions(ctx context.Context, areaName string, 
 	return result, rows.Err()
 }
 
+func (r *Repository) UpsertMunicipalityBudgetSnapshots(ctx context.Context, snapshots []ports.MunicipalityBudgetSnapshot) (int, error) {
+	if len(snapshots) == 0 {
+		return 0, nil
+	}
+	const q = `
+		INSERT INTO municipality_budget_snapshots (mun_code, area_name, year, value_mnkr, total_mnkr, pct, fetched_at)
+		VALUES ($1, $2, $3, $4, $5, $6, NOW())
+		ON CONFLICT (mun_code, area_name, year) DO UPDATE SET
+			value_mnkr = EXCLUDED.value_mnkr,
+			total_mnkr = EXCLUDED.total_mnkr,
+			pct        = EXCLUDED.pct,
+			fetched_at = NOW()
+	`
+	var count int
+	for _, s := range snapshots {
+		tag, err := r.db.Exec(ctx, q, s.MunCode, s.AreaName, s.Year, s.ValueMnkr, s.TotalMnkr, s.Pct)
+		if err != nil {
+			return count, err
+		}
+		count += int(tag.RowsAffected())
+	}
+	return count, nil
+}
+
+func (r *Repository) GetMunicipalityBudgetHistory(ctx context.Context, munCode string, years []int) ([]ports.MunicipalityBudgetSnapshot, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT mun_code, area_name, year, value_mnkr, total_mnkr, pct
+		FROM municipality_budget_snapshots
+		WHERE mun_code = $1 AND year = ANY($2)
+		ORDER BY year, area_name
+	`, munCode, years)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []ports.MunicipalityBudgetSnapshot
+	for rows.Next() {
+		var s ports.MunicipalityBudgetSnapshot
+		if err := rows.Scan(&s.MunCode, &s.AreaName, &s.Year, &s.ValueMnkr, &s.TotalMnkr, &s.Pct); err != nil {
+			return nil, err
+		}
+		result = append(result, s)
+	}
+	return result, rows.Err()
+}
+
 func (r *Repository) GetMunicipality(ctx context.Context, code string) (*domain.MunicipalityDetail, error) {
 	detail := &domain.MunicipalityDetail{}
 	detail.Municipality.GoverningParties = []string{}
