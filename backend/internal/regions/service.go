@@ -2,6 +2,7 @@ package regions
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"sort"
 	"time"
@@ -155,7 +156,14 @@ func (s *Service) GetMunicipalitySpending(ctx context.Context, munCode string) (
 
 // GetMunicipalityBudgetMultiYear fetches Kolada spending KPIs for multiple years,
 // multiplies kr/inv by population to derive mnkr totals, and returns snapshots.
+// NOTE: population is the municipality's current figure, applied uniformly across all
+// years. Year-specific populations are not fetched. Year-over-year deltas are directionally
+// correct but slightly imprecise for years where population differed significantly.
 func (s *Service) GetMunicipalityBudgetMultiYear(ctx context.Context, munCode string, population int, years []int) ([]ports.MunicipalityBudgetSnapshot, error) {
+	if population <= 0 {
+		return nil, fmt.Errorf("GetMunicipalityBudgetMultiYear: invalid population %d for %s", population, munCode)
+	}
+
 	kpis, err := s.kolada.FetchKPIs(ctx, munCode, spendingKPIs, years)
 	if err != nil {
 		return nil, err
@@ -188,6 +196,8 @@ func (s *Service) GetMunicipalityBudgetMultiYear(ctx context.Context, munCode st
 		if totalMnkr == 0 {
 			continue
 		}
+		// Pct is computed from unrounded totalMnkr for accuracy.
+		// Stored TotalMnkr is rounded for display; do not recompute Pct from stored fields.
 		for _, a := range areas {
 			v := kpiMap[a.code]
 			valueMnkr := (v * float64(population)) / 1_000_000
