@@ -159,12 +159,23 @@ func (r *Repository) UpsertRegionBudgetSnapshots(ctx context.Context, snapshots 
 }
 
 func (r *Repository) GetRegionBudgetHistory(ctx context.Context, regionCode string, years []int) ([]ports.RegionBudgetSnapshot, error) {
-	rows, err := r.db.Query(ctx, `
-		SELECT region_code, area_name, year, value_mnkr, total_mnkr, pct
-		FROM region_budget_snapshots
-		WHERE region_code = $1 AND year = ANY($2)
-		ORDER BY year, area_name
-	`, regionCode, years)
+	var rows pgx.Rows
+	var err error
+	if len(years) == 0 {
+		rows, err = r.db.Query(ctx, `
+			SELECT region_code, area_name, year, value_mnkr, total_mnkr, pct
+			FROM region_budget_snapshots
+			WHERE region_code = $1
+			ORDER BY year, area_name
+		`, regionCode)
+	} else {
+		rows, err = r.db.Query(ctx, `
+			SELECT region_code, area_name, year, value_mnkr, total_mnkr, pct
+			FROM region_budget_snapshots
+			WHERE region_code = $1 AND year = ANY($2)
+			ORDER BY year, area_name
+		`, regionCode, years)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -229,12 +240,23 @@ func (r *Repository) UpsertMunicipalityBudgetSnapshots(ctx context.Context, snap
 }
 
 func (r *Repository) GetMunicipalityBudgetHistory(ctx context.Context, munCode string, years []int) ([]ports.MunicipalityBudgetSnapshot, error) {
-	rows, err := r.db.Query(ctx, `
-		SELECT mun_code, area_name, year, value_mnkr, total_mnkr, pct
-		FROM municipality_budget_snapshots
-		WHERE mun_code = $1 AND year = ANY($2)
-		ORDER BY year, area_name
-	`, munCode, years)
+	var rows pgx.Rows
+	var err error
+	if len(years) == 0 {
+		rows, err = r.db.Query(ctx, `
+			SELECT mun_code, area_name, year, value_mnkr, total_mnkr, pct
+			FROM municipality_budget_snapshots
+			WHERE mun_code = $1
+			ORDER BY year, area_name
+		`, munCode)
+	} else {
+		rows, err = r.db.Query(ctx, `
+			SELECT mun_code, area_name, year, value_mnkr, total_mnkr, pct
+			FROM municipality_budget_snapshots
+			WHERE mun_code = $1 AND year = ANY($2)
+			ORDER BY year, area_name
+		`, munCode, years)
+	}
 	if err != nil {
 		return nil, err
 	}
