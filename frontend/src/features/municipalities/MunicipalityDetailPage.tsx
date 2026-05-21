@@ -477,7 +477,6 @@ export function MunicipalityDetailPage() {
       >
         <BudgetHistorySection
           snapshots={budgetHistory}
-          entityCode={code ?? ""}
           emptyMessage="Budgetdata saknas för denna kommun. Kolada — endast utvalda kommuner stöds f.n."
           sourceId="kolada-spending"
         />

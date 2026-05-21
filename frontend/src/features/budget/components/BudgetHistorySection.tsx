@@ -2,8 +2,6 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useAreaAcrossRegions, useRegionList } from "@/hooks/useDemocracy";
-import { BarsWithMean } from "./BarsWithMean";
 import type { BudgetSnapshot } from "@/shared/types";
 
 const BUDGET_COLORS = [
@@ -19,100 +17,156 @@ const BUDGET_COLORS = [
 
 interface BudgetHistorySectionProps {
   snapshots: BudgetSnapshot[];
-  entityCode: string;
   makeAreaLink?: (areaName: string) => string;
   emptyMessage?: string;
   sourceId: string;
 }
 
 // ── ExpandedAreaRow ────────────────────────────────────────────────────────────
-// Defined as a separate component so hooks are called unconditionally per row.
 
 interface ExpandedAreaRowProps {
   areaName: string;
-  entityCode: string;
+  yearSnapshots: { year: number; value_mnkr: number }[];
   makeAreaLink?: (areaName: string) => string;
 }
 
-function ExpandedAreaRow({ areaName, entityCode, makeAreaLink }: ExpandedAreaRowProps) {
-  const isMobile = useMediaQuery("(max-width: 640px)");
-  const { data: crossRegionData, isLoading } = useAreaAcrossRegions(areaName);
-  const { data: regionList } = useRegionList();
+function ExpandedAreaRow({ areaName, yearSnapshots, makeAreaLink }: ExpandedAreaRowProps) {
+  const byYear = useMemo(() => {
+    const m = new Map<number, number>();
+    for (const s of yearSnapshots) m.set(s.year, s.value_mnkr);
+    return m;
+  }, [yearSnapshots]);
 
-  const { codeToName, sortedPoints, mean, maxValue } = useMemo(() => {
-    const codeToName = new Map<string, string>();
-    if (regionList) {
-      for (const r of regionList) {
-        codeToName.set(r.code, r.name);
-      }
-    }
-
-    if (!crossRegionData || crossRegionData.length === 0) {
-      return { codeToName, sortedPoints: [], mean: 0, maxValue: 1 };
-    }
-
-    const sortedPoints = [...crossRegionData].sort((a, b) => b.pct - a.pct);
-    const mean =
-      crossRegionData.reduce((s, p) => s + p.pct, 0) / crossRegionData.length;
-    const maxValue = Math.max(...crossRegionData.map((p) => p.pct), 1);
-
-    return { codeToName, sortedPoints, mean, maxValue };
-  }, [crossRegionData, regionList]);
-
-  if (isLoading) {
-    return (
-      <div
-        style={{
-          height: 60,
-          background: "var(--color-surface-low)",
-          borderRadius: 6,
-          margin: "8px 12px 12px",
-          animation: "pulse 1.5s infinite",
-        }}
-      />
-    );
-  }
-
-  if (!makeAreaLink) {
-    return (
-      <div
-        style={{
-          padding: "8px 12px 12px",
-          fontFamily: "var(--font-mono)",
-          fontSize: 10,
-          color: "var(--color-fg-muted)",
-        }}
-      >
-        Jämförelsedata ej tillgänglig
-      </div>
-    );
-  }
+  const oldestYear = useMemo(
+    () => Math.min(...yearSnapshots.map((s) => s.year)),
+    [yearSnapshots]
+  );
+  const latestYear = useMemo(
+    () => Math.max(...yearSnapshots.map((s) => s.year)),
+    [yearSnapshots]
+  );
+  const sorted = useMemo(
+    () => [...yearSnapshots].sort((a, b) => b.value_mnkr - a.value_mnkr),
+    [yearSnapshots]
+  );
+  const maxVal = useMemo(
+    () => Math.max(...sorted.map((s) => s.value_mnkr), 1),
+    [sorted]
+  );
 
   return (
-    <div style={{ padding: "8px 12px 12px" }}>
-      {sortedPoints.length > 0 && (
-        <BarsWithMean
-          points={sortedPoints}
-          mean={mean}
-          maxValue={maxValue}
-          highlightCode={entityCode}
-          codeToName={codeToName}
-          isMobile={isMobile}
-        />
+    <div
+      style={{
+        padding: "10px 14px 14px",
+        background: "var(--color-surface-low)",
+        borderTop: "1px solid var(--color-border)",
+      }}
+    >
+      {sorted.map((snap) => {
+        const hl = snap.year === latestYear;
+        const pct = (snap.value_mnkr / maxVal) * 100;
+        const prevVal = byYear.get(snap.year - 1);
+        const deltaPct =
+          snap.year !== oldestYear && prevVal != null && prevVal > 0
+            ? ((snap.value_mnkr - prevVal) / prevVal) * 100
+            : null;
+
+        return (
+          <div
+            key={snap.year}
+            style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 0" }}
+          >
+            {/* Year */}
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                color: hl ? "var(--color-fg)" : "var(--color-fg-muted)",
+                fontWeight: hl ? 700 : 400,
+                width: 36,
+                textAlign: "right",
+                flexShrink: 0,
+              }}
+            >
+              {snap.year}
+            </span>
+
+            {/* YoY delta */}
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                width: 52,
+                textAlign: "right",
+                flexShrink: 0,
+                color:
+                  deltaPct == null
+                    ? "var(--color-fg-muted)"
+                    : deltaPct >= 0
+                    ? "#4caf7d"
+                    : "#e05c5c",
+              }}
+            >
+              {deltaPct == null
+                ? "—"
+                : `${deltaPct >= 0 ? "+" : ""}${deltaPct.toFixed(1)}%`}
+            </span>
+
+            {/* Value */}
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                color: hl ? "var(--color-fg)" : "var(--color-fg-muted)",
+                width: 68,
+                textAlign: "right",
+                flexShrink: 0,
+              }}
+            >
+              {Math.round(snap.value_mnkr).toLocaleString("sv-SE")}
+            </span>
+
+            {/* Bar */}
+            <div
+              style={{
+                flex: 1,
+                height: 8,
+                background: "var(--color-surface-high, #1c1c21)",
+                borderRadius: 2,
+              }}
+            >
+              <div
+                style={{
+                  width: `${pct}%`,
+                  height: "100%",
+                  borderRadius: 2,
+                  background: hl ? "var(--color-accent, #7c9ff5)" : "#2d3a52",
+                }}
+              />
+            </div>
+          </div>
+        );
+      })}
+
+      {makeAreaLink && (
+        <div style={{ marginTop: 10 }}>
+          <Link
+            to={makeAreaLink(areaName)}
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              color: "var(--color-accent, #7c9ff5)",
+              textDecoration: "none",
+              border: "1px solid rgba(124,159,245,0.3)",
+              borderRadius: 4,
+              padding: "5px 10px",
+              display: "inline-block",
+            }}
+          >
+            → Visa jämförelse med andra regioner
+          </Link>
+        </div>
       )}
-      <div style={{ marginTop: 8 }}>
-        <Link
-          to={makeAreaLink(areaName)}
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            color: "var(--color-accent, #7c9ff5)",
-            textDecoration: "none",
-          }}
-        >
-          → Visa fullständig jämförelse
-        </Link>
-      </div>
     </div>
   );
 }
@@ -121,7 +175,6 @@ function ExpandedAreaRow({ areaName, entityCode, makeAreaLink }: ExpandedAreaRow
 
 export function BudgetHistorySection({
   snapshots,
-  entityCode,
   makeAreaLink,
   emptyMessage = "Budgetdata saknas.",
   sourceId,
@@ -569,7 +622,16 @@ export function BudgetHistorySection({
                   {isExpanded && (
                     <ExpandedAreaRow
                       areaName={a.area_name}
-                      entityCode={entityCode}
+                      yearSnapshots={[...historyByYear.entries()].flatMap(
+                        ([yr, areas]) => {
+                          const snap = areas.find(
+                            (s) => s.area_name === a.area_name
+                          );
+                          return snap
+                            ? [{ year: yr, value_mnkr: snap.value_mnkr }]
+                            : [];
+                        }
+                      )}
                       makeAreaLink={makeAreaLink}
                     />
                   )}
