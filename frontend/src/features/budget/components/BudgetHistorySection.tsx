@@ -46,12 +46,12 @@ function ExpandedAreaRow({ areaName, yearSnapshots, makeAreaLink }: ExpandedArea
     [yearSnapshots]
   );
   const sorted = useMemo(
-    () => [...yearSnapshots].sort((a, b) => b.value_mnkr - a.value_mnkr),
+    () => [...yearSnapshots].sort((a, b) => b.year - a.year),
     [yearSnapshots]
   );
   const maxVal = useMemo(
-    () => Math.max(...sorted.map((s) => s.value_mnkr), 1),
-    [sorted]
+    () => Math.max(...yearSnapshots.map((s) => s.value_mnkr), 1),
+    [yearSnapshots]
   );
 
   return (
