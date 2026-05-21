@@ -193,6 +193,16 @@ func (r *Repository) GetRegionBudgetHistory(ctx context.Context, regionCode stri
 }
 
 func (r *Repository) GetAreaAcrossRegions(ctx context.Context, areaName string, year int) ([]ports.RegionAreaDataPoint, error) {
+	if year == 0 {
+		// Pick the year with the most regions for this area (most complete snapshot).
+		if err := r.db.QueryRow(ctx, `
+			SELECT year FROM region_budget_snapshots
+			WHERE area_name = $1
+			GROUP BY year ORDER BY COUNT(*) DESC, year DESC LIMIT 1
+		`, areaName).Scan(&year); err != nil {
+			return nil, err
+		}
+	}
 	rows, err := r.db.Query(ctx, `
 		SELECT region_code, value_mnkr, total_mnkr, pct
 		FROM region_budget_snapshots
