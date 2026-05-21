@@ -107,16 +107,15 @@ func (h *Handler) getRegionBudget(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getRegionBudgetHistory(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
 	yearsParam := r.URL.Query().Get("years")
-	n := 4
+	var years []int
 	if yearsParam != "" {
-		if parsed, err := strconv.Atoi(yearsParam); err == nil && parsed > 0 {
-			n = parsed
+		if n, err := strconv.Atoi(yearsParam); err == nil && n > 0 {
+			current := time.Now().Year()
+			years = make([]int, n)
+			for i := range years {
+				years[i] = current - 1 - i
+			}
 		}
-	}
-	current := time.Now().Year()
-	years := make([]int, n)
-	for i := range years {
-		years[i] = current - 1 - i
 	}
 	snapshots, err := h.svc.GetRegionBudgetHistory(r.Context(), code, years)
 	if err != nil {
@@ -232,16 +231,15 @@ func (h *Handler) getMunicipalityProcurement(w http.ResponseWriter, r *http.Requ
 func (h *Handler) getMunicipalityBudgetHistory(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
 	yearsParam := r.URL.Query().Get("years")
-	n := 4
+	var years []int
 	if yearsParam != "" {
-		if parsed, err := strconv.Atoi(yearsParam); err == nil && parsed > 0 {
-			n = parsed
+		if n, err := strconv.Atoi(yearsParam); err == nil && n > 0 {
+			current := time.Now().Year()
+			years = make([]int, n)
+			for i := range years {
+				years[i] = current - 1 - i
+			}
 		}
-	}
-	current := time.Now().Year()
-	years := make([]int, n)
-	for i := range years {
-		years[i] = current - 1 - i
 	}
 	snapshots, err := h.svc.GetMunicipalityBudgetHistory(r.Context(), code, years)
 	if err != nil {
