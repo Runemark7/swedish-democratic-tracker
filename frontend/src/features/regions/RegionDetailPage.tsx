@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory } from "@/hooks/useDemocracy";
-import { Hemicycle, Pill, Trend, GoalBadge } from "@/components/charts";
+import { MandateComposition, Pill, Trend, GoalBadge } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { AgendaList } from "@/components/AgendaList";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import type { LiveVote, Party } from "@/types/democracy";
+import type { LiveVote } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
   if (!v.beteckning) return null;
@@ -63,21 +63,12 @@ export function RegionDetailPage() {
 
   const { title, subtitle, ruling, liveVotes, agenda, kpis } = data;
 
-  // Build hemicycle groups: opposition left → support → governing right
-  const hemicycleGroups = [
-    ...ruling.opposition.map((p: Party) => ({ color: p.color, count: p.seats })),
-    ...(ruling.support ?? []).map((p: Party) => ({ color: p.color, count: p.seats })),
-    ...ruling.parties.map((p: Party) => ({ color: p.color, count: p.seats })),
-  ];
-
   const allParties = [
     ...ruling.parties,
     ...(ruling.support ?? []),
     ...ruling.opposition,
   ];
   const totalSeats = allParties.reduce((s, p) => s + p.seats, 0);
-  const rulingSeats = ruling.parties.reduce((s, p) => s + p.seats, 0);
-
   return (
     <>
       <div className="sdt-page">
@@ -335,108 +326,10 @@ export function RegionDetailPage() {
               MANDAT · KAMMARENS SAMMANSÄTTNING
             </div>
 
-            {totalSeats === 0 ? (
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 11,
-                  color: "var(--color-fg-muted)",
-                  padding: "24px 0",
-                  textAlign: "center",
-                  lineHeight: 1.5,
-                }}
-              >
-                Mandatdata saknas för denna region.
-              </div>
-            ) : (
-              <Hemicycle groups={hemicycleGroups} width={440} height={150} />
-            )}
-
-            {/* Party legend — split by governing / opposition */}
-            <div style={{ display: totalSeats === 0 ? "none" : "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>
-              {[
-                { label: "STYRE", parties: [...ruling.parties, ...(ruling.support ?? [])] },
-                { label: "OPPOSITION", parties: ruling.opposition },
-              ].map(({ label, parties }) => (
-                <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                  <span
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 8,
-                      letterSpacing: "0.15em",
-                      color: label === "STYRE" ? "var(--color-accent)" : "var(--color-fg-muted)",
-                      opacity: label === "STYRE" ? 1 : 0.7,
-                      minWidth: isMobile ? 48 : 64,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {label}
-                  </span>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 12px" }}>
-                    {parties.map((p) => (
-                      <span
-                        key={p.short}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4,
-                          fontFamily: "var(--font-mono)",
-                          fontSize: 10,
-                          color: "var(--color-fg-muted)",
-                        }}
-                      >
-                        <span
-                          style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: "50%",
-                            background: p.color,
-                            display: "inline-block",
-                            flexShrink: 0,
-                          }}
-                        />
-                        {p.short}{" "}
-                        <span style={{ color: "var(--color-fg)" }}>{p.seats}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Coalition */}
-            {totalSeats > 0 && (
-              <div
-                style={{
-                  borderTop: "1px solid var(--color-border)",
-                  marginTop: 14,
-                  paddingTop: 14,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    fontSize: 18,
-                    color: "var(--color-fg)",
-                    marginRight: 12,
-                  }}
-                >
-                  {ruling.type}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10,
-                    color: "var(--color-fg-muted)",
-                    letterSpacing: "0.1em",
-                  }}
-                >
-                  MAJORITET {rulingSeats}/{totalSeats}
-                </span>
-                <SourceMarker sourceId="scb-ltmandat" />
-              </div>
-            )}
+            <MandateComposition
+              ruling={ruling}
+              totalSeats={totalSeats}
+            />
           </div>
 
         </div>
