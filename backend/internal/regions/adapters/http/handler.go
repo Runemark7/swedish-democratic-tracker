@@ -131,7 +131,7 @@ func (h *Handler) getRegionBudgetHistory(w http.ResponseWriter, r *http.Request)
 func (h *Handler) getAreaAcrossRegions(w http.ResponseWriter, r *http.Request) {
 	areaName := chi.URLParam(r, "areaName")
 	yearParam := r.URL.Query().Get("year")
-	year := time.Now().Year() - 1 // default: last completed year
+	year := 0 // 0 = let repo pick the most complete year
 	if yearParam != "" {
 		if parsed, err := strconv.Atoi(yearParam); err == nil {
 			year = parsed
