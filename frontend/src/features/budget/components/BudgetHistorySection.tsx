@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -219,71 +219,26 @@ export function BudgetHistorySection({
     return new Map(prevAreas.map((a) => [a.area_name, a]));
   }, [historyByYear, previousYear]);
 
-  // ── Total trend line chart ────────────────────────────────────────────────────
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [svgWidth, setSvgWidth] = useState<number>(600);
+  // ── Total per year (descending) for header bars ──────────────────────────────
+  const totalByYear = useMemo(
+    () =>
+      new Map(
+        sortedYears.map((yr) => [
+          yr,
+          (historyByYear.get(yr) ?? []).reduce((s, a) => s + a.value_mnkr, 0),
+        ])
+      ),
+    [sortedYears, historyByYear]
+  );
 
-  useEffect(() => {
-    const el = svgRef.current;
-    if (!el) return;
-    const obs = new ResizeObserver((entries) => {
-      const w = entries[0]?.contentRect.width;
-      if (w && w > 0) setSvgWidth(w);
-    });
-    obs.observe(el);
-    const initial = el.getBoundingClientRect().width;
-    if (initial > 0) setSvgWidth(initial);
-    return () => obs.disconnect();
-  }, []);
-
-  const chartH = 110;
-  const padL = 44, padR = 12, padT = 10, padB = 22;
-  const innerW = svgWidth - padL - padR;
-  const innerH = chartH - padT - padB;
-
-  const totalTrend = useMemo((): { year: number; total: number }[] | null => {
-    if (sortedYears.length < 2) return null;
-    const ascending = [...sortedYears].sort((a, b) => a - b);
-    return ascending.map((yr) => ({
-      year: yr,
-      total: (historyByYear.get(yr) ?? []).reduce((s, a) => s + a.value_mnkr, 0),
-    }));
-  }, [sortedYears, historyByYear]);
-
-  const trendMax = totalTrend
-    ? Math.max(...totalTrend.map((p) => p.total), 1)
-    : 1;
-
-  const xScale = (year: number, years: number[]): number => {
-    if (years.length < 2) return padL;
-    return (
-      padL +
-      ((year - years[0]) / (years[years.length - 1] - years[0])) * innerW
-    );
-  };
-
-  const yScale = (val: number): number =>
-    padT + innerH - (val / trendMax) * innerH;
-
-  // Headline KPI
-  const latestTotal =
-    latestYear != null
-      ? (historyByYear.get(latestYear) ?? []).reduce(
-          (s, a) => s + a.value_mnkr,
-          0
-        )
-      : 0;
-  const prevTotal =
-    previousYear != null
-      ? (historyByYear.get(previousYear) ?? []).reduce(
-          (s, a) => s + a.value_mnkr,
-          0
-        )
-      : null;
+  const latestTotal = latestYear != null ? (totalByYear.get(latestYear) ?? 0) : 0;
+  const prevTotal = previousYear != null ? (totalByYear.get(previousYear) ?? null) : null;
   const yoyDeltaPct =
     prevTotal != null && prevTotal > 0
       ? ((latestTotal - prevTotal) / prevTotal) * 100
       : null;
+  const totalMax = Math.max(...[...totalByYear.values()], 1);
+  const oldestYear = sortedYears[sortedYears.length - 1] ?? null;
 
   return (
     <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
@@ -316,160 +271,53 @@ export function BudgetHistorySection({
         </div>
       ) : (
         <>
-          {/* 2. Total trend line chart */}
-          {totalTrend && (
+          {/* 2. Total year bars */}
+          {sortedYears.length >= 2 && (
             <div style={{ marginBottom: 20 }}>
               {/* Headline KPI */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "baseline",
-                  gap: 8,
-                  marginBottom: 8,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 20,
-                    fontWeight: 700,
-                    color: "var(--color-fg)",
-                  }}
-                >
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 10 }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 20, fontWeight: 700, color: "var(--color-fg)" }}>
                   {Math.round(latestTotal).toLocaleString("sv-SE")} mnkr
                 </span>
                 {yoyDeltaPct != null && (
-                  <span
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 11,
-                      color: yoyDeltaPct >= 0 ? "#4caf7d" : "#e05c5c",
-                    }}
-                  >
-                    {yoyDeltaPct >= 0 ? "+" : ""}
-                    {yoyDeltaPct.toFixed(1)}%
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: yoyDeltaPct >= 0 ? "#4caf7d" : "#e05c5c" }}>
+                    {yoyDeltaPct >= 0 ? "+" : ""}{yoyDeltaPct.toFixed(1)}%
                   </span>
                 )}
                 {latestYear != null && (
-                  <span
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 10,
-                      color: "var(--color-fg-muted)",
-                    }}
-                  >
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
                     {latestYear}
                   </span>
                 )}
               </div>
 
-              {/* Line chart */}
-              <svg
-                ref={svgRef}
-                width="100%"
-                height={chartH}
-                style={{ display: "block", overflow: "visible" }}
-              >
-                {/* Y-axis */}
-                <line
-                  x1={padL} y1={padT}
-                  x2={padL} y2={padT + innerH}
-                  stroke="var(--color-border)"
-                  strokeWidth={1}
-                />
-                {/* X-axis */}
-                <line
-                  x1={padL} y1={padT + innerH}
-                  x2={padL + innerW} y2={padT + innerH}
-                  stroke="var(--color-border)"
-                  strokeWidth={1}
-                />
-
-                {/* Y-axis 3 ticks */}
-                {[0, 0.5, 1].map((frac) => {
-                  const val = Math.round(frac * trendMax);
-                  const y = yScale(frac * trendMax);
-                  return (
-                    <g key={frac}>
-                      <line
-                        x1={padL - 3} y1={y}
-                        x2={padL} y2={y}
-                        stroke="var(--color-border)"
-                        strokeWidth={1}
-                      />
-                      <text
-                        x={padL - 6}
-                        y={y + 3}
-                        textAnchor="end"
-                        fontSize={9}
-                        fontFamily="var(--font-mono)"
-                        fill="var(--color-fg-muted)"
-                      >
-                        {val >= 1000 ? `${Math.round(val / 1000)}k` : String(val)}
-                      </text>
-                    </g>
-                  );
-                })}
-
-                {/* X-axis year labels */}
-                {totalTrend.map((pt) => {
-                  const x = xScale(pt.year, totalTrend.map((p) => p.year));
-                  return (
-                    <g key={pt.year}>
-                      <line
-                        x1={x} y1={padT + innerH}
-                        x2={x} y2={padT + innerH + 4}
-                        stroke="var(--color-border)"
-                        strokeWidth={1}
-                      />
-                      <text
-                        x={x}
-                        y={padT + innerH + 14}
-                        textAnchor="middle"
-                        fontSize={9}
-                        fontFamily="var(--font-mono)"
-                        fill="var(--color-fg-muted)"
-                      >
-                        {pt.year}
-                      </text>
-                    </g>
-                  );
-                })}
-
-                {/* Line */}
-                {(() => {
-                  const years = totalTrend.map((p) => p.year);
-                  const pts = totalTrend
-                    .map(
-                      (p) =>
-                        `${xScale(p.year, years).toFixed(1)},${yScale(p.total).toFixed(1)}`
-                    )
-                    .join(" ");
-                  return (
-                    <polyline
-                      points={pts}
-                      fill="none"
-                      stroke="var(--color-accent, #7c9ff5)"
-                      strokeWidth={2}
-                      strokeLinejoin="round"
-                    />
-                  );
-                })()}
-
-                {/* Dots */}
-                {totalTrend.map((pt) => {
-                  const years = totalTrend.map((p) => p.year);
-                  return (
-                    <circle
-                      key={pt.year}
-                      cx={xScale(pt.year, years)}
-                      cy={yScale(pt.total)}
-                      r={3}
-                      fill="var(--color-accent, #7c9ff5)"
-                    />
-                  );
-                })}
-              </svg>
+              {/* Year bars */}
+              {sortedYears.map((yr) => {
+                const total = totalByYear.get(yr) ?? 0;
+                const hl = yr === latestYear;
+                const pct = (total / totalMax) * 100;
+                const prevYrTotal = totalByYear.get(yr - 1) ?? null;
+                const delta =
+                  yr !== oldestYear && prevYrTotal != null && prevYrTotal > 0
+                    ? ((total - prevYrTotal) / prevYrTotal) * 100
+                    : null;
+                return (
+                  <div key={yr} style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 0" }}>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: hl ? "var(--color-fg)" : "var(--color-fg-muted)", fontWeight: hl ? 700 : 400, width: 36, textAlign: "right", flexShrink: 0 }}>
+                      {yr}
+                    </span>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, width: 52, textAlign: "right", flexShrink: 0, color: delta == null ? "var(--color-fg-muted)" : delta >= 0 ? "#4caf7d" : "#e05c5c" }}>
+                      {delta == null ? "—" : `${delta >= 0 ? "+" : ""}${delta.toFixed(1)}%`}
+                    </span>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: hl ? "var(--color-fg)" : "var(--color-fg-muted)", width: 68, textAlign: "right", flexShrink: 0 }}>
+                      {Math.round(total).toLocaleString("sv-SE")}
+                    </span>
+                    <div style={{ flex: 1, height: 8, background: "var(--color-surface-high, #1c1c21)", borderRadius: 2 }}>
+                      <div style={{ width: `${pct}%`, height: "100%", borderRadius: 2, background: hl ? "var(--color-accent, #7c9ff5)" : "#2d3a52" }} />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
