@@ -451,6 +451,7 @@ export function RegionDetailPage() {
         >
           <BudgetHistorySection
             snapshots={budgetHistory}
+            entityCode={code ?? ""}
             makeAreaLink={(a) => `/region/${code}/budget/${encodeURIComponent(a)}`}
             emptyMessage="Budgetdata saknas för denna region."
             sourceId="scb-kostndrlt"
