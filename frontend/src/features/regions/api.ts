@@ -5,8 +5,8 @@ export const regionsApi = {
   listRegions: () => api.get<RegionSummary[]>("/regions"),
   getRegion: (code: string) => api.get<RegionDetail>(`/regions/${code}`),
   getRegionBudget: (code: string) => api.get<RegionBudgetArea[]>(`/regions/${code}/budget`),
-  getRegionBudgetHistory: (code: string, years = 4) =>
-    api.get<RegionBudgetSnapshot[]>(`/regions/${code}/budget/history?years=${years}`),
+  getRegionBudgetHistory: (code: string) =>
+    api.get<RegionBudgetSnapshot[]>(`/regions/${code}/budget/history`),
   getRegionKPIs: (code: string) => api.get<MunicipalityKPIItem[]>(`/regions/${code}/kpi`),
   getAreaAcrossRegions: (areaName: string, year?: number) =>
     api.get<RegionAreaDataPoint[]>(
