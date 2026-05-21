@@ -16,6 +16,6 @@ export const municipalitiesApi = {
     api.get<MunicipalityKPIItem[]>(`/municipalities/${code}/spending`),
   getMunicipalityProcurement: (code: string) =>
     api.get<ProcurementCategorySummary[]>(`/municipalities/${code}/procurement`),
-  getMunicipalityBudgetHistory: (code: string, years = 4) =>
-    api.get<MunicipalityBudgetSnapshot[]>(`/municipalities/${code}/budget/history?years=${years}`),
+  getMunicipalityBudgetHistory: (code: string) =>
+    api.get<MunicipalityBudgetSnapshot[]>(`/municipalities/${code}/budget/history`),
 };
