@@ -1,23 +1,14 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Hemicycle, Donut, HBars, Pill, Trend, GoalBadge } from "@/components/charts";
+import { Hemicycle, Pill, Trend, GoalBadge } from "@/components/charts";
+import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { useKommun, useKommunList } from "@/hooks/useDemocracy";
+import { useKommun, useKommunList, useKommunBudgetHistory } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import type { LiveVote } from "@/types/democracy";
 
-const BUDGET_COLORS = [
-  "#0b3d7a",
-  "#2d6fa8",
-  "#5a9fd0",
-  "#8bc0e0",
-  "#c8a13b",
-  "#d0533f",
-  "#7a8390",
-  "#b3bcc5",
-];
 
 function beslutHref(v: LiveVote): string | null {
   if (!v.beteckning) return null;
@@ -40,6 +31,7 @@ export function MunicipalityDetailPage() {
 
   const { data, isLoading } = useKommun(code ?? "");
   const { data: allKommuner } = useKommunList();
+  const { data: budgetHistory = [] } = useKommunBudgetHistory(code ?? "");
 
   if (isLoading || !data) {
     return (
@@ -118,19 +110,6 @@ export function MunicipalityDetailPage() {
   const govSeats = governing.reduce((s, p) => s + p.seats, 0);
 
   const kpis = data.kpis ?? [];
-  const budgetAreas = data.budget.areas;
-  const donutSegments = budgetAreas.map((a, i) => ({
-    color: BUDGET_COLORS[i % BUDGET_COLORS.length],
-    value: a.pct,
-    name: a.name,
-  }));
-  const hbarsItems = budgetAreas.map((a, i) => ({
-    name: a.name,
-    value: a.pct,
-    pct: a.pct,
-    amount: `${a.value.toFixed(2)} mdkr`,
-    color: BUDGET_COLORS[i % BUDGET_COLORS.length],
-  }));
 
   return (
     <div
@@ -366,7 +345,7 @@ export function MunicipalityDetailPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gridTemplateColumns: "1fr",
           gap: 1,
           background: "var(--color-border)",
           border: "1px solid var(--color-border)",
@@ -487,63 +466,20 @@ export function MunicipalityDetailPage() {
           </div>
         </div>
 
-        {/* Right — BUDGET */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px", display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "2px",
-              color: "var(--color-fg-muted)",
-              textTransform: "uppercase",
-              marginBottom: 16,
-              display: "flex",
-              alignItems: "center",
-              gap: 4,
-            }}
-          >
-            <span>
-              BUDGET {data.budget.year}
-              {data.budget.total ? ` · ${data.budget.total}` : ""}
-            </span>
-            <SourceMarker sourceId="kolada-spending" />
-          </div>
+      </div>
 
-          <div style={{ flex: 1 }}>
-            {budgetAreas.length === 0 ? (
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 11,
-                  color: "var(--color-fg-muted)",
-                  padding: "24px 0",
-                  textAlign: "center",
-                  lineHeight: 1.5,
-                }}
-              >
-                Budgetdata saknas för denna kommun.
-                <div style={{ fontSize: 9, marginTop: 6, opacity: 0.7 }}>
-                  Källa: Kolada — endast utvalda kommuner stöds f.n.
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: "flex", gap: 20, alignItems: isMobile ? "center" : "flex-start", flexDirection: isMobile ? "column" : "row" }}>
-                <Donut
-                  segments={donutSegments}
-                  size={isMobile ? 140 : 160}
-                  thickness={isMobile ? 16 : 24}
-                  label={data.budget.total}
-                  sublabel={data.budget.year}
-                />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <HBars items={hbarsItems} unit="" height={5} gap={9} />
-                </div>
-              </div>
-            )}
-          </div>
-          <div style={{ marginTop: 16 }}>
-          </div>
-        </div>
+      <div
+        style={{
+          border: "1px solid var(--color-border)",
+          borderTop: "none",
+          margin: isMobile ? "1px 14px 0" : "1px 32px 0",
+        }}
+      >
+        <BudgetHistorySection
+          snapshots={budgetHistory}
+          emptyMessage="Budgetdata saknas för denna kommun. Kolada — endast utvalda kommuner stöds f.n."
+          sourceId="kolada-spending"
+        />
       </div>
 
       {/* ── Bottom grid ────────────────────────────────────────────────── */}
