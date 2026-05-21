@@ -333,7 +333,7 @@ export function BudgetHistorySection({
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr auto auto auto",
+                gridTemplateColumns: "1fr auto auto auto auto",
                 gap: 8,
                 padding: "6px 12px",
                 background: "var(--color-surface-low)",
@@ -346,6 +346,7 @@ export function BudgetHistorySection({
             >
               <span>Område</span>
               <span style={{ textAlign: "right", minWidth: 72 }}>Senaste</span>
+              <span style={{ textAlign: "right", minWidth: 44 }}>Andel</span>
               <span style={{ textAlign: "right", minWidth: 64 }}>Förändring</span>
               <span style={{ minWidth: 12 }} />
             </div>
@@ -372,7 +373,7 @@ export function BudgetHistorySection({
                     onClick={handleToggle}
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr auto auto auto",
+                      gridTemplateColumns: "1fr auto auto auto auto",
                       gap: 8,
                       alignItems: "center",
                       padding: "8px 12px",
@@ -428,6 +429,21 @@ export function BudgetHistorySection({
                       }}
                     >
                       {Math.round(a.value_mnkr)} mnkr
+                    </span>
+
+                    {/* Share of total */}
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 11,
+                        color: "var(--color-fg-muted)",
+                        textAlign: "right",
+                        minWidth: 44,
+                      }}
+                    >
+                      {latestTotal > 0
+                        ? `${((a.value_mnkr / latestTotal) * 100).toFixed(1)}%`
+                        : "—"}
                     </span>
 
                     {/* YoY delta */}
@@ -492,7 +508,7 @@ export function BudgetHistorySection({
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "1fr auto auto auto",
+                  gridTemplateColumns: "1fr auto auto auto auto",
                   gap: 8,
                   alignItems: "center",
                   padding: "8px 12px",
@@ -514,6 +530,9 @@ export function BudgetHistorySection({
                   }}
                 >
                   {Math.round(latestTotal).toLocaleString("sv-SE")} mnkr
+                </span>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-fg-muted)", textAlign: "right", minWidth: 44 }}>
+                  100%
                 </span>
                 <span
                   style={{
