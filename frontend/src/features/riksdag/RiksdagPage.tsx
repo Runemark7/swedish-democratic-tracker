@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useRiksdag } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { Hemicycle, Donut, HBars, DualLine, Pill, GoalBadge, Trend } from "@/components/charts";
+import { MandateComposition, Donut, HBars, DualLine, Pill, GoalBadge, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import type { Authority, LiveVote, Party } from "@/types/democracy";
+import type { Authority, LiveVote } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
   if (!v.beteckning) return null;
@@ -181,20 +181,7 @@ export function RiksdagPage() {
 
   const { ruling, liveVotes, budget, agenda, kpis, authorities } = data;
 
-  // Build hemicycle groups: opposition left → support → ruling right
-  const hemicycleGroups = [
-    ...ruling.opposition.map((p: Party) => ({ color: p.color, count: p.seats })),
-    ...(ruling.support ?? []).map((p: Party) => ({ color: p.color, count: p.seats })),
-    ...ruling.parties.map((p: Party) => ({ color: p.color, count: p.seats })),
-  ];
-
-  const allParties = [
-    ...ruling.parties,
-    ...(ruling.support ?? []),
-    ...ruling.opposition,
-  ];
-  const totalSeats = allParties.reduce((s, p) => s + p.seats, 0);
-  const rulingSeats = ruling.parties.reduce((s, p) => s + p.seats, 0);
+  const totalSeats = [...ruling.parties, ...(ruling.support ?? []), ...ruling.opposition].reduce((s, p) => s + p.seats, 0);
 
   const budgetSegments = budget.areas.map((a, i) => ({
     name: a.name,
@@ -369,76 +356,11 @@ export function RiksdagPage() {
             MANDAT · KAMMARENS SAMMANSÄTTNING
           </div>
 
-          <Hemicycle groups={hemicycleGroups} width={440} height={150} />
-
-          {/* Party legend */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "6px 14px",
-              marginTop: 12,
-            }}
-          >
-            {allParties.map((p) => (
-              <span
-                key={p.short}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 5,
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  color: "var(--color-fg-muted)",
-                }}
-              >
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: p.color,
-                    display: "inline-block",
-                    flexShrink: 0,
-                  }}
-                />
-                {p.short}{" "}
-                <span style={{ color: "var(--color-fg)" }}>{p.seats}</span>
-              </span>
-            ))}
-          </div>
-
-          {/* Coalition */}
-          <div
-            style={{
-              borderTop: "1px solid var(--color-border)",
-              marginTop: 14,
-              paddingTop: 14,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontStyle: "italic",
-                fontSize: 18,
-                color: "var(--color-fg)",
-                marginRight: 12,
-              }}
-            >
-              {ruling.type}
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                color: "var(--color-fg-muted)",
-                letterSpacing: "0.1em",
-              }}
-            >
-              MAJORITET {rulingSeats}/{totalSeats}
-              <SourceMarker sourceId="riksdagen" />
-            </span>
-          </div>
+          <MandateComposition
+            ruling={ruling}
+            totalSeats={totalSeats}
+            sourceId="riksdagen"
+          />
         </div>
 
         {/* Right card — BUDGET */}
