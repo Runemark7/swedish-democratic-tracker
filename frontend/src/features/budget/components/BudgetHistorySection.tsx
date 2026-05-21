@@ -1,8 +1,9 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { DeltaIndicator } from "./DeltaIndicator";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useAreaAcrossRegions, useRegionList } from "@/hooks/useDemocracy";
+import { BarsWithMean } from "./BarsWithMean";
 import type { BudgetSnapshot } from "@/shared/types";
 
 const BUDGET_COLORS = [
@@ -18,13 +19,109 @@ const BUDGET_COLORS = [
 
 interface BudgetHistorySectionProps {
   snapshots: BudgetSnapshot[];
+  entityCode: string;
   makeAreaLink?: (areaName: string) => string;
   emptyMessage?: string;
   sourceId: string;
 }
 
+// ── ExpandedAreaRow ────────────────────────────────────────────────────────────
+// Defined as a separate component so hooks are called unconditionally per row.
+
+interface ExpandedAreaRowProps {
+  areaName: string;
+  entityCode: string;
+  makeAreaLink?: (areaName: string) => string;
+}
+
+function ExpandedAreaRow({ areaName, entityCode, makeAreaLink }: ExpandedAreaRowProps) {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const { data: crossRegionData, isLoading } = useAreaAcrossRegions(areaName);
+  const { data: regionList } = useRegionList();
+
+  const { codeToName, sortedPoints, mean, maxValue } = useMemo(() => {
+    const codeToName = new Map<string, string>();
+    if (regionList) {
+      for (const r of regionList) {
+        codeToName.set(r.code, r.name);
+      }
+    }
+
+    if (!crossRegionData || crossRegionData.length === 0) {
+      return { codeToName, sortedPoints: [], mean: 0, maxValue: 1 };
+    }
+
+    const sortedPoints = [...crossRegionData].sort((a, b) => b.pct - a.pct);
+    const mean =
+      crossRegionData.reduce((s, p) => s + p.pct, 0) / crossRegionData.length;
+    const maxValue = Math.max(...crossRegionData.map((p) => p.pct), 1);
+
+    return { codeToName, sortedPoints, mean, maxValue };
+  }, [crossRegionData, regionList]);
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          height: 60,
+          background: "var(--color-surface-low)",
+          borderRadius: 6,
+          margin: "8px 12px 12px",
+          animation: "pulse 1.5s infinite",
+        }}
+      />
+    );
+  }
+
+  if (!makeAreaLink) {
+    return (
+      <div
+        style={{
+          padding: "8px 12px 12px",
+          fontFamily: "var(--font-mono)",
+          fontSize: 10,
+          color: "var(--color-fg-muted)",
+        }}
+      >
+        Jämförelsedata ej tillgänglig
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: "8px 12px 12px" }}>
+      {sortedPoints.length > 0 && (
+        <BarsWithMean
+          points={sortedPoints}
+          mean={mean}
+          maxValue={maxValue}
+          highlightCode={entityCode}
+          codeToName={codeToName}
+          isMobile={isMobile}
+        />
+      )}
+      <div style={{ marginTop: 8 }}>
+        <Link
+          to={makeAreaLink(areaName)}
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 10,
+            color: "var(--color-accent, #7c9ff5)",
+            textDecoration: "none",
+          }}
+        >
+          → Visa fullständig jämförelse
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+// ── BudgetHistorySection ───────────────────────────────────────────────────────
+
 export function BudgetHistorySection({
   snapshots,
+  entityCode,
   makeAreaLink,
   emptyMessage = "Budgetdata saknas.",
   sourceId,
@@ -32,18 +129,44 @@ export function BudgetHistorySection({
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   // Group snapshots by year.
-  const historyByYear = new Map<number, BudgetSnapshot[]>();
-  for (const snap of snapshots) {
-    const list = historyByYear.get(snap.year) ?? [];
-    list.push(snap);
-    historyByYear.set(snap.year, list);
-  }
-  const sortedYears = [...historyByYear.keys()].sort((a, b) => b - a);
+  const historyByYear = useMemo(() => {
+    const m = new Map<number, BudgetSnapshot[]>();
+    for (const snap of snapshots) {
+      const list = m.get(snap.year) ?? [];
+      list.push(snap);
+      m.set(snap.year, list);
+    }
+    return m;
+  }, [snapshots]);
 
-  const [activeTab, setActiveTab] = useState<number | null>(null);
-  const activeYear = activeTab ?? sortedYears[0] ?? null;
+  const sortedYears = useMemo(
+    () => [...historyByYear.keys()].sort((a, b) => b - a),
+    [historyByYear]
+  );
 
-  // --- Chart state ---
+  const [expandedArea, setExpandedArea] = useState<string | null>(null);
+
+  // Most recent year data, sorted by value descending
+  const latestYear = sortedYears[0] ?? null;
+  const previousYear = sortedYears[1] ?? null;
+
+  const latestAreas = useMemo(
+    () =>
+      latestYear != null
+        ? [...(historyByYear.get(latestYear) ?? [])].sort(
+            (a, b) => b.value_mnkr - a.value_mnkr
+          )
+        : [],
+    [historyByYear, latestYear]
+  );
+
+  const prevByName = useMemo(() => {
+    const prevAreas =
+      previousYear != null ? (historyByYear.get(previousYear) ?? []) : [];
+    return new Map(prevAreas.map((a) => [a.area_name, a]));
+  }, [historyByYear, previousYear]);
+
+  // ── Total trend line chart ────────────────────────────────────────────────────
   const svgRef = useRef<SVGSVGElement>(null);
   const [svgWidth, setSvgWidth] = useState<number>(600);
 
@@ -55,53 +178,63 @@ export function BudgetHistorySection({
       if (w && w > 0) setSvgWidth(w);
     });
     obs.observe(el);
-    // Initialise with actual rendered width
     const initial = el.getBoundingClientRect().width;
     if (initial > 0) setSvgWidth(initial);
     return () => obs.disconnect();
   }, []);
 
-  // Chart geometry constants
-  const padL = 48, padR = 16, padT = 12, padB = 28;
-  const chartH = isMobile ? 140 : 180;
-
-  const chartData = useMemo(() => {
-    if (sortedYears.length < 2) return null;
-
-    // Years ascending for x-axis
-    const allYears = [...sortedYears].sort((a, b) => a - b);
-
-    // Area order = order in the most recent year's data (index → color matches table)
-    const mostRecentAreas = historyByYear.get(sortedYears[0]) ?? [];
-    const areaNames = mostRecentAreas.map((a) => a.area_name);
-
-    // Build lookup: area_name → year → value_mnkr
-    const byArea = new Map<string, Map<number, number>>();
-    for (const snap of snapshots) {
-      let m = byArea.get(snap.area_name);
-      if (!m) { m = new Map(); byArea.set(snap.area_name, m); }
-      m.set(snap.year, snap.value_mnkr);
-    }
-
-    const maxVal = Math.max(...snapshots.map((s) => s.value_mnkr), 1);
-
-    return { allYears, areaNames, byArea, maxVal };
-  }, [snapshots, sortedYears, historyByYear]);
-
+  const chartH = 110;
+  const padL = 44, padR = 12, padT = 10, padB = 22;
   const innerW = svgWidth - padL - padR;
   const innerH = chartH - padT - padB;
 
-  const xScale = (year: number, allYears: number[]): number => {
-    if (allYears.length < 2) return padL;
-    return padL + ((year - allYears[0]) / (allYears[allYears.length - 1] - allYears[0])) * innerW;
+  const totalTrend = useMemo((): { year: number; total: number }[] | null => {
+    if (sortedYears.length < 2) return null;
+    const ascending = [...sortedYears].sort((a, b) => a - b);
+    return ascending.map((yr) => ({
+      year: yr,
+      total: (historyByYear.get(yr) ?? []).reduce((s, a) => s + a.value_mnkr, 0),
+    }));
+  }, [sortedYears, historyByYear]);
+
+  const trendMax = totalTrend
+    ? Math.max(...totalTrend.map((p) => p.total), 1)
+    : 1;
+
+  const xScale = (year: number, years: number[]): number => {
+    if (years.length < 2) return padL;
+    return (
+      padL +
+      ((year - years[0]) / (years[years.length - 1] - years[0])) * innerW
+    );
   };
 
-  const yScale = (val: number, maxVal: number): number =>
-    padT + innerH - (val / maxVal) * innerH;
+  const yScale = (val: number): number =>
+    padT + innerH - (val / trendMax) * innerH;
+
+  // Headline KPI
+  const latestTotal =
+    latestYear != null
+      ? (historyByYear.get(latestYear) ?? []).reduce(
+          (s, a) => s + a.value_mnkr,
+          0
+        )
+      : 0;
+  const prevTotal =
+    previousYear != null
+      ? (historyByYear.get(previousYear) ?? []).reduce(
+          (s, a) => s + a.value_mnkr,
+          0
+        )
+      : null;
+  const yoyDeltaPct =
+    prevTotal != null && prevTotal > 0
+      ? ((latestTotal - prevTotal) / prevTotal) * 100
+      : null;
 
   return (
     <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
-      {/* Section label */}
+      {/* 1. Section header */}
       <div
         style={{
           fontFamily: "var(--font-mono)",
@@ -114,165 +247,6 @@ export function BudgetHistorySection({
         BUDGET · HISTORIK
         <SourceMarker sourceId={sourceId} />
       </div>
-
-      {/* Multi-line trend chart (only when ≥2 years) */}
-      {chartData && (
-        <div style={{ marginBottom: 16 }}>
-          <svg
-            ref={svgRef}
-            width="100%"
-            height={chartH}
-            style={{ display: "block", overflow: "visible" }}
-          >
-            {/* Y-axis line */}
-            <line
-              x1={padL} y1={padT}
-              x2={padL} y2={padT + innerH}
-              stroke="var(--color-border)"
-              strokeWidth={1}
-            />
-            {/* X-axis line */}
-            <line
-              x1={padL} y1={padT + innerH}
-              x2={padL + innerW} y2={padT + innerH}
-              stroke="var(--color-border)"
-              strokeWidth={1}
-            />
-
-            {/* Y-axis labels: 0, max/2, max */}
-            {[0, 0.5, 1].map((frac) => {
-              const val = Math.round(frac * chartData.maxVal);
-              const y = yScale(frac * chartData.maxVal, chartData.maxVal);
-              return (
-                <g key={frac}>
-                  <line
-                    x1={padL - 3} y1={y}
-                    x2={padL} y2={y}
-                    stroke="var(--color-border)"
-                    strokeWidth={1}
-                  />
-                  <text
-                    x={padL - 6}
-                    y={y + 3}
-                    textAnchor="end"
-                    fontSize={9}
-                    fontFamily="var(--font-mono)"
-                    fill="var(--color-fg-muted)"
-                  >
-                    {val >= 1000 ? `${Math.round(val / 1000)}k` : String(val)}
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* X-axis year labels + tick marks */}
-            {chartData.allYears.map((yr) => {
-              const x = xScale(yr, chartData.allYears);
-              return (
-                <g key={yr}>
-                  <line
-                    x1={x} y1={padT + innerH}
-                    x2={x} y2={padT + innerH + 4}
-                    stroke="var(--color-border)"
-                    strokeWidth={1}
-                  />
-                  <text
-                    x={x}
-                    y={padT + innerH + 14}
-                    textAnchor="middle"
-                    fontSize={9}
-                    fontFamily="var(--font-mono)"
-                    fill="var(--color-fg-muted)"
-                  >
-                    {yr}
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* Lines + dots per area */}
-            {chartData.areaNames.map((areaName, i) => {
-              const color = BUDGET_COLORS[i % BUDGET_COLORS.length];
-              const valByYear = chartData.byArea.get(areaName);
-              if (!valByYear) return null;
-
-              // Build polyline segments (skip gaps)
-              const points = chartData.allYears
-                .filter((yr) => valByYear.has(yr))
-                .map((yr) => {
-                  const val = valByYear.get(yr)!;
-                  return `${xScale(yr, chartData.allYears).toFixed(1)},${yScale(val, chartData.maxVal).toFixed(1)}`;
-                })
-                .join(" ");
-
-              return (
-                <g key={areaName}>
-                  {points && (
-                    <polyline
-                      points={points}
-                      fill="none"
-                      stroke={color}
-                      strokeWidth={2}
-                      strokeLinejoin="round"
-                    />
-                  )}
-                  {chartData.allYears
-                    .filter((yr) => valByYear.has(yr))
-                    .map((yr) => {
-                      const val = valByYear.get(yr)!;
-                      return (
-                        <circle
-                          key={yr}
-                          cx={xScale(yr, chartData.allYears)}
-                          cy={yScale(val, chartData.maxVal)}
-                          r={3}
-                          fill={color}
-                        />
-                      );
-                    })}
-                </g>
-              );
-            })}
-          </svg>
-
-          {/* Legend */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "4px 12px",
-              marginTop: 6,
-            }}
-          >
-            {chartData.areaNames.map((areaName, i) => (
-              <div
-                key={areaName}
-                style={{ display: "flex", alignItems: "center", gap: 4 }}
-              >
-                <div
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 2,
-                    flexShrink: 0,
-                    background: BUDGET_COLORS[i % BUDGET_COLORS.length],
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10,
-                    color: "var(--color-fg-muted)",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {areaName}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {sortedYears.length === 0 ? (
         <div
@@ -289,273 +263,370 @@ export function BudgetHistorySection({
         </div>
       ) : (
         <>
-          {/* Year tabs */}
-          <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 16 }}>
-            {sortedYears.map((yr, idx) => {
-              const prevYear = sortedYears[idx + 1] ?? null;
-              const prevSnaps = prevYear != null ? (historyByYear.get(prevYear) ?? []) : null;
-              const curTotal = (historyByYear.get(yr) ?? []).reduce((s, a) => s + a.value_mnkr, 0);
-              const prevTotal = prevSnaps ? prevSnaps.reduce((s, a) => s + a.value_mnkr, 0) : null;
-              const delta =
-                prevTotal != null && prevTotal > 0
-                  ? ((curTotal - prevTotal) / prevTotal) * 100
-                  : null;
-              const isActive = yr === activeYear;
-              const tabDeltaColor =
-                delta == null
-                  ? "var(--color-fg-muted)"
-                  : delta >= 0
-                  ? "#4caf7d"
-                  : "#e05c5c";
-
-              return (
-                <button
-                  key={yr}
-                  onClick={() => setActiveTab(yr)}
-                  className="px-3 py-1.5 text-xs font-mono font-bold rounded-md transition-all"
+          {/* 2. Total trend line chart */}
+          {totalTrend && (
+            <div style={{ marginBottom: 20 }}>
+              {/* Headline KPI */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 8,
+                  marginBottom: 8,
+                }}
+              >
+                <span
                   style={{
-                    background: isActive
-                      ? "var(--color-primary)"
-                      : "var(--color-surface-low)",
-                    color: isActive
-                      ? "var(--color-on-primary)"
-                      : "var(--color-on-surface)",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 20,
+                    fontWeight: 700,
+                    color: "var(--color-fg)",
                   }}
                 >
-                  {yr}
-                  {delta != null && (
-                    <span
-                      style={{
-                        marginLeft: 4,
-                        fontSize: 10,
-                        color: isActive ? "var(--color-on-primary)" : tabDeltaColor,
-                      }}
-                    >
-                      {delta >= 0 ? "+" : ""}
-                      {delta.toFixed(1)}%
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                  {Math.round(latestTotal).toLocaleString("sv-SE")} mnkr
+                </span>
+                {yoyDeltaPct != null && (
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 11,
+                      color: yoyDeltaPct >= 0 ? "#4caf7d" : "#e05c5c",
+                    }}
+                  >
+                    {yoyDeltaPct >= 0 ? "+" : ""}
+                    {yoyDeltaPct.toFixed(1)}%
+                  </span>
+                )}
+                {latestYear != null && (
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 10,
+                      color: "var(--color-fg-muted)",
+                    }}
+                  >
+                    {latestYear}
+                  </span>
+                )}
+              </div>
 
-          {/* Active year table */}
-          {activeYear != null &&
-            (() => {
-              const areas = historyByYear.get(activeYear) ?? [];
-              const prevYear =
-                sortedYears[sortedYears.indexOf(activeYear) + 1] ?? null;
-              const prevAreas =
-                prevYear != null ? (historyByYear.get(prevYear) ?? []) : [];
-              const prevByName = new Map(prevAreas.map((a) => [a.area_name, a]));
+              {/* Line chart */}
+              <svg
+                ref={svgRef}
+                width="100%"
+                height={chartH}
+                style={{ display: "block", overflow: "visible" }}
+              >
+                {/* Y-axis */}
+                <line
+                  x1={padL} y1={padT}
+                  x2={padL} y2={padT + innerH}
+                  stroke="var(--color-border)"
+                  strokeWidth={1}
+                />
+                {/* X-axis */}
+                <line
+                  x1={padL} y1={padT + innerH}
+                  x2={padL + innerW} y2={padT + innerH}
+                  stroke="var(--color-border)"
+                  strokeWidth={1}
+                />
+
+                {/* Y-axis 3 ticks */}
+                {[0, 0.5, 1].map((frac) => {
+                  const val = Math.round(frac * trendMax);
+                  const y = yScale(frac * trendMax);
+                  return (
+                    <g key={frac}>
+                      <line
+                        x1={padL - 3} y1={y}
+                        x2={padL} y2={y}
+                        stroke="var(--color-border)"
+                        strokeWidth={1}
+                      />
+                      <text
+                        x={padL - 6}
+                        y={y + 3}
+                        textAnchor="end"
+                        fontSize={9}
+                        fontFamily="var(--font-mono)"
+                        fill="var(--color-fg-muted)"
+                      >
+                        {val >= 1000 ? `${Math.round(val / 1000)}k` : String(val)}
+                      </text>
+                    </g>
+                  );
+                })}
+
+                {/* X-axis year labels */}
+                {totalTrend.map((pt) => {
+                  const x = xScale(pt.year, totalTrend.map((p) => p.year));
+                  return (
+                    <g key={pt.year}>
+                      <line
+                        x1={x} y1={padT + innerH}
+                        x2={x} y2={padT + innerH + 4}
+                        stroke="var(--color-border)"
+                        strokeWidth={1}
+                      />
+                      <text
+                        x={x}
+                        y={padT + innerH + 14}
+                        textAnchor="middle"
+                        fontSize={9}
+                        fontFamily="var(--font-mono)"
+                        fill="var(--color-fg-muted)"
+                      >
+                        {pt.year}
+                      </text>
+                    </g>
+                  );
+                })}
+
+                {/* Line */}
+                {(() => {
+                  const years = totalTrend.map((p) => p.year);
+                  const pts = totalTrend
+                    .map(
+                      (p) =>
+                        `${xScale(p.year, years).toFixed(1)},${yScale(p.total).toFixed(1)}`
+                    )
+                    .join(" ");
+                  return (
+                    <polyline
+                      points={pts}
+                      fill="none"
+                      stroke="var(--color-accent, #7c9ff5)"
+                      strokeWidth={2}
+                      strokeLinejoin="round"
+                    />
+                  );
+                })()}
+
+                {/* Dots */}
+                {totalTrend.map((pt) => {
+                  const years = totalTrend.map((p) => p.year);
+                  return (
+                    <circle
+                      key={pt.year}
+                      cx={xScale(pt.year, years)}
+                      cy={yScale(pt.total)}
+                      r={3}
+                      fill="var(--color-accent, #7c9ff5)"
+                    />
+                  );
+                })}
+              </svg>
+            </div>
+          )}
+
+          {/* 3. Area rows + header */}
+          <div
+            style={{
+              borderRadius: 8,
+              overflow: "hidden",
+              border: "1px solid var(--color-surface-high)",
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr auto auto auto",
+                gap: 8,
+                padding: "6px 12px",
+                background: "var(--color-surface-low)",
+                fontFamily: "var(--font-mono)",
+                fontSize: 9,
+                letterSpacing: "0.12em",
+                color: "var(--color-on-surface-variant)",
+                textTransform: "uppercase",
+              }}
+            >
+              <span>Område</span>
+              <span style={{ textAlign: "right", minWidth: 72 }}>Senaste</span>
+              <span style={{ textAlign: "right", minWidth: 64 }}>Förändring</span>
+              <span style={{ minWidth: 12 }} />
+            </div>
+
+            {latestAreas.map((a, i) => {
+              const prev = prevByName.get(a.area_name);
+              const deltaPct =
+                prev && prev.value_mnkr > 0
+                  ? ((a.value_mnkr - prev.value_mnkr) / prev.value_mnkr) * 100
+                  : null;
+              const isExpanded = expandedArea === a.area_name;
+
+              const handleToggle = () => {
+                setExpandedArea(isExpanded ? null : a.area_name);
+              };
 
               return (
                 <div
-                  style={{
-                    borderRadius: 8,
-                    overflow: "hidden",
-                    border: "1px solid var(--color-surface-high)",
-                  }}
+                  key={a.area_name}
+                  style={{ borderTop: "1px solid var(--color-surface-high)" }}
                 >
-                  {/* Header row */}
-                  <div
+                  {/* Collapsed row */}
+                  <button
+                    onClick={handleToggle}
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr auto auto",
-                      gap: 8,
-                      padding: "6px 12px",
-                      background: "var(--color-surface-low)",
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 9,
-                      letterSpacing: "0.12em",
-                      color: "var(--color-on-surface-variant)",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    <span>Område</span>
-                    <span style={{ textAlign: "right", minWidth: 60 }}>
-                      {prevYear ?? "—"}
-                    </span>
-                    <span style={{ textAlign: "right", minWidth: 80 }}>
-                      Förändring
-                    </span>
-                  </div>
-
-                  {/* Area rows */}
-                  {areas.map((a, i) => {
-                    const prev = prevByName.get(a.area_name);
-                    const deltaPct =
-                      prev && prev.value_mnkr > 0
-                        ? ((a.value_mnkr - prev.value_mnkr) / prev.value_mnkr) * 100
-                        : null;
-
-                    const rowStyle = {
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto auto",
+                      gridTemplateColumns: "1fr auto auto auto",
                       gap: 8,
                       alignItems: "center",
                       padding: "8px 12px",
-                      textDecoration: "none" as const,
+                      width: "100%",
+                      background: isExpanded
+                        ? "var(--color-surface-low)"
+                        : "var(--color-sdt-surface)",
+                      border: "none",
+                      cursor: "pointer",
+                      textAlign: "left",
                       color: "inherit",
-                      borderTop: "1px solid var(--color-surface-high)",
-                      background: "var(--color-sdt-surface)",
-                    };
-
-                    const inner = (
-                      <>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            minWidth: 0,
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: 10,
-                              height: 10,
-                              borderRadius: 2,
-                              flexShrink: 0,
-                              background: BUDGET_COLORS[i % BUDGET_COLORS.length],
-                            }}
-                          />
-                          <span
-                            style={{
-                              fontSize: 12,
-                              fontWeight: 500,
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            {a.area_name}
-                          </span>
-                        </div>
-                        <span
-                          style={{
-                            fontFamily: "var(--font-mono)",
-                            fontSize: 11,
-                            color: "var(--color-on-surface-variant)",
-                            textAlign: "right",
-                            minWidth: 60,
-                          }}
-                        >
-                          {prev ? `${Math.round(prev.value_mnkr)} mnkr` : "—"}
-                        </span>
-                        <div
-                          style={{
-                            minWidth: 80,
-                            display: "flex",
-                            justifyContent: "flex-end",
-                          }}
-                        >
-                          {deltaPct != null ? (
-                            <DeltaIndicator
-                              pct={Math.round(deltaPct * 10) / 10}
-                              showBar={false}
-                            />
-                          ) : (
-                            <span
-                              style={{
-                                fontFamily: "var(--font-mono)",
-                                fontSize: 11,
-                                color: "var(--color-on-surface-variant)",
-                              }}
-                            >
-                              —
-                            </span>
-                          )}
-                        </div>
-                      </>
-                    );
-
-                    return makeAreaLink ? (
-                      <Link
-                        key={a.area_name}
-                        to={makeAreaLink(a.area_name)}
-                        style={rowStyle}
-                      >
-                        {inner}
-                      </Link>
-                    ) : (
-                      <div key={a.area_name} style={rowStyle}>
-                        {inner}
-                      </div>
-                    );
-                  })}
-
-                  {/* Total row */}
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto auto",
-                      gap: 8,
-                      alignItems: "center",
-                      padding: "8px 12px",
-                      borderTop: "2px solid var(--color-surface-highest)",
-                      background: "var(--color-surface-low)",
-                      fontWeight: 700,
                     }}
                   >
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 11 }}>
-                      TOTALT
-                    </span>
+                    {/* Color dot + name */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        minWidth: 0,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: 2,
+                          flexShrink: 0,
+                          background: BUDGET_COLORS[i % BUDGET_COLORS.length],
+                        }}
+                      />
+                      <span
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 500,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {a.area_name}
+                      </span>
+                    </div>
+
+                    {/* Latest value */}
                     <span
                       style={{
                         fontFamily: "var(--font-mono)",
                         fontSize: 11,
                         color: "var(--color-on-surface-variant)",
                         textAlign: "right",
-                        minWidth: 60,
+                        minWidth: 72,
                       }}
                     >
-                      {prevAreas.length > 0
-                        ? `${Math.round(
-                            prevAreas.reduce((s, a) => s + a.value_mnkr, 0)
-                          )} mnkr`
+                      {Math.round(a.value_mnkr)} mnkr
+                    </span>
+
+                    {/* YoY delta */}
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 11,
+                        textAlign: "right",
+                        minWidth: 64,
+                        color:
+                          deltaPct == null
+                            ? "var(--color-fg-muted)"
+                            : deltaPct >= 0
+                            ? "#4caf7d"
+                            : "#e05c5c",
+                      }}
+                    >
+                      {deltaPct != null
+                        ? `${deltaPct >= 0 ? "+" : ""}${deltaPct.toFixed(1)}%`
                         : "—"}
                     </span>
-                    <div
+
+                    {/* Chevron */}
+                    <span
                       style={{
-                        minWidth: 80,
-                        display: "flex",
-                        justifyContent: "flex-end",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 13,
+                        color: "var(--color-fg-muted)",
+                        minWidth: 12,
+                        transform: isExpanded ? "rotate(90deg)" : "none",
+                        display: "inline-block",
+                        transition: "transform 0.15s",
                       }}
                     >
-                      {(() => {
-                        const curTot = areas.reduce((s, a) => s + a.value_mnkr, 0);
-                        const prevTot = prevAreas.reduce(
-                          (s, a) => s + a.value_mnkr,
-                          0
-                        );
-                        return prevTot > 0 ? (
-                          <DeltaIndicator
-                            pct={
-                              Math.round(
-                                ((curTot - prevTot) / prevTot) * 1000
-                              ) / 10
-                            }
-                            showBar={false}
-                          />
-                        ) : (
-                          <span
-                            style={{
-                              fontFamily: "var(--font-mono)",
-                              fontSize: 11,
-                              color: "var(--color-on-surface-variant)",
-                            }}
-                          >
-                            —
-                          </span>
-                        );
-                      })()}
-                    </div>
-                  </div>
+                      ›
+                    </span>
+                  </button>
+
+                  {/* Expanded content */}
+                  {isExpanded && (
+                    <ExpandedAreaRow
+                      areaName={a.area_name}
+                      entityCode={entityCode}
+                      makeAreaLink={makeAreaLink}
+                    />
+                  )}
                 </div>
               );
-            })()}
+            })}
+
+            {/* 4. Total row */}
+            {latestYear != null && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto auto auto",
+                  gap: 8,
+                  alignItems: "center",
+                  padding: "8px 12px",
+                  borderTop: "2px solid var(--color-surface-highest)",
+                  background: "var(--color-surface-low)",
+                  fontWeight: 700,
+                }}
+              >
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 11 }}>
+                  TOTALT
+                </span>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 11,
+                    color: "var(--color-fg)",
+                    textAlign: "right",
+                    minWidth: 72,
+                  }}
+                >
+                  {Math.round(latestTotal).toLocaleString("sv-SE")} mnkr
+                </span>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 11,
+                    textAlign: "right",
+                    minWidth: 64,
+                    color:
+                      yoyDeltaPct == null
+                        ? "var(--color-fg-muted)"
+                        : yoyDeltaPct >= 0
+                        ? "#4caf7d"
+                        : "#e05c5c",
+                  }}
+                >
+                  {yoyDeltaPct != null
+                    ? `${yoyDeltaPct >= 0 ? "+" : ""}${yoyDeltaPct.toFixed(1)}%`
+                    : "—"}
+                </span>
+                <span style={{ minWidth: 12 }} />
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
