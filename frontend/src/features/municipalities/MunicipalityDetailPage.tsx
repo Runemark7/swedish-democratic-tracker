@@ -341,7 +341,7 @@ export function MunicipalityDetailPage() {
         </div>
       )}
 
-      {/* ── Main 2-column grid ─────────────────────────────────────────── */}
+      {/* ── Mandate grid ──────────────────────────────────────────────── */}
       <div
         style={{
           display: "grid",
