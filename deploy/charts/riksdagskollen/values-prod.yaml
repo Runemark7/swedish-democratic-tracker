@@ -4,7 +4,7 @@ backend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-api
     pullPolicy: Always
-    tag: c221f989e34e302d502291426a988789faae1248
+    tag: 3a1c50ab3539d7d6f8968d282058e1612d2ee7d3
   imagePullSecrets:
     - name: ghcr-pull-secret
   env:
@@ -15,7 +15,7 @@ frontend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-frontend
     pullPolicy: Always
-    tag: c221f989e34e302d502291426a988789faae1248
+    tag: 3a1c50ab3539d7d6f8968d282058e1612d2ee7d3
   imagePullSecrets:
     - name: ghcr-pull-secret
 postgresql:
