@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useRiksdag } from "@/hooks/useDemocracy";
+import { useRiksdag, useRiksdagBudgetHistory } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { MandateComposition, Donut, HBars, DualLine, Pill, GoalBadge, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import type { Authority, LiveVote } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -175,6 +176,7 @@ function AuthorityRow({
 export function RiksdagPage() {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { data, isLoading } = useRiksdag();
+  const { data: budgetHistory = [] } = useRiksdagBudgetHistory();
   const [openAuthority, setOpenAuthority] = useState<number | null>(null);
 
   if (isLoading || !data) return <Skeleton />;
@@ -356,11 +358,7 @@ export function RiksdagPage() {
             MANDAT · KAMMARENS SAMMANSÄTTNING
           </div>
 
-          <MandateComposition
-            ruling={ruling}
-            totalSeats={totalSeats}
-            sourceId="riksdagen"
-          />
+          <MandateComposition ruling={ruling} totalSeats={totalSeats} sourceId="riksdagen" />
         </div>
 
         {/* Right card — BUDGET */}
@@ -410,6 +408,19 @@ export function RiksdagPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Budget History ────────────────────────────────────────────── */}
+      {budgetHistory.length > 0 && (
+        <div
+          style={{
+            border: "1px solid var(--color-border)",
+            borderTop: "none",
+            margin: isMobile ? "0 14px 0" : "0 32px 0",
+          }}
+        >
+          <BudgetHistorySection snapshots={budgetHistory} sourceId="seed-budget-data" />
+        </div>
+      )}
 
       {/* ── Bottom grid ──────────────────────────────────────────────── */}
       <div
