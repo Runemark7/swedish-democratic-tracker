@@ -342,6 +342,7 @@ export function MunicipalityDetailPage() {
         style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          alignItems: "start",
           gap: 1,
           background: "var(--color-border)",
           border: "1px solid var(--color-border)",

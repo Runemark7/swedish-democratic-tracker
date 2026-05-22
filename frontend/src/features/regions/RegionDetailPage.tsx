@@ -306,6 +306,7 @@ export function RegionDetailPage() {
           style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            alignItems: "start",
             gap: 1,
             border: "1px solid var(--color-border)",
             background: "var(--color-border)",
