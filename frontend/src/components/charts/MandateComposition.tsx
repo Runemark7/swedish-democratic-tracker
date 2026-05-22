@@ -87,7 +87,7 @@ export function MandateComposition({
           lineHeight: 1.5,
         }}
       >
-        Mandatdata saknas för denna region.
+        Mandatdata saknas.
       </div>
     );
   }
