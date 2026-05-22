@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Hemicycle, Pill, Trend, GoalBadge } from "@/components/charts";
+import { MandateComposition, Pill, Trend, GoalBadge } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
@@ -103,11 +103,7 @@ export function MunicipalityDetailPage() {
     );
   }
 
-  const governing = data.ruling.parties;
-  const opposition = data.ruling.opposition;
-  const allParties = [...opposition, ...governing];
-  const totalSeats = allParties.reduce((s, p) => s + p.seats, 0);
-  const govSeats = governing.reduce((s, p) => s + p.seats, 0);
+  const totalSeats = [...data.ruling.parties, ...(data.ruling.support ?? []), ...data.ruling.opposition].reduce((s, p) => s + p.seats, 0);
 
   const kpis = data.kpis ?? [];
 
@@ -345,7 +341,7 @@ export function MunicipalityDetailPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
           gap: 1,
           background: "var(--color-border)",
           border: "1px solid var(--color-border)",
@@ -366,120 +362,18 @@ export function MunicipalityDetailPage() {
           >
             MANDAT · KAMMARENS SAMMANSÄTTNING
           </div>
-
-          {totalSeats === 0 ? (
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                color: "var(--color-fg-muted)",
-                padding: "24px 0",
-                textAlign: "center",
-                lineHeight: 1.5,
-              }}
-            >
-              Mandatdata saknas för denna kommun.
-            </div>
-          ) : (
-            <Hemicycle groups={allParties.map((p) => ({ color: p.color, count: p.seats }))} width={440} height={150} />
-          )}
-
-          {/* Party legend — split by governing / opposition */}
-          <div style={{ display: totalSeats === 0 ? "none" : "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
-            {[
-              { label: "STYRE", parties: governing },
-              { label: "OPPOSITION", parties: opposition },
-            ].map(({ label, parties }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 8,
-                    letterSpacing: "0.15em",
-                    color: label === "STYRE" ? "var(--color-accent)" : "var(--color-fg-muted)",
-                    opacity: label === "STYRE" ? 1 : 0.7,
-                    minWidth: isMobile ? 48 : 64,
-                    flexShrink: 0,
-                  }}
-                >
-                  {label}
-                </span>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 12px" }}>
-                  {parties.map((p) => (
-                    <div key={p.short} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <span
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: "50%",
-                          background: p.color,
-                          flexShrink: 0,
-                        }}
-                      />
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: 10,
-                          color: "var(--color-fg-muted)",
-                        }}
-                      >
-                        <span style={{ color: "var(--color-fg)", fontWeight: 600 }}>{p.short}</span>{" "}
-                        {p.seats}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Coalition name + majority */}
-          {totalSeats > 0 && (
-            <div style={{ marginTop: 14 }}>
-              <span
-                style={{
-                  fontFamily: "var(--font-serif)",
-                  fontStyle: "italic",
-                  fontSize: 14,
-                  color: "var(--color-fg-muted)",
-                }}
-              >
-                {data.ruling.type}
-              </span>
-              <span
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  color: "var(--color-fg-muted)",
-                  marginLeft: 12,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 4,
-                }}
-              >
-                MAJORITET {govSeats}/{totalSeats}
-                <SourceMarker sourceId="scb-kfmandat" />
-              </span>
-            </div>
-          )}
-          <div style={{ marginTop: 16 }}>
-          </div>
+          <MandateComposition ruling={data.ruling} totalSeats={totalSeats} sourceId="scb-kfmandat" />
         </div>
 
-      </div>
+        {/* Right — BUDGET */}
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
+          <BudgetHistorySection
+            snapshots={budgetHistory}
+            emptyMessage="Budgetdata saknas för denna kommun. Kolada — endast utvalda kommuner stöds f.n."
+            sourceId="kolada-spending"
+          />
+        </div>
 
-      <div
-        style={{
-          border: "1px solid var(--color-border)",
-          borderTop: "none",
-          margin: isMobile ? "1px 14px 0" : "1px 32px 0",
-        }}
-      >
-        <BudgetHistorySection
-          snapshots={budgetHistory}
-          emptyMessage="Budgetdata saknas för denna kommun. Kolada — endast utvalda kommuner stöds f.n."
-          sourceId="kolada-spending"
-        />
       </div>
 
       {/* ── Bottom grid ────────────────────────────────────────────────── */}

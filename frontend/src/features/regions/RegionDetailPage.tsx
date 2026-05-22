@@ -305,7 +305,7 @@ export function RegionDetailPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
             gap: 1,
             border: "1px solid var(--color-border)",
             background: "var(--color-border)",
@@ -332,22 +332,16 @@ export function RegionDetailPage() {
             />
           </div>
 
-        </div>
+          {/* Right card — BUDGET */}
+          <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
+            <BudgetHistorySection
+              snapshots={budgetHistory}
+              makeAreaLink={(a) => `/region/${code}/budget/${encodeURIComponent(a)}`}
+              emptyMessage="Budgetdata saknas för denna region."
+              sourceId="scb-kostndrlt"
+            />
+          </div>
 
-        {/* ── Budget history ──────────────────────────────────────────────── */}
-        <div
-          style={{
-            border: "1px solid var(--color-border)",
-            borderTop: "none",
-            margin: isMobile ? "1px 14px 0" : "1px 32px 0",
-          }}
-        >
-          <BudgetHistorySection
-            snapshots={budgetHistory}
-            makeAreaLink={(a) => `/region/${code}/budget/${encodeURIComponent(a)}`}
-            emptyMessage="Budgetdata saknas för denna region."
-            sourceId="scb-kostndrlt"
-          />
         </div>
 
         {/* ── Bottom grid ──────────────────────────────────────────────── */}
