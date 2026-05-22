@@ -341,7 +341,7 @@ export function MunicipalityDetailPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
           gap: 1,
           background: "var(--color-border)",
           border: "1px solid var(--color-border)",
@@ -362,28 +362,18 @@ export function MunicipalityDetailPage() {
           >
             MANDAT · KAMMARENS SAMMANSÄTTNING
           </div>
+          <MandateComposition ruling={data.ruling} totalSeats={totalSeats} sourceId="scb-kfmandat" />
+        </div>
 
-          <MandateComposition
-            ruling={data.ruling}
-            totalSeats={totalSeats}
-            sourceId="scb-kfmandat"
+        {/* Right — BUDGET */}
+        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
+          <BudgetHistorySection
+            snapshots={budgetHistory}
+            emptyMessage="Budgetdata saknas för denna kommun. Kolada — endast utvalda kommuner stöds f.n."
+            sourceId="kolada-spending"
           />
         </div>
 
-      </div>
-
-      <div
-        style={{
-          border: "1px solid var(--color-border)",
-          borderTop: "none",
-          margin: isMobile ? "1px 14px 0" : "1px 32px 0",
-        }}
-      >
-        <BudgetHistorySection
-          snapshots={budgetHistory}
-          emptyMessage="Budgetdata saknas för denna kommun. Kolada — endast utvalda kommuner stöds f.n."
-          sourceId="kolada-spending"
-        />
       </div>
 
       {/* ── Bottom grid ────────────────────────────────────────────────── */}
