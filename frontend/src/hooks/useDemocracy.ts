@@ -5,7 +5,7 @@ import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type Rik
 import { speechesApi, type Speech } from "@/features/speeches/api";
 import { votesApi } from "@/features/votes/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
-import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, MunicipalityBudgetSnapshot } from "@/shared/types";
+import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, MunicipalityBudgetSnapshot, BudgetSnapshot } from "@/shared/types";
 
 const EMPTY_BUDGET: Budget = { total: "–", year: "–", areas: [] };
 const EMPTY_RULING: Ruling = { type: "–", parties: [], opposition: [] };
@@ -520,6 +520,34 @@ export function useKommunBudgetHistory(code: string) {
     queryFn: () => municipalitiesApi.getMunicipalityBudgetHistory(code),
     staleTime: 300_000,
     enabled: !!code,
+  });
+}
+
+// ── Riksdag budget history ────────────────────────────────────────────────────
+export function useRiksdagBudgetHistory() {
+  return useQuery<BudgetSnapshot[]>({
+    queryKey: ["riksdag-budget-history"],
+    queryFn: async () => {
+      const years = await budgetApi.listYears();
+      const decided = years.filter(y => y.status === "decided");
+      const details = await Promise.all(decided.map(y => budgetApi.getYear(y.year)));
+      const snapshots: BudgetSnapshot[] = [];
+      for (const detail of details) {
+        const total_mnkr = detail.totalKsek / 1000;
+        for (const alloc of detail.allocations) {
+          const value_mnkr = alloc.amountKsek / 1000;
+          snapshots.push({
+            area_name: alloc.area.name,
+            year: detail.year,
+            value_mnkr,
+            total_mnkr,
+            pct: total_mnkr > 0 ? (value_mnkr / total_mnkr) * 100 : 0,
+          });
+        }
+      }
+      return snapshots;
+    },
+    staleTime: 300_000,
   });
 }
 

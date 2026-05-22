@@ -9,6 +9,7 @@ interface MandateCompositionProps {
     type: string;
   };
   totalSeats: number;
+  sourceId?: string;
 }
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -72,6 +73,7 @@ function PartyRow({
 export function MandateComposition({
   ruling,
   totalSeats,
+  sourceId = "scb-ltmandat",
 }: MandateCompositionProps) {
   if (totalSeats === 0) {
     return (
@@ -159,7 +161,7 @@ export function MandateComposition({
         >
           MAJORITET {rulingSeats}/{totalSeats}
         </span>
-        <SourceMarker sourceId="scb-ltmandat" />
+        <SourceMarker sourceId={sourceId} />
       </div>
     </div>
   );
