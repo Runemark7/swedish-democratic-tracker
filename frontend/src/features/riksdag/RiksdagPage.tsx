@@ -332,7 +332,7 @@ export function RiksdagPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr",
           gap: 1,
           border: "1px solid var(--color-border)",
           margin: isMobile ? "14px 14px 0" : "22px 32px 0",
