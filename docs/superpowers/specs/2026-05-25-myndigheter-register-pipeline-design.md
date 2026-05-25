@@ -1,232 +1,247 @@
-# Myndighetsregister-pipeline — Design
+# Agency Register Pipeline — Design
 
-**Datum:** 2026-05-25
-**Status:** Godkänd design, redo för implementeringsplan
-**Bygger på:** PR #35 (`feat/riksdag-myndigheter-table`) — MYNDIGHETER-kortet med tabellstil. Den här pipelinen fyller kortet + ny listsida med riktig, komplett data.
+**Date:** 2026-05-25
+**Status:** Design approved, ready for implementation plan
+**Builds on:** PR #35 (`feat/riksdag-myndigheter-table`) — the MYNDIGHETER card in table style. This pipeline fills that card + a new list page with real, complete data.
+
+> Note: the product UI is Swedish, so user-facing strings (e.g. "MYNDIGHETER", "Läs mer", "saknas") and Swedish proper nouns (SCB Myndighetsregistret, Statskontoret, ESV, Arbetsgivarverket) stay in Swedish. Code, identifiers, and this document are English.
 
 ---
 
-## Mål
+## Goal
 
-Ersätt den hårdkodade listan på 10 myndigheter med Sveriges **hela** statliga
-myndighetsregister (~449), hämtat från auktoritativa öppna källor, så att
-Riksdag-sidan visar officiellt korrekt och komplett data — namn för alla,
-utgift och anställda där källa finns.
+Replace the hardcoded list of 10 agencies with Sweden's **entire** state agency
+register (~449), pulled from authoritative open sources, so the Riksdag page
+shows officially correct and complete data — names for all, expenditure and
+headcount wherever a source exists.
 
-## Problem (nuläge)
+## Problem (current state)
 
-- `backend/internal/riksdag/adapters/statskontoret/client.go` laddar ner
-  Statskontorets årsutfall-CSV men filtrerar till **10 hårdkodade anslagskoder**
-  (`targetAnslag`). Allt annat slängs.
-- `backend/internal/riksdag/adapters/static/client.go` = 10 hårdkodade
-  myndigheter (fallback).
-- `backend/internal/riksdag/adapters/scb/client.go` (anställda) mappar bara
-  **8 KLS-koder**.
-- Ingen DB-tabell för myndigheter — allt live-hämtas med 24h minnescache.
-- Resultat: kortet visar 10 myndigheter. Sverige har ~449 i registret
-  (~371 förvaltningsmyndigheter under regeringen).
+- `backend/internal/riksdag/adapters/statskontoret/client.go` downloads the
+  Statskontoret year-outcome CSV but filters to **10 hardcoded appropriation
+  codes** (`targetAnslag`). Everything else is dropped.
+- `backend/internal/riksdag/adapters/static/client.go` = 10 hardcoded agencies
+  (fallback).
+- `backend/internal/riksdag/adapters/scb/client.go` (headcount) maps only
+  **8 KLS codes**.
+- No DB table for agencies — everything is fetched live with a 24h in-memory
+  cache.
+- Result: the card shows 10 agencies. Sweden has ~449 in the register
+  (~371 administrative agencies under the Government).
 
 ## Scope
 
-- **Population:** alla **449** myndigheter från SCB Myndighetsregistret,
-  taggade med `huvudman`/`typ` och en flagga `under_regeringen` (~371) så att
-  UI kan visa alla eller filtrera.
-- **Per myndighet:**
-  - Grunddata (namn, org-nr, typ, huvudman, departement) — **alltid**.
-  - Utgift (ESV) — **best-effort**, `null` när källa saknas → "saknas" i UI.
-  - Anställda (Arbetsgivarverket) — **best-effort**, `null` → "saknas".
-- **Fakta-lager-princip:** aldrig hitta på värden. Saknad data visas som
-  "saknas", inte 0 eller gissning. Varje värde har källmarkör.
-- **Ej i scope:** kommunala/regionala nämnder (ingår inte i SCB-registret).
+- **Population:** all **449** agencies from SCB Myndighetsregistret, tagged with
+  `type`/`principal_body` and an `under_government` flag (~371) so the UI can
+  show all or filter.
+- **Per agency:**
+  - Base data (name, org number, type, principal body, department) — **always**.
+  - Expenditure (ESV) — **best-effort**, `null` when no source → "saknas" in UI.
+  - Headcount (Arbetsgivarverket) — **best-effort**, `null` → "saknas".
+- **Fact-layer principle:** never invent values. Missing data shows as "saknas",
+  not 0 or a guess. Every value carries a source marker.
+- **Out of scope:** municipal/regional boards (not in the SCB register).
 
-## Datakällor
+## Data sources
 
-| Källa | Ger | Åtkomst | Join-nyckel |
+| Source | Provides | Access | Join key |
 |---|---|---|---|
-| SCB Myndighetsregistret | Lista 449: org-nr, namn, typ, huvudman | Företagsregister-API (gratis, kräver certifikat via mejl) **eller** webbregister-export | org-nr |
-| ESV/Hermes öppna data (`esv.se/psidata`) | Utfall per anslag **och myndighet** | Öppna data-filer/endpoints | org-nr (fallback namn) |
-| Arbetsgivarverket "Anställda i staten" | Anställda per myndighet, 1991→ | Öppna data/export, uppdateras dec/juni | org-nr (fallback namn) |
+| SCB Myndighetsregistret | List of 449: org number, name, type, principal body | Business-register API (free, requires certificate via email) **or** web-register export | org number |
+| ESV/Hermes open data (`esv.se/psidata`) | Outcome per appropriation **and agency** | Open-data files/endpoints | org number (fallback: name) |
+| Arbetsgivarverket "Anställda i staten" | Headcount per agency, 1991→ | Open data/export, updated Dec/June | org number (fallback: name) |
 
-**Notera:** ESV bytte namn till Statskontoret 2026-01-01 (sammanslagning).
-Endpoints/branding är i rörelse — exakta URL:er verifieras i planeringssteget.
+**Note:** ESV was renamed to Statskontoret on 2026-01-01 (merger). Endpoints and
+branding are in flux — exact URLs are verified during planning.
 
-**Identitet:** `org_nr` är kanonisk nyckel. Källor som saknar org-nr matchas
-via normaliserat namn (gemener, trimmat, utan bolagsform-suffix). Omatchade
-rader loggas — inga gissningsjoins.
+**Identity:** `org_number` is the canonical key. Sources lacking org number are
+matched via a normalized name (lowercased, trimmed, company-suffix stripped).
+Unmatched rows are logged — no guessed joins.
 
-## Arkitektur
+## Architecture
 
-Hexagonalt, i befintlig feature `backend/internal/riksdag/`.
+Hexagonal, inside the existing `backend/internal/riksdag/` feature. Reuse the
+existing English domain term `Authority` (already used for agencies across the
+codebase: `domain.Authority`, `GetAuthorities`, the `/authorities` endpoint, the
+frontend `Authority` type).
 
-### Domän
-`domain/myndighet.go`:
-```
-type Myndighet struct {
-    OrgNr            string
-    Slug             string
-    Name             string
-    Typ              string   // t.ex. "Förvaltningsmyndighet", "Domstol"
-    Huvudman         string   // "Regeringen", "Riksdagen", ...
-    Departement      string
-    UnderRegeringen  bool
-    ExpenditureMdkr  *float64 // nil = saknas
-    BudgetMdkr       *float64
-    HeadcountInt     *int     // nil = saknas
-    Year             int
+### Domain
+Extend `domain/authority.go`:
+```go
+type Authority struct {
+    OrgNumber          string
+    Slug               string
+    Name               string
+    Type               string   // e.g. "Förvaltningsmyndighet", "Domstol"
+    PrincipalBody      string   // "Regeringen", "Riksdagen", ...
+    Department         string
+    UnderGovernment    bool
+    ExpenditureMdkr    *float64 // nil = missing
+    BudgetMdkr         *float64
+    HeadcountInt       *int     // nil = missing
+    Year               int
     ExpenditureHistory []YearlyExpenditure
     HeadcountHistory   []YearlyHeadcount
-    UpdatedAt        time.Time
+    UpdatedAt          time.Time
 }
 ```
-Pekare för utgift/anställda gör "saknas" explicit i hela stacken.
+Pointers for expenditure/headcount make "missing" explicit through the stack.
 
-### Portar (`ports/`)
-```
+### Ports (`ports/`)
+```go
 type RegisterClient interface {
-    FetchRegister(ctx) ([]RegisterEntry, error)   // 449 grunddata
+    FetchRegister(ctx) ([]RegisterEntry, error)        // 449 base entries
 }
 type ExpenditureClient interface {
-    FetchExpenditure(ctx) ([]AgencyExpenditure, error) // ESV, per org-nr
+    FetchExpenditure(ctx) ([]AgencyExpenditure, error) // ESV, per org number
 }
 type HeadcountClient interface {
     FetchHeadcounts(ctx) ([]AgencyHeadcount, error)    // Arbetsgivarverket
 }
-type MyndighetRepository interface {
-    UpsertMyndigheter(ctx, []domain.Myndighet) error
-    List(ctx, MyndighetFilter) ([]domain.Myndighet, error) // sök/filter/paginering
-    ListTop(ctx, n int) ([]domain.Myndighet, error)        // topp-N efter utgift
-    GetBySlug(ctx, slug string) (*domain.Myndighet, error)
+type AuthorityRepository interface {
+    UpsertAuthorities(ctx, []domain.Authority) error
+    List(ctx, AuthorityFilter) ([]domain.Authority, error) // search/filter/paginate
+    ListTop(ctx, n int) ([]domain.Authority, error)        // top-N by expenditure
+    GetBySlug(ctx, slug string) (*domain.Authority, error)
 }
 ```
 
 ### Adapters (`adapters/`)
-- `registret/` — SCB Myndighetsregistret (ny).
-- `esv/` — ESV/Hermes utfall (ny; ersätter anslag-filtret i `statskontoret/`).
-- `arbetsgivarverket/` — anställda (ny; ersätter den begränsade `scb/`-klienten).
-- `postgres/myndighet_repository.go` — ny.
-- Behåll `agency_intel_repository` (regleringsbrev/beslut) och statiska
-  10-listan som **nöd-fallback** om DB-tabellen är tom (första boot).
+- `registret/` — SCB Myndighetsregistret (new).
+- `esv/` — ESV/Hermes outcome (new; replaces the appropriation filter in
+  `statskontoret/`).
+- `arbetsgivarverket/` — headcount (new; replaces the limited `scb/` client).
+- `postgres/authority_repository.go` — new.
+- Keep `agency_intel_repository` (regleringsbrev/decisions) and the static
+  10-agency list as an **emergency fallback** if the DB table is empty (first
+  boot).
 
-### Ingestion-worker
-`internal/ingestion/workers/myndigheter.go`, cron **@weekly**:
-1. `FetchRegister` → upsert grundrader (org-nr nyckel, beräkna slug + `under_regeringen`).
-2. `FetchExpenditure` → uppdatera utgift + historik per org-nr.
-3. `FetchHeadcounts` → uppdatera anställda + historik per org-nr (namn-fallback).
+### Ingestion worker
+`internal/ingestion/workers/authorities.go`, cron **@weekly**:
+1. `FetchRegister` → upsert base rows (org-number key, compute slug +
+   `under_government`).
+2. `FetchExpenditure` → update expenditure + history per org number.
+3. `FetchHeadcounts` → update headcount + history per org number (name fallback).
 
-**Robusthet:** varje steg har egen try/catch. Misslyckas en källa: logga,
-behåll senaste lyckade data — **wipe:a aldrig** vid hämtningsfel. Partiellt
-resultat sparas.
+**Resilience:** each step has its own try/catch. If a source fails: log, keep
+the last good data — **never wipe** on a fetch error. Partial results are saved.
 
 ### Service
-`service.go` läser från `MyndighetRepository` (ej live):
-- `GetAuthorities(ctx)` / `ListTop(ctx, 10)` → kortet.
-- `ListMyndigheter(ctx, filter)` → listsidan (sök/filter/paginering).
-- `GetAuthority(ctx, slug)` → detaljsidan (befintlig, läser nu DB + intel).
+`service.go` reads from `AuthorityRepository` (not live):
+- `GetAuthorities(ctx)` / `ListTop(ctx, 10)` → the card.
+- `ListAuthorities(ctx, filter)` → the list page (search/filter/paginate).
+- `GetAuthority(ctx, slug)` → the detail page (existing, now reads DB + intel).
 
-## Datamodell (migration)
+## Data model (migration)
 
-Ny migration `000020_myndigheter.up.sql`:
+New migration `000020_authorities.up.sql`:
 ```sql
-CREATE TABLE myndigheter (
-    org_nr            TEXT PRIMARY KEY,
-    slug              TEXT NOT NULL UNIQUE,
-    name              TEXT NOT NULL,
-    typ               TEXT NOT NULL DEFAULT '',
-    huvudman          TEXT NOT NULL DEFAULT '',
-    departement       TEXT NOT NULL DEFAULT '',
-    under_regeringen  BOOLEAN NOT NULL DEFAULT FALSE,
-    expenditure_mdkr  DOUBLE PRECISION,            -- NULL = saknas
-    budget_mdkr       DOUBLE PRECISION,
-    headcount_int     INTEGER,                     -- NULL = saknas
-    year              INTEGER NOT NULL DEFAULT 0,
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+CREATE TABLE authorities (
+    org_number          TEXT PRIMARY KEY,
+    slug                TEXT NOT NULL UNIQUE,
+    name                TEXT NOT NULL,
+    type                TEXT NOT NULL DEFAULT '',
+    principal_body      TEXT NOT NULL DEFAULT '',
+    department          TEXT NOT NULL DEFAULT '',
+    under_government    BOOLEAN NOT NULL DEFAULT FALSE,
+    expenditure_mdkr    DOUBLE PRECISION,             -- NULL = missing
+    budget_mdkr         DOUBLE PRECISION,
+    headcount_int       INTEGER,                      -- NULL = missing
+    year                INTEGER NOT NULL DEFAULT 0,
     expenditure_history JSONB NOT NULL DEFAULT '[]',
     headcount_history   JSONB NOT NULL DEFAULT '[]',
-    updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_myndigheter_under_regeringen ON myndigheter (under_regeringen);
-CREATE INDEX idx_myndigheter_expenditure ON myndigheter (expenditure_mdkr DESC NULLS LAST);
-CREATE INDEX idx_myndigheter_name_trgm ON myndigheter USING gin (name gin_trgm_ops);
+CREATE INDEX idx_authorities_under_government ON authorities (under_government);
+CREATE INDEX idx_authorities_expenditure ON authorities (expenditure_mdkr DESC NULLS LAST);
+CREATE INDEX idx_authorities_name_trgm ON authorities USING gin (name gin_trgm_ops);
 ```
-Historik som JSONB (visas, frågas inte) → en tabell, inga extra join-tabeller.
-Sök via `pg_trgm` på namn (kräver `CREATE EXTENSION IF NOT EXISTS pg_trgm`).
+History as JSONB (displayed, not queried) → one table, no extra join tables.
+Search via `pg_trgm` on `name`.
 
-## API (openapi.yaml först → regenerera api-contract.ts)
+## API (openapi.yaml first → regenerate api-contract.ts)
 
-- `GET /api/riksdag/authorities?limit=10` — topp-N efter utgift (befintlig,
-  läser nu DB). Driver kortet.
-- `GET /api/riksdag/myndigheter?q=&huvudman=&underRegeringen=&page=&pageSize=`
-  — sökbar/filtrerbar lista (ny). Driver listsidan.
-- `GET /api/riksdag/myndigheter/{slug}` — detalj (befintlig).
+- `GET /api/riksdag/authorities?limit=10` — top-N by expenditure (existing, now
+  reads DB). Drives the card.
+- `GET /api/riksdag/authorities/list?q=&principalBody=&underGovernment=&page=&pageSize=`
+  — searchable/filterable list (new). Drives the list page.
+- `GET /api/riksdag/myndigheter/{slug}` — detail (existing UI route slug stays
+  Swedish to match the current detail page).
 
-Uppdatera `api/openapi.yaml` först, kör `npm run generate:api`. Hand-editera
-aldrig `api-contract.ts`.
+Update `api/openapi.yaml` first, run `npm run generate:api`. Never hand-edit
+`api-contract.ts`.
 
 ## Frontend
 
-- **Kortet** (`RiksdagPage`, MYNDIGHETER, från PR #35): topp-10 efter utgift +
-  knapp "Läs om fler myndigheter →" till `/riksdag/myndigheter`.
-- **Ny sida** `/riksdag/myndigheter` (`MyndigheterListPage`):
-  sökfält (namn), filter (huvudman, toggle "under regeringen"), samma
-  tabellstil (Myndighet / Senaste / Andel / Förändring + chevron),
-  paginering/virtualisering för hundratals rader. Rad-expand = aktuellt år +
-  anställda + kostnad + "Läs mer →" (detaljsida).
-- Detaljsida `/riksdag/myndigheter/:slug` finns — läser nu DB-data.
+- **Card** (`RiksdagPage`, MYNDIGHETER, from PR #35): top-10 by expenditure +
+  a "Läs om fler myndigheter →" button to `/riksdag/myndigheter`.
+- **New page** `/riksdag/myndigheter` (`AuthorityListPage`): search box (name),
+  filters (principal body, an "under regeringen" toggle), same table style
+  (Myndighet / Senaste / Andel / Förändring + chevron), pagination/virtualization
+  for hundreds of rows. Row expand = current year + headcount + cost +
+  "Läs mer →" (detail page).
+- Detail page `/riksdag/myndigheter/:slug` exists — now reads DB data.
 
-## Data-source-disciplin (CLAUDE.md-krav)
+## Data-source discipline (CLAUDE.md requirement)
 
-1. Uppdatera mermaid-diagrammet i `CLAUDE.md`: lägg till SCB Myndighetsregistret,
-   ESV/Hermes, Arbetsgivarverket; justera Statskontoret årsutfall.
-2. `docs/data-sources/`: nya MD-filer (`scb-myndighetsregistret.md`,
-   `esv-utfall.md`, `arbetsgivarverket-anstallda.md`) från `_TEMPLATE.md` med
-   frontmatter + reproducerbara nedladdningssteg.
-3. `cd frontend && npm run sync:data-sources` → regenerera SourceRegistry.
-4. `<SourceMarker sourceId="...">` på alla nya UI-värden + `<SectionSource>`.
-5. Verifiera att källorna syns på `/data` och `/data/<id>`.
+1. Update the mermaid diagram in `CLAUDE.md`: add SCB Myndighetsregistret,
+   ESV/Hermes, Arbetsgivarverket; adjust Statskontoret year-outcome.
+2. `docs/data-sources/`: new MD files (`scb-myndighetsregistret.md`,
+   `esv-utfall.md`, `arbetsgivarverket-anstallda.md`) from `_TEMPLATE.md` with
+   frontmatter + reproducible download steps.
+3. `cd frontend && npm run sync:data-sources` → regenerate SourceRegistry.
+4. `<SourceMarker sourceId="...">` on all new UI values + `<SectionSource>`.
+5. Verify the sources appear at `/data` and `/data/<id>`.
 
-## Felhantering
+## Error handling
 
-- Worker: per-källa isolering, partiellt resultat sparas, ingen wipe vid fel.
-- Saknad utgift/anställda → `NULL` → UI "saknas".
-- Org-nr kanonisk; namn-fallback normaliserat; omatchade rader loggas, ej
-  gissade.
-- DB tom (första boot före worker) → statiska 10 som nöd-fallback.
-- `INITIAL_SYNC=true` kör worker direkt vid boot (befintligt mönster).
+- Worker: per-source isolation, partial results saved, no wipe on failure.
+- Missing expenditure/headcount → `NULL` → UI "saknas".
+- Org number canonical; normalized name fallback; unmatched rows logged, never
+  guessed.
+- DB empty (first boot before worker) → static 10 as emergency fallback.
+- `INITIAL_SYNC=true` runs the worker immediately on boot (existing pattern).
 
-## Testning
+## Testing
 
-Repo har inga tester än, men ny logik med hög buggrisk testas (TDD):
-- Parsers: register, ESV-utfall, anställda (fixtures från riktig data).
-- Merge/join: org-nr-match + namn-fallback + null-hantering.
-- Repo: upsert (idempotent), List-filter/sök/paginering (integration mot test-DB).
-Rena funktioner (parse/merge) prioriteras — störst värde, lätta att testa.
+The repo has no tests yet, but the new high-risk logic is tested (TDD):
+- Parsers: register, ESV outcome, headcount (fixtures from real data).
+- Merge/join: org-number match + name fallback + null handling.
+- Repo: upsert (idempotent), List filter/search/paginate (integration against a
+  test DB).
+Pure functions (parse/merge) are prioritized — highest value, easiest to test.
 
-## Fasad utrullning
+## Phased rollout
 
-Varje fas är självständigt levererbar och testbar:
+Each phase is independently shippable and testable:
 
-1. **Register-grund:** migration + `registret`-klient + repo + worker (bara
-   register) + service läser DB + kortet visar 449 namn (utgift/anställda kan
-   vara "saknas" initialt). Ersätter de hårdkodade 10.
-2. **Utgift:** `esv`-klient + worker-steg + utgift i kort/detalj.
-3. **Anställda:** `arbetsgivarverket`-klient + worker-steg + anställda.
-4. **Listsida + sök:** `/riksdag/myndigheter` + "fler"-knapp + list-API-endpoint.
+1. **Register foundation:** migration + `registret` client + repo + worker
+   (register only) + service reads DB + card shows 449 names (expenditure/
+   headcount may be "saknas" initially). Replaces the hardcoded 10.
+2. **Expenditure:** `esv` client + worker step + expenditure in card/detail.
+3. **Headcount:** `arbetsgivarverket` client + worker step + headcount.
+4. **List page + search:** `/riksdag/myndigheter` + "fler" button + list API
+   endpoint.
 
-Max 5 filer per fas (CLAUDE.md), verifiera (`go build`, `tsc`) mellan faser.
+Max 5 files per phase (CLAUDE.md), verify (`go build`, `tsc`) between phases.
 
-## Risker / öppna frågor (verifieras i plan)
+## Risks / open questions (verified during planning)
 
-- **SCB register-API kräver certifikat** (mejl-godkännande, kan dröja).
-  Fallback: webbregister-export/scrape, eller periodisk manuell CSV.
-- **ESV↔Statskontoret-namnbyte** (jan 2026): bekräfta aktuella öppna
-  data-endpoints/format.
-- **org-nr** kanske saknas i ESV/Arbetsgivarverket-export → namn-matchning
-  fallback; mät träffgrad.
-- **Utgift-täckning**: myndigheter utan eget anslag får "saknas" — förväntat.
+- **SCB register API requires a certificate** (email approval, may take time).
+  Fallback: web-register export/scrape, or a periodic manual CSV.
+- **ESV↔Statskontoret rename** (Jan 2026): confirm current open-data
+  endpoints/formats.
+- **Org number** may be absent in ESV/Arbetsgivarverket exports → name-matching
+  fallback; measure hit rate.
+- **Expenditure coverage:** agencies without their own appropriation get
+  "saknas" — expected.
 
-## Framgångskriterier
+## Success criteria
 
-- `/riksdag/myndigheter` listar alla ~449 med fungerande sök + filter.
-- Kortet visar topp-10 efter utgift + "fler"-knapp.
-- Utgift/anställda visas där källa finns, "saknas" annars — inga gissade värden.
-- Varje värde har källmarkör; källorna syns på `/data`.
-- Data persisterar i DB; en källas utfall kraschar inte sidan.
+- `/riksdag/myndigheter` lists all ~449 with working search + filter.
+- The card shows top-10 by expenditure + a "fler" button.
+- Expenditure/headcount shown where a source exists, "saknas" otherwise — no
+  guessed values.
+- Every value has a source marker; sources appear at `/data`.
+- Data persists in the DB; one source failing does not break the page.
