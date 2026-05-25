@@ -1,9 +1,14 @@
 package registret
 
 import (
+	"context"
+	"fmt"
 	"html"
+	"io"
+	"net/http"
 	"regexp"
 	"strings"
+	"time"
 	"unicode"
 
 	"riksdagskollen/internal/riksdag/ports"
@@ -57,6 +62,77 @@ func slugify(name string) string {
 		}
 	}
 	return b.String()
+}
+
+const hamtaURL = "https://myndighetsregistret.scb.se/Myndighet/HamtaMynd"
+
+type Client struct {
+	http *http.Client
+}
+
+func NewClient() *Client {
+	return &Client{http: &http.Client{Timeout: 30 * time.Second}}
+}
+
+func (c *Client) FetchRegister(ctx context.Context) ([]ports.RegisterEntry, error) {
+	byOrg := make(map[string]ports.RegisterEntry)
+	var firstErr error
+
+	for i, g := range groups {
+		entries, err := c.fetchGroup(ctx, g)
+		if err != nil {
+			// Best-effort: remember the first error, keep going so one bad group
+			// does not lose the others.
+			if firstErr == nil {
+				firstErr = err
+			}
+			continue
+		}
+		for _, e := range entries {
+			byOrg[e.OrgNumber] = e // dedupe across groups by org number
+		}
+		if i < len(groups)-1 {
+			time.Sleep(400 * time.Millisecond)
+		}
+	}
+
+	if len(byOrg) == 0 {
+		if firstErr != nil {
+			return nil, fmt.Errorf("register: all groups failed: %w", firstErr)
+		}
+		return nil, fmt.Errorf("register: no entries parsed")
+	}
+
+	out := make([]ports.RegisterEntry, 0, len(byOrg))
+	for _, e := range byOrg {
+		out = append(out, e)
+	}
+	return out, nil
+}
+
+func (c *Client) fetchGroup(ctx context.Context, g group) ([]ports.RegisterEntry, error) {
+	body := fmt.Sprintf(`{"mynd":%q}`, g.label)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, hamtaURL, strings.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("User-Agent", "riksdagskollen/1.0")
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("hamtamynd %q: %w", g.label, err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("hamtamynd %q: HTTP %d", g.label, resp.StatusCode)
+	}
+
+	raw, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return parseAgencyTable(string(raw), g), nil
 }
 
 func parseAgencyTable(fragment string, g group) []ports.RegisterEntry {
