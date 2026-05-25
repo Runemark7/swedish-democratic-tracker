@@ -46,12 +46,38 @@ headcount wherever a source exists.
 
 | Source | Provides | Access | Join key |
 |---|---|---|---|
-| SCB Myndighetsregistret | List of 449: org number, name, type, principal body | Business-register API (free, requires certificate via email) **or** web-register export | org number |
+| SCB Myndighetsregistret | List (~449): name, org number, SFS, website | **Web-register scrape (chosen, no cert)** — see below | org number |
 | ESV/Hermes open data (`esv.se/psidata`) | Outcome per appropriation **and agency** | Open-data files/endpoints | org number (fallback: name) |
 | Arbetsgivarverket "Anställda i staten" | Headcount per agency, 1991→ | Open data/export, updated Dec/June | org number (fallback: name) |
 
+### Register scrape (verified 2026-05-25)
+
+`POST https://myndighetsregistret.scb.se/Myndighet/HamtaMynd`
+- Header: `Content-Type: application/json; charset=utf-8`
+- Body: `{"mynd":"<group name>"}` (the exact group label, see below)
+- Response: an **HTML table fragment** with columns `Namn`, `Organisationsnr`,
+  `SFS`, `WebbAdress`. (Not JSON.)
+
+The `#MyId` group selector enumerates six groups; iterate all to get the full
+register, and map each group to `type` / `under_government`:
+
+| Group label (`mynd`) | type | under_government |
+|---|---|---|
+| `Statliga förvaltningsmyndigheter` | Förvaltningsmyndighet | true |
+| `Myndigheter under riksdagen` | Riksdagsmyndighet | false |
+| `Statliga affärsverk` | Affärsverk | true |
+| `AP-fonder` | AP-fond | true |
+| `Sveriges domstolar samt Domstolsverket` | Domstol | false |
+| `Svenska utlandsmyndigheter` | Utlandsmyndighet | true |
+
+`Statliga förvaltningsmyndigheter` returned 244 agencies on 2026-05-25.
+`principal_body` = "Regeringen" when `under_government`, else "Riksdagen".
+**`department` is NOT in this register** → stays blank (default ''); sourced
+later if at all.
+
 **Note:** ESV was renamed to Statskontoret on 2026-01-01 (merger). Endpoints and
-branding are in flux — exact URLs are verified during planning.
+branding for the expenditure source (Phase 2) are in flux — exact URLs are
+verified when planning that phase.
 
 **Identity:** `org_number` is the canonical key. Sources lacking org number are
 matched via a normalized name (lowercased, trimmed, company-suffix stripped).
@@ -228,8 +254,9 @@ Max 5 files per phase (CLAUDE.md), verify (`go build`, `tsc`) between phases.
 
 ## Risks / open questions (verified during planning)
 
-- **SCB register API requires a certificate** (email approval, may take time).
-  Fallback: web-register export/scrape, or a periodic manual CSV.
+- **Register scrape is HTML-structure-dependent** (chosen over the cert-gated
+  API). If SCB changes the `HamtaMynd` markup, the parser breaks — worker keeps
+  last good data and logs. Fallback: SCB business-register API (needs cert).
 - **ESV↔Statskontoret rename** (Jan 2026): confirm current open-data
   endpoints/formats.
 - **Org number** may be absent in ESV/Arbetsgivarverket exports → name-matching
