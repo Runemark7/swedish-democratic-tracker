@@ -46,6 +46,13 @@ type HeadcountEntry struct {
 	History    []YearlyHeadcountSCB // chronological, ascending
 }
 
+// HeadcountSCBClient fetches per-agency headcount + department from
+// Statskontoret's Myndighetsförteckning. Named distinctly from the legacy
+// HeadcountClient in external.go (which returns []HeadcountData from SCB KLS).
+type HeadcountSCBClient interface {
+	FetchHeadcounts(ctx context.Context) ([]HeadcountEntry, error)
+}
+
 // Enrichment is the update payload for non-register columns. Phase 1's
 // UpsertAuthorities never writes these; this method only updates rows whose
 // org_number already exists (no INSERT — pre-existing register row required).
