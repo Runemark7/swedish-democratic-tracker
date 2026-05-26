@@ -75,6 +75,21 @@ register, and map each group to `type` / `under_government`:
 **`department` is NOT in this register** → stays blank (default ''); sourced
 later if at all.
 
+**Two groups return different table schemas (discovered during Phase 1 e2e):**
+- *Sveriges domstolar samt Domstolsverket* (~85 rows): columns
+  `Namn, CfarNr, Postadress, Postnr, Postort, WebbAdress`. Courts share
+  Domstolsverket's organisationsnummer, so `org_number` is synthesized as
+  `cfar:<NNNNNNNN>` from the CfarNr (workplace identifier).
+- *Svenska utlandsmyndigheter* (~110 rows): columns
+  `Land, LopNr, Namn, Ambassadör/Generalkonsul, WebbAdress`. Embassies share
+  Utrikesdepartementet's organisationsnummer; `org_number` is synthesized as
+  `utland:<LopNr>` from the register's sequence number.
+
+Total observed register (all 6 groups): **448** entries (244 förvaltning, 107
+utland, 83 domstol, 6 AP-fond, 5 under riksdagen, 3 affärsverk) — matches the
+"~449" figure from SCB. The synthetic-key prefix (`cfar:` / `utland:`) keeps the
+PK stable across runs.
+
 **Note:** ESV was renamed to Statskontoret on 2026-01-01 (merger). Endpoints and
 branding for the expenditure source (Phase 2) are in flux — exact URLs are
 verified when planning that phase.

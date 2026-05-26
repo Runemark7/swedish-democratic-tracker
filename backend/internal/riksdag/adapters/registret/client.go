@@ -14,31 +14,45 @@ import (
 	"riksdagskollen/internal/riksdag/ports"
 )
 
-// group is a Myndighetsregistret category. The group label is sent verbatim as
-// the HamtaMynd "mynd" parameter; typ/principal/underGov classify the rows.
+// schema identifies the cell layout returned by HamtaMynd for a given group.
+// SCB returns three different table shapes — see group definitions below.
+type schema int
+
+const (
+	schemaStandard schema = iota // Namn, Org-nr, SFS, WebbAdress
+	schemaCourt                  // Namn, CfarNr (8-digit), Postadress, Postnr, Postort, WebbAdress
+	schemaForeign                // Land, LopNr, Namn, Ambassadör/Generalkonsul, WebbAdress
+)
+
+// group is a Myndighetsregistret category. The label is sent verbatim as the
+// HamtaMynd "mynd" parameter; typ/principal/underGov classify the rows; schema
+// picks the row parser.
 type group struct {
 	label     string
 	typ       string
 	principal string
 	underGov  bool
+	schema    schema
 }
 
 // groups enumerates the six categories from the #MyId selector. Iterating all
 // of them yields the full register (~449).
 var groups = []group{
-	{"Statliga förvaltningsmyndigheter", "Förvaltningsmyndighet", "Regeringen", true},
-	{"Myndigheter under riksdagen", "Riksdagsmyndighet", "Riksdagen", false},
-	{"Statliga affärsverk", "Affärsverk", "Regeringen", true},
-	{"AP-fonder", "AP-fond", "Regeringen", true},
-	{"Sveriges domstolar samt Domstolsverket", "Domstol", "Riksdagen", false},
-	{"Svenska utlandsmyndigheter", "Utlandsmyndighet", "Regeringen", true},
+	{"Statliga förvaltningsmyndigheter", "Förvaltningsmyndighet", "Regeringen", true, schemaStandard},
+	{"Myndigheter under riksdagen", "Riksdagsmyndighet", "Riksdagen", false, schemaStandard},
+	{"Statliga affärsverk", "Affärsverk", "Regeringen", true, schemaStandard},
+	{"AP-fonder", "AP-fond", "Regeringen", true, schemaStandard},
+	{"Sveriges domstolar samt Domstolsverket", "Domstol", "Riksdagen", false, schemaCourt},
+	{"Svenska utlandsmyndigheter", "Utlandsmyndighet", "Regeringen", true, schemaForeign},
 }
 
 var (
-	rowRe   = regexp.MustCompile(`(?s)<tr[^>]*>(.*?)</tr>`)
-	cellRe  = regexp.MustCompile(`(?s)<td[^>]*>(.*?)</td>`)
-	tagRe   = regexp.MustCompile(`<[^>]+>`)
-	orgNrRe = regexp.MustCompile(`^\d{6}-\d{4}$`)
+	rowRe    = regexp.MustCompile(`(?s)<tr[^>]*>(.*?)</tr>`)
+	cellRe   = regexp.MustCompile(`(?s)<td[^>]*>(.*?)</td>`)
+	tagRe    = regexp.MustCompile(`<[^>]+>`)
+	orgNrRe  = regexp.MustCompile(`^\d{6}-\d{4}$`)
+	cfarRe   = regexp.MustCompile(`^\d{6,10}$`)
+	lopnrRe  = regexp.MustCompile(`^\d+$`)
 )
 
 func cleanCell(s string) string {
@@ -62,6 +76,113 @@ func slugify(name string) string {
 		}
 	}
 	return b.String()
+}
+
+// parseAgencyTable dispatches to the right row parser for the group's schema.
+func parseAgencyTable(fragment string, g group) []ports.RegisterEntry {
+	var out []ports.RegisterEntry
+	for _, rm := range rowRe.FindAllStringSubmatch(fragment, -1) {
+		cells := cellRe.FindAllStringSubmatch(rm[1], -1)
+		if len(cells) < 2 {
+			continue
+		}
+		var (
+			e  ports.RegisterEntry
+			ok bool
+		)
+		switch g.schema {
+		case schemaStandard:
+			e, ok = parseStandardRow(cells, g)
+		case schemaCourt:
+			e, ok = parseCourtRow(cells, g)
+		case schemaForeign:
+			e, ok = parseForeignRow(cells, g)
+		}
+		if ok {
+			out = append(out, e)
+		}
+	}
+	return out
+}
+
+// schemaStandard: cells = [Namn, Org-nr, SFS, WebbAdress].
+func parseStandardRow(cells [][]string, g group) (ports.RegisterEntry, bool) {
+	name := cleanCell(cells[0][1])
+	org := cleanCell(cells[1][1])
+	if name == "" || !orgNrRe.MatchString(org) {
+		return ports.RegisterEntry{}, false
+	}
+	var sfs, web string
+	if len(cells) > 2 {
+		sfs = cleanCell(cells[2][1])
+	}
+	if len(cells) > 3 {
+		web = cleanCell(cells[3][1])
+	}
+	return ports.RegisterEntry{
+		OrgNumber:       org,
+		Slug:            slugify(name),
+		Name:            name,
+		Type:            g.typ,
+		PrincipalBody:   g.principal,
+		UnderGovernment: g.underGov,
+		Website:         web,
+		SFS:             sfs,
+	}, true
+}
+
+// schemaCourt: cells = [Namn, CfarNr, Postadress, Postnr, Postort, WebbAdress].
+// Courts share Domstolsverket's organisationsnummer, so synthesize a stable
+// per-court key from the CfarNr (the workplace identifier in SCB's register).
+func parseCourtRow(cells [][]string, g group) (ports.RegisterEntry, bool) {
+	if len(cells) < 2 {
+		return ports.RegisterEntry{}, false
+	}
+	name := cleanCell(cells[0][1])
+	cfar := cleanCell(cells[1][1])
+	if name == "" || !cfarRe.MatchString(cfar) {
+		return ports.RegisterEntry{}, false
+	}
+	var web string
+	if len(cells) > 5 {
+		web = cleanCell(cells[5][1])
+	}
+	return ports.RegisterEntry{
+		OrgNumber:       "cfar:" + cfar,
+		Slug:            slugify(name),
+		Name:            name,
+		Type:            g.typ,
+		PrincipalBody:   g.principal,
+		UnderGovernment: g.underGov,
+		Website:         web,
+	}, true
+}
+
+// schemaForeign: cells = [Land, LopNr, Namn, Ambassadör/Generalkonsul, WebbAdress].
+// Embassies share Utrikesdepartementet's organisationsnummer, so synthesize a
+// stable key from LopNr (the register's sequence number for the mission).
+func parseForeignRow(cells [][]string, g group) (ports.RegisterEntry, bool) {
+	if len(cells) < 3 {
+		return ports.RegisterEntry{}, false
+	}
+	lopnr := cleanCell(cells[1][1])
+	name := cleanCell(cells[2][1])
+	if name == "" || !lopnrRe.MatchString(lopnr) {
+		return ports.RegisterEntry{}, false
+	}
+	var web string
+	if len(cells) > 4 {
+		web = cleanCell(cells[4][1])
+	}
+	return ports.RegisterEntry{
+		OrgNumber:       "utland:" + lopnr,
+		Slug:            slugify(name),
+		Name:            name,
+		Type:            g.typ,
+		PrincipalBody:   g.principal,
+		UnderGovernment: g.underGov,
+		Website:         web,
+	}, true
 }
 
 const hamtaURL = "https://myndighetsregistret.scb.se/Myndighet/HamtaMynd"
@@ -133,37 +254,4 @@ func (c *Client) fetchGroup(ctx context.Context, g group) ([]ports.RegisterEntry
 		return nil, err
 	}
 	return parseAgencyTable(string(raw), g), nil
-}
-
-func parseAgencyTable(fragment string, g group) []ports.RegisterEntry {
-	var out []ports.RegisterEntry
-	for _, rm := range rowRe.FindAllStringSubmatch(fragment, -1) {
-		cells := cellRe.FindAllStringSubmatch(rm[1], -1)
-		if len(cells) < 2 {
-			continue
-		}
-		name := cleanCell(cells[0][1])
-		org := cleanCell(cells[1][1])
-		if name == "" || !orgNrRe.MatchString(org) {
-			continue
-		}
-		var sfs, web string
-		if len(cells) > 2 {
-			sfs = cleanCell(cells[2][1])
-		}
-		if len(cells) > 3 {
-			web = cleanCell(cells[3][1])
-		}
-		out = append(out, ports.RegisterEntry{
-			OrgNumber:       org,
-			Slug:            slugify(name),
-			Name:            name,
-			Type:            g.typ,
-			PrincipalBody:   g.principal,
-			UnderGovernment: g.underGov,
-			Website:         web,
-			SFS:             sfs,
-		})
-	}
-	return out
 }
