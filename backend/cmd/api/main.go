@@ -71,6 +71,7 @@ import (
 	// Feature: riksdag
 	riksdagHTTP "riksdagskollen/internal/riksdag/adapters/http"
 	riksdagPG "riksdagskollen/internal/riksdag/adapters/postgres"
+	riksdagRegistret "riksdagskollen/internal/riksdag/adapters/registret"
 	riksdagRD "riksdagskollen/internal/riksdag/adapters/riksdagen"
 	riksdagSCB "riksdagskollen/internal/riksdag/adapters/scb"
 	riksdagStatic "riksdagskollen/internal/riksdag/adapters/static"
@@ -175,6 +176,7 @@ func main() {
 	riksdagSvc.SetAgendaRepo(riksdagPG.NewAgendaRepository(db))
 	riksdagSvc.SetLiveVotesRepo(riksdagPG.NewLiveVotesRepository(db))
 	agencyIntelRepo := riksdagPG.NewAgencyIntelRepository(db)
+	authorityRepo := riksdagPG.NewAuthorityRepository(db)
 	riksdagSvc.SetAgencyIntelRepo(agencyIntelRepo)
 	riksdagHandler := riksdagHTTP.NewHandler(riksdagSvc)
 
@@ -223,6 +225,7 @@ func main() {
 	refreshWorker := workers.NewRefreshScorecardsWorker(matchSvc)
 
 	agencyIntelWorker := workers.NewAgencyIntelWorker(riksdagRD.NewAgencyClient(), agencyIntelRepo, agencyInfoList())
+	authoritiesWorker := workers.NewAuthoritiesWorker(riksdagRegistret.NewClient(), authorityRepo)
 
 	sched := ingestion.NewScheduler()
 	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker); err != nil {
@@ -236,6 +239,9 @@ func main() {
 	if err := sched.RegisterSync("@weekly", &agencyIntelWorker); err != nil {
 		slog.Error("failed to register agency-intel worker", "error", err)
 		os.Exit(1)
+	}
+	if err := sched.RegisterSync("@weekly", &authoritiesWorker); err != nil {
+		slog.Error("failed to register authorities worker", "error", err)
 	}
 	regionBudgetWorker := workers.NewRegionBudgetWorker(regionsSvc, ingestionRunsRepo)
 	if err := sched.RegisterSync("@weekly", &regionBudgetWorker); err != nil {
