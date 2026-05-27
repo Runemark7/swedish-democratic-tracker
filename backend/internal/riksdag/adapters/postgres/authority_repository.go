@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 	"strings"
 
@@ -89,6 +90,34 @@ func (r *AuthorityRepository) Count(ctx context.Context, f ports.AuthorityFilter
 	var n int
 	err := r.pool.QueryRow(ctx, "SELECT count(*) FROM authorities "+where, args...).Scan(&n)
 	return n, err
+}
+
+func (r *AuthorityRepository) UpdateEnrichment(ctx context.Context, items []ports.Enrichment) (int, int, error) {
+	matched, unmatched := 0, 0
+	for _, e := range items {
+		historyJSON, err := json.Marshal(e.History)
+		if err != nil {
+			return matched, unmatched, err
+		}
+		tag, err := r.pool.Exec(ctx, `
+			UPDATE authorities
+			SET department        = CASE WHEN $2 <> '' THEN $2 ELSE department END,
+			    headcount_int     = $3,
+			    year              = GREATEST(year, $4),
+			    headcount_history = $5,
+			    updated_at        = now()
+			WHERE org_number = $1
+		`, e.OrgNumber, e.Department, e.HeadcountInt, e.Year, historyJSON)
+		if err != nil {
+			return matched, unmatched, err
+		}
+		if tag.RowsAffected() == 1 {
+			matched++
+		} else {
+			unmatched++
+		}
+	}
+	return matched, unmatched, nil
 }
 
 func buildWhere(f ports.AuthorityFilter) (string, []any) {

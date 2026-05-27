@@ -70,6 +70,7 @@ import (
 
 	// Feature: riksdag
 	riksdagHTTP "riksdagskollen/internal/riksdag/adapters/http"
+	riksdagMF "riksdagskollen/internal/riksdag/adapters/myndighetsforteckning"
 	riksdagPG "riksdagskollen/internal/riksdag/adapters/postgres"
 	riksdagRegistret "riksdagskollen/internal/riksdag/adapters/registret"
 	riksdagRD "riksdagskollen/internal/riksdag/adapters/riksdagen"
@@ -226,6 +227,7 @@ func main() {
 
 	agencyIntelWorker := workers.NewAgencyIntelWorker(riksdagRD.NewAgencyClient(), agencyIntelRepo, agencyInfoList())
 	authoritiesWorker := workers.NewAuthoritiesWorker(riksdagRegistret.NewClient(), authorityRepo)
+	headcountWorker := workers.NewAuthorityHeadcountWorker(riksdagMF.NewClient(), authorityRepo)
 
 	sched := ingestion.NewScheduler()
 	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker); err != nil {
@@ -242,6 +244,9 @@ func main() {
 	}
 	if err := sched.RegisterSync("@weekly", &authoritiesWorker); err != nil {
 		slog.Error("failed to register authorities worker", "error", err)
+	}
+	if err := sched.RegisterSync("@weekly", &headcountWorker); err != nil {
+		slog.Error("failed to register authority-headcount worker", "error", err)
 	}
 	regionBudgetWorker := workers.NewRegionBudgetWorker(regionsSvc, ingestionRunsRepo)
 	if err := sched.RegisterSync("@weekly", &regionBudgetWorker); err != nil {
