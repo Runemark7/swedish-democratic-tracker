@@ -37,6 +37,9 @@ func (m *mockAuthorityRepo) List(_ context.Context, _ ports.AuthorityFilter) ([]
 func (m *mockAuthorityRepo) Count(_ context.Context, _ ports.AuthorityFilter) (int, error) {
 	return 0, nil
 }
+func (m *mockAuthorityRepo) UpdateEnrichment(_ context.Context, _ []ports.Enrichment) (int, int, error) {
+	return 0, 0, nil
+}
 
 func TestAuthoritiesWorker_MapsAndUpserts(t *testing.T) {
 	client := &mockRegisterClient{entries: []ports.RegisterEntry{
