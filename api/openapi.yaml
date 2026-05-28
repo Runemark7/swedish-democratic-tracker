@@ -48,6 +48,21 @@ paths:
         "502":
           description: Upstream data source unavailable
 
+  /riksdag/authorities/stats:
+    get:
+      operationId: getRiksdagAuthorityStats
+      tags: [riksdag]
+      summary: Aggregated coverage of the authorities register
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthorityStats"
+        "500":
+          description: Server error
+
   /riksdag/authorities/list:
     get:
       operationId: listRiksdagMyndigheter
@@ -1939,6 +1954,18 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    AuthorityStats:
+      type: object
+      required: [total, underGovernment, withExpenditure, withHeadcount, totalExpenditureMdkr, totalHeadcount, latestUpdatedAt]
+      properties:
+        total: { type: integer }
+        underGovernment: { type: integer }
+        withExpenditure: { type: integer }
+        withHeadcount: { type: integer }
+        totalExpenditureMdkr: { type: number }
+        totalHeadcount: { type: integer }
+        latestUpdatedAt: { type: string, format: date-time }
 
     RegisteredAuthorityList:
       type: object

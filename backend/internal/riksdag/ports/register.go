@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"riksdagskollen/internal/riksdag/domain"
 )
@@ -69,8 +70,22 @@ type AuthorityRepository interface {
 	List(ctx context.Context, f AuthorityFilter) ([]domain.RegisteredAuthority, error)
 	Count(ctx context.Context, f AuthorityFilter) (int, error)
 	GetBySlug(ctx context.Context, slug string) (*domain.RegisteredAuthority, error)
+	Stats(ctx context.Context) (*AuthorityStats, error)
 	UpdateEnrichment(ctx context.Context, items []Enrichment) (matched, unmatched int, err error)
 	UpdateExpenditure(ctx context.Context, items []ExpenditureUpdate) (matched, unmatched int, err error)
+}
+
+// AuthorityStats is the aggregated overview shown above the searchable list
+// page. Coverage = how many of the 448 registered agencies have non-NULL
+// expenditure / headcount; sums are over the populated rows only.
+type AuthorityStats struct {
+	Total                int       `json:"total"`
+	UnderGovernment      int       `json:"underGovernment"`
+	WithExpenditure      int       `json:"withExpenditure"`
+	WithHeadcount        int       `json:"withHeadcount"`
+	TotalExpenditureMdkr float64   `json:"totalExpenditureMdkr"`
+	TotalHeadcount       int       `json:"totalHeadcount"`
+	LatestUpdatedAt      time.Time `json:"latestUpdatedAt"`
 }
 
 // YearlyExpenditureSCB is one year's outcome + budget for an agency, in mdkr.

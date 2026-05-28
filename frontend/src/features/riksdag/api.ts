@@ -3,6 +3,7 @@ import type { components } from "@/shared/api-contract";
 
 export type RegisteredAuthority = components["schemas"]["RegisteredAuthority"];
 export type RegisteredAuthorityList = components["schemas"]["RegisteredAuthorityList"];
+export type AuthorityStats = components["schemas"]["AuthorityStats"];
 
 export interface MyndigheterListFilter {
   q?: string;
@@ -104,6 +105,12 @@ export const riksdagApi = {
   getAuthority: (slug: string): Promise<AuthorityDetail> =>
     fetch(`/api/riksdag/authorities/${encodeURIComponent(slug)}`).then((r) => {
       if (!r.ok) throw new Error(`riksdag/authorities/${slug}: ${r.status}`);
+      return r.json();
+    }),
+
+  getAuthorityStats: (): Promise<AuthorityStats> =>
+    fetch("/api/riksdag/authorities/stats").then((r) => {
+      if (!r.ok) throw new Error(`riksdag/authorities/stats: ${r.status}`);
       return r.json();
     }),
 

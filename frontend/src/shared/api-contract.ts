@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/riksdag/authorities/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Aggregated coverage of the authorities register */
+        get: operations["getRiksdagAuthorityStats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/riksdag/authorities/list": {
         parameters: {
             query?: never;
@@ -1339,6 +1356,16 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
+        AuthorityStats: {
+            total: number;
+            underGovernment: number;
+            withExpenditure: number;
+            withHeadcount: number;
+            totalExpenditureMdkr: number;
+            totalHeadcount: number;
+            /** Format: date-time */
+            latestUpdatedAt: string;
+        };
         RegisteredAuthorityList: {
             items: components["schemas"]["RegisteredAuthority"][];
             total: number;
@@ -1501,6 +1528,33 @@ export interface operations {
             };
             /** @description Upstream data source unavailable */
             502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getRiksdagAuthorityStats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Stats */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorityStats"];
+                };
+            };
+            /** @description Server error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };

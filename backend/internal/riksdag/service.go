@@ -45,6 +45,16 @@ type MyndigheterList struct {
 	PageSize int                          `json:"pageSize"`
 }
 
+// AuthorityStats returns aggregated coverage for the searchable list page's
+// header tiles. Returns an error if the repo is not configured (i.e. older
+// deploys without the authorities table wired in).
+func (s *Service) AuthorityStats(ctx context.Context) (*ports.AuthorityStats, error) {
+	if s.authorityRepo == nil {
+		return nil, errors.New("authority repository not configured")
+	}
+	return s.authorityRepo.Stats(ctx)
+}
+
 // ListMyndigheter returns the searchable/filterable agency list backed by the
 // authorities table (Phase 1 register + Phase 2 enrichment). Pagination is
 // 1-indexed; page <= 0 is treated as 1, pageSize is clamped to [1, 200].
