@@ -69,4 +69,23 @@ type AuthorityRepository interface {
 	List(ctx context.Context, f AuthorityFilter) ([]domain.RegisteredAuthority, error)
 	Count(ctx context.Context, f AuthorityFilter) (int, error)
 	UpdateEnrichment(ctx context.Context, items []Enrichment) (matched, unmatched int, err error)
+	UpdateExpenditure(ctx context.Context, items []ExpenditureUpdate) (matched, unmatched int, err error)
+}
+
+// YearlyExpenditureSCB is one year's outcome + budget for an agency, in mdkr.
+type YearlyExpenditureSCB struct {
+	Year            int
+	ExpenditureMdkr float64
+	BudgetMdkr      float64
+}
+
+// ExpenditureUpdate is the update payload for the expenditure columns of an
+// authorities row. Like Enrichment, it is UPDATE-only — rows whose org_number
+// does not exist are skipped (counted as unmatched).
+type ExpenditureUpdate struct {
+	OrgNumber       string
+	ExpenditureMdkr float64
+	BudgetMdkr      float64
+	Year            int
+	History         []YearlyExpenditureSCB
 }

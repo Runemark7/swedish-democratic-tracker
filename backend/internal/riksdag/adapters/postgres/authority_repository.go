@@ -92,6 +92,34 @@ func (r *AuthorityRepository) Count(ctx context.Context, f ports.AuthorityFilter
 	return n, err
 }
 
+func (r *AuthorityRepository) UpdateExpenditure(ctx context.Context, items []ports.ExpenditureUpdate) (int, int, error) {
+	matched, unmatched := 0, 0
+	for _, e := range items {
+		historyJSON, err := json.Marshal(e.History)
+		if err != nil {
+			return matched, unmatched, err
+		}
+		tag, err := r.pool.Exec(ctx, `
+			UPDATE authorities
+			SET expenditure_mdkr    = $2,
+			    budget_mdkr         = $3,
+			    year                = GREATEST(year, $4),
+			    expenditure_history = $5,
+			    updated_at          = now()
+			WHERE org_number = $1
+		`, e.OrgNumber, e.ExpenditureMdkr, e.BudgetMdkr, e.Year, historyJSON)
+		if err != nil {
+			return matched, unmatched, err
+		}
+		if tag.RowsAffected() == 1 {
+			matched++
+		} else {
+			unmatched++
+		}
+	}
+	return matched, unmatched, nil
+}
+
 func (r *AuthorityRepository) UpdateEnrichment(ctx context.Context, items []ports.Enrichment) (int, int, error) {
 	matched, unmatched := 0, 0
 	for _, e := range items {

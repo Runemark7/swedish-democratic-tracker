@@ -229,6 +229,7 @@ func main() {
 	agencyIntelWorker := workers.NewAgencyIntelWorker(riksdagRD.NewAgencyClient(), agencyIntelRepo, agencyInfoList())
 	authoritiesWorker := workers.NewAuthoritiesWorker(riksdagRegistret.NewClient(), authorityRepo)
 	headcountWorker := workers.NewAuthorityHeadcountWorker(riksdagMF.NewClient(), authorityRepo)
+	expenditureWorker := workers.NewAuthorityExpenditureWorker(riksdagSK.NewClient(), authorityRepo)
 
 	sched := ingestion.NewScheduler()
 	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker); err != nil {
@@ -248,6 +249,9 @@ func main() {
 	}
 	if err := sched.RegisterSync("@weekly", &headcountWorker); err != nil {
 		slog.Error("failed to register authority-headcount worker", "error", err)
+	}
+	if err := sched.RegisterSync("@weekly", &expenditureWorker); err != nil {
+		slog.Error("failed to register authority-expenditure worker", "error", err)
 	}
 	regionBudgetWorker := workers.NewRegionBudgetWorker(regionsSvc, ingestionRunsRepo)
 	if err := sched.RegisterSync("@weekly", &regionBudgetWorker); err != nil {

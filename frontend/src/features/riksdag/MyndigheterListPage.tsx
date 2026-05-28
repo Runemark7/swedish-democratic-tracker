@@ -80,9 +80,10 @@ export function MyndigheterListPage() {
       </div>
 
       <div style={{ margin: isMobile ? "14px 14px 28px" : "22px 32px 32px", border: "1px solid var(--color-border)", borderRadius: 8, overflow: "hidden" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 100px 110px 140px 14px", gap: 8, padding: "8px 14px", background: "var(--color-surface-low)", fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.12em", color: "var(--color-on-surface-variant)", textTransform: "uppercase" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 100px 110px 130px 14px", gap: 8, padding: "8px 14px", background: "var(--color-surface-low)", fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.12em", color: "var(--color-on-surface-variant)", textTransform: "uppercase" }}>
           <span>Myndighet</span>
           <span style={{ textAlign: "right" }}>Anställda</span>
+          <span style={{ textAlign: "right" }}>Utgift</span>
           <span style={{ textAlign: "right" }}>Departement</span>
           <span style={{ textAlign: "right" }}>Typ</span>
           <span />
@@ -100,13 +101,16 @@ export function MyndigheterListPage() {
           <Link
             key={a.orgNumber}
             to={`/riksdag/myndigheter/${a.slug}`}
-            style={{ display: "grid", gridTemplateColumns: "1fr 100px 110px 140px 14px", gap: 8, padding: "10px 14px", alignItems: "center", borderTop: "1px solid var(--color-border)", textDecoration: "none", color: "inherit" }}
+            style={{ display: "grid", gridTemplateColumns: "1fr 90px 100px 110px 130px 14px", gap: 8, padding: "10px 14px", alignItems: "center", borderTop: "1px solid var(--color-border)", textDecoration: "none", color: "inherit" }}
           >
             <span style={{ fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {a.name}
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, textAlign: "right", color: a.headcountInt ? "var(--color-fg)" : "var(--color-fg-muted)" }}>
               {a.headcountInt ? a.headcountInt.toLocaleString("sv-SE") : "saknas"}
+            </span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, textAlign: "right", color: a.expenditureMdkr != null ? "var(--color-fg)" : "var(--color-fg-muted)" }}>
+              {a.expenditureMdkr != null ? `${a.expenditureMdkr.toFixed(1)} mdkr` : "saknas"}
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, textAlign: "right", color: "var(--color-fg-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {a.department || "—"}
