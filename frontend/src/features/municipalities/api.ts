@@ -1,5 +1,5 @@
 import { api } from "@/shared/api-client";
-import type { MunicipalityDetail, MunicipalitySummary, MunicipalityKPIItem, PopulationTrendEntry, ProcurementCategorySummary, MunicipalityBudgetSnapshot } from "@/shared/types";
+import type { MunicipalityDetail, MunicipalitySummary, MunicipalityKPIItem, PopulationTrendEntry, ProcurementCategorySummary, MunicipalityBudgetSnapshot, MunicipalityAreaDataPoint } from "@/shared/types";
 
 export const municipalitiesApi = {
   listMunicipalities: (regionCode?: string) =>
@@ -18,4 +18,8 @@ export const municipalitiesApi = {
     api.get<ProcurementCategorySummary[]>(`/municipalities/${code}/procurement`),
   getMunicipalityBudgetHistory: (code: string) =>
     api.get<MunicipalityBudgetSnapshot[]>(`/municipalities/${code}/budget/history`),
+  getAreaAcrossMunicipalities: (areaName: string, year?: number) =>
+    api.get<MunicipalityAreaDataPoint[]>(
+      `/municipalities/budget/area/${encodeURIComponent(areaName)}${year ? `?year=${year}` : ""}`
+    ),
 };

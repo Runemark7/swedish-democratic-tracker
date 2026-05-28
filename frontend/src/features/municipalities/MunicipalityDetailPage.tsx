@@ -369,6 +369,8 @@ export function MunicipalityDetailPage() {
         <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px" }}>
           <BudgetHistorySection
             snapshots={budgetHistory}
+            makeAreaLink={(a) => `/kommun/${code}/budget/${encodeURIComponent(a)}`}
+            compareLabel="→ Visa jämförelse med andra kommuner"
             emptyMessage="Budgetdata saknas för denna kommun. Kolada — endast utvalda kommuner stöds f.n."
             sourceId="kolada-spending"
           />

@@ -283,6 +283,38 @@ func (r *Repository) GetMunicipalityBudgetHistory(ctx context.Context, munCode s
 	return result, rows.Err()
 }
 
+func (r *Repository) GetAreaAcrossMunicipalities(ctx context.Context, areaName string, year int) ([]ports.MunicipalityAreaDataPoint, error) {
+	if year == 0 {
+		if err := r.db.QueryRow(ctx, `
+			SELECT year FROM municipality_budget_snapshots
+			WHERE area_name = $1
+			GROUP BY year ORDER BY COUNT(*) DESC, year DESC LIMIT 1
+		`, areaName).Scan(&year); err != nil {
+			return nil, err
+		}
+	}
+	rows, err := r.db.Query(ctx, `
+		SELECT mun_code, value_mnkr, total_mnkr, pct
+		FROM municipality_budget_snapshots
+		WHERE area_name = $1 AND year = $2
+		ORDER BY mun_code
+	`, areaName, year)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []ports.MunicipalityAreaDataPoint
+	for rows.Next() {
+		var d ports.MunicipalityAreaDataPoint
+		if err := rows.Scan(&d.MunCode, &d.ValueMnkr, &d.TotalMnkr, &d.Pct); err != nil {
+			return nil, err
+		}
+		result = append(result, d)
+	}
+	return result, rows.Err()
+}
+
 func (r *Repository) GetMunicipality(ctx context.Context, code string) (*domain.MunicipalityDetail, error) {
 	detail := &domain.MunicipalityDetail{}
 	detail.Municipality.GoverningParties = []string{}

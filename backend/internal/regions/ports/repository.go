@@ -16,4 +16,5 @@ type RegionRepository interface {
 	GetAreaAcrossRegions(ctx context.Context, areaName string, year int) ([]RegionAreaDataPoint, error)
 	UpsertMunicipalityBudgetSnapshots(ctx context.Context, snapshots []MunicipalityBudgetSnapshot) (int, error)
 	GetMunicipalityBudgetHistory(ctx context.Context, munCode string, years []int) ([]MunicipalityBudgetSnapshot, error)
+	GetAreaAcrossMunicipalities(ctx context.Context, areaName string, year int) ([]MunicipalityAreaDataPoint, error)
 }

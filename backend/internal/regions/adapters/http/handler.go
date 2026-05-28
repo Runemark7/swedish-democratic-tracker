@@ -30,6 +30,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/regions/{code}/budget/history", h.getRegionBudgetHistory)
 	r.Get("/regions/{code}/kpi", h.getRegionKPI)
 	r.Get("/municipalities", h.listMunicipalities)
+	r.Get("/municipalities/budget/area/{areaName}", h.getAreaAcrossMunicipalities)
 	r.Get("/municipalities/{code}", h.getMunicipality)
 	r.Get("/municipalities/{code}/kpi", h.getMunicipalityKPI)
 	r.Get("/municipalities/{code}/spending", h.getMunicipalitySpending)
@@ -144,6 +145,26 @@ func (h *Handler) getAreaAcrossRegions(w http.ResponseWriter, r *http.Request) {
 	}
 	if points == nil {
 		points = []ports.RegionAreaDataPoint{}
+	}
+	jsonOK(w, points)
+}
+
+func (h *Handler) getAreaAcrossMunicipalities(w http.ResponseWriter, r *http.Request) {
+	areaName := chi.URLParam(r, "areaName")
+	yearParam := r.URL.Query().Get("year")
+	year := 0
+	if yearParam != "" {
+		if parsed, err := strconv.Atoi(yearParam); err == nil {
+			year = parsed
+		}
+	}
+	points, err := h.svc.GetAreaAcrossMunicipalities(r.Context(), areaName, year)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if points == nil {
+		points = []ports.MunicipalityAreaDataPoint{}
 	}
 	jsonOK(w, points)
 }
