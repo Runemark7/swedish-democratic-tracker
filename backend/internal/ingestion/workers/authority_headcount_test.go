@@ -44,6 +44,9 @@ func (m *mockEnrichRepo) UpdateEnrichment(_ context.Context, items []ports.Enric
 func (m *mockEnrichRepo) UpdateExpenditure(_ context.Context, _ []ports.ExpenditureUpdate) (int, int, error) {
 	return 0, 0, nil
 }
+func (m *mockEnrichRepo) GetBySlug(_ context.Context, _ string) (*domain.RegisteredAuthority, error) {
+	return nil, nil
+}
 
 func TestAuthorityHeadcountWorker_MapsAndUpdates(t *testing.T) {
 	client := &mockHeadcountClient{entries: []ports.HeadcountEntry{

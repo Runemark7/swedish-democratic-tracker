@@ -85,6 +85,24 @@ func (r *AuthorityRepository) List(ctx context.Context, f ports.AuthorityFilter)
 	return out, rows.Err()
 }
 
+func (r *AuthorityRepository) GetBySlug(ctx context.Context, slug string) (*domain.RegisteredAuthority, error) {
+	row := r.pool.QueryRow(ctx, `
+		SELECT org_number, slug, name, type, principal_body, department,
+		       under_government, website, sfs, expenditure_mdkr, budget_mdkr,
+		       headcount_int, year, updated_at
+		FROM authorities WHERE slug = $1
+	`, slug)
+	var a domain.RegisteredAuthority
+	if err := row.Scan(
+		&a.OrgNumber, &a.Slug, &a.Name, &a.Type, &a.PrincipalBody, &a.Department,
+		&a.UnderGovernment, &a.Website, &a.SFS, &a.ExpenditureMdkr, &a.BudgetMdkr,
+		&a.HeadcountInt, &a.Year, &a.UpdatedAt,
+	); err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
+
 func (r *AuthorityRepository) Count(ctx context.Context, f ports.AuthorityFilter) (int, error) {
 	where, args := buildWhere(f)
 	var n int

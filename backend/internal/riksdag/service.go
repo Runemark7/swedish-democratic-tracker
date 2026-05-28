@@ -223,7 +223,74 @@ func (s *Service) GetAuthority(ctx context.Context, slug string) (*domain.Author
 
 		return detail, nil
 	}
+
+	// Fallback: agency exists in the DB-backed register but not in the curated
+	// 10-agency live path. Return a "skinny" detail with whatever Phase 1/2/3
+	// data we have so the detail page never 404s for a real registered agency.
+	if s.authorityRepo != nil {
+		ra, err := s.authorityRepo.GetBySlug(ctx, slug)
+		if err == nil && ra != nil {
+			detail := registeredAuthorityToDetail(ra)
+			if s.agencyIntelRepo != nil {
+				if dec, derr := s.agencyIntelRepo.GetDecisions(ctx, slug); derr == nil && len(dec) > 0 {
+					detail.RecentDecisions = dec
+				}
+			}
+			return detail, nil
+		}
+		// pgx returns ErrNoRows for missing rows; treat any error here as "fall
+		// through to ErrNotFound" (logged so we notice real DB issues).
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			slog.Warn("authority DB fallback failed", "slug", slug, "error", err)
+		}
+	}
 	return nil, ErrNotFound
+}
+
+// registeredAuthorityToDetail builds an AuthorityDetail from the DB row.
+// Missing data stays zero/empty — the UI handles that ("saknas" / hidden).
+func registeredAuthorityToDetail(ra *domain.RegisteredAuthority) *domain.AuthorityDetail {
+	var hc int
+	if ra.HeadcountInt != nil {
+		hc = *ra.HeadcountInt
+	}
+	var exp, bud float64
+	if ra.ExpenditureMdkr != nil {
+		exp = *ra.ExpenditureMdkr
+	}
+	if ra.BudgetMdkr != nil {
+		bud = *ra.BudgetMdkr
+	}
+	hcStr := ""
+	if hc > 0 {
+		hcStr = fmt.Sprintf("%d", hc)
+	}
+	return &domain.AuthorityDetail{
+		Authority: domain.Authority{
+			Slug:         ra.Slug,
+			Name:         ra.Name,
+			Role:         ra.Type, // e.g. Förvaltningsmyndighet/Domstol — best surrogate when no curated role.
+			Ministry:     ra.Department,
+			Headcount:    hcStr,
+			HeadcountInt: hc,
+			WebsiteURL: func() string {
+				if ra.Website == "" {
+					return ""
+				}
+				if strings.HasPrefix(ra.Website, "http://") || strings.HasPrefix(ra.Website, "https://") {
+					return ra.Website
+				}
+				return "https://" + ra.Website
+			}(),
+			ExpenditureMdkr:  exp,
+			BudgetMdkr:       bud,
+			Year:             ra.Year,
+			History:          []domain.YearlyExpenditure{},
+			HeadcountHistory: []domain.YearlyHeadcount{},
+		},
+		Regleringsbrev:  []domain.Regleringsbrev{},
+		RecentDecisions: []domain.AgencyDecision{},
+	}
 }
 
 type mandateInfo struct {
