@@ -21,12 +21,39 @@ func NewHandler(svc *riksdag.Service) *Handler {
 
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/riksdag/authorities", h.getAuthorities)
+	r.Get("/riksdag/authorities/list", h.listMyndigheter)
 	r.Get("/riksdag/authorities/{slug}", h.getAuthority)
 	r.Get("/riksdag/kpis", h.getKpis)
 	r.Get("/riksdag/government", h.getGovernment)
 	r.Get("/riksdag/agenda", h.getAgenda)
 	r.Get("/riksdag/agenda/{id}", h.getAgendaItem)
 	r.Get("/riksdag/live-votes", h.getLiveVotes)
+}
+
+func (h *Handler) listMyndigheter(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	query := q.Get("q")
+	page, _ := strconv.Atoi(q.Get("page"))
+	pageSize, _ := strconv.Atoi(q.Get("pageSize"))
+
+	var underGov *bool
+	if v := q.Get("underGovernment"); v != "" {
+		switch v {
+		case "true":
+			t := true
+			underGov = &t
+		case "false":
+			f := false
+			underGov = &f
+		}
+	}
+
+	list, err := h.svc.ListMyndigheter(r.Context(), query, underGov, page, pageSize)
+	if err != nil {
+		jsonError(w, "failed to list myndigheter", http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, list)
 }
 
 func (h *Handler) getAuthorities(w http.ResponseWriter, r *http.Request) {

@@ -1,4 +1,15 @@
 import type { Authority, AuthorityDetail } from "@/types/democracy";
+import type { components } from "@/shared/api-contract";
+
+export type RegisteredAuthority = components["schemas"]["RegisteredAuthority"];
+export type RegisteredAuthorityList = components["schemas"]["RegisteredAuthorityList"];
+
+export interface MyndigheterListFilter {
+  q?: string;
+  underGovernment?: boolean;
+  page?: number;
+  pageSize?: number;
+}
 
 // ── Budget API types (from /api/budget/years) ─────────────────────────────────
 
@@ -95,6 +106,19 @@ export const riksdagApi = {
       if (!r.ok) throw new Error(`riksdag/authorities/${slug}: ${r.status}`);
       return r.json();
     }),
+
+  listMyndigheter: (filter: MyndigheterListFilter = {}): Promise<RegisteredAuthorityList> => {
+    const p = new URLSearchParams();
+    if (filter.q) p.set("q", filter.q);
+    if (filter.underGovernment !== undefined) p.set("underGovernment", String(filter.underGovernment));
+    if (filter.page) p.set("page", String(filter.page));
+    if (filter.pageSize) p.set("pageSize", String(filter.pageSize));
+    const qs = p.toString();
+    return fetch(`/api/riksdag/authorities/list${qs ? "?" + qs : ""}`).then((r) => {
+      if (!r.ok) throw new Error(`riksdag/authorities/list: ${r.status}`);
+      return r.json();
+    });
+  },
 
   getKpis: (): Promise<RiksdagKpi[]> =>
     fetch("/api/riksdag/kpis").then((r) => {

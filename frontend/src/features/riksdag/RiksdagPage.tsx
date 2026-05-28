@@ -285,6 +285,24 @@ function MyndigheterCard({ authorities }: { authorities: Authority[] }) {
           </div>
         </div>
       )}
+
+      <div style={{ marginTop: 14, textAlign: "right" }}>
+        <Link
+          to="/riksdag/myndigheter"
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 11,
+            color: "var(--color-accent)",
+            textDecoration: "none",
+            border: "1px solid var(--color-border)",
+            borderRadius: 4,
+            padding: "6px 12px",
+            display: "inline-block",
+          }}
+        >
+          Läs om fler myndigheter →
+        </Link>
+      </div>
     </div>
   );
 }

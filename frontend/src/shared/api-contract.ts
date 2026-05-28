@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/riksdag/authorities/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Searchable/filterable list of all state agencies (from authorities table) */
+        get: operations["listRiksdagMyndigheter"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/riksdag/authorities/{slug}": {
         parameters: {
             query?: never;
@@ -1299,6 +1316,35 @@ export interface components {
              */
             expenditureMdkr: number;
         };
+        RegisteredAuthority: {
+            /** @example 202100-0076 */
+            orgNumber: string;
+            /** @example polismyndigheten */
+            slug: string;
+            /** @example POLISMYNDIGHETEN */
+            name: string;
+            /** @enum {string} */
+            type: "Förvaltningsmyndighet" | "Riksdagsmyndighet" | "Affärsverk" | "AP-fond" | "Domstol" | "Utlandsmyndighet";
+            /** @enum {string} */
+            principalBody: "Regeringen" | "Riksdagen";
+            /** @example Justitiedepartementet */
+            department: string;
+            underGovernment: boolean;
+            website?: string;
+            sfs?: string;
+            expenditureMdkr?: number | null;
+            budgetMdkr?: number | null;
+            headcountInt?: number | null;
+            year: number;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        RegisteredAuthorityList: {
+            items: components["schemas"]["RegisteredAuthority"][];
+            total: number;
+            page: number;
+            pageSize: number;
+        };
         RiksdagAuthority: {
             /** @example polismyndigheten */
             slug: string;
@@ -1455,6 +1501,40 @@ export interface operations {
             };
             /** @description Upstream data source unavailable */
             502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listRiksdagMyndigheter: {
+        parameters: {
+            query?: {
+                /** @description Free-text name match (ILIKE) */
+                q?: string;
+                /** @description Filter to agencies under the Government (true) or not (false) */
+                underGovernment?: "true" | "false";
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisteredAuthorityList"];
+                };
+            };
+            /** @description Server error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };

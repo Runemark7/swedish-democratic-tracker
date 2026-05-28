@@ -48,6 +48,36 @@ paths:
         "502":
           description: Upstream data source unavailable
 
+  /riksdag/authorities/list:
+    get:
+      operationId: listRiksdagMyndigheter
+      tags: [riksdag]
+      summary: Searchable/filterable list of all state agencies (from authorities table)
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+          description: Free-text name match (ILIKE)
+        - name: underGovernment
+          in: query
+          schema: { type: string, enum: ["true", "false"] }
+          description: Filter to agencies under the Government (true) or not (false)
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisteredAuthorityList"
+        "500":
+          description: Server error
+
   /riksdag/authorities/{slug}:
     get:
       operationId: getRiksdagAuthority
@@ -1866,6 +1896,64 @@ components:
           type: number
           format: float
           example: 41.4
+
+    RegisteredAuthority:
+      type: object
+      required: [orgNumber, slug, name, type, principalBody, department, underGovernment, year]
+      properties:
+        orgNumber:
+          type: string
+          example: "202100-0076"
+        slug:
+          type: string
+          example: polismyndigheten
+        name:
+          type: string
+          example: POLISMYNDIGHETEN
+        type:
+          type: string
+          enum: [Förvaltningsmyndighet, Riksdagsmyndighet, Affärsverk, AP-fond, Domstol, Utlandsmyndighet]
+        principalBody:
+          type: string
+          enum: [Regeringen, Riksdagen]
+        department:
+          type: string
+          example: Justitiedepartementet
+        underGovernment:
+          type: boolean
+        website:
+          type: string
+        sfs:
+          type: string
+        expenditureMdkr:
+          type: number
+          nullable: true
+        budgetMdkr:
+          type: number
+          nullable: true
+        headcountInt:
+          type: integer
+          nullable: true
+        year:
+          type: integer
+        updatedAt:
+          type: string
+          format: date-time
+
+    RegisteredAuthorityList:
+      type: object
+      required: [items, total, page, pageSize]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/RegisteredAuthority"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
 
     RiksdagAuthority:
       type: object

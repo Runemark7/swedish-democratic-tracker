@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
-import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type RiksdagGovernment, type RiksdagAgendaItem, type RiksdagLiveVote } from "@/features/riksdag/api";
+import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type RiksdagGovernment, type RiksdagAgendaItem, type RiksdagLiveVote, type RegisteredAuthorityList, type MyndigheterListFilter } from "@/features/riksdag/api";
 import { speechesApi, type Speech } from "@/features/speeches/api";
 import { votesApi } from "@/features/votes/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
@@ -520,6 +520,15 @@ export function useKommunBudgetHistory(code: string) {
     queryFn: () => municipalitiesApi.getMunicipalityBudgetHistory(code),
     staleTime: 300_000,
     enabled: !!code,
+  });
+}
+
+// ── Myndigheter list (DB-backed agency register, Phase 4) ────────────────────
+export function useMyndigheterList(filter: MyndigheterListFilter) {
+  return useQuery<RegisteredAuthorityList>({
+    queryKey: ["myndigheter-list", filter],
+    queryFn: () => riksdagApi.listMyndigheter(filter),
+    staleTime: 60_000,
   });
 }
 

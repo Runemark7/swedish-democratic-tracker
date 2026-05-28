@@ -179,6 +179,7 @@ func main() {
 	agencyIntelRepo := riksdagPG.NewAgencyIntelRepository(db)
 	authorityRepo := riksdagPG.NewAuthorityRepository(db)
 	riksdagSvc.SetAgencyIntelRepo(agencyIntelRepo)
+	riksdagSvc.SetAuthorityRepo(authorityRepo)
 	riksdagHandler := riksdagHTTP.NewHandler(riksdagSvc)
 
 	// -- Router --
