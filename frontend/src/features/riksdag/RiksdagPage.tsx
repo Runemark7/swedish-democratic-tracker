@@ -193,10 +193,21 @@ function MyndighetRow({
   );
 }
 
-function MyndigheterCard({ authorities }: { authorities: Authority[] }) {
+function MyndigheterCard({
+  authorities,
+  stateBudgetMdkr,
+}: {
+  authorities: Authority[];
+  // Statens budget total (mdkr) for the latest year — used as the *honest*
+  // denominator for "Andel". The 10 agencies on this card cover only ~7% of
+  // the budget; the old "sum of shown / sum of shown = 100%" was misleading.
+  stateBudgetMdkr: number | null;
+}) {
   const [open, setOpen] = useState<number | null>(null);
   const total = authorities.reduce((s, a) => s + a.expenditureMdkr, 0);
   const year = authorities[0]?.year;
+  const denom = stateBudgetMdkr ?? 0;
+  const totalSharePct = denom > 0 ? (total / denom) * 100 : null;
 
   return (
     <div>
@@ -209,7 +220,7 @@ function MyndigheterCard({ authorities }: { authorities: Authority[] }) {
           marginBottom: 12,
         }}
       >
-        MYNDIGHETER · STATLIGA DRIFTKOSTNADER{year ? ` ${year}` : ""}
+        MYNDIGHETER · TOPP 10 EFTER DRIFTKOSTNAD{year ? ` ${year}` : ""}
         <SourceMarker sourceId="statskontoret-arsutfall" />
       </div>
 
@@ -254,7 +265,7 @@ function MyndigheterCard({ authorities }: { authorities: Authority[] }) {
               key={a.slug || a.name}
               authority={a}
               color={BUDGET_COLORS[i % BUDGET_COLORS.length]}
-              share={total > 0 ? (a.expenditureMdkr / total) * 100 : 0}
+              share={denom > 0 ? (a.expenditureMdkr / denom) * 100 : 0}
               isOpen={open === i}
               onToggle={() => setOpen(open === i ? null : i)}
             />
@@ -273,16 +284,22 @@ function MyndigheterCard({ authorities }: { authorities: Authority[] }) {
               fontWeight: 700,
             }}
           >
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11 }}>TOTALT</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11 }}>SUMMA TOPP-10</span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-fg)", textAlign: "right", minWidth: 72 }}>
               {total.toFixed(1)} mdkr
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-fg-muted)", textAlign: "right", minWidth: 44 }}>
-              100%
+              {totalSharePct != null ? `${totalSharePct.toFixed(1)}%` : "—"}
             </span>
             <span style={{ minWidth: 64 }} />
             <span style={{ minWidth: 12 }} />
           </div>
+        </div>
+      )}
+
+      {denom > 0 && (
+        <div style={{ marginTop: 10, fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.08em" }}>
+          Andel = av statens budget {Math.round(denom).toLocaleString("sv-SE")} mdkr ({year}).
         </div>
       )}
 
@@ -319,6 +336,15 @@ export function RiksdagPage() {
   const { ruling, liveVotes, agenda, kpis, authorities } = data;
 
   const totalSeats = [...ruling.parties, ...(ruling.support ?? []), ...ruling.opposition].reduce((s, p) => s + p.seats, 0);
+
+  // Statens budget total (mdkr) for the latest year present in budgetHistory.
+  // BudgetSnapshot.total_mnkr is the full state-budget total for that year, so
+  // any row of the latest year works as the source.
+  const latestBudgetYear = budgetHistory.length > 0 ? Math.max(...budgetHistory.map((s) => s.year)) : 0;
+  const stateBudgetMdkr =
+    latestBudgetYear > 0
+      ? (budgetHistory.find((s) => s.year === latestBudgetYear)?.total_mnkr ?? 0) / 1000
+      : null;
 
   return (
     <div className="sdt-page">
@@ -496,7 +522,7 @@ export function RiksdagPage() {
             padding: isMobile ? 16 : 24,
           }}
         >
-          <MyndigheterCard authorities={authorities ?? []} />
+          <MyndigheterCard authorities={authorities ?? []} stateBudgetMdkr={stateBudgetMdkr} />
         </div>
       </div>
 
