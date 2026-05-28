@@ -51,7 +51,7 @@ export function MyndigheterListPage() {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div className="sdt-page">
+    <div className="sdt-page" style={{ background: "var(--color-sdt-surface)", minHeight: "100vh" }}>
       <div style={{ padding: isMobile ? "18px 14px 0" : "40px 32px 0" }}>
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "2px", color: "var(--color-fg-muted)", marginBottom: 6 }}>
           MYNDIGHETSREGISTER
