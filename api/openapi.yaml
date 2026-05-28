@@ -29,6 +29,8 @@ tags:
     description: Swedish municipal (kommunal) election results and governing coalitions
   - name: riksdag
     description: National level — state agency expenditure data
+  - name: ministers
+    description: Cabinet ministers and their proposals
 
 paths:
   /riksdag/authorities:
@@ -137,6 +139,78 @@ paths:
                 $ref: "#/components/schemas/RiksdagAgendaItem"
         "404":
           description: Agenda item not found
+
+  /party-meta:
+    get:
+      operationId: listPartyMeta
+      summary: List all parties with metadata
+      tags: [parties]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Party'
+
+  /party-meta/{code}:
+    get:
+      operationId: getPartyMeta
+      summary: Get party metadata by code
+      tags: [parties]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+        '404':
+          description: Party not found
+
+  /ministers:
+    get:
+      operationId: listMinisters
+      summary: List active ministers grouped by department
+      tags: [ministers]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DepartmentGroup'
+
+  /ministers/{id}:
+    get:
+      operationId: getMinister
+      summary: Get minister detail with proposals
+      tags: [ministers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MinisterDetail'
+        '404':
+          description: Minister not found
 
   /healthz:
     get:
@@ -2302,3 +2376,61 @@ components:
           type: string
           enum: [active, in_progress, completed]
       required: [id, title, description, source, status]
+
+    Party:
+      type: object
+      properties:
+        code:        { type: string }
+        name:        { type: string }
+        foundedYear: { type: integer, nullable: true }
+        ideology:    { type: string, nullable: true }
+        colorHex:    { type: string }
+        textHex:     { type: string }
+        active:      { type: boolean }
+        websiteUrl:  { type: string, nullable: true }
+        createdAt:   { type: string, format: date-time }
+
+    Minister:
+      type: object
+      properties:
+        id:             { type: string }
+        name:           { type: string }
+        title:          { type: string }
+        department:     { type: string }
+        departmentCode: { type: string }
+        party:          { type: string }
+        politicianId:   { type: string, nullable: true }
+        photoUrl:       { type: string, nullable: true }
+        bio:            { type: string, nullable: true }
+        active:         { type: boolean }
+        createdAt:      { type: string, format: date-time }
+
+    Proposal:
+      type: object
+      properties:
+        id:             { type: string }
+        title:          { type: string }
+        departmentCode: { type: string }
+        riksdagYear:    { type: string }
+        publishedAt:    { type: string, format: date-time, nullable: true }
+        url:            { type: string }
+
+    DepartmentGroup:
+      type: object
+      properties:
+        department:     { type: string }
+        departmentCode: { type: string }
+        ministers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Minister'
+
+    MinisterDetail:
+      type: object
+      properties:
+        minister:
+          $ref: '#/components/schemas/Minister'
+        proposals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Proposal'

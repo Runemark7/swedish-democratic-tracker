@@ -89,6 +89,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/party-meta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all parties with metadata */
+        get: operations["listPartyMeta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/party-meta/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get party metadata by code */
+        get: operations["getPartyMeta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ministers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List active ministers grouped by department */
+        get: operations["listMinisters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ministers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get minister detail with proposals */
+        get: operations["getMinister"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/healthz": {
         parameters: {
             query?: never;
@@ -1591,6 +1659,50 @@ export interface components {
             /** @enum {string} */
             status: "active" | "in_progress" | "completed";
         };
+        Party: {
+            code?: string;
+            name?: string;
+            foundedYear?: number | null;
+            ideology?: string | null;
+            colorHex?: string;
+            textHex?: string;
+            active?: boolean;
+            websiteUrl?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        Minister: {
+            id?: string;
+            name?: string;
+            title?: string;
+            department?: string;
+            departmentCode?: string;
+            party?: string;
+            politicianId?: string | null;
+            photoUrl?: string | null;
+            bio?: string | null;
+            active?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        Proposal: {
+            id?: string;
+            title?: string;
+            departmentCode?: string;
+            riksdagYear?: string;
+            /** Format: date-time */
+            publishedAt?: string | null;
+            url?: string;
+        };
+        DepartmentGroup: {
+            department?: string;
+            departmentCode?: string;
+            ministers?: components["schemas"]["Minister"][];
+        };
+        MinisterDetail: {
+            minister?: components["schemas"]["Minister"];
+            proposals?: components["schemas"]["Proposal"][];
+        };
     };
     responses: {
         /** @description Resource not found */
@@ -1769,6 +1881,104 @@ export interface operations {
                 };
             };
             /** @description Agenda item not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listPartyMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Party"][];
+                };
+            };
+        };
+    };
+    getPartyMeta: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Party"];
+                };
+            };
+            /** @description Party not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listMinisters: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentGroup"][];
+                };
+            };
+        };
+    };
+    getMinister: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MinisterDetail"];
+                };
+            };
+            /** @description Minister not found */
             404: {
                 headers: {
                     [name: string]: unknown;
