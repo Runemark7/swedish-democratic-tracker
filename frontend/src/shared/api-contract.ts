@@ -497,23 +497,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/municipalities/{code}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Full municipality detail including election results per party */
-        get: operations["getMunicipality"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/municipalities/kpi/{kpiCode}/ranking": {
         parameters: {
             query?: never;
@@ -540,6 +523,23 @@ export interface paths {
         };
         /** Rank of a municipality for each default KPI */
         get: operations["getMunicipalityKPIRanks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/municipalities/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Full municipality detail including election results per party */
+        get: operations["getMunicipality"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2283,29 +2283,6 @@ export interface operations {
             };
         };
     };
-    getMunicipality: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                code: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Municipality with full election result breakdown */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MunicipalityDetail"];
-                };
-            };
-            404: components["responses"]["NotFound"];
-        };
-    };
     getMunicipalityKPIRanking: {
         parameters: {
             query?: never;
@@ -2362,6 +2339,29 @@ export interface operations {
                 };
                 content?: never;
             };
+        };
+    };
+    getMunicipality: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Municipality with full election result breakdown */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MunicipalityDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
         };
     };
     getMunicipalityKPIs: {

@@ -667,29 +667,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/MunicipalitySummary"
 
-  /municipalities/{code}:
-    get:
-      operationId: getMunicipality
-      tags: [municipalities]
-      summary: Full municipality detail including election results per party
-      parameters:
-        - name: code
-          in: path
-          required: true
-          schema:
-            type: string
-            example: "0180"
-            description: Four-digit municipality code (SCB/Valmyndigheten)
-      responses:
-        "200":
-          description: Municipality with full election result breakdown
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MunicipalityDetail"
-        "404":
-          $ref: "#/components/responses/NotFound"
-
   /municipalities/kpi/{kpiCode}/ranking:
     get:
       operationId: getMunicipalityKPIRanking
@@ -737,6 +714,29 @@ paths:
                   $ref: "#/components/schemas/KPIRank"
         "502":
           description: Upstream Kolada API error
+
+  /municipalities/{code}:
+    get:
+      operationId: getMunicipality
+      tags: [municipalities]
+      summary: Full municipality detail including election results per party
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "0180"
+            description: Four-digit municipality code (SCB/Valmyndigheten)
+      responses:
+        "200":
+          description: Municipality with full election result breakdown
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MunicipalityDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /municipalities/{code}/kpi:
     get:
