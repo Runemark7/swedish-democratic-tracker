@@ -42,6 +42,9 @@ func (m *mockExpenditureRepo) UpdateEnrichment(_ context.Context, _ []ports.Enri
 func (m *mockExpenditureRepo) GetBySlug(_ context.Context, _ string) (*domain.RegisteredAuthority, error) {
 	return nil, nil
 }
+func (m *mockExpenditureRepo) Stats(_ context.Context) (*ports.AuthorityStats, error) {
+	return nil, nil
+}
 func (m *mockExpenditureRepo) UpdateExpenditure(_ context.Context, items []ports.ExpenditureUpdate) (int, int, error) {
 	if m.updateErr != nil {
 		return 0, 0, m.updateErr

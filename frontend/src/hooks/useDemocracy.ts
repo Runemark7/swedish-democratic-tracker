@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
-import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type RiksdagGovernment, type RiksdagAgendaItem, type RiksdagLiveVote, type RegisteredAuthorityList, type MyndigheterListFilter } from "@/features/riksdag/api";
+import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type RiksdagGovernment, type RiksdagAgendaItem, type RiksdagLiveVote, type RegisteredAuthorityList, type MyndigheterListFilter, type AuthorityStats } from "@/features/riksdag/api";
 import { speechesApi, type Speech } from "@/features/speeches/api";
 import { votesApi } from "@/features/votes/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
@@ -520,6 +520,15 @@ export function useKommunBudgetHistory(code: string) {
     queryFn: () => municipalitiesApi.getMunicipalityBudgetHistory(code),
     staleTime: 300_000,
     enabled: !!code,
+  });
+}
+
+// ── Myndigheter stats (aggregated coverage for list page header) ─────────────
+export function useMyndigheterStats() {
+  return useQuery<AuthorityStats>({
+    queryKey: ["myndigheter-stats"],
+    queryFn: () => riksdagApi.getAuthorityStats(),
+    staleTime: 300_000,
   });
 }
 

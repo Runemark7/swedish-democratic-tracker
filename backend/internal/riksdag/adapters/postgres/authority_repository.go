@@ -103,6 +103,28 @@ func (r *AuthorityRepository) GetBySlug(ctx context.Context, slug string) (*doma
 	return &a, nil
 }
 
+func (r *AuthorityRepository) Stats(ctx context.Context) (*ports.AuthorityStats, error) {
+	row := r.pool.QueryRow(ctx, `
+		SELECT
+			count(*)                                                   AS total,
+			count(*) FILTER (WHERE under_government)                   AS under_government,
+			count(*) FILTER (WHERE expenditure_mdkr IS NOT NULL)       AS with_exp,
+			count(*) FILTER (WHERE headcount_int IS NOT NULL)          AS with_hc,
+			coalesce(sum(expenditure_mdkr), 0)                         AS sum_exp,
+			coalesce(sum(headcount_int), 0)                            AS sum_hc,
+			coalesce(max(updated_at), now())                           AS latest
+		FROM authorities
+	`)
+	var s ports.AuthorityStats
+	if err := row.Scan(
+		&s.Total, &s.UnderGovernment, &s.WithExpenditure, &s.WithHeadcount,
+		&s.TotalExpenditureMdkr, &s.TotalHeadcount, &s.LatestUpdatedAt,
+	); err != nil {
+		return nil, err
+	}
+	return &s, nil
+}
+
 func (r *AuthorityRepository) Count(ctx context.Context, f ports.AuthorityFilter) (int, error) {
 	where, args := buildWhere(f)
 	var n int
