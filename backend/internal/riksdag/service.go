@@ -27,6 +27,7 @@ type Service struct {
 	agendaRepo      ports.AgendaRepository      // optional
 	liveVotesRepo   ports.LiveVotesRepository   // optional
 	agencyIntelRepo ports.AgencyIntelRepository // optional
+	authorityRepo   ports.AuthorityRepository   // optional; backs ListMyndigheter
 }
 
 func (s *Service) SetKpiRepo(r ports.KpiRepository)                 { s.kpiRepo = r }
@@ -34,6 +35,49 @@ func (s *Service) SetGovRepo(r ports.GovRepository)                 { s.govRepo 
 func (s *Service) SetAgendaRepo(r ports.AgendaRepository)           { s.agendaRepo = r }
 func (s *Service) SetLiveVotesRepo(r ports.LiveVotesRepository)     { s.liveVotesRepo = r }
 func (s *Service) SetAgencyIntelRepo(r ports.AgencyIntelRepository) { s.agencyIntelRepo = r }
+func (s *Service) SetAuthorityRepo(r ports.AuthorityRepository)     { s.authorityRepo = r }
+
+// MyndigheterList is the paginated response for ListMyndigheter.
+type MyndigheterList struct {
+	Items    []domain.RegisteredAuthority `json:"items"`
+	Total    int                          `json:"total"`
+	Page     int                          `json:"page"`
+	PageSize int                          `json:"pageSize"`
+}
+
+// ListMyndigheter returns the searchable/filterable agency list backed by the
+// authorities table (Phase 1 register + Phase 2 enrichment). Pagination is
+// 1-indexed; page <= 0 is treated as 1, pageSize is clamped to [1, 200].
+func (s *Service) ListMyndigheter(ctx context.Context, query string, underGovernment *bool, page, pageSize int) (*MyndigheterList, error) {
+	if s.authorityRepo == nil {
+		return nil, errors.New("authority repository not configured")
+	}
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 50
+	}
+	if pageSize > 200 {
+		pageSize = 200
+	}
+
+	filter := ports.AuthorityFilter{
+		Query:           query,
+		UnderGovernment: underGovernment,
+		Limit:           pageSize,
+		Offset:          (page - 1) * pageSize,
+	}
+	items, err := s.authorityRepo.List(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("list authorities: %w", err)
+	}
+	total, err := s.authorityRepo.Count(ctx, ports.AuthorityFilter{Query: query, UnderGovernment: underGovernment})
+	if err != nil {
+		return nil, fmt.Errorf("count authorities: %w", err)
+	}
+	return &MyndigheterList{Items: items, Total: total, Page: page, PageSize: pageSize}, nil
+}
 
 func (s *Service) ListKpis(ctx context.Context) ([]domain.Kpi, error) {
 	if s.kpiRepo == nil {
