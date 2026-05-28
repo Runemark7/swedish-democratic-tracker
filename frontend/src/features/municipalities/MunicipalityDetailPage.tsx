@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { MandateComposition, Pill, Trend, GoalBadge } from "@/components/charts";
+import { MandateComposition, Pill } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { useKommun, useKommunList, useKommunBudgetHistory } from "@/hooks/useDemocracy";
+import { useKommun, useKommunList, useKommunBudgetHistory, useKommunKpiRanks } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import type { LiveVote } from "@/types/democracy";
@@ -32,6 +32,8 @@ export function MunicipalityDetailPage() {
   const { data, isLoading } = useKommun(code ?? "");
   const { data: allKommuner } = useKommunList();
   const { data: budgetHistory = [] } = useKommunBudgetHistory(code ?? "");
+  const { data: kpiRanks = [] } = useKommunKpiRanks(code ?? "");
+  const rankMap = new Map(kpiRanks.map((r) => [r.kpi, r]));
 
   if (isLoading || !data) {
     return (
@@ -302,17 +304,28 @@ export function MunicipalityDetailPage() {
                   {kpi.value}
                   <SourceMarker sourceId="kolada" />
                 </div>
-                <div style={{ marginBottom: 12 }}>
-                  <Trend trend={kpi.trend} delta={kpi.delta} worseHigher={kpi.worseHigher} />
-                </div>
-                <GoalBadge
-                  raw={kpi.raw}
-                  target={kpi.target}
-                  worseHigher={kpi.worseHigher}
-                  unit={kpi.unit}
-                  note={kpi.note}
-                  sourceUrl={kpi.sourceUrl}
-                />
+                {(() => {
+                  const rank = rankMap.get(kpi.kpiId);
+                  if (!rank) return null;
+                  const diff = kpi.raw - rank.mean;
+                  return (
+                    <a
+                      href={`/kommun/${code}/kpi/${kpi.kpiId}`}
+                      style={{ textDecoration: "none", display: "inline-flex", alignItems: "baseline", gap: 7, marginBottom: 10, flexWrap: "wrap" }}
+                    >
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "#b91c1c", fontWeight: 700 }}>
+                        #{rank.rank} AV {rank.total}
+                      </span>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)" }}>·</span>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)" }}>
+                        <span style={{ fontWeight: 700, color: "var(--color-fg)" }}>
+                          {diff >= 0 ? "+" : ""}{diff.toFixed(2)} {kpi.unit}
+                        </span>
+                        {" "}{diff >= 0 ? "ÖVER" : "UNDER"} MEDEL →
+                      </span>
+                    </a>
+                  );
+                })()}
                 {kpi.description && (
                   <div
                     style={{
