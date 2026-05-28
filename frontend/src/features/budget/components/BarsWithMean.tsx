@@ -72,7 +72,17 @@ export function BarsWithMean({
         return (
           <div
             key={p.region_code}
-            style={{ display: "flex", alignItems: "center", marginBottom: ROW_GAP }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: ROW_GAP,
+              background: isHighlighted ? "rgba(185, 28, 28, 0.07)" : "transparent",
+              borderLeft: isHighlighted ? "3px solid rgba(185, 28, 28, 0.6)" : "3px solid transparent",
+              paddingLeft: isHighlighted ? 6 : 6,
+              marginLeft: -9,
+              paddingRight: 4,
+              borderRadius: 2,
+            }}
           >
             <div
               style={{
