@@ -225,6 +225,7 @@ function kpiItemsToStrip(
     const absDelta = Math.abs(delta).toFixed(2);
 
     return [{
+      kpiId: code,
       label: m.label,
       description: m.description,
       value: m.format(latest.value),
@@ -327,6 +328,7 @@ function mapApiKpis(apiKpis: RiksdagKpi[]): Kpi[] {
       ? `${k.raw}${k.unit ? " " + k.unit : ""}`
       : `${k.raw.toFixed(1).replace(".", ",")}${k.unit ? " " + k.unit : ""}`;
     return {
+      kpiId: String(k.id),
       label: k.label,
       description: k.description,
       value: rawStr,

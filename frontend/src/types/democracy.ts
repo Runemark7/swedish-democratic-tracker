@@ -35,6 +35,7 @@ export interface Budget {
 }
 
 export interface Kpi {
+  kpiId: string;      // Kolada KPI code, e.g. "N00900"
   label: string;
   description: string;
   value: string;
