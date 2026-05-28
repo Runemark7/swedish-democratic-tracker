@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory } from "@/hooks/useDemocracy";
-import { MandateComposition, Pill, Trend, GoalBadge } from "@/components/charts";
+import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory, useRegionKpiRanks } from "@/hooks/useDemocracy";
+import { MandateComposition, Pill } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { AgendaList } from "@/components/AgendaList";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { REGION_KPI_META } from "@/features/regions/regionKpiMeta";
 import type { LiveVote } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -58,6 +59,8 @@ export function RegionDetailPage() {
   const { data: regionList } = useRegionList();
   const { data: regionKommuner } = useKommunList(code);
   const { data: budgetHistory = [] } = useRegionBudgetHistory(code ?? "");
+  const { data: kpiRanks = [] } = useRegionKpiRanks(code ?? "");
+  const rankMap = new Map(kpiRanks.map((r) => [r.kpi, r]));
 
   if (isLoading || !data) return <Skeleton />;
 
@@ -254,7 +257,7 @@ export function RegionDetailPage() {
                     display: "flex",
                     alignItems: "center",
                     gap: 8,
-                    marginBottom: 12,
+                    marginBottom: 8,
                   }}
                 >
                   <span
@@ -269,16 +272,31 @@ export function RegionDetailPage() {
                     {k.value}
                   </span>
                   <SourceMarker sourceId="kolada" />
-                  <Trend trend={k.trend} delta={k.delta} worseHigher={k.worseHigher} />
                 </div>
-                <GoalBadge
-                  raw={k.raw}
-                  target={k.target}
-                  worseHigher={k.worseHigher}
-                  unit={k.unit}
-                  note={k.note}
-                  sourceUrl={k.sourceUrl}
-                />
+                {(() => {
+                  const rank = rankMap.get(k.kpiId);
+                  if (!rank) return null;
+                  const meta = REGION_KPI_META[k.kpiId];
+                  const unit = meta?.unit ?? k.unit;
+                  const diff = k.raw - rank.mean;
+                  return (
+                    <Link
+                      to={`/region/${code}/kpi/${k.kpiId}`}
+                      style={{ textDecoration: "none", display: "inline-flex", alignItems: "baseline", gap: 7, marginBottom: 10, flexWrap: "wrap" }}
+                    >
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "#b91c1c", fontWeight: 700 }}>
+                        #{rank.rank} AV {rank.total}
+                      </span>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)" }}>·</span>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)" }}>
+                        <span style={{ fontWeight: 700, color: "var(--color-fg)" }}>
+                          {diff >= 0 ? "+" : ""}{diff.toFixed(2)}{unit}
+                        </span>
+                        {" "}{diff >= 0 ? "ÖVER" : "UNDER"} MEDEL →
+                      </span>
+                    </Link>
+                  );
+                })()}
                 {k.description && (
                   <div
                     style={{

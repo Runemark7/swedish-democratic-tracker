@@ -412,6 +412,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/regions/kpi/{kpiCode}/ranking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All regions ranked by a single KPI (highest first) */
+        get: operations["getRegionKPIRanking"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/regions/{code}/kpi-ranks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Rank of a region for each strip KPI */
+        get: operations["getRegionKPIRanks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/regions/{code}": {
         parameters: {
             query?: never;
@@ -1323,6 +1357,23 @@ export interface components {
              */
             status: string;
         };
+        RegionKPIRankEntry: {
+            /** @example 09 */
+            region_code: string;
+            /** @example Blekinge */
+            name: string;
+            /**
+             * Format: float
+             * @example 41200.5
+             */
+            value: number;
+            /** @example 2023 */
+            year: number;
+            /** @example 5 */
+            rank: number;
+            /** @example 21 */
+            total: number;
+        };
         KPIRankEntry: {
             /** @example 0180 */
             mun_code: string;
@@ -2158,6 +2209,64 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RegionSummary"][];
                 };
+            };
+        };
+    };
+    getRegionKPIRanking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kpiCode: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of rank entries sorted by value descending */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionKPIRankEntry"][];
+                };
+            };
+            /** @description Upstream Kolada API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getRegionKPIRanks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of KPI rank entries (one per region strip KPI) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KPIRank"][];
+                };
+            };
+            /** @description Upstream Kolada API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
