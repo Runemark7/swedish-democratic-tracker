@@ -4,6 +4,7 @@ import "context"
 
 type KoladaClient interface {
 	FetchKPIs(ctx context.Context, munCode string, kpiCodes []string, years []int) ([]KPIValue, error)
+	FetchKPIAllMunicipalities(ctx context.Context, kpiCode string, years []int) ([]KPIValueWithMun, error)
 }
 
 type KPIValue struct {
@@ -11,6 +12,34 @@ type KPIValue struct {
 	Year   int     `json:"year"`
 	Value  float64 `json:"value"`
 	Status string  `json:"status"`
+}
+
+// KPIValueWithMun is a KPI value associated with a specific municipality,
+// returned when querying Kolada's municipality/all endpoint.
+type KPIValueWithMun struct {
+	MunCode string
+	KPI     string
+	Year    int
+	Value   float64
+	Status  string
+}
+
+// KPIRankEntry is one row in a cross-municipality KPI ranking list.
+type KPIRankEntry struct {
+	MunCode string  `json:"mun_code"`
+	Name    string  `json:"name"`
+	Value   float64 `json:"value"`
+	Year    int     `json:"year"`
+	Rank    int     `json:"rank"`
+	Total   int     `json:"total"`
+}
+
+// KPIRank holds the rank of a single KPI for one municipality.
+type KPIRank struct {
+	KPI   string  `json:"kpi"`
+	Rank  int     `json:"rank"`
+	Total int     `json:"total"`
+	Mean  float64 `json:"mean"`
 }
 
 type SCBClient interface {
