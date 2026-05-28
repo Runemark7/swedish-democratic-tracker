@@ -1,9 +1,31 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useMyndigheterList } from "@/hooks/useDemocracy";
+import { useMyndigheterList, useMyndigheterStats } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 type UnderGovChoice = "all" | "true" | "false";
+
+function Stat({ label, value, caption, missing }: { label: string; value: string; caption: string; missing?: number }) {
+  return (
+    <div>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 6 }}>
+        {label}
+      </div>
+      <div style={{ fontFamily: "var(--font-serif)", fontSize: 26, fontWeight: 400, color: "var(--color-fg)", lineHeight: 1.05 }}>
+        {value}
+      </div>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)", marginTop: 4, lineHeight: 1.4 }}>
+        {caption}
+        {missing !== undefined && missing > 0 && (
+          <>
+            {" · "}
+            <span style={{ color: "var(--color-down, #b8391c)" }}>{missing} saknar data</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function MyndigheterListPage() {
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -23,6 +45,7 @@ export function MyndigheterListPage() {
   );
 
   const { data, isLoading } = useMyndigheterList(filter);
+  const { data: stats } = useMyndigheterStats();
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -40,6 +63,45 @@ export function MyndigheterListPage() {
           {total} myndigheter · Källa: SCB Myndighetsregistret + Statskontorets Myndighetsförteckning
         </div>
       </div>
+
+      {stats && (
+        <div
+          style={{
+            margin: isMobile ? "14px 14px 0" : "22px 32px 0",
+            border: "1px solid var(--color-border)",
+            background: "var(--color-sdt-surface)",
+            padding: isMobile ? 16 : "18px 22px",
+          }}
+        >
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", color: "var(--color-fg-muted)", marginBottom: 14 }}>
+            ÖVERSIKT
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 14 : 24 }}>
+            <Stat
+              label="Totalsumma utgift"
+              value={`${stats.totalExpenditureMdkr.toFixed(0)} mdkr`}
+              caption={`${stats.withExpenditure} av ${stats.total} myndigheter har utgiftsdata`}
+              missing={stats.total - stats.withExpenditure}
+            />
+            <Stat
+              label="Totalt anställda"
+              value={stats.totalHeadcount.toLocaleString("sv-SE")}
+              caption={`${stats.withHeadcount} av ${stats.total} har anställdadata`}
+              missing={stats.total - stats.withHeadcount}
+            />
+            <Stat
+              label="Under regeringen"
+              value={`${stats.underGovernment}`}
+              caption={`av ${stats.total} totalt (resten under riksdagen, domstolar, AP-fonder, utlandsmyndigheter)`}
+            />
+            <Stat
+              label="Senast uppdaterad"
+              value={new Date(stats.latestUpdatedAt).toLocaleDateString("sv-SE")}
+              caption={`Veckovis ingestion från SCB + Statskontoret`}
+            />
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", padding: isMobile ? "14px 14px 0" : "22px 32px 0", alignItems: "center" }}>
         <input

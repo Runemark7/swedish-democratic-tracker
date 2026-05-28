@@ -21,6 +21,7 @@ func NewHandler(svc *riksdag.Service) *Handler {
 
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/riksdag/authorities", h.getAuthorities)
+	r.Get("/riksdag/authorities/stats", h.getAuthorityStats)
 	r.Get("/riksdag/authorities/list", h.listMyndigheter)
 	r.Get("/riksdag/authorities/{slug}", h.getAuthority)
 	r.Get("/riksdag/kpis", h.getKpis)
@@ -28,6 +29,15 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/riksdag/agenda", h.getAgenda)
 	r.Get("/riksdag/agenda/{id}", h.getAgendaItem)
 	r.Get("/riksdag/live-votes", h.getLiveVotes)
+}
+
+func (h *Handler) getAuthorityStats(w http.ResponseWriter, r *http.Request) {
+	stats, err := h.svc.AuthorityStats(r.Context())
+	if err != nil {
+		jsonError(w, "failed to fetch authority stats", http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, stats)
 }
 
 func (h *Handler) listMyndigheter(w http.ResponseWriter, r *http.Request) {
