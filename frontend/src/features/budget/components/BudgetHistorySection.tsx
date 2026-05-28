@@ -18,6 +18,7 @@ const BUDGET_COLORS = [
 interface BudgetHistorySectionProps {
   snapshots: BudgetSnapshot[];
   makeAreaLink?: (areaName: string) => string;
+  compareLabel?: string; // label on the expanded "Visa jämförelse" button
   emptyMessage?: string;
   sourceId: string;
 }
@@ -28,9 +29,10 @@ interface ExpandedAreaRowProps {
   areaName: string;
   yearSnapshots: { year: number; value_mnkr: number }[];
   makeAreaLink?: (areaName: string) => string;
+  compareLabel?: string;
 }
 
-function ExpandedAreaRow({ areaName, yearSnapshots, makeAreaLink }: ExpandedAreaRowProps) {
+function ExpandedAreaRow({ areaName, yearSnapshots, makeAreaLink, compareLabel }: ExpandedAreaRowProps) {
   const byYear = useMemo(() => {
     const m = new Map<number, number>();
     for (const s of yearSnapshots) m.set(s.year, s.value_mnkr);
@@ -163,7 +165,7 @@ function ExpandedAreaRow({ areaName, yearSnapshots, makeAreaLink }: ExpandedArea
               display: "inline-block",
             }}
           >
-            → Visa jämförelse med andra regioner
+            {compareLabel ?? "→ Visa jämförelse med andra regioner"}
           </Link>
         </div>
       )}
@@ -176,6 +178,7 @@ function ExpandedAreaRow({ areaName, yearSnapshots, makeAreaLink }: ExpandedArea
 export function BudgetHistorySection({
   snapshots,
   makeAreaLink,
+  compareLabel,
   emptyMessage = "Budgetdata saknas.",
   sourceId,
 }: BudgetHistorySectionProps) {
@@ -497,6 +500,7 @@ export function BudgetHistorySection({
                         }
                       )}
                       makeAreaLink={makeAreaLink}
+                      compareLabel={compareLabel}
                     />
                   )}
                 </div>

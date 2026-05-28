@@ -45,6 +45,13 @@ type RegionAreaDataPoint struct {
 	Pct        float64 `json:"pct"`
 }
 
+type MunicipalityAreaDataPoint struct {
+	MunCode   string  `json:"mun_code"`
+	ValueMnkr float64 `json:"value_mnkr"`
+	TotalMnkr float64 `json:"total_mnkr"`
+	Pct       float64 `json:"pct"`
+}
+
 type PopulationEntry struct {
 	Year       int `json:"year"`
 	Population int `json:"population"`
