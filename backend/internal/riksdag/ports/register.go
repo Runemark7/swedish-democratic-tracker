@@ -68,6 +68,7 @@ type AuthorityRepository interface {
 	UpsertAuthorities(ctx context.Context, items []domain.RegisteredAuthority) (int, error)
 	List(ctx context.Context, f AuthorityFilter) ([]domain.RegisteredAuthority, error)
 	Count(ctx context.Context, f AuthorityFilter) (int, error)
+	GetBySlug(ctx context.Context, slug string) (*domain.RegisteredAuthority, error)
 	UpdateEnrichment(ctx context.Context, items []Enrichment) (matched, unmatched int, err error)
 	UpdateExpenditure(ctx context.Context, items []ExpenditureUpdate) (matched, unmatched int, err error)
 }
