@@ -26,6 +26,8 @@ import { RiksdagPage } from "./features/riksdag/RiksdagPage";
 import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { MyndigheterListPage } from "./features/riksdag/MyndigheterListPage";
 import { AgendaDetailPage } from "./features/riksdag/AgendaDetailPage";
+import { RegeringPage } from "./features/regering/RegeringPage";
+import { MinisterDetailPage } from "./features/regering/MinisterDetailPage";
 import { SearchPage } from "./features/search/SearchPage";
 import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
 import { DebateDetailPage } from "./features/speeches/DebateDetailPage";
@@ -36,7 +38,7 @@ import { useMediaQuery } from "./hooks/useMediaQuery";
 import { MobileNav } from "./components/MobileNav";
 
 // ── Section detection ─────────────────────────────────────────────────────
-type NavSection = "start" | "riksdag" | "region" | "kommun" | "sok";
+type NavSection = "start" | "riksdag" | "region" | "kommun" | "regering" | "sok";
 
 function sectionFromPath(pathname: string): NavSection {
   if (
@@ -54,6 +56,7 @@ function sectionFromPath(pathname: string): NavSection {
   if (pathname.startsWith("/region")) return "region";
   if (pathname.startsWith("/kommun")) return "kommun";
   if (pathname.startsWith("/sok")) return "sok";
+  if (pathname.startsWith("/regering")) return "regering";
   return "start";
 }
 
@@ -177,11 +180,12 @@ export default function App() {
   const showRiksdagTabs = isRiksdagSection(location.pathname);
 
   const navPills = [
-    { key: "start",   to: "/",        label: "◆ START"     },
-    { key: "riksdag", to: "/riksdag",  label: "I RIKSDAG"   },
-    { key: "region",  to: "/region",  label: "II REGION"   },
-    { key: "kommun",  to: "/kommun",  label: "III KOMMUN"  },
-    { key: "sok",     to: "/sok",     label: "⌕ SÖK"       },
+    { key: "start",    to: "/",         label: "◆ START"     },
+    { key: "riksdag",  to: "/riksdag",  label: "I RIKSDAG"   },
+    { key: "region",   to: "/region",  label: "II REGION"   },
+    { key: "kommun",   to: "/kommun",  label: "III KOMMUN"  },
+    { key: "regering", to: "/regering", label: "IV REGERING" },
+    { key: "sok",      to: "/sok",     label: "⌕ SÖK"       },
   ] as const;
 
   return (
@@ -329,6 +333,8 @@ export default function App() {
       <main style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0" : "32px" }}>
         <Routes>
           <Route path="/"                                      element={<HomePage />} />
+          <Route path="/regering"     element={<RegeringPage />} />
+          <Route path="/regering/:id" element={<MinisterDetailPage />} />
           <Route path="/riksdag"                               element={<RiksdagPage />} />
           <Route path="/riksdag/myndigheter"                   element={<MyndigheterListPage />} />
           <Route path="/riksdag/myndigheter/:slug"             element={<AuthorityDetailPage />} />

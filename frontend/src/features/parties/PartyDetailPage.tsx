@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { partiesApi } from "./api";
 import { politiciansApi } from "@/features/politicians/api";
+import { regeringApi } from "@/features/regering/api";
 import { PARTY_COLORS, partyShortToName } from "@/shared/design";
 import { useSpeechesByParty } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
@@ -57,6 +58,15 @@ export function PartyDetailPage() {
     enabled: !!party && tab === "politiker",
     staleTime: 60_000,
   });
+
+  const { data: ministerGroups } = useQuery({
+    queryKey: ["ministers"],
+    queryFn: regeringApi.listMinisters,
+    staleTime: 5 * 60_000,
+  });
+  const partyMinisters = (ministerGroups ?? [])
+    .flatMap((g) => g.ministers ?? [])
+    .filter((m) => m.party === party && m.active);
 
   const pc = PARTY_COLORS[party];
 
@@ -356,6 +366,43 @@ export function PartyDetailPage() {
           </section>
         )}
       </main>
+
+      {partyMinisters.length > 0 && (
+        <div
+          className="mt-8"
+          style={{ padding: isMobile ? "0 14px" : "0 32px", maxWidth: 920 }}
+        >
+          <h3 className="text-xs font-mono uppercase tracking-widest text-on-surface-variant mb-3">
+            Statsråd från partiet
+          </h3>
+          <div className="bg-surface-lowest rounded-xl overflow-hidden">
+            {partyMinisters.map((m, i) => (
+              <Link
+                key={m.id}
+                to={`/regering/${m.id}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "12px 20px",
+                  borderTop: i > 0 ? "1px solid var(--color-surface-high)" : undefined,
+                  textDecoration: "none",
+                  color: "inherit",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--color-surface-high)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{m.name}</div>
+                  <div style={{ fontSize: 12, color: "var(--color-fg-muted)" }}>{m.title}</div>
+                </div>
+                <span style={{ fontSize: 12, color: "var(--color-fg-muted)" }}>→</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
