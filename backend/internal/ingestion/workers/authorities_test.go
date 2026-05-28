@@ -43,6 +43,9 @@ func (m *mockAuthorityRepo) UpdateEnrichment(_ context.Context, _ []ports.Enrich
 func (m *mockAuthorityRepo) UpdateExpenditure(_ context.Context, _ []ports.ExpenditureUpdate) (int, int, error) {
 	return 0, 0, nil
 }
+func (m *mockAuthorityRepo) GetBySlug(_ context.Context, _ string) (*domain.RegisteredAuthority, error) {
+	return nil, nil
+}
 
 func TestAuthoritiesWorker_MapsAndUpserts(t *testing.T) {
 	client := &mockRegisterClient{entries: []ports.RegisterEntry{
