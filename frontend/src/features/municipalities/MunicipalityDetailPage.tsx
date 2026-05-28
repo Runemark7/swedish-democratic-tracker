@@ -309,8 +309,8 @@ export function MunicipalityDetailPage() {
                   if (!rank) return null;
                   const diff = kpi.raw - rank.mean;
                   return (
-                    <a
-                      href={`/kommun/${code}/kpi/${kpi.kpiId}`}
+                    <Link
+                      to={`/kommun/${code}/kpi/${kpi.kpiId}`}
                       style={{ textDecoration: "none", display: "inline-flex", alignItems: "baseline", gap: 7, marginBottom: 10, flexWrap: "wrap" }}
                     >
                       <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "#b91c1c", fontWeight: 700 }}>
@@ -323,7 +323,7 @@ export function MunicipalityDetailPage() {
                         </span>
                         {" "}{diff >= 0 ? "ÖVER" : "UNDER"} MEDEL →
                       </span>
-                    </a>
+                    </Link>
                   );
                 })()}
                 {kpi.description && (

@@ -79,6 +79,10 @@ var spendingKPIs = []string{
 	"N45014", // Nettokostnad VA (vatten och avlopp), kr/inv — kolada.se/kpi/N45014
 }
 
+// stripKPIs are the five KPIs shown on the municipality detail strip.
+// Kept in sync with frontend/src/features/municipalities/kpiMeta.ts STRIP_ORDER.
+var stripKPIs = []string{"N00900", "N03102", "N03106", "N15428", "N00708"}
+
 // spendingKPINames maps Kolada KPI codes to human-readable Swedish area names.
 var spendingKPINames = map[string]string{
 	"N11004": "Förskola",
@@ -199,17 +203,17 @@ func (s *Service) GetKPIRanking(ctx context.Context, kpiCode string) ([]ports.KP
 	return entries, nil
 }
 
-// GetMunicipalityKPIRanks returns the rank (and mean) for each default KPI for munCode.
+// GetMunicipalityKPIRanks returns the rank (and mean) for each strip KPI for munCode.
 func (s *Service) GetMunicipalityKPIRanks(ctx context.Context, munCode string) ([]ports.KPIRank, error) {
 	type result struct {
 		rank ports.KPIRank
 		err  error
 	}
 
-	results := make([]result, len(defaultKPIs))
+	results := make([]result, len(stripKPIs))
 	var wg sync.WaitGroup
 
-	for i, kpi := range defaultKPIs {
+	for i, kpi := range stripKPIs {
 		wg.Add(1)
 		go func(idx int, kpiCode string) {
 			defer wg.Done()
@@ -236,7 +240,7 @@ func (s *Service) GetMunicipalityKPIRanks(ctx context.Context, munCode string) (
 	}
 	wg.Wait()
 
-	ranks := make([]ports.KPIRank, 0, len(defaultKPIs))
+	ranks := make([]ports.KPIRank, 0, len(stripKPIs))
 	for _, r := range results {
 		if r.err != nil {
 			continue // skip KPIs that fail, don't fail the whole response
