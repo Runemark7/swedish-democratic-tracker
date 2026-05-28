@@ -41,6 +41,9 @@ func (m *mockEnrichRepo) UpdateEnrichment(_ context.Context, items []ports.Enric
 	m.captured = append(m.captured, items...)
 	return m.matched, len(items) - m.matched, nil
 }
+func (m *mockEnrichRepo) UpdateExpenditure(_ context.Context, _ []ports.ExpenditureUpdate) (int, int, error) {
+	return 0, 0, nil
+}
 
 func TestAuthorityHeadcountWorker_MapsAndUpdates(t *testing.T) {
 	client := &mockHeadcountClient{entries: []ports.HeadcountEntry{
