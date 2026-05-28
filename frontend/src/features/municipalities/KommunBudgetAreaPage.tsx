@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   useAreaAcrossMunicipalities,
@@ -7,6 +8,8 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { MunicipalityBudgetSnapshot } from "@/shared/types";
 import { BarsWithMean } from "@/features/budget/components/BarsWithMean";
+
+const INITIAL_LIMIT = 20;
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
@@ -169,6 +172,7 @@ export function KommunBudgetAreaPage() {
   }>();
   const areaName = decodeURIComponent(rawArea);
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const [showAll, setShowAll] = useState(false);
 
   const { data: kommunList, isLoading: loadingKommuns } = useKommunList();
   const { data: historySnaps = [], isLoading: loadingHistory } =
@@ -337,14 +341,37 @@ export function KommunBudgetAreaPage() {
             Data saknas
           </div>
         ) : (
-          <BarsWithMean
-            points={sortedPoints.map((p) => ({ region_code: p.mun_code, pct: p.pct }))}
-            mean={mean}
-            maxValue={maxValue}
-            highlightCode={code}
-            codeToName={codeToName}
-            isMobile={isMobile}
-          />
+          <>
+            <BarsWithMean
+              points={(showAll ? sortedPoints : sortedPoints.slice(0, INITIAL_LIMIT)).map(
+                (p) => ({ region_code: p.mun_code, pct: p.pct }),
+              )}
+              mean={mean}
+              maxValue={maxValue}
+              highlightCode={code}
+              codeToName={codeToName}
+              isMobile={isMobile}
+            />
+            {!showAll && sortedPoints.length > INITIAL_LIMIT && (
+              <button
+                onClick={() => setShowAll(true)}
+                style={{
+                  marginTop: 16,
+                  padding: "7px 14px",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  letterSpacing: "0.1em",
+                  color: "var(--color-accent)",
+                  background: "transparent",
+                  border: "1px solid var(--color-border)",
+                  cursor: "pointer",
+                  display: "block",
+                }}
+              >
+                VISA FLER KOMMUNER ({sortedPoints.length - INITIAL_LIMIT} ST)
+              </button>
+            )}
+          </>
         )}
       </div>
 
