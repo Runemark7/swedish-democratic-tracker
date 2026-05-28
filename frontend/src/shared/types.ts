@@ -383,6 +383,22 @@ export interface MunicipalityKPIItem {
   status: string;
 }
 
+export interface RegionKPIRankEntry {
+  region_code: string;
+  name: string;
+  value: number;
+  year: number;
+  rank: number;
+  total: number;
+}
+
+export interface KPIRank {
+  kpi: string;
+  rank: number;
+  total: number;
+  mean: number;
+}
+
 export interface PopulationTrendEntry {
   year: number;
   population: number;

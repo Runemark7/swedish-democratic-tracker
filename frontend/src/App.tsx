@@ -15,6 +15,7 @@ import { ManifestosPage } from "./features/manifestos/ManifestosPage";
 import { RegionLandingPage } from "./features/regions/RegionLandingPage";
 import { RegionDetailPage } from "./features/regions/RegionDetailPage";
 import { RegionBudgetAreaPage } from "./features/regions/RegionBudgetAreaPage";
+import { RegionKpiRankingPage } from "./features/regions/RegionKpiRankingPage";
 import { KommunBudgetAreaPage } from "./features/municipalities/KommunBudgetAreaPage";
 import { KommunKpiRankingPage } from "./features/municipalities/KommunKpiRankingPage";
 import { MunicipalityLandingPage } from "./features/municipalities/MunicipalityLandingPage";
@@ -345,8 +346,9 @@ export default function App() {
           <Route path="/budget/areas/:code"                    element={<AreaHistoryPage />} />
           <Route path="/manifestos"                            element={<ManifestosPage />} />
           <Route path="/region"                                element={<RegionLandingPage />} />
-          <Route path="/region/:code"                          element={<RegionDetailPage />} />
           <Route path="/region/:code/budget/:areaName"         element={<RegionBudgetAreaPage />} />
+          <Route path="/region/:code/kpi/:kpiId"               element={<RegionKpiRankingPage />} />
+          <Route path="/region/:code"                          element={<RegionDetailPage />} />
           <Route path="/kommun/:code/budget/:areaName"         element={<KommunBudgetAreaPage />} />
           <Route path="/kommun/:code/kpi/:kpiId"              element={<KommunKpiRankingPage />} />
           <Route path="/kommun"                                element={<MunicipalityLandingPage />} />

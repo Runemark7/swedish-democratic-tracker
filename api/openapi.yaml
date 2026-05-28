@@ -546,6 +546,54 @@ paths:
                 items:
                   $ref: "#/components/schemas/RegionSummary"
 
+  /regions/kpi/{kpiCode}/ranking:
+    get:
+      operationId: getRegionKPIRanking
+      tags: [regions]
+      summary: All regions ranked by a single KPI (highest first)
+      parameters:
+        - name: kpiCode
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "N60008"
+      responses:
+        "200":
+          description: Array of rank entries sorted by value descending
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegionKPIRankEntry"
+        "502":
+          description: Upstream Kolada API error
+
+  /regions/{code}/kpi-ranks:
+    get:
+      operationId: getRegionKPIRanks
+      tags: [regions]
+      summary: Rank of a region for each strip KPI
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "09"
+      responses:
+        "200":
+          description: Array of KPI rank entries (one per region strip KPI)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KPIRank"
+        "502":
+          description: Upstream Kolada API error
+
   /regions/{code}:
     get:
       operationId: getRegion
@@ -1909,6 +1957,30 @@ components:
           type: string
           example: ""
           description: Empty string means normal; "M" means missing data
+
+    RegionKPIRankEntry:
+      type: object
+      required: [region_code, name, value, year, rank, total]
+      properties:
+        region_code:
+          type: string
+          example: "09"
+        name:
+          type: string
+          example: "Blekinge"
+        value:
+          type: number
+          format: float
+          example: 41200.5
+        year:
+          type: integer
+          example: 2023
+        rank:
+          type: integer
+          example: 5
+        total:
+          type: integer
+          example: 21
 
     KPIRankEntry:
       type: object

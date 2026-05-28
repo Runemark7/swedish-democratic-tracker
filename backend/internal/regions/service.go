@@ -394,6 +394,117 @@ func (s *Service) GetMunicipalityProcurement(ctx context.Context, munCode string
 	return result, nil
 }
 
+// GetRegionKPIRanking fetches the latest value for kpiCode across all regions,
+// returns them sorted by value descending with 1-based rank assigned.
+func (s *Service) GetRegionKPIRanking(ctx context.Context, kpiCode string) ([]ports.RegionKPIRankEntry, error) {
+	allRegions, err := s.repo.ListRegions(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list regions for ranking: %w", err)
+	}
+	// Build lookup from Kolada 4-digit code → (region DB code, name).
+	type regionInfo struct {
+		code string
+		name string
+	}
+	byKoladaCode := make(map[string]regionInfo, len(allRegions))
+	for _, r := range allRegions {
+		byKoladaCode[koladaRegionCode(r.Code)] = regionInfo{code: r.Code, name: r.Name}
+	}
+
+	raw, err := s.kolada.FetchKPIAllMunicipalities(ctx, kpiCode, rollingYears(2))
+	if err != nil {
+		return nil, fmt.Errorf("fetch all regions KPI %s: %w", kpiCode, err)
+	}
+
+	// Keep only the latest year per entity, skip missing values.
+	latest := make(map[string]ports.KPIValueWithMun)
+	for _, v := range raw {
+		if v.Status == "M" {
+			continue
+		}
+		if existing, ok := latest[v.MunCode]; !ok || v.Year > existing.Year {
+			latest[v.MunCode] = v
+		}
+	}
+
+	entries := make([]ports.RegionKPIRankEntry, 0, len(byKoladaCode))
+	for koladaCode, v := range latest {
+		info, ok := byKoladaCode[koladaCode]
+		if !ok {
+			continue // skip non-region entities
+		}
+		entries = append(entries, ports.RegionKPIRankEntry{
+			RegionCode: info.code,
+			Name:       info.name,
+			Value:      v.Value,
+			Year:       v.Year,
+		})
+	}
+
+	// Sort descending by value.
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Value > entries[j].Value
+	})
+
+	total := len(entries)
+	for i := range entries {
+		entries[i].Rank = i + 1
+		entries[i].Total = total
+	}
+
+	return entries, nil
+}
+
+// GetRegionKPIRanks returns the rank (and mean) for each region strip KPI for regionCode.
+func (s *Service) GetRegionKPIRanks(ctx context.Context, regionCode string) ([]ports.KPIRank, error) {
+	type result struct {
+		rank ports.KPIRank
+		err  error
+	}
+
+	results := make([]result, len(regionStripKPIs))
+	var wg sync.WaitGroup
+
+	for i, kpi := range regionStripKPIs {
+		wg.Add(1)
+		go func(idx int, kpiCode string) {
+			defer wg.Done()
+			entries, err := s.GetRegionKPIRanking(ctx, kpiCode)
+			if err != nil {
+				results[idx] = result{err: err}
+				return
+			}
+			var sum float64
+			var rank ports.KPIRank
+			rank.KPI = kpiCode
+			rank.Total = len(entries)
+			koladaCode := koladaRegionCode(regionCode)
+			for _, e := range entries {
+				sum += e.Value
+				if koladaRegionCode(e.RegionCode) == koladaCode {
+					rank.Rank = e.Rank
+				}
+			}
+			if len(entries) > 0 {
+				rank.Mean = sum / float64(len(entries))
+			}
+			results[idx] = result{rank: rank}
+		}(i, kpi)
+	}
+	wg.Wait()
+
+	ranks := make([]ports.KPIRank, 0, len(regionStripKPIs))
+	for _, r := range results {
+		if r.err != nil {
+			continue // skip KPIs that fail, don't fail the whole response
+		}
+		if r.rank.Rank > 0 {
+			ranks = append(ranks, r.rank)
+		}
+	}
+	return ranks, nil
+}
+
 // cpvDivisionLabel returns a Swedish label for a 2-digit EU CPV division code.
 // Source: Official EU Common Procurement Vocabulary (CPV) 2008, OJ 2007 L 74
 // Reference: https://simap.ted.europa.eu/cpv
