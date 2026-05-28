@@ -141,24 +141,40 @@ Layout (mirrors `KommunBudgetAreaPage` without the trend section):
 
 ### Modified: `MunicipalityDetailPage`
 
-1. Add `const { data: kpiRanks = [] } = useKommunKpiRanks(code)` call.
-2. Build a lookup `const rankMap = new Map(kpiRanks.map(r => [r.kpi, r]))`.
-3. For each KPI card that has a matching entry in `rankMap`, add a rank badge:
+**Remove from each KPI card:**
+- Delta/trend row (year-over-year change arrow + %)
+- Target pill ("X pp över/under mål")
+
+**Add to each KPI card** (directly below the value, above the description):
 
 ```tsx
-<a href={`/kommun/${code}/kpi/${kpi.kpiId}`} style={{ textDecoration: "none" }}>
-  <span style={{
-    fontFamily: "var(--font-mono)",
-    fontSize: 9,
-    letterSpacing: "0.08em",
-    color: "var(--color-fg-muted)",
-  }}>
+<a href={`/kommun/${code}/kpi/${kpi.kpiId}`} style={{ textDecoration: "none", display: "inline-flex", alignItems: "baseline", gap: 7 }}>
+  <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-rank, #b91c1c)", fontWeight: 700 }}>
     #{rank.rank} AV {rank.total}
+  </span>
+  <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)" }}>·</span>
+  <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)" }}>
+    <span style={{ fontWeight: 700, color: "var(--color-fg)" }}>
+      {diff >= 0 ? "+" : ""}{diff.toFixed(2)} {unit}
+    </span>
+    {" "}{diff >= 0 ? "ÖVER" : "UNDER"} MEDEL →
   </span>
 </a>
 ```
 
-Badge sits below the delta/trend row in the KPI card, left-aligned. Clicking navigates to ranking page.
+Where `diff = kpi.value - rank.mean` and `unit` comes from the KPI metadata (e.g. `%`, `kr/inv`).
+
+The badge is clickable — navigates to `/kommun/:code/kpi/:kpiId`.
+
+`rank.mean` must be added to the `KPIRank` port type:
+```go
+type KPIRank struct {
+    KPI   string  `json:"kpi"`
+    Rank  int     `json:"rank"`
+    Total int     `json:"total"`
+    Mean  float64 `json:"mean"`
+}
+```
 
 ### New route in `App.tsx`
 
