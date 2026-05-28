@@ -669,3 +669,39 @@ export function useDocumentFull(dokId: string | undefined) {
     staleTime: 5 * 60 * 1000,
   });
 }
+
+// ── KPI ranking — all municipalities for one KPI ──────────────────────────────
+export interface KPIRankEntry {
+  mun_code: string;
+  name: string;
+  value: number;
+  year: number;
+  rank: number;
+  total: number;
+}
+
+export function useKpiRanking(kpiCode: string) {
+  return useQuery<KPIRankEntry[]>({
+    queryKey: ["kpi-ranking", kpiCode],
+    queryFn: () => municipalitiesApi.getKPIRanking(kpiCode),
+    staleTime: 10 * 60 * 1000,
+    enabled: !!kpiCode,
+  });
+}
+
+// ── KPI ranks for one municipality ────────────────────────────────────────────
+export interface KPIRank {
+  kpi: string;
+  rank: number;
+  total: number;
+  mean: number;
+}
+
+export function useKommunKpiRanks(munCode: string) {
+  return useQuery<KPIRank[]>({
+    queryKey: ["kommun-kpi-ranks", munCode],
+    queryFn: () => municipalitiesApi.getMunicipalityKPIRanks(munCode),
+    staleTime: 10 * 60 * 1000,
+    enabled: !!munCode,
+  });
+}
