@@ -79,6 +79,17 @@ import (
 	riksdagSK "riksdagskollen/internal/riksdag/adapters/statskontoret"
 	"riksdagskollen/internal/riksdag"
 
+	// Feature: parties
+	partiesHTTP "riksdagskollen/internal/parties/adapters/http"
+	partiesPG "riksdagskollen/internal/parties/adapters/postgres"
+	"riksdagskollen/internal/parties"
+
+	// Feature: ministers
+	ministersHTTP "riksdagskollen/internal/ministers/adapters/http"
+	ministersPG "riksdagskollen/internal/ministers/adapters/postgres"
+	ministersRD "riksdagskollen/internal/ministers/adapters/riksdagen"
+	"riksdagskollen/internal/ministers"
+
 	// Ingestion
 	"riksdagskollen/internal/ingestion"
 	ingestionPG "riksdagskollen/internal/ingestion/adapters/postgres"
@@ -182,6 +193,15 @@ func main() {
 	riksdagSvc.SetAuthorityRepo(authorityRepo)
 	riksdagHandler := riksdagHTTP.NewHandler(riksdagSvc)
 
+	partiesRepo := partiesPG.NewRepository(db)
+	partiesSvc := parties.NewService(partiesRepo)
+	partiesHandler := partiesHTTP.NewHandler(partiesSvc)
+
+	ministersRepo := ministersPG.NewRepository(db)
+	ministersRDClient := ministersRD.NewClient()
+	ministersSvc := ministers.NewService(ministersRepo, ministersRDClient)
+	ministersHandler := ministersHTTP.NewHandler(ministersSvc)
+
 	// -- Router --
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -206,6 +226,8 @@ func main() {
 		contextHandler.Routes(r)
 		regionsHandler.Routes(r)
 		riksdagHandler.Routes(r)
+		partiesHandler.Routes(r)
+		ministersHandler.Routes(r)
 
 		// TODO: return aggregate 24h decision counts per level for the homepage pulse strip.
 		// Shape: { riksdag: number, region: number, kommun: number, total: number, buckets: number[] }
@@ -261,6 +283,11 @@ func main() {
 	munBudgetWorker := workers.NewMunicipalityBudgetWorker(regionsSvc, ingestionRunsRepo)
 	if err := sched.RegisterSync("@weekly", &munBudgetWorker); err != nil {
 		slog.Error("failed to register municipality-budget worker", "error", err)
+		os.Exit(1)
+	}
+	proposalsWorker := workers.NewProposalsWorker(ministersSvc)
+	if err := sched.RegisterSync("@weekly", &proposalsWorker); err != nil {
+		slog.Error("failed to register proposals worker", "error", err)
 		os.Exit(1)
 	}
 	sched.Start()

@@ -11,6 +11,12 @@ export function PartiesPage() {
     queryFn: partiesApi.listParties,
   });
 
+  const { data: metaList } = useQuery({
+    queryKey: ["party-meta"],
+    queryFn: partiesApi.listPartyMeta,
+  });
+  const metaByCode = Object.fromEntries((metaList ?? []).map((m) => [m.code ?? "", m]));
+
   if (isLoading) {
     return <div className="text-on-surface-variant py-16 text-center text-sm">Laddar...</div>;
   }
@@ -77,6 +83,11 @@ export function PartiesPage() {
                   <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-fg)" }}>
                     {p.party}
                   </span>
+                  {metaByCode[p.party]?.ideology && (
+                    <span style={{ fontSize: 10, color: "var(--color-fg-muted)", marginLeft: 8 }}>
+                      {metaByCode[p.party].ideology}
+                    </span>
+                  )}
                   <span style={{ fontSize: 12, color: "var(--color-fg-muted)" }}>
                     {p.totalGoals} mål
                     <SourceMarker sourceId="seed-party-goals" />

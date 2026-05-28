@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 
-type NavSection = "start" | "riksdag" | "region" | "kommun" | "sok";
+type NavSection = "start" | "riksdag" | "region" | "kommun" | "regering" | "sok";
 
 interface MobileNavProps {
   section: NavSection;
@@ -10,11 +10,12 @@ interface MobileNavProps {
 }
 
 const navPills = [
-  { key: "start",   to: "/",       label: "◆ START"    },
-  { key: "riksdag", to: "/riksdag", label: "I RIKSDAG"  },
-  { key: "region",  to: "/region",  label: "II REGION"  },
-  { key: "kommun",  to: "/kommun",  label: "III KOMMUN" },
-  { key: "sok",     to: "/sok",     label: "⌕ SÖK"      },
+  { key: "start",    to: "/",         label: "◆ START"     },
+  { key: "riksdag",  to: "/riksdag",  label: "I RIKSDAG"   },
+  { key: "region",   to: "/region",   label: "II REGION"   },
+  { key: "kommun",   to: "/kommun",   label: "III KOMMUN"  },
+  { key: "regering", to: "/regering", label: "IV REGERING" },
+  { key: "sok",      to: "/sok",      label: "⌕ SÖK"       },
 ] as const;
 
 const riksdagTabs = [
