@@ -179,11 +179,15 @@ func (s *Service) GetKPIRanking(ctx context.Context, kpiCode string) ([]ports.KP
 		}
 	}
 
-	entries := make([]ports.KPIRankEntry, 0, len(latest))
+	entries := make([]ports.KPIRankEntry, 0, len(nameByCode))
 	for munCode, v := range latest {
+		name, ok := nameByCode[munCode]
+		if !ok {
+			continue // skip non-municipality entities (regions, counties, national)
+		}
 		entries = append(entries, ports.KPIRankEntry{
 			MunCode: munCode,
-			Name:    nameByCode[munCode],
+			Name:    name,
 			Value:   v.Value,
 			Year:    v.Year,
 		})
