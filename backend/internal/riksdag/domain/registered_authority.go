@@ -6,18 +6,18 @@ import "time"
 // Expenditure/headcount are pointers: nil means "no source data yet" (rendered
 // as "saknas"), distinct from a real zero.
 type RegisteredAuthority struct {
-	OrgNumber       string
-	Slug            string
-	Name            string
-	Type            string
-	PrincipalBody   string
-	Department      string
-	UnderGovernment bool
-	Website         string
-	SFS             string
-	ExpenditureMdkr *float64
-	BudgetMdkr      *float64
-	HeadcountInt    *int
-	Year            int
-	UpdatedAt       time.Time
+	OrgNumber       string    `json:"orgNumber"`
+	Slug            string    `json:"slug"`
+	Name            string    `json:"name"`
+	Type            string    `json:"type"`
+	PrincipalBody   string    `json:"principalBody"`
+	Department      string    `json:"department"`
+	UnderGovernment bool      `json:"underGovernment"`
+	Website         string    `json:"website,omitempty"`
+	SFS             string    `json:"sfs,omitempty"`
+	ExpenditureMdkr *float64  `json:"expenditureMdkr,omitempty"`
+	BudgetMdkr      *float64  `json:"budgetMdkr,omitempty"`
+	HeadcountInt    *int      `json:"headcountInt,omitempty"`
+	Year            int       `json:"year"`
+	UpdatedAt       time.Time `json:"updatedAt"`
 }

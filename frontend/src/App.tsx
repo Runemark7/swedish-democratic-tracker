@@ -21,6 +21,7 @@ import { MunicipalityComparePage } from "./features/municipalities/MunicipalityC
 import { HomePage } from "./features/home/HomePage";
 import { RiksdagPage } from "./features/riksdag/RiksdagPage";
 import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
+import { MyndigheterListPage } from "./features/riksdag/MyndigheterListPage";
 import { AgendaDetailPage } from "./features/riksdag/AgendaDetailPage";
 import { SearchPage } from "./features/search/SearchPage";
 import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
@@ -326,6 +327,7 @@ export default function App() {
         <Routes>
           <Route path="/"                                      element={<HomePage />} />
           <Route path="/riksdag"                               element={<RiksdagPage />} />
+          <Route path="/riksdag/myndigheter"                   element={<MyndigheterListPage />} />
           <Route path="/riksdag/myndigheter/:slug"             element={<AuthorityDetailPage />} />
           <Route path="/agenda/:id"                            element={<AgendaDetailPage />} />
           <Route path="/parties"                               element={<PartiesPage />} />
