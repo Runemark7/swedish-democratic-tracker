@@ -5,7 +5,7 @@ import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type Rik
 import { speechesApi, type Speech } from "@/features/speeches/api";
 import { votesApi } from "@/features/votes/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
-import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, MunicipalityBudgetSnapshot, BudgetSnapshot } from "@/shared/types";
+import type { ElectionResult, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, MunicipalityBudgetSnapshot, MunicipalityAreaDataPoint, BudgetSnapshot } from "@/shared/types";
 
 const EMPTY_BUDGET: Budget = { total: "–", year: "–", areas: [] };
 const EMPTY_RULING: Ruling = { type: "–", parties: [], opposition: [] };
@@ -574,6 +574,16 @@ export function useAreaAcrossRegions(areaName: string, year?: number) {
   return useQuery<RegionAreaDataPoint[]>({
     queryKey: ["area-across-regions", areaName, year],
     queryFn: () => regionsApi.getAreaAcrossRegions(areaName, year),
+    staleTime: 300_000,
+    enabled: !!areaName,
+  });
+}
+
+// ── Area across municipalities ────────────────────────────────────────────────
+export function useAreaAcrossMunicipalities(areaName: string, year?: number) {
+  return useQuery<MunicipalityAreaDataPoint[]>({
+    queryKey: ["area-across-municipalities", areaName, year],
+    queryFn: () => municipalitiesApi.getAreaAcrossMunicipalities(areaName, year),
     staleTime: 300_000,
     enabled: !!areaName,
   });

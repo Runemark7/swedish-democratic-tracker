@@ -354,6 +354,13 @@ export interface RegionAreaDataPoint {
   pct: number;
 }
 
+export interface MunicipalityAreaDataPoint {
+  mun_code: string;
+  value_mnkr: number;
+  total_mnkr: number;
+  pct: number;
+}
+
 export interface MunicipalitySummary {
   code: string;
   name: string;

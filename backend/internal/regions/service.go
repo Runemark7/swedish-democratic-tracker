@@ -134,6 +134,10 @@ func (s *Service) GetAreaAcrossRegions(ctx context.Context, areaName string, yea
 	return s.repo.GetAreaAcrossRegions(ctx, areaName, year)
 }
 
+func (s *Service) GetAreaAcrossMunicipalities(ctx context.Context, areaName string, year int) ([]ports.MunicipalityAreaDataPoint, error) {
+	return s.repo.GetAreaAcrossMunicipalities(ctx, areaName, year)
+}
+
 func (s *Service) UpsertRegionBudgetSnapshots(ctx context.Context, snapshots []ports.RegionBudgetSnapshot) (int, error) {
 	return s.repo.UpsertRegionBudgetSnapshots(ctx, snapshots)
 }
