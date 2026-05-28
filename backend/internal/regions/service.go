@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"sync"
 	"time"
 
 	"riksdagskollen/internal/regions/domain"
@@ -78,6 +79,10 @@ var spendingKPIs = []string{
 	"N45014", // Nettokostnad VA (vatten och avlopp), kr/inv — kolada.se/kpi/N45014
 }
 
+// stripKPIs are the five KPIs shown on the municipality detail strip.
+// Kept in sync with frontend/src/features/municipalities/kpiMeta.ts STRIP_ORDER.
+var stripKPIs = []string{"N00900", "N03102", "N03106", "N15428", "N00708"}
+
 // spendingKPINames maps Kolada KPI codes to human-readable Swedish area names.
 var spendingKPINames = map[string]string{
 	"N11004": "Förskola",
@@ -144,6 +149,107 @@ func (s *Service) UpsertRegionBudgetSnapshots(ctx context.Context, snapshots []p
 
 func (s *Service) GetMunicipalityKPIs(ctx context.Context, munCode string) ([]ports.KPIValue, error) {
 	return s.kolada.FetchKPIs(ctx, munCode, defaultKPIs, rollingYears(5))
+}
+
+// GetKPIRanking fetches the latest value for kpiCode across all municipalities,
+// returns them sorted by value descending with 1-based rank assigned.
+func (s *Service) GetKPIRanking(ctx context.Context, kpiCode string) ([]ports.KPIRankEntry, error) {
+	allMuns, err := s.repo.ListMunicipalities(ctx, "")
+	if err != nil {
+		return nil, fmt.Errorf("list municipalities for ranking: %w", err)
+	}
+	nameByCode := make(map[string]string, len(allMuns))
+	for _, m := range allMuns {
+		nameByCode[m.Code] = m.Name
+	}
+
+	raw, err := s.kolada.FetchKPIAllMunicipalities(ctx, kpiCode, rollingYears(2))
+	if err != nil {
+		return nil, fmt.Errorf("fetch all municipalities KPI %s: %w", kpiCode, err)
+	}
+
+	// Keep only the latest year per municipality, skip missing values.
+	latest := make(map[string]ports.KPIValueWithMun)
+	for _, v := range raw {
+		if v.Status == "M" {
+			continue
+		}
+		if existing, ok := latest[v.MunCode]; !ok || v.Year > existing.Year {
+			latest[v.MunCode] = v
+		}
+	}
+
+	entries := make([]ports.KPIRankEntry, 0, len(latest))
+	for munCode, v := range latest {
+		entries = append(entries, ports.KPIRankEntry{
+			MunCode: munCode,
+			Name:    nameByCode[munCode],
+			Value:   v.Value,
+			Year:    v.Year,
+		})
+	}
+
+	// Sort descending by value.
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Value > entries[j].Value
+	})
+
+	total := len(entries)
+	for i := range entries {
+		entries[i].Rank = i + 1
+		entries[i].Total = total
+	}
+
+	return entries, nil
+}
+
+// GetMunicipalityKPIRanks returns the rank (and mean) for each strip KPI for munCode.
+func (s *Service) GetMunicipalityKPIRanks(ctx context.Context, munCode string) ([]ports.KPIRank, error) {
+	type result struct {
+		rank ports.KPIRank
+		err  error
+	}
+
+	results := make([]result, len(stripKPIs))
+	var wg sync.WaitGroup
+
+	for i, kpi := range stripKPIs {
+		wg.Add(1)
+		go func(idx int, kpiCode string) {
+			defer wg.Done()
+			entries, err := s.GetKPIRanking(ctx, kpiCode)
+			if err != nil {
+				results[idx] = result{err: err}
+				return
+			}
+			var sum float64
+			var rank ports.KPIRank
+			rank.KPI = kpiCode
+			rank.Total = len(entries)
+			for _, e := range entries {
+				sum += e.Value
+				if e.MunCode == munCode {
+					rank.Rank = e.Rank
+				}
+			}
+			if len(entries) > 0 {
+				rank.Mean = sum / float64(len(entries))
+			}
+			results[idx] = result{rank: rank}
+		}(i, kpi)
+	}
+	wg.Wait()
+
+	ranks := make([]ports.KPIRank, 0, len(stripKPIs))
+	for _, r := range results {
+		if r.err != nil {
+			continue // skip KPIs that fail, don't fail the whole response
+		}
+		if r.rank.Rank > 0 {
+			ranks = append(ranks, r.rank)
+		}
+	}
+	return ranks, nil
 }
 
 func (s *Service) GetRegionKPIs(ctx context.Context, regionCode string) ([]ports.KPIValue, error) {
