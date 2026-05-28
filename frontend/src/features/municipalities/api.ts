@@ -22,4 +22,12 @@ export const municipalitiesApi = {
     api.get<MunicipalityAreaDataPoint[]>(
       `/municipalities/budget/area/${encodeURIComponent(areaName)}${year ? `?year=${year}` : ""}`
     ),
+  getKPIRanking: (kpiCode: string) =>
+    api.get<{ mun_code: string; name: string; value: number; year: number; rank: number; total: number }[]>(
+      `/municipalities/kpi/${kpiCode}/ranking`
+    ),
+  getMunicipalityKPIRanks: (code: string) =>
+    api.get<{ kpi: string; rank: number; total: number; mean: number }[]>(
+      `/municipalities/${code}/kpi-ranks`
+    ),
 };

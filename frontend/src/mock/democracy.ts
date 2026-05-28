@@ -63,21 +63,25 @@ export const mockRiksdag: LevelData = {
   ],
   kpis: [
     {
+      kpiId: "sku-001",
       label: "Statsskuld/BNP",
       description: "Statens samlade skuld i förhållande till BNP. Hög skuld begränsar statens möjlighet att investera i välfärd och krisberedskap utan att höja skatterna.",
       value: "38 %", raw: 38, target: 35, worseHigher: true, unit: "%", trend: "down", delta: "−1,2 pp", note: "Källa: Riksgälden", sourceUrl: "https://www.riksgalden.se/sv/var-verksamhet/statsskulden/",
     },
     {
+      kpiId: "sku-002",
       label: "Arbetslöshet",
       description: "Andel av arbetskraften som är arbetslösa. Hög arbetslöshet minskar skatteintäkterna och ökar kostnaderna för socialförsäkringssystemet.",
       value: "8,5 %", raw: 8.5, target: 5, worseHigher: true, unit: "%", trend: "up", delta: "+0,3 pp", note: "Källa: SCB", sourceUrl: "https://www.scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/",
     },
     {
+      kpiId: "sku-003",
       label: "Inflation (KPI)",
       description: "Konsumentprisindex visar hur snabbt priserna stiger. Riksbankens mål är 2 %. För hög inflation urholkar hushållens köpkraft.",
       value: "1,8 %", raw: 1.8, target: 2, worseHigher: false, unit: "%", trend: "down", delta: "−0,6 pp", note: "Källa: SCB", sourceUrl: "https://www.scb.se/hitta-statistik/statistik-efter-amne/priser-och-konsumtion/konsumentprisindex/konsumentprisindex-kpi/",
     },
     {
+      kpiId: "sku-004",
       label: "BNP-tillväxt",
       description: "Hur snabbt ekonomin växer. Positiv tillväxt innebär fler jobb och ökade skatteintäkter som kan finansiera välfärden.",
       value: "1,2 %", raw: 1.2, target: 2, worseHigher: false, unit: "%", trend: "up", delta: "+0,8 pp", note: "Källa: Konjunkturinstitutet", sourceUrl: "https://www.konj.se/statistik/prognoser.html",
@@ -128,9 +132,9 @@ export const mockRegion: LevelData = {
     { id: 4, title: "Digital vårdplattform", description: "Samla journalsystem, remisshantering och patientkommunikation i en gemensam regional plattform för att minska dubbelarbete och förbättra informationsflödet.", source: "Regionalt mandatprogram M+MP+L+KD+C 2022–2026", status: "active" },
   ],
   kpis: [
-    { label: "Väntetid akut",       description: "Genomsnittlig väntetid på akutmottagning från ankomst till läkarbedömning.",         value: "3 h 12 min", raw: 3.2, target: 3.0, worseHigher: true,  unit: "h",  trend: "up",   delta: "+8 min",    note: "Mål: under 3 h" },
-    { label: "Bedömning inom 3 mån",description: "Andel patienter med specialistvårdsremiss som fått tid inom 90 dagar.",              value: "78 %",       raw: 78,  target: 80,  worseHigher: false, unit: "%",  trend: "up",   delta: "+2 pp",     note: "Mål: 80 %"      },
-    { label: "Punktlighet SL",      description: "Andel avgångar inom kollektivtrafiken som avgår inom 3 minuter från tidtabell.",     value: "94,2 %",     raw: 94.2,target: 95,  worseHigher: false, unit: "%",  trend: "down", delta: "−0,5 pp",   note: "Mål: 95 %"      },
+    { kpiId: "N79173", label: "Väntetid akut",       description: "Genomsnittlig väntetid på akutmottagning från ankomst till läkarbedömning.",         value: "3 h 12 min", raw: 3.2, target: 3.0, worseHigher: true,  unit: "h",  trend: "up",   delta: "+8 min",    note: "Mål: under 3 h" },
+    { kpiId: "N79179", label: "Bedömning inom 3 mån",description: "Andel patienter med specialistvårdsremiss som fått tid inom 90 dagar.",              value: "78 %",       raw: 78,  target: 80,  worseHigher: false, unit: "%",  trend: "up",   delta: "+2 pp",     note: "Mål: 80 %"      },
+    { kpiId: "N60404", label: "Punktlighet SL",      description: "Andel avgångar inom kollektivtrafiken som avgår inom 3 minuter från tidtabell.",     value: "94,2 %",     raw: 94.2,target: 95,  worseHigher: false, unit: "%",  trend: "down", delta: "−0,5 pp",   note: "Mål: 95 %"      },
   ],
 };
 
@@ -180,8 +184,8 @@ export const mockKommun: LevelData = {
     { id: 4, title: "Fossilfritt Malmö 2030", description: "Kommunens fordonsflotta ska vara 100 % fossilfri 2026. Solceller på alla kommunala tak 2028. Nettopositiv koldioxidbalans 2030 enligt antagen klimatplan.", source: "Malmö stads klimatplan 2022–2030", status: "in_progress" },
   ],
   kpis: [
-    { label: "Lärare per 100 elever",  description: "Antal heltidsanställda lärare per 100 elever i kommunens grundskolor.",                      value: "8,1",  raw: 8.1, target: 8.5, worseHigher: false, unit: "",  trend: "flat", delta: "±0",    note: "Mål: 8,5"        },
-    { label: "Handläggning bygglov",   description: "Genomsnittlig handläggningstid i veckor för standardärenden på plan- och byggavdelningen.",   value: "11 v", raw: 11,  target: 10,  worseHigher: true,  unit: "v", trend: "down", delta: "−2 v",  note: "Mål: under 10 v" },
-    { label: "Otrygghet (SCB)",        description: "Andel invånare som uppger att de känner sig otrygga i sitt bostadsområde (SCB trygghetsmätning).", value: "28 %", raw: 28,  target: 22,  worseHigher: true,  unit: "%", trend: "down", delta: "−3 pp", note: "Mål: 22 %"       },
+    { kpiId: "N15028", label: "Lärare per 100 elever",  description: "Antal heltidsanställda lärare per 100 elever i kommunens grundskolor.",                      value: "8,1",  raw: 8.1, target: 8.5, worseHigher: false, unit: "",  trend: "flat", delta: "±0",    note: "Mål: 8,5"        },
+    { kpiId: "N17014", label: "Handläggning bygglov",   description: "Genomsnittlig handläggningstid i veckor för standardärenden på plan- och byggavdelningen.",   value: "11 v", raw: 11,  target: 10,  worseHigher: true,  unit: "v", trend: "down", delta: "−2 v",  note: "Mål: under 10 v" },
+    { kpiId: "N20014", label: "Otrygghet (SCB)",        description: "Andel invånare som uppger att de känner sig otrygga i sitt bostadsområde (SCB trygghetsmätning).", value: "28 %", raw: 28,  target: 22,  worseHigher: true,  unit: "%", trend: "down", delta: "−3 pp", note: "Mål: 22 %"       },
   ],
 };

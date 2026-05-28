@@ -667,6 +667,54 @@ paths:
                 items:
                   $ref: "#/components/schemas/MunicipalitySummary"
 
+  /municipalities/kpi/{kpiCode}/ranking:
+    get:
+      operationId: getMunicipalityKPIRanking
+      tags: [municipalities]
+      summary: All municipalities ranked by a single KPI (highest first)
+      parameters:
+        - name: kpiCode
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "N00900"
+      responses:
+        "200":
+          description: Array of rank entries sorted by value descending
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KPIRankEntry"
+        "502":
+          description: Upstream Kolada API error
+
+  /municipalities/{code}/kpi-ranks:
+    get:
+      operationId: getMunicipalityKPIRanks
+      tags: [municipalities]
+      summary: Rank of a municipality for each default KPI
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "0180"
+      responses:
+        "200":
+          description: Array of KPI rank entries (one per default KPI)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KPIRank"
+        "502":
+          description: Upstream Kolada API error
+
   /municipalities/{code}:
     get:
       operationId: getMunicipality
@@ -1861,6 +1909,48 @@ components:
           type: string
           example: ""
           description: Empty string means normal; "M" means missing data
+
+    KPIRankEntry:
+      type: object
+      required: [mun_code, name, value, year, rank, total]
+      properties:
+        mun_code:
+          type: string
+          example: "0180"
+        name:
+          type: string
+          example: "Stockholm"
+        value:
+          type: number
+          format: float
+          example: 22.85
+        year:
+          type: integer
+          example: 2023
+        rank:
+          type: integer
+          example: 47
+        total:
+          type: integer
+          example: 290
+
+    KPIRank:
+      type: object
+      required: [kpi, rank, total, mean]
+      properties:
+        kpi:
+          type: string
+          example: "N00900"
+        rank:
+          type: integer
+          example: 47
+        total:
+          type: integer
+          example: 290
+        mean:
+          type: number
+          format: float
+          example: 22.14
 
     PopulationTrendEntry:
       type: object

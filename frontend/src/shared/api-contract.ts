@@ -497,6 +497,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/municipalities/kpi/{kpiCode}/ranking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All municipalities ranked by a single KPI (highest first) */
+        get: operations["getMunicipalityKPIRanking"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/municipalities/{code}/kpi-ranks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Rank of a municipality for each default KPI */
+        get: operations["getMunicipalityKPIRanks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/municipalities/{code}": {
         parameters: {
             query?: never;
@@ -1288,6 +1322,36 @@ export interface components {
              * @example
              */
             status: string;
+        };
+        KPIRankEntry: {
+            /** @example 0180 */
+            mun_code: string;
+            /** @example Stockholm */
+            name: string;
+            /**
+             * Format: float
+             * @example 22.85
+             */
+            value: number;
+            /** @example 2023 */
+            year: number;
+            /** @example 47 */
+            rank: number;
+            /** @example 290 */
+            total: number;
+        };
+        KPIRank: {
+            /** @example N00900 */
+            kpi: string;
+            /** @example 47 */
+            rank: number;
+            /** @example 290 */
+            total: number;
+            /**
+             * Format: float
+             * @example 22.14
+             */
+            mean: number;
         };
         PopulationTrendEntry: {
             /** @example 2023 */
@@ -2216,6 +2280,64 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MunicipalitySummary"][];
                 };
+            };
+        };
+    };
+    getMunicipalityKPIRanking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kpiCode: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of rank entries sorted by value descending */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KPIRankEntry"][];
+                };
+            };
+            /** @description Upstream Kolada API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMunicipalityKPIRanks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of KPI rank entries (one per default KPI) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KPIRank"][];
+                };
+            };
+            /** @description Upstream Kolada API error */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

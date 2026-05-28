@@ -110,3 +110,63 @@ func (c *Client) fetchOneKPI(ctx context.Context, kpi, munCode, yearsStr string)
 	}
 	return result, nil
 }
+
+func (c *Client) FetchKPIAllMunicipalities(ctx context.Context, kpiCode string, years []int) ([]ports.KPIValueWithMun, error) {
+	yearStrs := make([]string, len(years))
+	for i, y := range years {
+		yearStrs[i] = strconv.Itoa(y)
+	}
+	yearsStr := strings.Join(yearStrs, ",")
+
+	url := fmt.Sprintf("%s/data/kpi/%s/municipality/all/year/%s", baseURL, kpiCode, yearsStr)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		resp.Body.Close()
+		return nil, fmt.Errorf("kolada API returned %d for KPI %s/all", resp.StatusCode, kpiCode)
+	}
+
+	var payload struct {
+		Values []struct {
+			KPI          string `json:"kpi"`
+			Municipality string `json:"municipality"`
+			Period       int    `json:"period"`
+			Values       []struct {
+				Gender    string  `json:"gender"`
+				Value     float64 `json:"value"`
+				Status    string  `json:"status"`
+				IsDeleted bool    `json:"isdeleted"`
+			} `json:"values"`
+		} `json:"values"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&payload)
+	resp.Body.Close()
+	if err != nil {
+		return nil, fmt.Errorf("decode kolada all-municipalities response for %s: %w", kpiCode, err)
+	}
+
+	var result []ports.KPIValueWithMun
+	for _, v := range payload.Values {
+		for _, val := range v.Values {
+			if val.Gender == "T" && !val.IsDeleted {
+				result = append(result, ports.KPIValueWithMun{
+					MunCode: v.Municipality,
+					KPI:     v.KPI,
+					Year:    v.Period,
+					Value:   val.Value,
+					Status:  val.Status,
+				})
+				break
+			}
+		}
+	}
+	return result, nil
+}
