@@ -151,6 +151,113 @@ func (c *Client) FetchAuthorities(ctx context.Context) ([]ports.AuthorityData, e
 	return nil, fmt.Errorf("statskontoret: all year attempts failed")
 }
 
+// FetchAllAnslagYearly returns every (anslag, year) row from the latest
+// available årsutfall CSV — NOT filtered by targetAnslag. The result spans
+// the full history present in the file (typically 1997 → latestYear). Used by
+// the Phase 3.1 name-match worker to attribute outcomes to all agencies whose
+// name appears as an `Anslagsnamn`.
+func (c *Client) FetchAllAnslagYearly(ctx context.Context) ([]ports.AnslagYearly, error) {
+	now := time.Now()
+	for _, year := range []int{now.Year() - 1, now.Year() - 2} {
+		raw, err := c.downloadZip(ctx, year)
+		if err != nil {
+			slog.Warn("statskontoret all-anslag fetch failed", "year", year, "error", err)
+			continue
+		}
+		return parseAllAnslagCSV(raw)
+	}
+	return nil, fmt.Errorf("statskontoret: all year attempts failed (all-anslag)")
+}
+
+func (c *Client) downloadZip(ctx context.Context, year int) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL(year), nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("download: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("download: HTTP %d", resp.StatusCode)
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("read body: %w", err)
+	}
+	zr, err := zip.NewReader(bytes.NewReader(body), int64(len(body)))
+	if err != nil {
+		return nil, fmt.Errorf("unzip: %w", err)
+	}
+	if len(zr.File) == 0 {
+		return nil, fmt.Errorf("unzip: empty archive")
+	}
+	f, err := zr.File[0].Open()
+	if err != nil {
+		return nil, fmt.Errorf("open csv: %w", err)
+	}
+	defer f.Close()
+	return io.ReadAll(f)
+}
+
+// parseAllAnslagCSV reads every anslag row and emits AnslagYearly entries.
+// Columns (0-indexed): 2=Anslag, 3=Anslagsnamn, 4=År, 6=Statens budget,
+// 7=Ändringsbudgetar, 10=Utfall. All in tkr; we return mdkr (= tkr / 1e6).
+func parseAllAnslagCSV(raw []byte) ([]ports.AnslagYearly, error) {
+	raw = bytes.TrimPrefix(raw, []byte{0xEF, 0xBB, 0xBF})
+	cr := csv.NewReader(bytes.NewReader(raw))
+	cr.Comma = ';'
+	cr.LazyQuotes = true
+	cr.FieldsPerRecord = -1
+	if _, err := cr.Read(); err != nil {
+		return nil, fmt.Errorf("read header: %w", err)
+	}
+
+	var out []ports.AnslagYearly
+	for {
+		row, err := cr.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("read row: %w", err)
+		}
+		if len(row) < 11 {
+			continue
+		}
+		anslag := strings.TrimSpace(row[2])
+		anslagName := strings.TrimSpace(row[3])
+		if anslag == "" || anslagName == "" {
+			continue
+		}
+		year, err := strconv.Atoi(strings.TrimSpace(row[4]))
+		if err != nil || year < historyFromYear {
+			continue
+		}
+		utfallStr := strings.TrimSpace(row[10])
+		if utfallStr == "" {
+			continue
+		}
+		utfall, err := strconv.ParseFloat(strings.ReplaceAll(utfallStr, ",", "."), 64)
+		if err != nil {
+			continue
+		}
+		budgetMkr := parseMkr(row[6]) + parseMkr(row[7])
+		out = append(out, ports.AnslagYearly{
+			Anslag:          anslag,
+			AnslagName:      anslagName,
+			Year:            year,
+			ExpenditureMdkr: utfall / 1000,
+			BudgetMdkr:      budgetMkr / 1000,
+		})
+	}
+	if len(out) == 0 {
+		return nil, fmt.Errorf("no anslag rows parsed")
+	}
+	return out, nil
+}
+
 func (c *Client) fetchYear(ctx context.Context, latestYear int) ([]ports.AuthorityData, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL(latestYear), nil)
 	if err != nil {

@@ -79,6 +79,25 @@ type YearlyExpenditureSCB struct {
 	BudgetMdkr      float64
 }
 
+// AnslagYearly is one (anslag, year) row from Statskontoret's årsutfall CSV.
+// AnslagName is the official anslag title — often the owning agency's name
+// (e.g. "Polismyndigheten" for 0401001), sometimes a topic ("Allmänna val
+// och demokrati"). The Phase 3.1 worker only attributes anslag whose
+// AnslagName matches a registered agency name.
+type AnslagYearly struct {
+	Anslag          string
+	AnslagName      string
+	Year            int
+	ExpenditureMdkr float64
+	BudgetMdkr      float64
+}
+
+// AllAnslagClient yields every anslag-year row from the latest available
+// Statskontoret year-outcome publication.
+type AllAnslagClient interface {
+	FetchAllAnslagYearly(ctx context.Context) ([]AnslagYearly, error)
+}
+
 // ExpenditureUpdate is the update payload for the expenditure columns of an
 // authorities row. Like Enrichment, it is UPDATE-only — rows whose org_number
 // does not exist are skipped (counted as unmatched).

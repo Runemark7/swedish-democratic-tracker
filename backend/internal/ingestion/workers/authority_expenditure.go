@@ -3,67 +3,94 @@ package workers
 import (
 	"context"
 	"log/slog"
+	"sort"
+	"strings"
 
 	"riksdagskollen/internal/riksdag/ports"
 )
 
-// nameToOrgNumber maps the curated set of agency names returned by the
-// statskontoret/static AuthorityClient to canonical org-numbers in the
-// authorities table. Phase 3 MVP covers only this curated set (~10 agencies);
-// extending to all ~449 needs a Statsliggaren scrape (anslag→myndighet
-// mapping), tracked as a follow-up.
-var nameToOrgNumber = map[string]string{
-	"Skatteverket":       "202100-5448",
-	"Tullverket":         "202100-0969",
-	"Polismyndigheten":   "202100-0076",
-	"Säkerhetspolisen":   "202100-6594",
-	"Åklagarmyndigheten": "202100-0084",
-	"Sveriges Domstolar": "cfar:20738233", // Domstolsverket (umbrella org)
-	"Kriminalvården":     "202100-0225",
-	"Migrationsverket":   "202100-2163",
-	"Försäkringskassan":  "202100-5521",
-	"Arbetsförmedlingen": "202100-2114",
-}
-
+// AuthorityExpenditureWorker attributes Statskontoret årsutfall outcomes to
+// agencies in the authorities table by exact-name matching the CSV's
+// `Anslagsnamn` against the registered agency name. Anslag whose name does
+// not match any registered agency (topic anslag, sub-posts, etc.) are
+// ignored.
 type AuthorityExpenditureWorker struct {
-	client ports.AuthorityClient
+	client ports.AllAnslagClient
 	repo   ports.AuthorityRepository
 }
 
-func NewAuthorityExpenditureWorker(client ports.AuthorityClient, repo ports.AuthorityRepository) AuthorityExpenditureWorker {
+func NewAuthorityExpenditureWorker(client ports.AllAnslagClient, repo ports.AuthorityRepository) AuthorityExpenditureWorker {
 	return AuthorityExpenditureWorker{client: client, repo: repo}
 }
 
 func (w *AuthorityExpenditureWorker) Name() string { return "authority-expenditure" }
 
 func (w *AuthorityExpenditureWorker) Run(ctx context.Context) error {
-	entries, err := w.client.FetchAuthorities(ctx)
+	rows, err := w.client.FetchAllAnslagYearly(ctx)
 	if err != nil {
 		// Keep last good expenditure — do not touch the table on fetch failure.
 		return err
 	}
 
-	items := make([]ports.ExpenditureUpdate, 0, len(entries))
-	skipped := 0
-	for _, e := range entries {
-		org, ok := nameToOrgNumber[e.Name]
-		if !ok {
-			skipped++
+	authorities, err := w.repo.List(ctx, ports.AuthorityFilter{Limit: 10000})
+	if err != nil {
+		return err
+	}
+	nameToOrg := make(map[string]string, len(authorities))
+	for _, a := range authorities {
+		key := normName(a.Name)
+		if key == "" {
 			continue
 		}
-		history := make([]ports.YearlyExpenditureSCB, len(e.History))
-		for i, h := range e.History {
-			history[i] = ports.YearlyExpenditureSCB{
-				Year:            h.Year,
-				ExpenditureMdkr: h.ExpenditureMdkr,
-				BudgetMdkr:      h.BudgetMdkr,
-			}
+		// First entry wins on conflicts (rare; logged for visibility).
+		if _, exists := nameToOrg[key]; !exists {
+			nameToOrg[key] = a.OrgNumber
 		}
+	}
+
+	// Accumulate per (org_number, year). One agency may have multiple anslag
+	// matching its name in the same year — sum them.
+	type yearAcc struct{ utfall, budget float64 }
+	byOrg := map[string]map[int]*yearAcc{}
+	matchedRows := 0
+	for _, r := range rows {
+		org, ok := nameToOrg[normName(r.AnslagName)]
+		if !ok {
+			continue
+		}
+		matchedRows++
+		yrs := byOrg[org]
+		if yrs == nil {
+			yrs = map[int]*yearAcc{}
+			byOrg[org] = yrs
+		}
+		a := yrs[r.Year]
+		if a == nil {
+			a = &yearAcc{}
+			yrs[r.Year] = a
+		}
+		a.utfall += r.ExpenditureMdkr
+		a.budget += r.BudgetMdkr
+	}
+
+	items := make([]ports.ExpenditureUpdate, 0, len(byOrg))
+	for org, yrs := range byOrg {
+		years := make([]int, 0, len(yrs))
+		for y := range yrs {
+			years = append(years, y)
+		}
+		sort.Ints(years)
+		history := make([]ports.YearlyExpenditureSCB, len(years))
+		for i, y := range years {
+			a := yrs[y]
+			history[i] = ports.YearlyExpenditureSCB{Year: y, ExpenditureMdkr: a.utfall, BudgetMdkr: a.budget}
+		}
+		latest := history[len(history)-1]
 		items = append(items, ports.ExpenditureUpdate{
 			OrgNumber:       org,
-			ExpenditureMdkr: e.ExpenditureMdkr,
-			BudgetMdkr:      e.BudgetMdkr,
-			Year:            e.Year,
+			ExpenditureMdkr: latest.ExpenditureMdkr,
+			BudgetMdkr:      latest.BudgetMdkr,
+			Year:            latest.Year,
 			History:         history,
 		})
 	}
@@ -72,6 +99,25 @@ func (w *AuthorityExpenditureWorker) Run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	slog.Info("authority-expenditure: applied", "matched", matched, "unmatched", unmatched, "skipped_unmapped", skipped)
+	slog.Info("authority-expenditure: applied",
+		"matched", matched, "unmatched", unmatched,
+		"agencies_with_anslag", len(byOrg), "anslag_rows_matched", matchedRows,
+		"anslag_rows_total", len(rows))
 	return nil
+}
+
+// normName lower-cases + folds Swedish vowels for tolerant exact match.
+// Trims whitespace. Returns "" for empty.
+func normName(s string) string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return ""
+	}
+	r := strings.NewReplacer(
+		"å", "a", "Å", "a",
+		"ä", "a", "Ä", "a",
+		"ö", "o", "Ö", "o",
+		"é", "e", "É", "e",
+	)
+	return strings.ToLower(r.Replace(s))
 }
