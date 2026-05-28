@@ -118,7 +118,7 @@ func (c *Client) FetchKPIAllMunicipalities(ctx context.Context, kpiCode string, 
 	}
 	yearsStr := strings.Join(yearStrs, ",")
 
-	url := fmt.Sprintf("%s/data/kpi/%s/municipality/all/year/%s", baseURL, kpiCode, yearsStr)
+	url := fmt.Sprintf("%s/data/kpi/%s/year/%s", baseURL, kpiCode, yearsStr)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -155,6 +155,9 @@ func (c *Client) FetchKPIAllMunicipalities(ctx context.Context, kpiCode string, 
 
 	var result []ports.KPIValueWithMun
 	for _, v := range payload.Values {
+		if v.Municipality == "0000" {
+			continue // skip national aggregate
+		}
 		for _, val := range v.Values {
 			if val.Gender == "T" && !val.IsDeleted {
 				result = append(result, ports.KPIValueWithMun{
