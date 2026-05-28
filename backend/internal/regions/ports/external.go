@@ -34,12 +34,22 @@ type KPIRankEntry struct {
 	Total   int     `json:"total"`
 }
 
-// KPIRank holds the rank of a single KPI for one municipality.
+// KPIRank holds the rank of a single KPI for one municipality or region.
 type KPIRank struct {
 	KPI   string  `json:"kpi"`
 	Rank  int     `json:"rank"`
 	Total int     `json:"total"`
 	Mean  float64 `json:"mean"`
+}
+
+// RegionKPIRankEntry is one row in a cross-region KPI ranking list.
+type RegionKPIRankEntry struct {
+	RegionCode string  `json:"region_code"`
+	Name       string  `json:"name"`
+	Value      float64 `json:"value"`
+	Year       int     `json:"year"`
+	Rank       int     `json:"rank"`
+	Total      int     `json:"total"`
 }
 
 type SCBClient interface {

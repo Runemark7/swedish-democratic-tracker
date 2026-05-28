@@ -25,10 +25,12 @@ func NewHandler(svc *regions.Service) *Handler {
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/regions", h.listRegions)
 	r.Get("/regions/budget/area/{areaName}", h.getAreaAcrossRegions)
+	r.Get("/regions/kpi/{kpiCode}/ranking", h.getRegionKPIRanking)
 	r.Get("/regions/{code}", h.getRegion)
 	r.Get("/regions/{code}/budget", h.getRegionBudget)
 	r.Get("/regions/{code}/budget/history", h.getRegionBudgetHistory)
 	r.Get("/regions/{code}/kpi", h.getRegionKPI)
+	r.Get("/regions/{code}/kpi-ranks", h.getRegionKPIRanks)
 	r.Get("/municipalities", h.listMunicipalities)
 	r.Get("/municipalities/budget/area/{areaName}", h.getAreaAcrossMunicipalities)
 	r.Get("/municipalities/kpi/{kpiCode}/ranking", h.getMunicipalityKPIRanking)
@@ -273,6 +275,32 @@ func (h *Handler) getMunicipalityBudgetHistory(w http.ResponseWriter, r *http.Re
 		snapshots = []ports.MunicipalityBudgetSnapshot{}
 	}
 	jsonOK(w, snapshots)
+}
+
+func (h *Handler) getRegionKPIRanking(w http.ResponseWriter, r *http.Request) {
+	kpiCode := chi.URLParam(r, "kpiCode")
+	entries, err := h.svc.GetRegionKPIRanking(r.Context(), kpiCode)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if entries == nil {
+		entries = []ports.RegionKPIRankEntry{}
+	}
+	jsonOK(w, entries)
+}
+
+func (h *Handler) getRegionKPIRanks(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	ranks, err := h.svc.GetRegionKPIRanks(r.Context(), code)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	if ranks == nil {
+		ranks = []ports.KPIRank{}
+	}
+	jsonOK(w, ranks)
 }
 
 func (h *Handler) getMunicipalityKPIRanking(w http.ResponseWriter, r *http.Request) {
