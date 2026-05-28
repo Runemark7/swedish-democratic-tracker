@@ -16,6 +16,7 @@ import { RegionLandingPage } from "./features/regions/RegionLandingPage";
 import { RegionDetailPage } from "./features/regions/RegionDetailPage";
 import { RegionBudgetAreaPage } from "./features/regions/RegionBudgetAreaPage";
 import { KommunBudgetAreaPage } from "./features/municipalities/KommunBudgetAreaPage";
+import { KommunKpiRankingPage } from "./features/municipalities/KommunKpiRankingPage";
 import { MunicipalityLandingPage } from "./features/municipalities/MunicipalityLandingPage";
 import { MunicipalityDetailPage } from "./features/municipalities/MunicipalityDetailPage";
 import { MunicipalityComparePage } from "./features/municipalities/MunicipalityComparePage";
@@ -347,6 +348,7 @@ export default function App() {
           <Route path="/region/:code"                          element={<RegionDetailPage />} />
           <Route path="/region/:code/budget/:areaName"         element={<RegionBudgetAreaPage />} />
           <Route path="/kommun/:code/budget/:areaName"         element={<KommunBudgetAreaPage />} />
+          <Route path="/kommun/:code/kpi/:kpiId"              element={<KommunKpiRankingPage />} />
           <Route path="/kommun"                                element={<MunicipalityLandingPage />} />
           <Route path="/kommun/jämför"                         element={<MunicipalityComparePage />} />
           <Route path="/kommun/:code"                          element={<MunicipalityDetailPage />} />
