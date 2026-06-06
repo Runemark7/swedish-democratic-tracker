@@ -11,7 +11,7 @@ Riksdagskollen's credibility rests on every value on the site being traceable to
 We need a second-pass verification that:
 
 1. Confirms every registered source's upstream URL still resolves and returns the expected payload shape.
-2. Confirms every source MD documents reproducible fetch steps a third party could replay.
+2. Confirms every source MD contains a **narrative overview** of how the data was obtained — written so a third party could repeat the steps and arrive at the same data. The MD is an overview, not a runbook: no executable code, no curl/wget commands, no API keys, no internal endpoints, no scraper logic. Anything that would help an attacker reproduce our ingestion in an automated way belongs in the backend client code, not in public docs.
 3. Confirms every UI value derived from a fetch/CSV/ZIP/document carries a `<SourceMarker>` pointing at a registered source.
 4. Confirms every external HTTP client in `backend/internal/*/adapters/` maps to a registered source.
 5. Tags any source that fails the above as **unsure** in the UI so the failure is visible to the user, not hidden in our docs.
@@ -32,6 +32,26 @@ We need a second-pass verification that:
 - Refactoring the source-registry build pipeline beyond adding the new fields.
 - Migrating to a different source-tracking system; we extend the existing `docs/data-sources/` + `SourceRegistry.generated.ts` flow.
 
+## Documentation rules for source MDs
+
+Each `docs/data-sources/*.md` is a **public, citizen-facing overview**, not an operator runbook. The rule applies to all sources, including CSV/ZIP sources (which CLAUDE.md flags as needing "reproducible download steps" — that requirement is satisfied by the narrative, not by code).
+
+Required prose answers (no specific format):
+- Who publishes the data (organisation, authority, jurisdiction).
+- What the dataset is and at what granularity (year, kommun, KPI, etc.).
+- Where a user goes to find it (the public landing page, dataset id, table name, file name).
+- Which filter/selection a user would apply to reach the same slice we use.
+- License + freshness expectation.
+
+Forbidden in source MDs (move to backend client code or internal docs):
+- Shell commands (`curl`, `wget`, `psql`, `unzip`, etc.).
+- Code blocks containing API request bodies, scraping logic, or transformation scripts.
+- API keys, tokens, internal hostnames, staging URLs.
+- Exact request headers, undocumented query parameters, or bypasses for rate limiting.
+- Any step whose only purpose is to automate ingestion at scale.
+
+Phase 1 audit treats violations as a `Gaps` entry; Phase 2 rewrites the MD as narrative before the source can be marked `verified` or `frozen`.
+
 ## Architecture
 
 Two phases, single spec.
@@ -47,7 +67,7 @@ Produce a single working document `docs/superpowers/audits/2026-06-06-source-ver
 | `id` | Registry id |
 | `URL liveness` | HTTP status + content-type from upstream, or "n/a (seed)" |
 | `Schema match` | Yes/No — sampled call still matches parser shape |
-| `Repro steps OK?` | Yes/No — gap notes if no |
+| `Repro steps OK?` | Yes/No — does the MD narrative cover origin + which dataset/endpoint + how to navigate to it, without code/curl/keys? Gap notes if no |
 | `UI consumers` | File paths + line numbers grepped from `SourceMarker sourceId="<id>"` and `SectionSource sourceIds={[..., "<id>", ...]}` |
 | `Backend client` | Package path under `backend/internal/`, or `seed` / `derived` |
 | `Proposed status` | `verified` \| `frozen` \| `unsure` |
