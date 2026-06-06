@@ -9,6 +9,18 @@ const KIND_LABEL: Record<string, string> = {
   synthesized: "Härledd",
 };
 
+const STATUS_LABEL: Record<string, string> = {
+  verified: "Verifierad",
+  frozen: "Statisk källa — verifierad en gång",
+  unsure: "⚠ Ej verifierad",
+};
+
+const STATUS_COLOR: Record<string, string> = {
+  verified: "var(--color-fg-muted)",
+  frozen: "var(--color-fg-muted)",
+  unsure: "var(--color-warn, #c08a2a)",
+};
+
 interface SourcePopoverProps {
   entry: SourceEntry;
   anchorRef: RefObject<HTMLElement | null>;
@@ -78,6 +90,29 @@ export function SourcePopover({ entry, anchorRef, onClose }: SourcePopoverProps)
         }}
       >
         {KIND_LABEL[entry.kind] ?? entry.kind} · senast verifierad {entry.lastVerified}
+      </div>
+      <div
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 11,
+          color: STATUS_COLOR[entry.verificationStatus],
+          letterSpacing: "0.03em",
+        }}
+      >
+        {STATUS_LABEL[entry.verificationStatus]}
+        {entry.verificationNotes ? (
+          <div
+            style={{
+              marginTop: 4,
+              fontSize: 11,
+              fontFamily: "var(--font-body)",
+              color: "var(--color-fg)",
+              lineHeight: 1.4,
+            }}
+          >
+            {entry.verificationNotes}
+          </div>
+        ) : null}
       </div>
       <div
         style={{
