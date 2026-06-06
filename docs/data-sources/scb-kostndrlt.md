@@ -5,7 +5,9 @@ kind: api
 upstream: https://api.scb.se/OV0104/v1/doris/sv/ssd/OE/OE0107/OE0107D/KostnDRLT
 license: PxWeb open data — fri användning
 freshness: årlig
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: unsure
+verification_notes: "Reproduktionsnarrativet innehöll ett curl-kommando med POST-kropp (förbjudet i käll-MD); ersatt med prosaöversikt. Dessutom renderar RegionBudgetAreaPage mnkr-värden utan SourceMarker (se audit Appendix 1)."
 used_by:
   - /region/:code (Budget-kortet)
 ---
@@ -15,12 +17,18 @@ SCB:s tabell över regioners nettokostnader per verksamhetsområde
 (hälso- och sjukvård, kollektivtrafik, regional utveckling).
 
 ## Hur du själv kommer åt datan
-```bash
-curl -s -X POST \
-  'https://api.scb.se/OV0104/v1/doris/sv/ssd/OE/OE0107/OE0107D/KostnDRLT' \
-  -H 'Content-Type: application/json' \
-  -d '{"query":[{"code":"Region","selection":{"filter":"item","values":["22L"]}},{"code":"Verksomrkom","selection":{"filter":"item","values":["1","2","3","5","6","7","8","4","0-9"]}},{"code":"ContentsCode","selection":{"filter":"item","values":["000000A7"]}},{"code":"Tid","selection":{"filter":"item","values":["2024"]}}],"response":{"format":"json"}}'
-```
+Tabellen heter **KostnDRLT** och finns i SCB:s statistikdatabas under
+offentlig ekonomi. Du når den via SCBs webbgränssnitt på
+<https://www.statistikdatabasen.scb.se/> — sök på "KostnDRLT" eller
+navigera via Offentlig ekonomi → Landstingsekonomi → Driftkostnader.
+
+Teknisk åtkomst sker via SCB:s PxWeb API med sökvägen
+`/OV0104/v1/doris/sv/ssd/OE/OE0107/OE0107D/KostnDRLT`. En GET mot
+rotadressen returnerar metadata med dimensionerna Region (regionkod i
+formatet `XXL`), Verksomrkom (verksamhetsområde) och Tid (år). Data
+hämtas via en POST där du väljer region, verksamhetsområden och år;
+innehållskoden för nettokostnad är `000000A7`. Svar ges i PxWeb
+JSON-format med värden i miljoner kronor (mnkr).
 
 ## Schema/fält vi använder
 - `data[].key[0]` — regionkod (`XXL`).

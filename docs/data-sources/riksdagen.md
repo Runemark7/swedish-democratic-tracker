@@ -5,7 +5,9 @@ kind: api
 upstream: https://data.riksdagen.se
 license: Public domain — Sveriges riksdag
 freshness: "dagligen (cron: politicians @daily, speeches @daily, votes @daily)"
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: unsure
+verification_notes: "Reproduktionsnarrativet innehöll tre curl-kommandon (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
 used_by:
   - / (Beslut idag, Aktuella debatter, Veckans omröstningar, Vad partierna säger, Kommande beslut)
   - /riksdag (live votes, agenda, mandat, government composition)
@@ -18,26 +20,29 @@ used_by:
 ---
 
 ## Vad det är
-Riksdagens öppna data är portalen som sveriges riksdag publicerar för
+Riksdagens öppna data är portalen som Sveriges riksdag publicerar för
 all kammaraktivitet: ledamöter, anföranden, omröstningar, betänkanden,
 motioner och utskottsärenden. Det är primärkällan för all "vad har
-politikerna gjort" -data på sidan.
+politikerna gjort"-data på sidan.
 
 ## Hur du själv kommer åt datan
-Alla endpoints är publika utan API-nyckel. Exempel:
+Alla endpoints är publika och kräver ingen API-nyckel. Startpunkten är
+<https://data.riksdagen.se> där dokumentationen finns samlad på
+<https://data.riksdagen.se/dokumentation/>.
 
-```bash
-# Lista nuvarande ledamöter i Moderaterna
-curl -s 'https://data.riksdagen.se/personlista/?utformat=json&parti=M&iid=&fnamn=&enamn=&f_ar=&kn=&valkrets=&rdlstatus=tjanstgorande'
+Tre huvudtyper av data används:
 
-# Senaste betänkanden
-curl -s 'https://data.riksdagen.se/dokumentlista/?doktyp=bet&utformat=json&sz=20'
+**Ledamöter** — via `/personlista/` med filter på parti, valkrets eller
+statusfältet `tjanstgorande`. Svaret kan begäras som JSON genom att
+lägga till parametern `utformat=json`.
 
-# Anföranden för en ledamot
-curl -s 'https://data.riksdagen.se/anforandelista/?iid=0123456789&utformat=json'
-```
+**Betänkanden och dokument** — via `/dokumentlista/` med filter på
+dokumenttyp (`doktyp=bet` för betänkanden). Ger en lista med
+`beteckning`-fält och `dok_id` som identifierar enskilda ärenden.
 
-Full referens: <https://data.riksdagen.se/dokumentation/>.
+**Omröstningar och anföranden** — via `/voteringlista/` respektive
+`/anforandelista/` med filter på ledamotens `iid`-kod. Returnerar
+per-ledamots röst (Ja/Nej/Avstår/Frånvarande) och anförandetext.
 
 ## Schema/fält vi använder
 - `personlista.person.intressent_id` — primärnyckel för politiker.

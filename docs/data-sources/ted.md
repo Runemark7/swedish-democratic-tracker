@@ -2,10 +2,12 @@
 id: ted
 name: TED — Tenders Electronic Daily
 kind: api
-upstream: https://ted.europa.eu/
+upstream: https://api.ted.europa.eu/v3/notices/search
 license: EU public data
 freshness: löpande
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: unsure
+verification_notes: "Upstream-URL i MD pekade på ted.europa.eu (webbgränssnitt) men backenden anropar api.ted.europa.eu/v3/notices/search; MD uppdaterat till korrekt API-host. Tidigare bash-block med curl mot fel host borttaget. Inga SourceMarker-konsumenter finns i UI idag."
 used_by:
   - /kommun/:code (kommunal upphandling — om endpointen är wired)
 ---
@@ -16,21 +18,21 @@ tröskelvärdet. Vi använder den för att visa kommunala kontrakt på
 kommunsidor.
 
 ## Hur du själv kommer åt datan
-TED:s sökgränssnitt är publikt och kräver ingen inloggning.
+TED:s publika webbgränssnitt finns på <https://ted.europa.eu/> och
+kräver ingen inloggning. Du kan söka på köparens namn, CPV-kod
+(produktkategori) eller land direkt i sökformuläret.
 
-```bash
-# Sök upphandlingar för en organisation (kommun)
-curl -s 'https://ted.europa.eu/api/v3.0/notices/search?q=BUYER-NAME%3D%22Stockholms%20kommun%22'
-```
-
-Full API-referens: <https://docs.ted.europa.eu/api/index.html>.
-Webbgränssnitt: <https://ted.europa.eu/>.
+För programmatisk åtkomst tillhandahåller EU ett öppet API på
+<https://api.ted.europa.eu/v3/notices/search>. API-dokumentationen
+finns på <https://docs.ted.europa.eu/api/index.html>. Endpointen tar
+en POST med ett JSON-sökuttryck och returnerar en lista med
+upphandlingsbeslut. Ingen API-nyckel krävs för grundläggande sökning.
 
 ## Schema/fält vi använder
-- `notices[].id` — TED-ID.
-- `notices[].title` — kontraktstitel.
-- `notices[].buyer.name` — köpande organisation.
 - `notices[].publication-date` — publiceringsdatum.
+- `notices[].classification-cpv` — CPV-kod (produktkategori).
+- `notices[].total-value` — kontraktsvärde.
+- `notices[].total-value-cur` — valutakod.
 
 ## Begränsningar och kända problem
 - TED är skrivet för EU-omfattande upphandling, vilket innebär att
@@ -40,6 +42,6 @@ Webbgränssnitt: <https://ted.europa.eu/>.
   "Stockholms kommun" vs "Stockholms stad") kan missas.
 
 ## Hur vi bearbetar
-Vår backend hämtar resultaten från TED via en proxy-endpoint som
+Vår backend hämtar resultaten från TED API via en proxy-endpoint som
 filtrerar på den valda kommunens namn, och returnerar listan till
 frontend för rendering.

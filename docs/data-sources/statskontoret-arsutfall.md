@@ -5,7 +5,9 @@ kind: csv
 upstream: https://www.statskontoret.se/psidata/arsutfall
 license: Statskontoret open data — fri användning
 freshness: årlig
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: unsure
+verification_notes: "Det dokumenterade upstream-URL:et /psidata/arsutfall returnerar 200 men den faktiska ZIP-filen hämtas via en dynamisk GetFile-länk som ändrats sedan MD skrevs; tidigare bash-block med curl/unzip borttaget. Dessutom saknar AuthorityDetailPage och MyndigheterListPage SourceMarker på kostnads- och personalvärden (se audit Appendix 1)."
 used_by:
   - /riksdag (Myndigheter-kortet — donut, lista, dual-line)
   - /riksdag/myndigheter/:slug (myndighetsdetalj)
@@ -18,34 +20,29 @@ ZIP med CSV-filer. Detta är "kvittot" för Myndigheter-kortet på
 Riksdag-sidan.
 
 ## Hur du själv kommer åt datan
-Datan är inte en API utan en zippad CSV-katalog. Direktlänk:
+Datan publiceras som öppen data på Statskontorets webbplats. Landningssidan
+är <https://www.statskontoret.se/psidata/arsutfall> — där finns en länk
+till den senaste ZIP-filen samt arkiv för tidigare år. Filnamn och
+exakta URL:er till ZIP:en varierar per år och uppdateras på landningssidan
+när ny data publiceras.
 
-```bash
-# Ladda hem zip:en (URL kan ändras per år; kolla på upstream-sidan)
-curl -O 'https://www.statskontoret.se/psidata/arsutfall/arsutfall-2024.zip'
-unzip arsutfall-2024.zip -d arsutfall-2024/
-ls arsutfall-2024/
-```
-
-CSV-filerna inom zip:en är semikolonseparerade (svensk konvention).
-Den primära filen är `myndigheter.csv` med kolumnerna:
-
-| Kolumn | Beskrivning |
-|---|---|
-| `myndighet_namn` | T.ex. "Polismyndigheten" |
-| `org_nummer` | Organisationsnummer |
-| `år` | Aktuellt år |
-| `driftkostnad_mkr` | Driftkostnader exkl. transfereringar, miljoner kr |
-| `antal_anstallda` | Helårsekvivalenter |
+Inne i ZIP:en finns semikolonseparerade CSV-filer (svensk konvention).
+Den primära filen innehåller ett anslag per rad med kolumner för
+myndighetens anslag, år, statsbudgetramen och det faktiska utfallet.
 
 ## Schema/fält vi använder
-- `myndighet_namn` — myndighetens namn.
-- `år` + `driftkostnad_mkr` — driftkostnad per år (i miljarder kr i UI).
-- `år` + `antal_anstallda` — antal anställda per år.
+Vi läser följande kolumner ur CSV:n (kolumnpositioner indexerade från 1):
+- Kolumn 2 — Anslag (myndighets-/anslagsnamn).
+- Kolumn 4 — År.
+- Kolumn 6 — Statens budget (mkr).
+- Kolumn 7 — Ändringsbudgetar (mkr).
+- Kolumn 10 — Utfall (tkr).
 
 ## Begränsningar och kända problem
 - Filformatet ändras ibland mellan år (kolumnnamn, separator). Vi
   verifierar schemat efter varje årlig uppdatering.
+- Den dynamiska URL:en till ZIP-filen ändrar sig per år — kontrollera
+  alltid landningssidan för aktuell nedladdningslänk.
 - Vissa myndigheter byter namn eller slås ihop över tid — vi
   konsoliderar dem manuellt så historiken hålls ihop.
 

@@ -5,7 +5,9 @@ kind: api
 upstream: https://api.kolada.se/v3
 license: Kommun- och regionkollade — fri användning
 freshness: årlig
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: unsure
+verification_notes: "Reproduktionsnarrativet innehöll curl-kommandon (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
 used_by:
   - /region/:code (KPI strip)
   - /kommun/:code (KPI strip)
@@ -18,17 +20,15 @@ skola, befolkning. Vi använder underlag för KPI-stripen på region- och
 kommunsidor.
 
 ## Hur du själv kommer åt datan
-Publik API utan nyckel:
+API:et är publikt och kräver ingen API-nyckel. Du hittar det på
+<https://api.kolada.se/v3> och den fullständiga API-referensen finns
+på <https://github.com/Hypergene/kolada>.
 
-```bash
-# Lista en KPI över tid för en kommun
-curl -s 'https://api.kolada.se/v3/data/kpi/N00945/municipality/0114'
-
-# Hämta metadata om en KPI (definition + enhet)
-curl -s 'https://api.kolada.se/v3/kpi/N00945'
-```
-
-API-referens: <https://github.com/Hypergene/kolada>.
+För att hitta data om en specifik KPI besöker du API:ets rotdokument
+och väljer endpoint `/data/kpi/{kpi_id}/municipality/{kommunkod}` — där
+`{kpi_id}` är ett N-nummer (t.ex. `N60008`) och `{kommunkod}` är den
+fyrsiffriga SCB-kommunkoden (t.ex. `0114` för Upplands Väsby). Metadata
+om enskilda KPI:n (definition, enhet) hittar du via `/kpi/{kpi_id}`.
 
 ## Schema/fält vi använder
 - `data[].values[].value` — siffran (typiskt %).
