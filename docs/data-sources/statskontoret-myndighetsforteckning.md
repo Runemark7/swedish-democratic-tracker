@@ -2,7 +2,7 @@
 id: statskontoret-myndighetsforteckning
 name: Statskontoret — Myndighetsförteckning (årsarbetskrafter)
 kind: csv
-upstream: https://www.statskontoret.se/om-statskontoret/om-webbplatsen/oppna-data/
+upstream: https://www.statskontoret.se/analys-och-statistik/oppna-data/myndighetsforteckning/
 license: Statskontoret open data — fri användning
 freshness: årlig (ny version publiceras vanligtvis under Q1 nästkommande år)
 last_verified: 2026-06-06

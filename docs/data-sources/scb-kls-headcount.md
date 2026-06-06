@@ -2,7 +2,7 @@
 id: scb-kls-headcount
 name: SCB KLS — Månadsanställda i statlig sektor (AM0102)
 kind: api
-upstream: https://www.scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/sysselsattning-forvarvsinkomster-och-arbetstider/konjunkturstatistik-over-lon-sysselsattning-och-arbetstid-kls/
+upstream: https://www.scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/loner-och-arbetskostnader/konjunkturstatistik-loner-for-statlig-sektor-kls/
 license: SCB öppna data — fri användning (CC0)
 freshness: månadsvis (december-snapshot används som årsavstämning)
 last_verified: 2026-06-06

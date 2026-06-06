@@ -2,7 +2,7 @@
 id: statskontoret-arsutfall
 name: Statskontoret — Årsutfall för myndigheter
 kind: csv
-upstream: https://www.statskontoret.se/psidata/arsutfall
+upstream: https://www.statskontoret.se/analys-och-statistik/oppna-data/arsutfall/
 license: Statskontoret open data — fri användning
 freshness: årlig
 last_verified: 2026-06-06
