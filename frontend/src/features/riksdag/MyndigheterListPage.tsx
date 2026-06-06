@@ -92,6 +92,7 @@ export function MyndigheterListPage() {
               value={stats.totalHeadcount.toLocaleString("sv-SE")}
               caption={`${stats.withHeadcount} av ${stats.total} har anställdadata`}
               missing={stats.total - stats.withHeadcount}
+              sourceId="statskontoret-myndighetsforteckning"
             />
             <Stat
               label="Under regeringen"
@@ -174,6 +175,7 @@ export function MyndigheterListPage() {
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, textAlign: "right", color: a.headcountInt ? "var(--color-fg)" : "var(--color-fg-muted)" }}>
               {a.headcountInt ? a.headcountInt.toLocaleString("sv-SE") : "saknas"}
+              {a.headcountInt ? <SourceMarker sourceId="statskontoret-myndighetsforteckning" /> : null}
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, textAlign: "right", color: a.expenditureMdkr != null ? "var(--color-fg)" : "var(--color-fg-muted)" }}>
               {a.expenditureMdkr != null ? `${a.expenditureMdkr.toFixed(1)} mdkr` : "saknas"}

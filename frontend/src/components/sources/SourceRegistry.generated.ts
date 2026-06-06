@@ -74,6 +74,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "verificationStatus": "unsure",
     "verificationNotes": "Reproduktionsnarrativet innehöll två curl-kommandon med POST-kropp (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
   },
+  "scb-kls-headcount": {
+    "id": "scb-kls-headcount",
+    "name": "SCB KLS — Månadsanställda i statlig sektor (AM0102)",
+    "kind": "api",
+    "upstream": "https://www.scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/sysselsattning-forvarvsinkomster-och-arbetstider/konjunkturstatistik-over-lon-sysselsattning-och-arbetstid-kls/",
+    "license": "SCB öppna data — fri användning (CC0)",
+    "freshness": "månadsvis (december-snapshot används som årsavstämning)",
+    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "SCB:s Konjunkturstatistik löner, sysselsättning och arbetstid (KLS) är en månatlig enkät till statliga arbetsgivare om antal anställda. Vi använder Tabell 14 — *Månadsanställda i statlig sektor per myndighet* — ur databasdelen AM0102A. Varje post avser en specifik myndighet (kodad med KLS-myndighetskod) och ett specifikt månadsslut. Vi tar december-snapshoten för varje år och använder dem som årsavstämningar för att bygga personalhistorik.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
   "scb-kostndrlt": {
     "id": "scb-kostndrlt",
     "name": "SCB KostnDRLT (regionernas driftkostnader)",
@@ -97,6 +109,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "blurb": "SCB:s tabell över mandatfördelning i regionfullmäktige (landsting). Syster till Kfmandat men för regionnivå.",
     "verificationStatus": "unsure",
     "verificationNotes": "Reproduktionsnarrativet innehöll ett curl-kommando med POST-kropp (förbjudet i käll-MD); ersatt med prosaöversikt. Repro-narrativet är nu godkänt."
+  },
+  "scb-myndighetsregistret": {
+    "id": "scb-myndighetsregistret",
+    "name": "SCB Myndighetsregistret",
+    "kind": "api",
+    "upstream": "https://myndighetsregistret.scb.se",
+    "license": "SCB öppna data — fri användning",
+    "freshness": "löpande (uppdateras när myndigheter inrättas, avvecklas eller byter namn)",
+    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "SCB:s Myndighetsregister är den officiella förteckningen över alla statliga myndigheter i Sverige. Det förs av Statistiska centralbyrån på uppdrag av regeringen och innehåller namn, organisationsnummer, typ (förvaltningsmyndighet, domstol, utlandsmyndighet m.m.), huvudman och webbadress för varje myndighet. Registret är källan för hela myndighetslistans struktur på sidan — utan det vet vi inte ens vilka myndigheter som existerar.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "seed-budget-data": {
     "id": "seed-budget-data",
@@ -133,6 +157,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "blurb": "Statskontoret publicerar årligen statliga myndigheters faktiska driftkostnader (löner, lokaler, IT — exkl. transfereringar) som en ZIP med CSV-filer. Detta är \"kvittot\" för Myndigheter-kortet på Riksdag-sidan.",
     "verificationStatus": "unsure",
     "verificationNotes": "Det dokumenterade upstream-URL:et /psidata/arsutfall returnerar 200 men den faktiska ZIP-filen hämtas via en dynamisk GetFile-länk som ändrats sedan MD skrevs; tidigare bash-block med curl/unzip borttaget. Dessutom saknar AuthorityDetailPage och MyndigheterListPage SourceMarker på kostnads- och personalvärden (se audit Appendix 1)."
+  },
+  "statskontoret-myndighetsforteckning": {
+    "id": "statskontoret-myndighetsforteckning",
+    "name": "Statskontoret — Myndighetsförteckning (årsarbetskrafter)",
+    "kind": "csv",
+    "upstream": "https://www.statskontoret.se/om-statskontoret/om-webbplatsen/oppna-data/",
+    "license": "Statskontoret open data — fri användning",
+    "freshness": "årlig (ny version publiceras vanligtvis under Q1 nästkommande år)",
+    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "Statskontoret publicerar varje år en Myndighetsförteckning — ett XLSX-dokument med longitudinella personaluppgifter för samtliga statliga myndigheter. Centrala måttet är *årsarbetskrafter*: heltidsekvivalenter per myndighet och år, med täckning från 2007 och framåt. Statskontoret beräknar detta mått från arbetsgivardeklarationer till Skatteverket och det är det officiella måttet för personalstyrka i statlig sektor.",
+    "verificationStatus": "verified",
+    "verificationNotes": "Den exakta XLSX-URL:en innehåller ett hårdkodat filnamn med årstal (statskontorets-myndighetsforteckning-2025.xlsx). URL:en måste uppdateras när Statskontoret publicerar nästa utgåva."
   },
   "ted": {
     "id": "ted",

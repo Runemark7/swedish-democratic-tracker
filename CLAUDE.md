@@ -163,6 +163,9 @@ graph TD
         SC["SCB PxWeb API\napi.scb.se"]
         TED["TED API\nted.europa.eu"]
         SK["Statskontoret Open Data\nstatskontoret.se/psidata/arsutfall"]
+        MR["SCB Myndighetsregistret\nmyndighetsregistret.scb.se"]
+        MF["Statskontoret Myndighetsförteckning\nstatskontoret.se (XLSX — årsarbetskrafter)"]
+        KLS["SCB KLS AM0102\napi.scb.se — månadsanställda statlig sektor"]
     end
 
     DB[(PostgreSQL 17)]
@@ -179,9 +182,12 @@ graph TD
     RS -->|population trend| SC
     RS -->|procurement| TED
     RKS -->|agency expenditure ZIP/CSV| SK
+    RKS -->|KLS headcount PxWeb POST| KLS
     SD -->|2022 mandates + population| SC
     SD --> DB
 
+    ingestion -->|authority register @daily| MR
+    ingestion -->|headcount XLSX @daily| MF
     ingestion --> DB
 ```
 

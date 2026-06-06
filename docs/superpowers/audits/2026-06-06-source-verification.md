@@ -29,12 +29,12 @@ UI strings quoting a number/date sourced from external data but lacking `<Source
 |---|---|---|
 | `frontend/src/features/municipalities/MunicipalityDetailPage.tsx:194` | `data.population` (population sub-header, all municipality detail pages) | `scb-befolkning` |
 | `frontend/src/features/riksdag/AuthorityDetailPage.tsx:145` | `authority.expenditureMdkr.toFixed(1) mdkr` (headline cost, historik header) | `statskontoret-arsutfall` |
-| `frontend/src/features/riksdag/AuthorityDetailPage.tsx:154` | `authority.headcountInt.toLocaleString` (headline headcount, historik header) | new: `scb-myndighetsforteckning` (see Appendix 3) |
+| `frontend/src/features/riksdag/AuthorityDetailPage.tsx:154` | `authority.headcountInt.toLocaleString` (headline headcount, historik header) | `statskontoret-myndighetsforteckning` (T18: done) |
 | `frontend/src/features/riksdag/AuthorityDetailPage.tsx:176` | `row.expenditureMdkr.toFixed(1) mdkr` (per-year rows in history table) | `statskontoret-arsutfall` |
-| `frontend/src/features/riksdag/AuthorityDetailPage.tsx:187` | `row.headcountInt.toLocaleString` (per-year headcount in history table) | new: `scb-myndighetsforteckning` (see Appendix 3) |
+| `frontend/src/features/riksdag/AuthorityDetailPage.tsx:187` | `row.headcountInt.toLocaleString` (per-year headcount in history table) | `scb-kls-headcount` (T18: done — history bars sourced from KLS) |
 | `frontend/src/features/riksdag/MyndigheterListPage.tsx:82` | `stats.totalExpenditureMdkr.toFixed(0) mdkr` (overview stat card) | `statskontoret-arsutfall` |
-| `frontend/src/features/riksdag/MyndigheterListPage.tsx:88` | `stats.totalHeadcount.toLocaleString` (overview stat card) | new: `scb-myndighetsforteckning` (see Appendix 3) |
-| `frontend/src/features/riksdag/MyndigheterListPage.tsx:172` | `a.headcountInt.toLocaleString` (per-agency row) | new: `scb-myndighetsforteckning` (see Appendix 3) |
+| `frontend/src/features/riksdag/MyndigheterListPage.tsx:88` | `stats.totalHeadcount.toLocaleString` (overview stat card) | `statskontoret-myndighetsforteckning` (T18: done) |
+| `frontend/src/features/riksdag/MyndigheterListPage.tsx:172` | `a.headcountInt.toLocaleString` (per-agency row) | `statskontoret-myndighetsforteckning` (T18: done) |
 | `frontend/src/features/riksdag/MyndigheterListPage.tsx:175` | `a.expenditureMdkr.toFixed(1) mdkr` (per-agency row) | `statskontoret-arsutfall` |
 | `frontend/src/features/regions/RegionBudgetAreaPage.tsx:140` | `Math.round(p.value).toLocaleString("sv-SE")` (chart dot labels — mnkr values) | `scb-kostndrlt` |
 | `frontend/src/features/municipalities/KommunBudgetAreaPage.tsx:143` | `Math.round(p.value).toLocaleString("sv-SE")` (chart dot labels — kr/inv values) | `kolada-spending` |
@@ -48,7 +48,7 @@ does not map to a registered source.
 | Backend file:line | Target URL | Should reference source (or "new") |
 |---|---|---|
 | `backend/internal/riksdag/adapters/registret/client.go:188` | `https://myndighetsregistret.scb.se/Myndighet/HamtaMynd` | new: `scb-myndighetsregistret` |
-| `backend/internal/riksdag/adapters/myndighetsforteckning/client.go:20` | `https://www.statskontoret.se/contentassets/bbd19bc969054c86bbc1aa757e7d5c85/statskontorets-myndighetsforteckning-2025.xlsx` | new: `scb-myndighetsforteckning` (Statskontorets myndighetsförteckning XLSX) |
+| `backend/internal/riksdag/adapters/myndighetsforteckning/client.go:20` | `https://www.statskontoret.se/contentassets/bbd19bc969054c86bbc1aa757e7d5c85/statskontorets-myndighetsforteckning-2025.xlsx` | `statskontoret-myndighetsforteckning` (renamed from `scb-myndighetsforteckning` — Statskontoret is publisher, not SCB) |
 | `backend/internal/riksdag/adapters/scb/client.go:18` | `https://api.scb.se/OV0104/v1/doris/sv/ssd/AM/AM0102/AM0102A/KLStabell14LpMan` | new: `scb-kls-headcount` (SCB KLS AM0102 — månadsanställda per myndighet) |
 | `backend/internal/riksdag/service.go:330` | `https://www.statskontoret.se/statsliggaren/regleringsbrev` (base URL, used to generate per-agency regleringsbrev links) | informational link only — no HTTP call made to this URL; no new source needed |
 
@@ -59,5 +59,5 @@ Discoveries from Appendix 1/2 that warrant a new MD in `docs/data-sources/`.
 | Proposed id | Upstream | Notes |
 |---|---|---|
 | `scb-myndighetsregistret` | `https://myndighetsregistret.scb.se/Myndighet/HamtaMynd` | SCB Myndighetsregistret — full list of ~449 Swedish government agencies. Scraped HTML table. Used by `internal/riksdag/adapters/registret`. Powers agency count, name, org-number, type on MyndigheterListPage. HTTP 200 confirmed. |
-| `scb-myndighetsforteckning` | `https://www.statskontoret.se/contentassets/bbd19bc969054c86bbc1aa757e7d5c85/statskontorets-myndighetsforteckning-2025.xlsx` | Statskontorets Myndighetsförteckning XLSX — longitudinal headcount (årsarbetskrafter) per agency 2007–2025. Used by `internal/riksdag/adapters/myndighetsforteckning`. HTTP 200 confirmed. Note: hardcoded year in URL (2025) will need updating annually. |
+| `statskontoret-myndighetsforteckning` | `https://www.statskontoret.se/contentassets/bbd19bc969054c86bbc1aa757e7d5c85/statskontorets-myndighetsforteckning-2025.xlsx` | Statskontorets Myndighetsförteckning XLSX — longitudinal headcount (årsarbetskrafter) per agency 2007–2025. Used by `internal/riksdag/adapters/myndighetsforteckning`. HTTP 200 confirmed. Note: hardcoded year in URL (2025) will need updating annually. Renamed from `scb-myndighetsforteckning` — publisher is Statskontoret. |
 | `scb-kls-headcount` | `https://api.scb.se/OV0104/v1/doris/sv/ssd/AM/AM0102/AM0102A/KLStabell14LpMan` | SCB KLS tabell 14 — månadsanställda i statlig sektor per myndighet (december snapshot). Used by `internal/riksdag/adapters/scb`. Powers headcount history bars in AuthorityDetailPage. PxWeb POST endpoint; HTTP 200 confirmed. |
