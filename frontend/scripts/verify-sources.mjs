@@ -8,7 +8,23 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const SRC_DIR = path.join(REPO_ROOT, "docs", "data-sources");
 const REPORT_PATH = path.join(REPO_ROOT, "frontend", "verify-report.json");
-const TIMEOUT_MS = 10_000;
+const TIMEOUT_MS = 30_000;
+const MAX_ATTEMPTS = 2;
+
+async function attemptFetch(entry, fetchImpl) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    let res = await fetchImpl(entry.upstream, { method: "HEAD", signal: controller.signal });
+    const headStatus = res.status;
+    if (res.status === 405) {
+      res = await fetchImpl(entry.upstream, { method: "GET", signal: controller.signal });
+    }
+    return { res, headStatus };
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export async function checkSource(entry, { fetch: fetchImpl = globalThis.fetch } = {}) {
   if (entry.kind === "seed" || entry.kind === "synthesized") {
@@ -18,25 +34,27 @@ export async function checkSource(entry, { fetch: fetchImpl = globalThis.fetch }
     return { id: entry.id, status: "skipped", reason: "no upstream URL" };
   }
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
   let headStatus;
   let res;
-  try {
-    res = await fetchImpl(entry.upstream, { method: "HEAD", signal: controller.signal });
-    headStatus = res.status;
-    if (res.status === 405) {
-      res = await fetchImpl(entry.upstream, { method: "GET", signal: controller.signal });
+  let lastErr;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      ({ res, headStatus } = await attemptFetch(entry, fetchImpl));
+      lastErr = null;
+      break;
+    } catch (err) {
+      lastErr = err;
+      // Only retry timeouts; permanent errors fail fast.
+      if (err.name !== "AbortError") break;
     }
-  } catch (err) {
-    clearTimeout(timer);
-    if (err.name === "AbortError") {
+  }
+
+  if (lastErr) {
+    if (lastErr.name === "AbortError") {
       return { id: entry.id, status: "timeout" };
     }
-    return { id: entry.id, status: "error", reason: String(err.message ?? err) };
+    return { id: entry.id, status: "error", reason: String(lastErr.message ?? lastErr) };
   }
-  clearTimeout(timer);
 
   const contentType = (
     res.headers.get?.("content-type") ??
