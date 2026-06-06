@@ -1,0 +1,53 @@
+name: verify-sources
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # Monday 06:00 UTC
+  pull_request:
+    paths:
+      - "docs/data-sources/**"
+      - "frontend/scripts/verify-sources.mjs"
+      - "frontend/scripts/sync-data-sources.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "25"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run verify-sources
+        id: verify
+        working-directory: frontend
+        run: npm run verify:sources
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-report
+          path: frontend/verify-report.json
+
+      - name: Open issue on scheduled failure
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "data-source drift detected $(date -u +%Y-%m-%d)" \
+            --label data-source-drift \
+            --body "Weekly verify-sources run failed. See the workflow artifact \`verify-report.json\` for details."
