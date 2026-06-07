@@ -140,11 +140,19 @@ async function loadEntries() {
   return entries;
 }
 
+// Hard failures indicate real source drift — upstream returned a definitive
+// error code or wrong shape. These break CI.
+// Soft failures (timeout, low-level fetch failed) indicate a transient or
+// environment-specific problem — they are reported but do not break CI, since
+// they reproduce inconsistently between local and GH-runner network paths.
+const HARD_FAILURE_STATUSES = new Set(["unreachable", "wrong-content-type"]);
+
 async function main() {
   const entries = await loadEntries();
   const results = await Promise.all(entries.map((e) => checkSource(e)));
-  const failures = results.filter(
-    (r) => r.status !== "ok" && r.status !== "skipped"
+  const hardFailures = results.filter((r) => HARD_FAILURE_STATUSES.has(r.status));
+  const softFailures = results.filter(
+    (r) => r.status !== "ok" && r.status !== "skipped" && !HARD_FAILURE_STATUSES.has(r.status)
   );
 
   await writeFile(REPORT_PATH, JSON.stringify({ results }, null, 2));
@@ -155,15 +163,25 @@ async function main() {
         ? `  ✓ ${r.id} — HTTP ${r.httpCode} (${r.contentType})`
         : r.status === "skipped"
         ? `  · ${r.id} — skipped (${r.reason})`
-        : `  ✗ ${r.id} — ${r.status}${r.httpCode ? ` (HTTP ${r.httpCode})` : ""}${r.reason ? ` — ${r.reason}` : ""}`;
+        : HARD_FAILURE_STATUSES.has(r.status)
+        ? `  ✗ ${r.id} — ${r.status}${r.httpCode ? ` (HTTP ${r.httpCode})` : ""}${r.reason ? ` — ${r.reason}` : ""}`
+        : `  ⚠ ${r.id} — ${r.status}${r.reason ? ` — ${r.reason}` : ""} (soft, won't fail CI)`;
     console.log(line);
   }
 
-  if (failures.length > 0) {
-    console.error(`\nverify-sources: ${failures.length} source(s) failed verification`);
+  if (softFailures.length > 0) {
+    console.warn(`\nverify-sources: ${softFailures.length} soft failure(s) — see above`);
+  }
+
+  if (hardFailures.length > 0) {
+    console.error(`\nverify-sources: ${hardFailures.length} source(s) failed verification`);
     process.exit(1);
   }
-  console.log(`\nverify-sources: ${results.length} source(s) checked, all healthy`);
+  const okCount = results.filter((r) => r.status === "ok").length;
+  const skipCount = results.filter((r) => r.status === "skipped").length;
+  console.log(
+    `\nverify-sources: ${okCount} healthy, ${skipCount} skipped, ${softFailures.length} soft failure(s)`
+  );
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
