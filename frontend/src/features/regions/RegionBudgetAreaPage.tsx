@@ -7,6 +7,7 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { RegionBudgetSnapshot } from "@/shared/types";
 import { BarsWithMean } from "@/features/budget/components/BarsWithMean";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
@@ -268,6 +269,7 @@ export function RegionBudgetAreaPage() {
           }}
         >
           Nettokostnad mnkr — 4-årsperiod
+          <SourceMarker sourceId="scb-kostndrlt" />
         </div>
 
         {trendPoints.length === 0 ? (

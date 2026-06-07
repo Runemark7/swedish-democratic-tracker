@@ -5,7 +5,9 @@ kind: api
 upstream: https://api.kolada.se/v3
 license: Kommun- och regionkollade — fri användning
 freshness: årlig
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: unsure
+verification_notes: "Reproduktionsnarrativet innehöll ett curl-kommando (förbjudet i käll-MD); ersatt med prosaöversikt. Repro-narrativet är nu godkänt."
 used_by:
   - /kommun/:code (Budget-kortet)
 ---
@@ -18,12 +20,13 @@ endpointen, mappningen, och visualiseringen skiljer sig från
 KPI-stripen.
 
 ## Hur du själv kommer åt datan
-```bash
-# Hämta verksamhetsutgift per kommun
-curl -s 'https://api.kolada.se/v3/data/kpi/N11004/municipality/0114'
-```
+API:et är publikt och kräver ingen API-nyckel — se
+<https://api.kolada.se/v3>. Använd endpoint
+`/data/kpi/{kpi_id}/municipality/{kommunkod}` med önskad KPI och
+fyrsiffrig kommunkod. Resultatet innehåller en tidsserie med ett värde
+(kr/invånare) per år.
 
-KPI:n vi läser:
+De KPI:n vi hämtar är:
 - `N11004` — Verksamhetens kostnad, kr/inv
 - `N15028` — Pedagogisk verksamhet
 - `N17014` — Vård och omsorg

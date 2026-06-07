@@ -5,7 +5,9 @@ kind: seed
 upstream: ~
 license: Sammanställt från partiernas valmanifest 2022
 freshness: engångs (vid antagande); uppdateras manuellt vid nya manifest
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: frozen
+verification_notes: ~
 used_by:
   - /parties (partiscorecards)
   - /parties/:party/goals (mållista)

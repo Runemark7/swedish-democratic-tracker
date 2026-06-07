@@ -5,7 +5,9 @@ kind: api
 upstream: https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat
 license: PxWeb open data — fri användning
 freshness: 4-årscykel (val)
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: unsure
+verification_notes: "Reproduktionsnarrativet innehöll två curl-kommandon med POST-kropp (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
 used_by:
   - /kommun/:code (mandat, hemicycle)
   - /region/:code (kommun-karta — vilka koder är klickbara)
@@ -16,20 +18,17 @@ SCB:s tabell över mandatfördelning i kommunfullmäktige efter senaste
 val. Källa till alla mandatkort på kommunsidor.
 
 ## Hur du själv kommer åt datan
-Tabellen är POST-only:
+Tabellen heter **Kfmandat** och finns i SCB:s statistikdatabas under
+val och demokrati. Du når den via SCBs webbgränssnitt på
+<https://www.statistikdatabasen.scb.se/> — sök på "Kfmandat" eller
+navigera via Val → Allmänna val → Kommunfullmäktige → Kfmandat.
 
-```bash
-curl -s -X POST \
-  'https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat' \
-  -H 'Content-Type: application/json' \
-  -d '{"query":[{"code":"Region","selection":{"filter":"item","values":["1490"]}},{"code":"Parti","selection":{"filter":"item","values":["M","C","FP","KD","MP","S","V","SD","ÖVRIGA"]}},{"code":"ContentsCode","selection":{"filter":"item","values":["ME0104C1"]}},{"code":"Tid","selection":{"filter":"item","values":["2022"]}}],"response":{"format":"json"}}'
-```
-
-Metadata (vilka kommuner finns, vilka år, vilka partier):
-
-```bash
-curl -s 'https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat'
-```
+Teknisk åtkomst sker via SCB:s PxWeb API med sökvägen
+`/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat`. En GET mot
+rotadressen returnerar metadata med tillgängliga dimensioner: Region
+(kommunkod), Parti och Tid (valår). Data hämtas via en POST med ett
+JSON-urval där du väljer önskade kommuner, partier och år. Innehållskoden
+för mandat är `ME0104C1`. Svar ges i PxWeb JSON-format.
 
 ## Schema/fält vi använder
 - `data[].key[0]` — kommunkod (4 siffror).

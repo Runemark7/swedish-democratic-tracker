@@ -5,7 +5,9 @@ kind: synthesized
 upstream: ~
 license: ~
 freshness: deterministisk (rendrar samma resultat för samma input)
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: frozen
+verification_notes: ~
 used_by:
   - / (Kommande beslut-panel)
   - /riksdag (Agenda-kortet)

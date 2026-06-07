@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit",
     "generate:api": "openapi-typescript ../api/openapi.yaml -o src/shared/api-contract.ts",
     "sync:data-sources": "node scripts/sync-data-sources.mjs",
+    "verify:sources": "node scripts/verify-sources.mjs",
+    "test:scripts": "node --test scripts/__tests__/*.test.mjs",
     "predev": "npm run sync:data-sources",
     "prebuild": "npm run sync:data-sources"
   },

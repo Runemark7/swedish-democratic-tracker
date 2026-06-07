@@ -192,6 +192,7 @@ export function MunicipalityDetailPage() {
                   }}
                 >
                   · {data.population}
+                  <SourceMarker sourceId="scb-befolkning" />
                 </span>
               )}
               {/* Desktop: invisible-select overlay */}

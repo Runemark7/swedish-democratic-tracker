@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { riksdagApi } from "./api";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 
 function Skeleton() {
   return (
@@ -143,6 +144,7 @@ export function AuthorityDetailPage() {
             <div style={{ textAlign: "right" }}>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 18, fontWeight: 600, color: "var(--color-fg)" }}>
                 {authority.expenditureMdkr.toFixed(1)} mdkr
+                <SourceMarker sourceId="statskontoret-arsutfall" />
               </div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.05em" }}>
                 kostnad {authority.year}
@@ -152,6 +154,7 @@ export function AuthorityDetailPage() {
               <div style={{ textAlign: "right" }}>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 18, fontWeight: 600, color: "var(--color-fg)" }}>
                   {authority.headcountInt.toLocaleString("sv-SE")}
+                  <SourceMarker sourceId="statskontoret-myndighetsforteckning" />
                 </div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.05em" }}>
                   anställda {authority.year}
@@ -174,6 +177,7 @@ export function AuthorityDetailPage() {
                 </div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg)", minWidth: "5.5rem", textAlign: "right" }}>
                   {row.expenditureMdkr.toFixed(1)} mdkr
+                  <SourceMarker sourceId="statskontoret-arsutfall" />
                 </div>
               </div>
 
@@ -185,6 +189,7 @@ export function AuthorityDetailPage() {
                   </div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg)", minWidth: "4.5rem", textAlign: "right" }}>
                     {row.headcountInt ? row.headcountInt.toLocaleString("sv-SE") : "–"}
+                    {row.headcountInt ? <SourceMarker sourceId="scb-kls-headcount" /> : null}
                   </div>
                 </div>
               )}

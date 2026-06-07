@@ -19,6 +19,26 @@ const GEN_FILE = path.join(
 );
 
 const REQUIRED_KINDS = ["api", "csv", "seed", "synthesized"];
+const REQUIRED_STATUSES = ["verified", "frozen", "unsure"];
+
+function validateStatus(file, fm) {
+  if (!fm.verification_status) {
+    throw new Error(`${file}: missing 'verification_status' (one of ${REQUIRED_STATUSES.join(", ")})`);
+  }
+  if (!REQUIRED_STATUSES.includes(fm.verification_status)) {
+    throw new Error(
+      `${file}: verification_status must be one of ${REQUIRED_STATUSES.join(", ")}, got "${fm.verification_status}"`
+    );
+  }
+  if (fm.verification_status === "unsure") {
+    const notes = (fm.verification_notes ?? "").toString().trim();
+    if (!notes) {
+      throw new Error(
+        `${file}: verification_status=unsure requires non-empty 'verification_notes'`
+      );
+    }
+  }
+}
 
 function firstParagraph(body) {
   const trimmed = body.trim();
@@ -83,6 +103,7 @@ async function main() {
       throw new Error(`${file}: kind must be one of ${REQUIRED_KINDS.join(", ")}, got "${fm.kind}"`);
     }
     if (!fm.last_verified) throw new Error(`${file}: missing 'last_verified'`);
+    validateStatus(file, fm);
 
     await copyFile(srcPath, dstPath);
 
@@ -95,6 +116,10 @@ async function main() {
       freshness: fm.freshness ?? null,
       lastVerified: String(fm.last_verified),
       blurb: firstParagraph(parsed.content),
+      verificationStatus: fm.verification_status,
+      verificationNotes: fm.verification_notes
+        ? String(fm.verification_notes).trim()
+        : null,
     });
   }
 
