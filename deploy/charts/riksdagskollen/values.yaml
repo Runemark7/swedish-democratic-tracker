@@ -81,27 +81,5 @@ ingress:
 ## Must be pre-created with key: DATABASE_URL
 dbSecretName: riksdagskollen-db-secret
 
-## bitnami/postgresql subchart — used when you want postgres in-cluster
-postgresql:
-  enabled: true
-  auth:
-    existingSecret: riksdagskollen-db-secret
-    secretKeys:
-      adminPasswordKey: postgres-password
-      userPasswordKey: password
-    username: riksdagskollen
-    database: riksdagskollen
-  primary:
-    persistence:
-      enabled: true
-      size: 10Gi
-    resources:
-      requests:
-        cpu: 250m
-        memory: 256Mi
-      limits:
-        cpu: 1000m
-        memory: 512Mi
-
 migrations:
   enabled: false

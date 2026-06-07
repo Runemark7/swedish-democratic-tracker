@@ -18,8 +18,6 @@ frontend:
     tag: 0a653590f2e6cbbef29638b1b173f9cac579605f
   imagePullSecrets:
     - name: ghcr-pull-secret
-postgresql:
-  enabled: false
 ingress:
   host: sdt.runevibe.se
   tlsSecretName: sdt-runevibe-tls

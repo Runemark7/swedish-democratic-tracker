@@ -5,8 +5,5 @@ type: application
 version: 0.1.0
 appVersion: "0.1.0"
 
-dependencies:
-  - name: postgresql
-    version: "16.x.x"
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
+# Database lives on Neon (serverless Postgres). DATABASE_URL is supplied via
+# the secret named in values.yaml `dbSecretName`. No in-cluster postgres.
