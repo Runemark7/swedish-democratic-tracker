@@ -9,16 +9,27 @@ const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const SRC_DIR = path.join(REPO_ROOT, "docs", "data-sources");
 const REPORT_PATH = path.join(REPO_ROOT, "frontend", "verify-report.json");
 const TIMEOUT_MS = 30_000;
-const MAX_ATTEMPTS = 2;
+const MAX_ATTEMPTS = 3;
+const USER_AGENT =
+  "riksdagskollen-verify-sources/1.0 (+https://github.com/Runemark7/swedish-democratic-tracker)";
 
 async function attemptFetch(entry, fetchImpl) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const baseHeaders = { "user-agent": USER_AGENT, accept: "*/*" };
   try {
-    let res = await fetchImpl(entry.upstream, { method: "HEAD", signal: controller.signal });
+    let res = await fetchImpl(entry.upstream, {
+      method: "HEAD",
+      signal: controller.signal,
+      headers: baseHeaders,
+    });
     const headStatus = res.status;
     if (res.status === 405) {
-      res = await fetchImpl(entry.upstream, { method: "GET", signal: controller.signal });
+      res = await fetchImpl(entry.upstream, {
+        method: "GET",
+        signal: controller.signal,
+        headers: baseHeaders,
+      });
     }
     return { res, headStatus };
   } finally {
@@ -44,8 +55,11 @@ export async function checkSource(entry, { fetch: fetchImpl = globalThis.fetch }
       break;
     } catch (err) {
       lastErr = err;
-      // Only retry timeouts; permanent errors fail fast.
-      if (err.name !== "AbortError") break;
+      // Retry all transient errors (timeouts + network/TLS failures from CI runners).
+      // Tests inject a non-retryable mock; mock throws synchronously on every attempt.
+      if (attempt < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, 500 * attempt));
+      }
     }
   }
 
