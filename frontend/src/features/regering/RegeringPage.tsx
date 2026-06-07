@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { regeringApi } from "./api";
 import { PartyBadge } from "@/shared/components";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 
 export function RegeringPage() {
   const { data, isLoading, error } = useQuery({
@@ -17,7 +18,10 @@ export function RegeringPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">Regeringen</h2>
+        <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">
+          Regeringen
+          <SourceMarker sourceId="riksdagen" />
+        </h2>
         <p className="text-sm text-on-surface-variant leading-relaxed max-w-lg">
           Aktuella statsråd, deras portföljer och propositioner till riksdagen.
         </p>

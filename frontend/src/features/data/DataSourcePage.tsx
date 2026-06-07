@@ -16,6 +16,18 @@ const KIND_LABEL: Record<string, string> = {
   synthesized: "Härledd",
 };
 
+const STATUS_LABEL: Record<string, string> = {
+  verified: "Verifierad",
+  frozen: "Statisk — verifierad en gång",
+  unsure: "⚠ Ej verifierad",
+};
+
+const STATUS_BG: Record<string, { bg: string; fg: string }> = {
+  verified: { bg: "transparent", fg: "var(--color-fg)" },
+  frozen: { bg: "transparent", fg: "var(--color-fg)" },
+  unsure: { bg: "var(--color-warn, #c08a2a)", fg: "var(--color-bg)" },
+};
+
 function getMarkdown(id: string): string | null {
   // Vite glob keys look like "../../data-sources/scb-kfmandat.md"
   const key = Object.keys(RAW_MARKDOWN).find((k) => k.endsWith(`/${id}.md`));
@@ -89,6 +101,27 @@ export function DataSourcePage() {
             {entry.name}
           </h1>
         </header>
+
+        <div
+          style={{
+            background: STATUS_BG[entry.verificationStatus].bg,
+            color: STATUS_BG[entry.verificationStatus].fg,
+            border: "1px solid var(--color-border)",
+            padding: "10px 14px",
+            marginBottom: 14,
+            fontSize: 12,
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+          }}
+        >
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+            {STATUS_LABEL[entry.verificationStatus]} · senast {entry.lastVerified}
+          </div>
+          {entry.verificationNotes ? (
+            <div style={{ fontSize: 12, lineHeight: 1.5 }}>{entry.verificationNotes}</div>
+          ) : null}
+        </div>
 
         <div
           style={{

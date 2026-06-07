@@ -12,6 +12,7 @@ frontend/dist/
 .playwright-mcp/
 .claude/worktrees/
 .claude/scheduled_tasks.lock
+frontend/verify-report.json
 
 # Environment
 .env

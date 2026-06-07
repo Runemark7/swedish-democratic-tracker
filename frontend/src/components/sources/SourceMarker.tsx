@@ -48,6 +48,11 @@ export function SourceMarker({ sourceId, label }: SourceMarkerProps) {
   }
 
   const glyph = KIND_GLYPH[entry.kind] ?? "ⓘ";
+  const markerColor =
+    entry.verificationStatus === "unsure"
+      ? "var(--color-warn, #c08a2a)"
+      : "var(--color-fg-muted)";
+  const ariaSuffix = entry.verificationStatus === "unsure" ? " (ej verifierad)" : "";
 
   return (
     <span style={{ position: "relative", display: "inline" }}>
@@ -58,7 +63,7 @@ export function SourceMarker({ sourceId, label }: SourceMarkerProps) {
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        aria-label={label ?? `Källa: ${entry.name}`}
+        aria-label={label ?? `Källa: ${entry.name}${ariaSuffix}`}
         aria-expanded={open}
         style={{
           display: "inline-flex",
@@ -72,7 +77,7 @@ export function SourceMarker({ sourceId, label }: SourceMarkerProps) {
           minHeight: 24,
           background: "transparent",
           border: "none",
-          color: "var(--color-fg-muted)",
+          color: markerColor,
           fontSize: 11,
           lineHeight: 1,
           cursor: "pointer",

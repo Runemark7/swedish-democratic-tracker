@@ -5,7 +5,9 @@ kind: api
 upstream: https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104B/Ltmandat
 license: PxWeb open data — fri användning
 freshness: 4-årscykel (val)
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: unsure
+verification_notes: "Reproduktionsnarrativet innehöll ett curl-kommando med POST-kropp (förbjudet i käll-MD); ersatt med prosaöversikt. Repro-narrativet är nu godkänt."
 used_by:
   - /region/:code (mandat, hemicycle, koalitionstyp)
 ---
@@ -15,14 +17,20 @@ SCB:s tabell över mandatfördelning i regionfullmäktige (landsting).
 Syster till Kfmandat men för regionnivå.
 
 ## Hur du själv kommer åt datan
-```bash
-curl -s -X POST \
-  'https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104B/Ltmandat' \
-  -H 'Content-Type: application/json' \
-  -d '{"query":[{"code":"Region","selection":{"filter":"item","values":["01L"]}},{"code":"Parti","selection":{"filter":"item","values":["M","C","FP","KD","MP","S","V","SD","ÖVRIGA"]}},{"code":"ContentsCode","selection":{"filter":"item","values":["ME0104C2"]}},{"code":"Tid","selection":{"filter":"item","values":["2022"]}}],"response":{"format":"json"}}'
-```
+Tabellen heter **Ltmandat** och finns i SCB:s statistikdatabas under
+val och demokrati. Du når den via SCBs webbgränssnitt på
+<https://www.statistikdatabasen.scb.se/> — sök på "Ltmandat" eller
+navigera via Val → Allmänna val → Landstingsfullmäktige → Ltmandat.
 
-Regionkod-format: tvåsiffrig kommunkod-prefix + `L` (t.ex. `01L`,
+Teknisk åtkomst sker via SCB:s PxWeb API med sökvägen
+`/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104B/Ltmandat`. En GET mot
+rotadressen returnerar metadata med dimensionerna Region (regionkod),
+Parti och Tid (valår). Data hämtas via en POST med ett JSON-urval där
+du väljer önskade regioner (koder i formatet `XXL`, t.ex. `01L` för
+Stockholm), partier och år. Innehållskoden för mandat är `ME0104C2`.
+Svar ges i PxWeb JSON-format.
+
+Regionkod-format: tvåsiffrig länsbokstavsprefix + `L` (t.ex. `01L`,
 `14L`). Endast koder som slutar på `L` används.
 
 ## Schema/fält vi använder

@@ -13,6 +13,18 @@ const KIND_LABEL: Record<SourceKind | "all", string> = {
 
 const KIND_ORDER: ("all" | SourceKind)[] = ["all", "api", "csv", "seed", "synthesized"];
 
+const STATUS_LABEL: Record<string, string> = {
+  verified: "VERIFIERAD",
+  frozen: "STATISK",
+  unsure: "EJ VERIFIERAD",
+};
+
+const STATUS_BG: Record<string, { bg: string; fg: string }> = {
+  verified: { bg: "transparent", fg: "var(--color-fg-muted)" },
+  frozen: { bg: "transparent", fg: "var(--color-fg-muted)" },
+  unsure: { bg: "var(--color-warn, #c08a2a)", fg: "var(--color-bg)" },
+};
+
 export function DataIndexPage() {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [filter, setFilter] = useState<"all" | SourceKind>("all");
@@ -95,6 +107,21 @@ export function DataIndexPage() {
             <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
               <span style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--color-fg)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, minWidth: 0 }}>
                 {e.name}
+              </span>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 9,
+                  color: STATUS_BG[e.verificationStatus].fg,
+                  background: STATUS_BG[e.verificationStatus].bg,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  border: "1px solid var(--color-border)",
+                  padding: "1px 6px",
+                  flexShrink: 0,
+                }}
+              >
+                {STATUS_LABEL[e.verificationStatus]}
               </span>
               <span
                 style={{

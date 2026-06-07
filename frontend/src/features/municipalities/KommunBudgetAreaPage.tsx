@@ -8,6 +8,7 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { MunicipalityBudgetSnapshot } from "@/shared/types";
 import { BarsWithMean } from "@/features/budget/components/BarsWithMean";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 
 const INITIAL_LIMIT = 20;
 
@@ -272,6 +273,7 @@ export function KommunBudgetAreaPage() {
           }}
         >
           Nettokostnad mnkr — 4-årsperiod
+          <SourceMarker sourceId="kolada-spending" />
         </div>
 
         {trendPoints.length === 0 ? (

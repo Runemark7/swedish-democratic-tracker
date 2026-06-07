@@ -2,10 +2,12 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMyndigheterList, useMyndigheterStats } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import type { SourceId } from "@/components/sources/SourceRegistry";
 
 type UnderGovChoice = "all" | "true" | "false";
 
-function Stat({ label, value, caption, missing }: { label: string; value: string; caption: string; missing?: number }) {
+function Stat({ label, value, caption, missing, sourceId }: { label: string; value: string; caption: string; missing?: number; sourceId?: SourceId }) {
   return (
     <div>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.15em", color: "var(--color-fg-muted)", textTransform: "uppercase", marginBottom: 6 }}>
@@ -13,6 +15,7 @@ function Stat({ label, value, caption, missing }: { label: string; value: string
       </div>
       <div style={{ fontFamily: "var(--font-serif)", fontSize: 26, fontWeight: 400, color: "var(--color-fg)", lineHeight: 1.05 }}>
         {value}
+        {sourceId && <SourceMarker sourceId={sourceId} />}
       </div>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)", marginTop: 4, lineHeight: 1.4 }}>
         {caption}
@@ -82,12 +85,14 @@ export function MyndigheterListPage() {
               value={`${stats.totalExpenditureMdkr.toFixed(0)} mdkr`}
               caption={`${stats.withExpenditure} av ${stats.total} myndigheter har utgiftsdata`}
               missing={stats.total - stats.withExpenditure}
+              sourceId="statskontoret-arsutfall"
             />
             <Stat
               label="Totalt anställda"
               value={stats.totalHeadcount.toLocaleString("sv-SE")}
               caption={`${stats.withHeadcount} av ${stats.total} har anställdadata`}
               missing={stats.total - stats.withHeadcount}
+              sourceId="statskontoret-myndighetsforteckning"
             />
             <Stat
               label="Under regeringen"
@@ -170,9 +175,11 @@ export function MyndigheterListPage() {
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, textAlign: "right", color: a.headcountInt ? "var(--color-fg)" : "var(--color-fg-muted)" }}>
               {a.headcountInt ? a.headcountInt.toLocaleString("sv-SE") : "saknas"}
+              {a.headcountInt ? <SourceMarker sourceId="statskontoret-myndighetsforteckning" /> : null}
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, textAlign: "right", color: a.expenditureMdkr != null ? "var(--color-fg)" : "var(--color-fg-muted)" }}>
               {a.expenditureMdkr != null ? `${a.expenditureMdkr.toFixed(1)} mdkr` : "saknas"}
+              {a.expenditureMdkr != null && <SourceMarker sourceId="statskontoret-arsutfall" />}
             </span>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, textAlign: "right", color: "var(--color-fg-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {a.department || "—"}

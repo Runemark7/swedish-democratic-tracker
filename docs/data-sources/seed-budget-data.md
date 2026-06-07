@@ -5,7 +5,9 @@ kind: seed
 upstream: https://www.regeringen.se/rattsliga-dokument/proposition/
 license: Public domain — Regeringskansliet
 freshness: engångs per år; uppdateras vid ny budget
-last_verified: 2026-05-08
+last_verified: 2026-06-06
+verification_status: frozen
+verification_notes: ~
 used_by:
   - /budget (budgetöversikt)
   - /budget/areas/:code (UO-historik)
