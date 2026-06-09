@@ -2,12 +2,13 @@ package workers
 
 import (
 	"context"
-	"log/slog"
-	"time"
 
 	"riksdagskollen/internal/politicians"
 )
 
+// ActiveParties is the named-party list used by the speeches and votes workers
+// for per-party aggregation. The politicians worker no longer iterates it (see
+// Run) because it excludes party-less members.
 var ActiveParties = []string{"S", "M", "SD", "C", "V", "KD", "L", "MP"}
 
 type PoliticiansWorker struct {
@@ -21,14 +22,8 @@ func NewPoliticiansWorker(svc *politicians.Service) PoliticiansWorker {
 func (w *PoliticiansWorker) Name() string { return "fetch-politicians" }
 
 func (w *PoliticiansWorker) Run(ctx context.Context) error {
-	for i, party := range ActiveParties {
-		if err := w.svc.SyncParty(ctx, party); err != nil {
-			slog.Warn("failed to sync party politicians, continuing", "party", party, "error", err)
-			continue
-		}
-		if i < len(ActiveParties)-1 {
-			time.Sleep(200 * time.Millisecond)
-		}
-	}
-	return nil
+	// Sync the full roster in one call (empty party filter) instead of looping
+	// the named parties — that loop missed party-less members ("-", politiska
+	// vildar), leaving the active roster 9 short of the 349 seats.
+	return w.svc.SyncAll(ctx)
 }
