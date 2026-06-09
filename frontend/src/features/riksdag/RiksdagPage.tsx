@@ -453,14 +453,16 @@ export function RiksdagPage() {
               <div style={{ marginBottom: 12 }}>
                 <Trend trend={k.trend} delta={k.delta} worseHigher={k.worseHigher} />
               </div>
-              <GoalBadge
-                raw={k.raw}
-                target={k.target}
-                worseHigher={k.worseHigher}
-                unit={k.unit}
-                note={k.note}
-                sourceUrl={k.sourceUrl}
-              />
+              {k.target != null && (
+                <GoalBadge
+                  raw={k.raw}
+                  target={k.target}
+                  worseHigher={k.worseHigher}
+                  unit={k.unit}
+                  note={k.note}
+                  sourceUrl={k.sourceUrl}
+                />
+              )}
               {k.description && (
                 <div
                   style={{

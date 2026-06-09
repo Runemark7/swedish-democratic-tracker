@@ -6,37 +6,37 @@ export const REGION_KPI_META: Record<string, KpiMeta> = {
   N60008: {
     label: "Nettokostnad/inv",
     description: "Regionens driftkostnad per invånare. Speglar servicenivå och effektivitet inom vård och kollektivtrafik.",
-    unit: " kr/inv", target: 40000, worseHigher: true, format: v => `${Math.round(v).toLocaleString("sv-SE")} kr`,
+    unit: " kr/inv", worseHigher: true, format: v => `${Math.round(v).toLocaleString("sv-SE")} kr`,
   },
   N63016: {
     label: "Resultat/skatt",
     description: "Regionens överskott i förhållande till skatteintäkterna. Under 2 % riskerar regionen att tvingas skära i vården.",
-    unit: "%", target: 2.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
+    unit: "%", worseHigher: false, format: v => `${v.toFixed(1)} %`,
   },
   N63007: {
     label: "Soliditet",
     description: "Hur stor del av regionens tillgångar som är skuldfria. Låg soliditet ökar sårbarheten vid ekonomiska kriser.",
-    unit: "%", target: 25.0, worseHigher: false, format: v => `${v.toFixed(0)} %`,
+    unit: "%", worseHigher: false, format: v => `${v.toFixed(0)} %`,
   },
   N79173: {
     label: "Primärvård 3 dagar",
     description: "Andel patienter som fick medicinsk bedömning inom tre dagar i primärvården. Visar tillgängligheten till vård i din region.",
-    unit: "%", target: 90.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
+    unit: "%", worseHigher: false, format: v => `${v.toFixed(1)} %`,
   },
   N79179: {
     label: "Svar primärvård",
     description: "Andel samtal till primärvården som besvarades samma dag. Låg andel kan tyda på underbemanning eller hög belastning.",
-    unit: "%", target: 90.0, worseHigher: false, format: v => `${v.toFixed(1)} %`,
+    unit: "%", worseHigher: false, format: v => `${v.toFixed(1)} %`,
   },
   N60404: {
     label: "Kollektivtrafik",
     description: "Antal resor med kollektivtrafik per invånare och år. Speglar hur väl regionen uppfyller sin lagstadgade skyldighet att tillhandahålla allmän kollektivtrafik.",
-    unit: " resor/inv", target: 120, worseHigher: false, format: v => `${Math.round(v)} resor/inv`,
+    unit: " resor/inv", worseHigher: false, format: v => `${Math.round(v)} resor/inv`,
   },
   N85012: {
     label: "Regional utv.",
     description: "Nettokostnad för regional utveckling per invånare. Täcker EU-program, regional strategi och infrastrukturplanering enligt Lag (2010:630).",
-    unit: " kr/inv", target: 1200, worseHigher: true, format: v => `${Math.round(v).toLocaleString("sv-SE")} kr/inv`,
+    unit: " kr/inv", worseHigher: true, format: v => `${Math.round(v).toLocaleString("sv-SE")} kr/inv`,
   },
 };
 
