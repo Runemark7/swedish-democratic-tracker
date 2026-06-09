@@ -5,9 +5,9 @@ kind: api
 upstream: https://api.kolada.se/v3
 license: Kommun- och regionkollade — fri användning
 freshness: årlig
-last_verified: 2026-06-06
-verification_status: unsure
-verification_notes: "Reproduktionsnarrativet innehöll curl-kommandon (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
+last_verified: 2026-06-08
+verification_status: verified
+verification_notes: ""
 used_by:
   - /region/:code (KPI strip)
   - /kommun/:code (KPI strip)

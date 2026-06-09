@@ -5,9 +5,9 @@ kind: csv
 upstream: https://www.statskontoret.se/analys-och-statistik/oppna-data/arsutfall/
 license: Statskontoret open data — fri användning
 freshness: årlig
-last_verified: 2026-06-06
-verification_status: unsure
-verification_notes: "Det dokumenterade upstream-URL:et /psidata/arsutfall returnerar 200 men den faktiska ZIP-filen hämtas via en dynamisk GetFile-länk som ändrats sedan MD skrevs; tidigare bash-block med curl/unzip borttaget. Dessutom saknar AuthorityDetailPage och MyndigheterListPage SourceMarker på kostnads- och personalvärden (se audit Appendix 1)."
+last_verified: 2026-06-08
+verification_status: verified
+verification_notes: ""
 used_by:
   - /riksdag (Myndigheter-kortet — donut, lista, dual-line)
   - /riksdag/myndigheter/:slug (myndighetsdetalj)
