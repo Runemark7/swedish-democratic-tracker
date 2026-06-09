@@ -231,7 +231,6 @@ function kpiItemsToStrip(
       description: m.description,
       value: m.format(latest.value),
       raw: latest.value,
-      target: m.target,
       worseHigher: m.worseHigher,
       unit: m.unit,
       trend,
