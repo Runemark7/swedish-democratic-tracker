@@ -13,14 +13,15 @@ import (
 	"riksdagskollen/internal/regions/ports"
 )
 
-const baseURL = "https://api.kolada.se/v3"
+const defaultBaseURL = "https://api.kolada.se/v3"
 
 type Client struct {
-	http *http.Client
+	http    *http.Client
+	baseURL string // overridable for tests
 }
 
 func NewClient() *Client {
-	return &Client{http: &http.Client{Timeout: 10 * time.Second}}
+	return &Client{http: &http.Client{Timeout: 10 * time.Second}, baseURL: defaultBaseURL}
 }
 
 func (c *Client) FetchKPIs(ctx context.Context, munCode string, kpiCodes []string, years []int) ([]ports.KPIValue, error) {
@@ -60,7 +61,7 @@ func (c *Client) FetchKPIs(ctx context.Context, munCode string, kpiCodes []strin
 }
 
 func (c *Client) fetchOneKPI(ctx context.Context, kpi, munCode, yearsStr string) ([]ports.KPIValue, error) {
-	url := fmt.Sprintf("%s/data/kpi/%s/municipality/%s/year/%s", baseURL, kpi, munCode, yearsStr)
+	url := fmt.Sprintf("%s/data/kpi/%s/municipality/%s/year/%s", c.baseURL, kpi, munCode, yearsStr)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -81,10 +82,10 @@ func (c *Client) fetchOneKPI(ctx context.Context, kpi, munCode, yearsStr string)
 			KPI    string `json:"kpi"`
 			Period int    `json:"period"`
 			Values []struct {
-				Gender    string  `json:"gender"`
-				Value     float64 `json:"value"`
-				Status    string  `json:"status"`
-				IsDeleted bool    `json:"isdeleted"`
+				Gender    string   `json:"gender"`
+				Value     *float64 `json:"value"`
+				Status    string   `json:"status"`
+				IsDeleted bool     `json:"isdeleted"`
 			} `json:"values"`
 		} `json:"values"`
 	}
@@ -97,11 +98,14 @@ func (c *Client) fetchOneKPI(ctx context.Context, kpi, munCode, yearsStr string)
 	var result []ports.KPIValue
 	for _, v := range payload.Values {
 		for _, val := range v.Values {
-			if val.Gender == "T" && !val.IsDeleted {
+			// A null value means the entity has not reported for that period.
+			// Treat it as no data (skip) rather than letting JSON null decode
+			// to 0.0 and surface as a real zero.
+			if val.Gender == "T" && !val.IsDeleted && val.Value != nil {
 				result = append(result, ports.KPIValue{
 					KPI:    v.KPI,
 					Year:   v.Period,
-					Value:  val.Value,
+					Value:  *val.Value,
 					Status: val.Status,
 				})
 				break
@@ -118,7 +122,7 @@ func (c *Client) FetchKPIAllMunicipalities(ctx context.Context, kpiCode string, 
 	}
 	yearsStr := strings.Join(yearStrs, ",")
 
-	url := fmt.Sprintf("%s/data/kpi/%s/year/%s", baseURL, kpiCode, yearsStr)
+	url := fmt.Sprintf("%s/data/kpi/%s/year/%s", c.baseURL, kpiCode, yearsStr)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -140,10 +144,10 @@ func (c *Client) FetchKPIAllMunicipalities(ctx context.Context, kpiCode string, 
 			Municipality string `json:"municipality"`
 			Period       int    `json:"period"`
 			Values       []struct {
-				Gender    string  `json:"gender"`
-				Value     float64 `json:"value"`
-				Status    string  `json:"status"`
-				IsDeleted bool    `json:"isdeleted"`
+				Gender    string   `json:"gender"`
+				Value     *float64 `json:"value"`
+				Status    string   `json:"status"`
+				IsDeleted bool     `json:"isdeleted"`
 			} `json:"values"`
 		} `json:"values"`
 	}
@@ -159,12 +163,15 @@ func (c *Client) FetchKPIAllMunicipalities(ctx context.Context, kpiCode string, 
 			continue // skip national aggregate
 		}
 		for _, val := range v.Values {
-			if val.Gender == "T" && !val.IsDeleted {
+			// Skip null values: a missing reading is "no data", not 0.0, and
+			// must not surface as a real zero (e.g. a region falsely ranked
+			// last for the latest year before it has reported).
+			if val.Gender == "T" && !val.IsDeleted && val.Value != nil {
 				result = append(result, ports.KPIValueWithMun{
 					MunCode: v.Municipality,
 					KPI:     v.KPI,
 					Year:    v.Period,
-					Value:   val.Value,
+					Value:   *val.Value,
 					Status:  val.Status,
 				})
 				break
