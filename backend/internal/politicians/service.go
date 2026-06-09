@@ -16,9 +16,12 @@ func NewService(repo ports.PoliticianRepository, riksdagen ports.RiksdagenMember
 	return &Service{repo: repo, riksdagen: riksdagen}
 }
 
-// SyncParty fetches all active members for a party and upserts them.
-func (s *Service) SyncParty(ctx context.Context, party string) error {
-	members, err := s.riksdagen.FetchMembers(ctx, party, "tjanstgorande")
+// SyncAll fetches every currently-serving member and upserts them. It queries
+// with an empty party filter so the riksdagen personlista endpoint returns all
+// 349 members, including party-less ones (status "-", politiska vildar) that a
+// per-party sync would miss.
+func (s *Service) SyncAll(ctx context.Context) error {
+	members, err := s.riksdagen.FetchMembers(ctx, "", "tjanstgorande")
 	if err != nil {
 		return err
 	}
