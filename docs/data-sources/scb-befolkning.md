@@ -5,9 +5,9 @@ kind: api
 upstream: https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy
 license: PxWeb open data — fri användning
 freshness: årlig (kvartal för kommunnivå)
-last_verified: 2026-06-06
-verification_status: unsure
-verification_notes: "Reproduktionsnarrativet innehöll ett curl-kommando med POST-kropp (förbjudet i käll-MD); ersatt med prosaöversikt. Dessutom renderar MunicipalityDetailPage befolkningssiffran utan SourceMarker (se audit Appendix 1)."
+last_verified: 2026-06-08
+verification_status: verified
+verification_notes: ""
 used_by:
   - /region landing (population per region)
   - /kommun landing (population per kommun)

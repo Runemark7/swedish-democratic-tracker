@@ -69,13 +69,56 @@ func Run(ctx context.Context, pool *pgxpool.Pool) error {
 		return fmt.Errorf("fetch ltmandat meta: %w", err)
 	}
 	allRegCodes, allRegNames := codesAndNames(regMeta)
-	var regCodes, regDBCodes, regNames []string
-	for i, code := range allRegCodes {
-		if strings.HasSuffix(code, "L") && code != "00L" {
-			regCodes = append(regCodes, code)
-			regDBCodes = append(regDBCodes, strings.TrimSuffix(code, "L"))
-			regNames = append(regNames, allRegNames[i])
+
+	// Valid current region codes come from the regions table (seeded by
+	// migration). SCB's Ltmandat list also contains "Summa regioner" (00L) and
+	// historical landsting — e.g. 12LG Malmöhus, 14LG Bohuslandstinget, 11L
+	// Kristianstad — that must NOT map to a current region. Conversely, some
+	// current regions use an "NNLG" code rather than "NNL": notably Dalarna is
+	// "20LG" with no plain "20L". So we select, per current region code (the
+	// leading two digits), the plain "NNL" code when present and fall back to
+	// the "NNLG" variant otherwise. The earlier HasSuffix("L") filter silently
+	// dropped Dalarna, leaving it on the migration's placeholder mandate count.
+	validRegion := make(map[string]bool)
+	rows, qerr := pool.Query(ctx, `SELECT code FROM regions`)
+	if qerr != nil {
+		return fmt.Errorf("load region codes: %w", qerr)
+	}
+	for rows.Next() {
+		var c string
+		if err := rows.Scan(&c); err != nil {
+			rows.Close()
+			return fmt.Errorf("scan region code: %w", err)
 		}
+		validRegion[c] = true
+	}
+	rows.Close()
+
+	chosenCode := make(map[string]string) // dbCode -> SCB Ltmandat api code
+	chosenName := make(map[string]string)
+	for i, code := range allRegCodes {
+		if code == "00L" || len(code) < 2 {
+			continue
+		}
+		db := code[:2]
+		if !validRegion[db] {
+			continue
+		}
+		if existing, ok := chosenCode[db]; ok {
+			// Prefer the plain "NNL" code over an "NNLG" variant.
+			if strings.HasSuffix(existing, "G") && !strings.HasSuffix(code, "G") {
+				chosenCode[db], chosenName[db] = code, allRegNames[i]
+			}
+			continue
+		}
+		chosenCode[db], chosenName[db] = code, allRegNames[i]
+	}
+
+	var regCodes, regDBCodes, regNames []string
+	for db, code := range chosenCode {
+		regCodes = append(regCodes, code)
+		regDBCodes = append(regDBCodes, db)
+		regNames = append(regNames, chosenName[db])
 	}
 	slog.Info("seeder: found regions", "count", len(regCodes))
 
@@ -360,6 +403,81 @@ func sumMandates(byParty map[string]int) int {
 		total += m
 	}
 	return total
+}
+
+// FetchPopulations returns population per municipality code, fetched live from
+// SCB in batches (the same call the startup seeder uses, Tid 2023). Intended
+// for the value-verification audit. It first reads the table metadata and drops
+// any code SCB does not list as a valid Region value, so one stale/unknown code
+// cannot reject (HTTP 400) an entire batch. Codes filtered out are simply
+// absent from the result; the caller reports them as "not in SCB set".
+func FetchPopulations(ctx context.Context, c *http.Client, codes []string) (map[string]int, error) {
+	meta, err := getMeta(ctx, c, befolkningURL)
+	if err != nil {
+		return nil, fmt.Errorf("population meta: %w", err)
+	}
+	valid := make(map[string]bool)
+	for _, v := range meta.Variables {
+		if v.Code == "Region" {
+			for _, code := range v.Values {
+				valid[code] = true
+			}
+		}
+	}
+	known := make([]string, 0, len(codes))
+	for _, code := range codes {
+		if valid[code] {
+			known = append(known, code)
+		}
+	}
+	return fetchPopulations(ctx, c, known)
+}
+
+// FetchMandateTotals returns total elected council seats per entity NAME,
+// fetched live from SCB's Kfmandat (municipalities) and Ltmandat (regions)
+// tables. It reuses the same PxWeb calls the startup seeder uses. Keyed by
+// name so callers need not reproduce the region code→SCB code mapping.
+func FetchMandateTotals(ctx context.Context, c *http.Client) (mun, reg map[string]int, err error) {
+	munMeta, err := getMeta(ctx, c, kfmandatURL)
+	if err != nil {
+		return nil, nil, fmt.Errorf("kfmandat meta: %w", err)
+	}
+	munCodes, munNames := codesAndNames(munMeta)
+	munByCode, err := fetchMandates(ctx, c, kfmandatURL, munCodes, "ME0104C1")
+	if err != nil {
+		return nil, nil, fmt.Errorf("kfmandat: %w", err)
+	}
+	regMeta, err := getMeta(ctx, c, ltmandatURL)
+	if err != nil {
+		return nil, nil, fmt.Errorf("ltmandat meta: %w", err)
+	}
+	regCodes, regNames := codesAndNames(regMeta)
+	regByCode, err := fetchMandates(ctx, c, ltmandatURL, regCodes, "ME0104C2")
+	if err != nil {
+		return nil, nil, fmt.Errorf("ltmandat: %w", err)
+	}
+
+	mun = totalsByName(munCodes, munNames, munByCode)
+	reg = totalsByName(regCodes, regNames, regByCode)
+	return mun, reg, nil
+}
+
+// totalsByName maps each code's per-party mandate map to a name→total entry.
+// Entries with zero mandates (e.g. historical landsting no longer in use) are omitted.
+func totalsByName(codes, names []string, byCode map[string]map[string]int) map[string]int {
+	out := make(map[string]int, len(codes))
+	for i, code := range codes {
+		total := sumMandates(byCode[code])
+		if total == 0 {
+			continue
+		}
+		name := code
+		if i < len(names) {
+			name = names[i]
+		}
+		out[name] = total
+	}
+	return out
 }
 
 func deriveGoverning(byParty map[string]int, total int) []string {

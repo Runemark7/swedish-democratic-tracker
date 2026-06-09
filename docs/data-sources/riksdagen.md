@@ -5,9 +5,9 @@ kind: api
 upstream: https://data.riksdagen.se
 license: Public domain — Sveriges riksdag
 freshness: "dagligen (cron: politicians @daily, speeches @daily, votes @daily)"
-last_verified: 2026-06-06
-verification_status: unsure
-verification_notes: "Reproduktionsnarrativet innehöll tre curl-kommandon (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
+last_verified: 2026-06-08
+verification_status: verified
+verification_notes: ""
 used_by:
   - / (Beslut idag, Aktuella debatter, Veckans omröstningar, Vad partierna säger, Kommande beslut)
   - /riksdag (live votes, agenda, mandat, government composition)
