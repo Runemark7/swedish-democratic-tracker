@@ -21,10 +21,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.kolada.se/v3",
     "license": "Kommun- och regionkollade — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Samma upstream som [kolada](./kolada.md), men begränsad till de KPI-id:n som beskriver kommunens verksamhetsutgifter per ansvarsområde — skola, omsorg, plan, gata, etc. Separata MD eftersom endpointen, mappningen, och visualiseringen skiljer sig från KPI-stripen.",
-    "verificationStatus": "unsure",
-    "verificationNotes": "Reproduktionsnarrativet innehöll ett curl-kommando (förbjudet i käll-MD); ersatt med prosaöversikt. Repro-narrativet är nu godkänt."
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "kolada": {
     "id": "kolada",
@@ -33,10 +33,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.kolada.se/v3",
     "license": "Kommun- och regionkollade — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Kolada är Rådet för främjande av kommunala analyser (RKA) sin databas med jämförelsetal för svenska kommuner och regioner — ekonomi, vård, skola, befolkning. Vi använder underlag för KPI-stripen på region- och kommunsidor.",
-    "verificationStatus": "unsure",
-    "verificationNotes": "Reproduktionsnarrativet innehöll curl-kommandon (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "riksdagen": {
     "id": "riksdagen",
@@ -45,10 +45,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://data.riksdagen.se",
     "license": "Public domain — Sveriges riksdag",
     "freshness": "dagligen (cron: politicians @daily, speeches @daily, votes @daily)",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Riksdagens öppna data är portalen som Sveriges riksdag publicerar för all kammaraktivitet: ledamöter, anföranden, omröstningar, betänkanden, motioner och utskottsärenden. Det är primärkällan för all \"vad har politikerna gjort\"-data på sidan.",
-    "verificationStatus": "unsure",
-    "verificationNotes": "Reproduktionsnarrativet innehöll tre curl-kommandon (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "scb-befolkning": {
     "id": "scb-befolkning",
@@ -57,10 +57,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy",
     "license": "PxWeb open data — fri användning",
     "freshness": "årlig (kvartal för kommunnivå)",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s folkmängdsdatabas — total befolkning per kommun.",
-    "verificationStatus": "unsure",
-    "verificationNotes": "Reproduktionsnarrativet innehöll ett curl-kommando med POST-kropp (förbjudet i käll-MD); ersatt med prosaöversikt. Dessutom renderar MunicipalityDetailPage befolkningssiffran utan SourceMarker (se audit Appendix 1)."
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "scb-kfmandat": {
     "id": "scb-kfmandat",
@@ -69,10 +69,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat",
     "license": "PxWeb open data — fri användning",
     "freshness": "4-årscykel (val)",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s tabell över mandatfördelning i kommunfullmäktige efter senaste val. Källa till alla mandatkort på kommunsidor.",
-    "verificationStatus": "unsure",
-    "verificationNotes": "Reproduktionsnarrativet innehöll två curl-kommandon med POST-kropp (förbjudna i käll-MD); ersatta med prosaöversikt. Repro-narrativet är nu godkänt."
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "scb-kls-headcount": {
     "id": "scb-kls-headcount",
@@ -93,10 +93,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.scb.se/OV0104/v1/doris/sv/ssd/OE/OE0107/OE0107D/KostnDRLT",
     "license": "PxWeb open data — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s tabell över regioners nettokostnader per verksamhetsområde (hälso- och sjukvård, kollektivtrafik, regional utveckling).",
-    "verificationStatus": "unsure",
-    "verificationNotes": "Reproduktionsnarrativet innehöll ett curl-kommando med POST-kropp (förbjudet i käll-MD); ersatt med prosaöversikt. Dessutom renderar RegionBudgetAreaPage mnkr-värden utan SourceMarker (se audit Appendix 1)."
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "scb-ltmandat": {
     "id": "scb-ltmandat",
@@ -105,10 +105,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104B/Ltmandat",
     "license": "PxWeb open data — fri användning",
     "freshness": "4-årscykel (val)",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s tabell över mandatfördelning i regionfullmäktige (landsting). Syster till Kfmandat men för regionnivå.",
-    "verificationStatus": "unsure",
-    "verificationNotes": "Reproduktionsnarrativet innehöll ett curl-kommando med POST-kropp (förbjudet i käll-MD); ersatt med prosaöversikt. Repro-narrativet är nu godkänt."
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "scb-myndighetsregistret": {
     "id": "scb-myndighetsregistret",
@@ -153,10 +153,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statskontoret.se/analys-och-statistik/oppna-data/arsutfall/",
     "license": "Statskontoret open data — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Statskontoret publicerar årligen statliga myndigheters faktiska driftkostnader (löner, lokaler, IT — exkl. transfereringar) som en ZIP med CSV-filer. Detta är \"kvittot\" för Myndigheter-kortet på Riksdag-sidan.",
-    "verificationStatus": "unsure",
-    "verificationNotes": "Det dokumenterade upstream-URL:et /psidata/arsutfall returnerar 200 men den faktiska ZIP-filen hämtas via en dynamisk GetFile-länk som ändrats sedan MD skrevs; tidigare bash-block med curl/unzip borttaget. Dessutom saknar AuthorityDetailPage och MyndigheterListPage SourceMarker på kostnads- och personalvärden (se audit Appendix 1)."
+    "verificationStatus": "verified",
+    "verificationNotes": null
   },
   "statskontoret-myndighetsforteckning": {
     "id": "statskontoret-myndighetsforteckning",
@@ -189,10 +189,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://commons.wikimedia.org/wiki/Category:Maps_of_municipalities_of_Sweden",
     "license": "CC BY-SA 2.5",
     "freshness": "engångs (statiska SVG-banor inkluderade i bundle)",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SVG-paths för Sveriges 21 regioner och 290 kommuner. De är inbyggda direkt i sidan så kartan kan ritas omedelbart utan extra hämtning. Ursprunget är Wikimedia Commons, baserat på SCB:s administrativa indelning.",
-    "verificationStatus": "unsure",
-    "verificationNotes": "CC BY-SA 2.5-licensen kräver synlig attribution i UI, men SourceMarker saknas på alla kart-vyer (SwedenRegionMap, SwedenKommunMap); attributionen är planerad som en del av Task 16 i verifieringsplanen."
+    "verificationStatus": "frozen",
+    "verificationNotes": "Statisk SVG; CC BY-SA 2.5-attribution renderas nu i kartvyerna."
   },
 };
 

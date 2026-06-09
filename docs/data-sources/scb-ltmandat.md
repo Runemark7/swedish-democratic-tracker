@@ -5,9 +5,9 @@ kind: api
 upstream: https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104B/Ltmandat
 license: PxWeb open data — fri användning
 freshness: 4-årscykel (val)
-last_verified: 2026-06-06
-verification_status: unsure
-verification_notes: "Reproduktionsnarrativet innehöll ett curl-kommando med POST-kropp (förbjudet i käll-MD); ersatt med prosaöversikt. Repro-narrativet är nu godkänt."
+last_verified: 2026-06-08
+verification_status: verified
+verification_notes: ""
 used_by:
   - /region/:code (mandat, hemicycle, koalitionstyp)
 ---

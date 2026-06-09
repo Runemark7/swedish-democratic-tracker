@@ -6,6 +6,7 @@ import {
   SWEDEN_KOMMUN_VIEWBOX,
   SWEDEN_KOMMUN_REGION_VIEWBOX,
 } from "../data/sweden-kommuner-svg";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 
 type Props = {
   municipalities: MunicipalitySummary[];
@@ -57,58 +58,70 @@ export function SwedenKommunMap({
   }, [regionCode]);
 
   return (
-    <div
-      className={"relative w-full mx-auto " + (className ?? "")}
-      style={{ aspectRatio: aspect }}
-    >
-      <svg
-        viewBox={viewBox}
-        width="100%"
-        height="100%"
-        preserveAspectRatio="xMidYMid meet"
-        aria-label={
-          regionCode
-            ? `Karta över kommunerna i region ${regionCode}`
-            : "Karta över Sveriges kommuner"
-        }
-        role="img"
+    <>
+      <div
+        className={"relative w-full mx-auto " + (className ?? "")}
+        style={{ aspectRatio: aspect }}
       >
-        {paths.map((p) => {
-          const known = knownCodes.has(p.code);
-          const active = highlightedCode === p.code;
-          const fill = REGION_HUES[p.regionCode] ?? "#003461";
-          const opacity = active ? 0.95 : known ? 0.65 : 0.3;
-          const name = nameByCode.get(p.code);
-          return (
-            <path
-              key={p.code}
-              d={p.d}
-              fill={fill}
-              fillOpacity={opacity}
-              stroke="#ffffff"
-              strokeWidth={0.4}
-              vectorEffect="non-scaling-stroke"
-              style={{
-                cursor: known ? "pointer" : "default",
-                transition: "fill-opacity 120ms ease",
-              }}
-              onClick={() => {
-                if (known) navigate(`/kommun/${p.code}`);
-              }}
-              onMouseEnter={(e) => {
-                if (known) e.currentTarget.setAttribute("fill-opacity", "0.95");
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.setAttribute("fill-opacity", String(opacity));
-              }}
-              role={known ? "link" : undefined}
-              aria-label={name ?? `Kommun ${p.code}`}
-            >
-              <title>{name ?? `Kommun ${p.code}`}</title>
-            </path>
-          );
-        })}
-      </svg>
-    </div>
+        <svg
+          viewBox={viewBox}
+          width="100%"
+          height="100%"
+          preserveAspectRatio="xMidYMid meet"
+          aria-label={
+            regionCode
+              ? `Karta över kommunerna i region ${regionCode}`
+              : "Karta över Sveriges kommuner"
+          }
+          role="img"
+        >
+          {paths.map((p) => {
+            const known = knownCodes.has(p.code);
+            const active = highlightedCode === p.code;
+            const fill = REGION_HUES[p.regionCode] ?? "#003461";
+            const opacity = active ? 0.95 : known ? 0.65 : 0.3;
+            const name = nameByCode.get(p.code);
+            return (
+              <path
+                key={p.code}
+                d={p.d}
+                fill={fill}
+                fillOpacity={opacity}
+                stroke="#ffffff"
+                strokeWidth={0.4}
+                vectorEffect="non-scaling-stroke"
+                style={{
+                  cursor: known ? "pointer" : "default",
+                  transition: "fill-opacity 120ms ease",
+                }}
+                onClick={() => {
+                  if (known) navigate(`/kommun/${p.code}`);
+                }}
+                onMouseEnter={(e) => {
+                  if (known) e.currentTarget.setAttribute("fill-opacity", "0.95");
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.setAttribute("fill-opacity", String(opacity));
+                }}
+                role={known ? "link" : undefined}
+                aria-label={name ?? `Kommun ${p.code}`}
+              >
+                <title>{name ?? `Kommun ${p.code}`}</title>
+              </path>
+            );
+          })}
+        </svg>
+      </div>
+      <div
+        style={{
+          fontSize: 9,
+          color: "var(--color-fg-muted)",
+          textAlign: "center",
+          marginTop: 4,
+        }}
+      >
+        Karta: Wikimedia Commons <SourceMarker sourceId="wikimedia-svg" />
+      </div>
+    </>
   );
 }

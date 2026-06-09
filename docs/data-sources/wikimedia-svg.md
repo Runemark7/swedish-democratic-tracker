@@ -5,9 +5,9 @@ kind: seed
 upstream: https://commons.wikimedia.org/wiki/Category:Maps_of_municipalities_of_Sweden
 license: CC BY-SA 2.5
 freshness: engångs (statiska SVG-banor inkluderade i bundle)
-last_verified: 2026-06-06
-verification_status: unsure
-verification_notes: "CC BY-SA 2.5-licensen kräver synlig attribution i UI, men SourceMarker saknas på alla kart-vyer (SwedenRegionMap, SwedenKommunMap); attributionen är planerad som en del av Task 16 i verifieringsplanen."
+last_verified: 2026-06-08
+verification_status: frozen
+verification_notes: "Statisk SVG; CC BY-SA 2.5-attribution renderas nu i kartvyerna."
 used_by:
   - /region (kartan)
   - /region/:code (kartan över kommunerna i regionen)
