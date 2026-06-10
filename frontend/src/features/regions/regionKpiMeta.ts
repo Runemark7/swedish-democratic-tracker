@@ -10,7 +10,7 @@ export const REGION_KPI_META: Record<string, KpiMeta> = {
   },
   N63016: {
     label: "Resultat/skatt",
-    description: "Regionens överskott i förhållande till skatteintäkterna. Under 2 % riskerar regionen att tvingas skära i vården.",
+    description: "Regionens överskott i förhållande till skatteintäkterna — ett mått på hur stor marginal regionen har i sin ekonomi.",
     unit: "%", worseHigher: false, format: v => `${v.toFixed(1)} %`,
   },
   N63007: {

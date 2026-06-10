@@ -14,7 +14,7 @@ export const STRIP_KPI_META: Record<string, KpiMeta> = {
   },
   N03102: {
     label: "Resultat/skatt",
-    description: "Kommunens överskott i förhållande till skatteintäkterna. Under 2 % riskerar kommunen att tvingas skära i välfärden.",
+    description: "Kommunens överskott i förhållande till skatteintäkterna — ett mått på hur stor marginal kommunen har i sin ekonomi.",
     unit: "%", worseHigher: false, format: v => `${v.toFixed(1)} %`,
   },
   N03106: {
