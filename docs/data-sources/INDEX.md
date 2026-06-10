@@ -22,6 +22,8 @@ skapar `SourceRegistry.generated.ts`.
 | [scb-myndighetsregistret](./scb-myndighetsregistret.md) | SCB Myndighetsregistret | api | myndighetsnamn, org-nummer, typ |
 | [statskontoret-myndighetsforteckning](./statskontoret-myndighetsforteckning.md) | Statskontoret Myndighetsförteckning | csv | årsarbetskrafter per myndighet |
 | [scb-kls-headcount](./scb-kls-headcount.md) | SCB KLS AM0102 — månadsanställda | api | anställda per myndighet (KLS-urval) |
+| [scb-aku-arbetsloshet](./scb-aku-arbetsloshet.md) | SCB AKU AM0401 — arbetslöshetstal | api | nationell KPI-strip (/riksdag) |
+| [scb-kpi-inflation](./scb-kpi-inflation.md) | SCB KPI PR0101 — inflationstakt | api | nationell KPI-strip (/riksdag) |
 
 För att lägga till en ny källa: kopiera `_TEMPLATE.md`, fyll i, och kör
 `npm run sync:data-sources` i `frontend/`. Se även CLAUDE.md → "Data

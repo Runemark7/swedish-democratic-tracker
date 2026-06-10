@@ -5,7 +5,6 @@ type Kpi struct {
 	Label       string  `json:"label"`
 	Description string  `json:"description"`
 	Raw         float64 `json:"raw"`
-	Target      float64 `json:"target"`
 	WorseHigher bool    `json:"worseHigher"`
 	Unit        string  `json:"unit"`
 	Trend       string  `json:"trend"`

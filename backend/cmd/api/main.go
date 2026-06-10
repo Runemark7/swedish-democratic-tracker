@@ -75,6 +75,7 @@ import (
 	riksdagRegistret "riksdagskollen/internal/riksdag/adapters/registret"
 	riksdagRD "riksdagskollen/internal/riksdag/adapters/riksdagen"
 	riksdagSCB "riksdagskollen/internal/riksdag/adapters/scb"
+	riksdagSCBMacro "riksdagskollen/internal/riksdag/adapters/scbmacro"
 	riksdagStatic "riksdagskollen/internal/riksdag/adapters/static"
 	riksdagSK "riksdagskollen/internal/riksdag/adapters/statskontoret"
 	"riksdagskollen/internal/riksdag"
@@ -183,7 +184,8 @@ func main() {
 	regionsHandler := regionsHTTP.NewHandler(regionsSvc)
 
 	riksdagSvc := riksdag.NewServiceWithSCB(riksdagSK.NewClient(), riksdagStatic.NewClient(), riksdagSCB.NewClient())
-	riksdagSvc.SetKpiRepo(riksdagPG.NewKpiRepository(db))
+	kpiRepo := riksdagPG.NewKpiRepository(db)
+	riksdagSvc.SetKpiRepo(kpiRepo)
 	riksdagSvc.SetGovRepo(riksdagPG.NewGovRepository(db))
 	riksdagSvc.SetAgendaRepo(riksdagPG.NewAgendaRepository(db))
 	riksdagSvc.SetLiveVotesRepo(riksdagPG.NewLiveVotesRepository(db))
@@ -252,6 +254,7 @@ func main() {
 	authoritiesWorker := workers.NewAuthoritiesWorker(riksdagRegistret.NewClient(), authorityRepo)
 	headcountWorker := workers.NewAuthorityHeadcountWorker(riksdagMF.NewClient(), authorityRepo)
 	expenditureWorker := workers.NewAuthorityExpenditureWorker(riksdagSK.NewClient(), authorityRepo)
+	nationalKpisWorker := workers.NewNationalKpisWorker(riksdagSCBMacro.NewClient(), kpiRepo)
 
 	sched := ingestion.NewScheduler()
 	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker); err != nil {
@@ -274,6 +277,9 @@ func main() {
 	}
 	if err := sched.RegisterSync("@weekly", &expenditureWorker); err != nil {
 		slog.Error("failed to register authority-expenditure worker", "error", err)
+	}
+	if err := sched.RegisterSync("@daily", &nationalKpisWorker); err != nil {
+		slog.Error("failed to register national-kpis worker", "error", err)
 	}
 	regionBudgetWorker := workers.NewRegionBudgetWorker(regionsSvc, ingestionRunsRepo)
 	if err := sched.RegisterSync("@weekly", &regionBudgetWorker); err != nil {

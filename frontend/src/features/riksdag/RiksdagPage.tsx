@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useRiksdag, useRiksdagBudgetHistory } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { MandateComposition, Pill, GoalBadge, Trend } from "@/components/charts";
+import { MandateComposition, Pill, Trend } from "@/components/charts";
 import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
@@ -13,6 +13,13 @@ function beslutHref(v: LiveVote): string | null {
   const p = new URLSearchParams({ title: v.title, status: v.status, tag: v.tag, time: v.time });
   return `/beslut/${encodeURIComponent(v.beteckning)}?${p}`;
 }
+
+// National KPI label → registered data-source id. KPIs are ingested by the
+// national-kpis worker; each label maps to the SCB table it comes from.
+const NATIONAL_KPI_SOURCE: Record<string, string> = {
+  "Arbetslöshet": "scb-aku-arbetsloshet",
+  "Inflation (KPI)": "scb-kpi-inflation",
+};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -448,20 +455,35 @@ export function RiksdagPage() {
                 }}
               >
                 {k.value}
-                <SourceMarker sourceId="seed-budget-data" />
+                {NATIONAL_KPI_SOURCE[k.label] && (
+                  <SourceMarker sourceId={NATIONAL_KPI_SOURCE[k.label]} />
+                )}
               </div>
               <div style={{ marginBottom: 12 }}>
                 <Trend trend={k.trend} delta={k.delta} worseHigher={k.worseHigher} />
               </div>
-              {k.target != null && (
-                <GoalBadge
-                  raw={k.raw}
-                  target={k.target}
-                  worseHigher={k.worseHigher}
-                  unit={k.unit}
-                  note={k.note}
-                  sourceUrl={k.sourceUrl}
-                />
+              {k.note && (
+                <div
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 9,
+                    color: "var(--color-fg-muted)",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  {k.sourceUrl ? (
+                    <a
+                      href={k.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: "inherit" }}
+                    >
+                      {k.note}
+                    </a>
+                  ) : (
+                    k.note
+                  )}
+                </div>
               )}
               {k.description && (
                 <div

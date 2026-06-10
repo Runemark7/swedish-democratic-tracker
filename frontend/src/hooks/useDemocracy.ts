@@ -297,7 +297,6 @@ function mapApiKpis(apiKpis: RiksdagKpi[]): Kpi[] {
       description: k.description,
       value: rawStr,
       raw: k.raw,
-      target: k.target,
       worseHigher: k.worseHigher,
       unit: k.unit,
       trend: k.trend,

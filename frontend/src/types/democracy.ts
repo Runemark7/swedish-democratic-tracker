@@ -40,7 +40,6 @@ export interface Kpi {
   description: string;
   value: string;
   raw: number;
-  target?: number; // optional: region/kommun KPIs have no fixed target (unsourced); riksdag KPIs may set one
   worseHigher: boolean;
   unit: string;
   trend: "up" | "down" | "flat";
