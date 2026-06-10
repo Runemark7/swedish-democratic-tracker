@@ -248,8 +248,45 @@ func Run(ctx context.Context, pool *pgxpool.Pool) error {
 			}
 		}
 	}
+	slog.Info("seeder: updating region populations")
+	regionDBCodes, err := allRegionCodes(ctx, pool)
+	if err != nil {
+		return fmt.Errorf("load region codes: %w", err)
+	}
+	// SCB BE0101 accepts 2-digit county codes, which are exactly our region
+	// codes. Region population had been a frozen, hand-entered migration value;
+	// fetch it live like municipalities so it stays sourced and current.
+	regionPops, err := fetchPopulations(ctx, httpClient, regionDBCodes)
+	if err != nil {
+		return fmt.Errorf("fetch region populations: %w", err)
+	}
+	for code, pop := range regionPops {
+		if _, err := pool.Exec(ctx, `UPDATE regions SET population = $1 WHERE code = $2`, pop, code); err != nil {
+			return fmt.Errorf("update region population %s: %w", code, err)
+		}
+	}
+	slog.Info("seeder: region populations done", "count", len(regionPops))
+
 	slog.Info("seeder: complete")
 	return nil
+}
+
+// allRegionCodes returns every region code currently in the regions table.
+func allRegionCodes(ctx context.Context, pool *pgxpool.Pool) ([]string, error) {
+	rows, err := pool.Query(ctx, `SELECT code FROM regions`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var codes []string
+	for rows.Next() {
+		var c string
+		if err := rows.Scan(&c); err != nil {
+			return nil, err
+		}
+		codes = append(codes, c)
+	}
+	return codes, rows.Err()
 }
 
 func getMeta(ctx context.Context, c *http.Client, url string) (*scbMeta, error) {
