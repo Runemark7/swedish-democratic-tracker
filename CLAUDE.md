@@ -166,6 +166,8 @@ graph TD
         MR["SCB Myndighetsregistret\nmyndighetsregistret.scb.se"]
         MF["Statskontoret Myndighetsförteckning\nstatskontoret.se (XLSX — årsarbetskrafter)"]
         KLS["SCB KLS AM0102\napi.scb.se — månadsanställda statlig sektor"]
+        AKU["SCB AKU AM0401\napi.scb.se — arbetslöshetstal"]
+        KPIINF["SCB KPI PR0101\napi.scb.se — inflationstakt årsförändring"]
     end
 
     DB[(PostgreSQL 17)]
@@ -186,6 +188,8 @@ graph TD
     SD -->|2022 mandates + population| SC
     SD --> DB
 
+    ingestion -->|national KPIs @daily| AKU
+    ingestion -->|national KPIs @daily| KPIINF
     ingestion -->|authority register @daily| MR
     ingestion -->|headcount XLSX @daily| MF
     ingestion --> DB

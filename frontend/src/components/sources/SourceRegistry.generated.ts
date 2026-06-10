@@ -50,6 +50,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "verificationStatus": "verified",
     "verificationNotes": null
   },
+  "scb-aku-arbetsloshet": {
+    "id": "scb-aku-arbetsloshet",
+    "name": "SCB AKU — Arbetslöshetstal (AM0401)",
+    "kind": "api",
+    "upstream": "https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__AM__AM0401__AM0401A/AKURLBefK/",
+    "license": "SCB öppna data — fri användning (CC0)",
+    "freshness": "kvartalsvis",
+    "lastVerified": "Wed Jun 10 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "Arbetskraftsundersökningarna (AKU) är SCB:s officiella mätning av arbetsmarknaden. Vi använder det säsongrensade relativa arbetslöshetstalet för hela befolkningen 15–74 år — andelen av arbetskraften som är arbetslös — som nationell indikator på riksdagssidan.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
   "scb-befolkning": {
     "id": "scb-befolkning",
     "name": "SCB BefolkningNy",
@@ -95,6 +107,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "freshness": "årlig",
     "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s tabell över regioners nettokostnader per verksamhetsområde (hälso- och sjukvård, kollektivtrafik, regional utveckling).",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
+  "scb-kpi-inflation": {
+    "id": "scb-kpi-inflation",
+    "name": "SCB KPI — Inflationstakt, årsförändring (PR0101)",
+    "kind": "api",
+    "upstream": "https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__PR__PR0101__PR0101A/KPI2020M/",
+    "license": "SCB öppna data — fri användning (CC0)",
+    "freshness": "månadsvis",
+    "lastVerified": "Wed Jun 10 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "Konsumentprisindex (KPI) är SCB:s officiella mått på prisutvecklingen för hushållens konsumtion. Vi använder seriens publicerade *årsförändring* — hur mycket priserna ändrats de senaste tolv månaderna, dvs. inflationstakten — som nationell indikator på riksdagssidan. Riksbankens inflationsmål är 2 %.",
     "verificationStatus": "verified",
     "verificationNotes": null
   },

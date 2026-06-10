@@ -76,6 +76,23 @@ type AgencyIntelRepository interface {
 
 type KpiRepository interface {
 	ListKpis(ctx context.Context) ([]domain.Kpi, error)
+	// UpsertKpi inserts or updates one national KPI, keyed by (label, year).
+	UpsertKpi(ctx context.Context, k domain.Kpi, sortOrder int) error
+}
+
+// MacroPoint is one macro-indicator observation: SCB period label
+// ("2026M04" / "2026K1") and its value.
+type MacroPoint struct {
+	Period string
+	Value  float64
+}
+
+// MacroClient fetches national macro indicators from SCB. Both methods return
+// the two most recent published observations, latest first, so callers can
+// derive a delta.
+type MacroClient interface {
+	FetchInflationRate(ctx context.Context) ([]MacroPoint, error)
+	FetchUnemploymentRate(ctx context.Context) ([]MacroPoint, error)
 }
 
 type GovRepository interface {

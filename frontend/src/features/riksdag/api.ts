@@ -41,7 +41,6 @@ export interface RiksdagKpi {
   label: string;
   description: string;
   raw: number;
-  target: number;
   worseHigher: boolean;
   unit: string;
   trend: "up" | "down" | "flat";
