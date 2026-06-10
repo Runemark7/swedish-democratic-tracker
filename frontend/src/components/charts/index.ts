@@ -2,7 +2,6 @@ export { Donut } from './Donut';
 export { DualLine } from './DualLine';
 export type { DualLineSeries } from './DualLine';
 export { HBars } from './HBars';
-export { TargetBar } from './TargetBar';
 export { GoalBadge } from './GoalBadge';
 export { Pill } from './Pill';
 export { Trend } from './Trend';
