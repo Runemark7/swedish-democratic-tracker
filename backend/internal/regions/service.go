@@ -55,6 +55,24 @@ var regionStripKPIs = []string{
 	"N85012", // Nettokostnad regional utveckling totalt, kr/inv — kolada.se/kpi/N85012
 }
 
+// regionKPIExclusions lists (KPI, region) pairs where the published value is a
+// structural accounting artifact rather than a measurement, so the region is
+// treated as having no data for that KPI (omitted from its strip and from the
+// cross-region ranking).
+//
+//   - N85012 / Gotland (09): Gotland is a kommun-region hybrid; its regional-
+//     development costs are booked in the municipal accounts, so Kolada
+//     publishes a permanent 0.0 for the region entity (verified 2020–2025
+//     while every other region reports four-digit kr/inv). Showing that zero
+//     would falsely rank Gotland last.
+var regionKPIExclusions = map[string]map[string]bool{
+	"N85012": {"09": true},
+}
+
+func regionKPIExcluded(kpiCode, regionCode string) bool {
+	return regionKPIExclusions[kpiCode][regionCode]
+}
+
 // koladaRegionCode converts a Swedish 2-digit county code (e.g. "09") to the
 // 4-digit zero-prefixed code Kolada expects (e.g. "0009").
 func koladaRegionCode(code string) string {
@@ -257,7 +275,13 @@ func (s *Service) GetMunicipalityKPIRanks(ctx context.Context, munCode string) (
 }
 
 func (s *Service) GetRegionKPIs(ctx context.Context, regionCode string) ([]ports.KPIValue, error) {
-	return s.kolada.FetchKPIs(ctx, koladaRegionCode(regionCode), regionStripKPIs, rollingYears(5))
+	kpis := make([]string, 0, len(regionStripKPIs))
+	for _, kpi := range regionStripKPIs {
+		if !regionKPIExcluded(kpi, regionCode) {
+			kpis = append(kpis, kpi)
+		}
+	}
+	return s.kolada.FetchKPIs(ctx, koladaRegionCode(regionCode), kpis, rollingYears(5))
 }
 
 func (s *Service) GetPopulationTrend(ctx context.Context, munCode string) ([]ports.PopulationEntry, error) {
@@ -432,6 +456,9 @@ func (s *Service) GetRegionKPIRanking(ctx context.Context, kpiCode string) ([]po
 		info, ok := byKoladaCode[koladaCode]
 		if !ok {
 			continue // skip non-region entities
+		}
+		if regionKPIExcluded(kpiCode, info.code) {
+			continue // structural artifact, not comparable (see regionKPIExclusions)
 		}
 		entries = append(entries, ports.RegionKPIRankEntry{
 			RegionCode: info.code,
