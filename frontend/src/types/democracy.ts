@@ -114,7 +114,10 @@ export interface LevelData {
   ruling: Ruling;
   liveVotes: LiveVote[];
   budget: Budget;
-  agenda: AgendaItem[];
+  // National agenda only (curated from government policy documents). Region
+  // and municipality levels omit this — Sweden publishes no structured
+  // primary source for their annual plans, so we show nothing rather than guess.
+  agenda?: AgendaItem[];
   kpis?: Kpi[];
   authorities?: Authority[];
 }
