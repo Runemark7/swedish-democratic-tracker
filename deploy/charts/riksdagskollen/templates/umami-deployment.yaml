@@ -1,0 +1,85 @@
+{{- if .Values.umami.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "riksdagskollen.fullname" . }}-umami
+  labels:
+    {{- include "riksdagskollen.labels" . | nindent 4 }}
+    {{- include "riksdagskollen.umami.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.umami.replicas }}
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      {{- include "riksdagskollen.umami.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "riksdagskollen.labels" . | nindent 8 }}
+        {{- include "riksdagskollen.umami.selectorLabels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      {{- if .Values.umami.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.umami.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001     # nextjs user in the umami image
+        runAsGroup: 1001
+        fsGroup: 1001       # writable emptyDir caches
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: umami
+          image: "{{ .Values.umami.image.repository }}:{{ .Values.umami.image.tag }}"
+          imagePullPolicy: {{ .Values.umami.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.umami.port }}
+              protocol: TCP
+          env:
+            - name: DATABASE_TYPE
+              value: postgresql
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.umami.app.secretName }}
+                  key: DATABASE_URL
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.umami.app.secretName }}
+                  key: APP_SECRET
+            # Do not phone home with usage telemetry.
+            - name: DISABLE_TELEMETRY
+              value: "1"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false   # Next.js writes runtime caches
+            capabilities:
+              drop: [ALL]
+          resources:
+            {{- toYaml .Values.umami.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /api/heartbeat
+              port: {{ .Values.umami.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /api/heartbeat
+              port: {{ .Values.umami.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - name: cache
+              mountPath: /app/.next/cache
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: cache
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+{{- end }}

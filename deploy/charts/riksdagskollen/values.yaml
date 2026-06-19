@@ -83,3 +83,67 @@ dbSecretName: riksdagskollen-db-secret
 
 migrations:
   enabled: false
+
+## Umami — self-hosted, cookieless web analytics (privacy-friendly, no consent
+## banner needed). Disabled by default; enable per environment.
+##
+## Required pre-created secrets when enabled:
+##   umami.db.secretName       key: POSTGRES_PASSWORD
+##   umami.app.secretName      keys: DATABASE_URL, APP_SECRET
+##     DATABASE_URL must point at the umami-db service and match POSTGRES_PASSWORD,
+##     e.g. postgresql://umami:<pw>@riksdagskollen-umami-db:5432/umami
+##     APP_SECRET is any long random string (used to sign Umami sessions).
+##
+## After first deploy: log in to Umami, create the website, copy its UUID into
+## umami.frontend.websiteId, copy the script URL into umami.frontend.scriptUrl,
+## then redeploy so the frontend injects the tracking tag.
+umami:
+  enabled: false
+  image:
+    repository: ghcr.io/umami-software/umami
+    tag: postgresql-latest
+    pullPolicy: IfNotPresent
+  imagePullSecrets: []
+  replicas: 1
+  port: 3000
+  # Secret with keys DATABASE_URL and APP_SECRET
+  app:
+    secretName: riksdagskollen-umami-secret
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 384Mi
+  # Dedicated Postgres for Umami
+  db:
+    image:
+      repository: postgres
+      tag: "17-alpine"
+      pullPolicy: IfNotPresent
+    imagePullSecrets: []
+    database: umami
+    user: umami
+    # Secret with key POSTGRES_PASSWORD
+    secretName: riksdagskollen-umami-db-secret
+    storageSize: 2Gi
+    storageClassName: ""   # "" = cluster default StorageClass
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+  # Tracking-tag values injected into the frontend (see umami-analytics docs).
+  # Leave empty until the website exists in Umami; empty = no tag emitted.
+  frontend:
+    scriptUrl: ""    # e.g. https://analytics.riksdagskollen.example.com/script.js
+    websiteId: ""    # UUID from Umami after creating the website
+  # Ingress for the Umami dashboard + script host (separate subdomain)
+  ingress:
+    enabled: true
+    host: analytics.riksdagskollen.example.com
+    tls: true
+    tlsSecretName: riksdagskollen-umami-tls

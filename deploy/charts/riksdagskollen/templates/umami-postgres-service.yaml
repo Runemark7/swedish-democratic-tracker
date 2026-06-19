@@ -1,0 +1,18 @@
+{{- if .Values.umami.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "riksdagskollen.fullname" . }}-umami-db
+  labels:
+    {{- include "riksdagskollen.labels" . | nindent 4 }}
+    {{- include "riksdagskollen.umamiDb.selectorLabels" . | nindent 4 }}
+spec:
+  # Headless service backing the StatefulSet — stable DNS for the umami app.
+  clusterIP: None
+  selector:
+    {{- include "riksdagskollen.umamiDb.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+{{- end }}

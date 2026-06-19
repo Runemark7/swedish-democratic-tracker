@@ -275,6 +275,8 @@ Path alias `@/*` → `src/*` is configured in both `tsconfig.json` and `vite.con
 | `MIGRATIONS_PATH` | Backend | `./migrations` |
 | `INITIAL_SYNC` | Backend | triggers data sync on boot |
 | `BACKEND_URL` | Frontend (Docker) | `http://backend:8080` |
+| `UMAMI_SCRIPT_URL` | Frontend (Docker) | `""` — set to enable analytics tag |
+| `UMAMI_WEBSITE_ID` | Frontend (Docker) | `""` — Umami website UUID |
 
 Local dev credentials (from `docker-compose.dev.yml`):
 ```
