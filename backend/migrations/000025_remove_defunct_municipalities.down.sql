@@ -1,0 +1,4 @@
+-- Irreversible by design: the deleted rows were ghost data (defunct
+-- municipalities with no mandates or population) that should never have been
+-- seeded. Rolling back does not recreate them; the seeder intentionally skips
+-- such codes. No-op.

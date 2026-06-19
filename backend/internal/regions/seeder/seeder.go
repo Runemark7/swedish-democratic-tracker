@@ -160,6 +160,7 @@ func Run(ctx context.Context, pool *pgxpool.Pool) error {
 	}
 
 	slog.Info("seeder: upserting municipalities")
+	upserted := 0
 	for i, code := range munCodes {
 		name := munNames[i]
 		regionCode := code[:2]
@@ -168,6 +169,15 @@ func Run(ctx context.Context, pool *pgxpool.Pool) error {
 		total := sumMandates(byParty)
 		governing := deriveGoverning(byParty, total)
 
+		// SCB's Kfmandat code list still contains defunct municipalities (e.g.
+		// 1229 Bara, merged into Svedala in 1977). They carry no 2022 mandates
+		// and no current population, so skip them — otherwise they seed as
+		// ghost rows (0 mandates, 0 population) and surface as empty kommuner.
+		if total == 0 {
+			continue
+		}
+
+		upserted++
 		if _, err := pool.Exec(ctx, `
 			INSERT INTO municipalities (code, name, region_code, population, governing_parties, election_year, total_mandates)
 			VALUES ($1, $2, $3, $4, $5, 2022, $6)
@@ -181,7 +191,7 @@ func Run(ctx context.Context, pool *pgxpool.Pool) error {
 			return fmt.Errorf("upsert municipality %s: %w", code, err)
 		}
 	}
-	slog.Info("seeder: municipalities done", "count", len(munCodes))
+	slog.Info("seeder: municipalities done", "count", upserted)
 
 	slog.Info("seeder: replacing municipal election results")
 	for _, code := range munCodes {
