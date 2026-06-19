@@ -6,7 +6,7 @@ skapar `SourceRegistry.generated.ts`.
 
 | ID | Namn | Kind | Backas i UI av |
 |---|---|---|---|
-| [riksdagen](./riksdagen.md) | Riksdagen Open Data | api | beslut, omröstningar, anföranden, agenda |
+| [riksdagen](./riksdagen.md) | Riksdagen Open Data | api | beslut, omröstningar, anföranden |
 | [kolada](./kolada.md) | Kolada API v3 | api | region/kommun KPIs |
 | [kolada-spending](./kolada-spending.md) | Kolada — kommunal verksamhetsutgift | api | kommun budget |
 | [scb-kfmandat](./scb-kfmandat.md) | SCB Kfmandat | api | kommunala mandat |
@@ -17,7 +17,8 @@ skapar `SourceRegistry.generated.ts`.
 | [statskontoret-arsutfall](./statskontoret-arsutfall.md) | Statskontoret årsutfall | csv | myndigheters driftkostnader |
 | [seed-party-goals](./seed-party-goals.md) | Partimål (seed) | seed | partimål och scorecards |
 | [seed-budget-data](./seed-budget-data.md) | Statsbudget (seed) | seed | budget per UO |
-| [derived-agenda](./derived-agenda.md) | Härledd agenda | synthesized | agenda-listor |
+| [national-agenda](./national-agenda.md) | Nationell politisk agenda (seed) | seed | nationell agenda (/, /riksdag, /agenda/:id) |
+| [region-budget-plan](./region-budget-plan.md) | Regioners mål och budget (seed) | seed | region: länk till officiell budget (/region/:code) |
 | [wikimedia-svg](./wikimedia-svg.md) | Sverige-karta SVG | seed | region/kommun-kartor |
 | [scb-myndighetsregistret](./scb-myndighetsregistret.md) | SCB Myndighetsregistret | api | myndighetsnamn, org-nummer, typ |
 | [statskontoret-myndighetsforteckning](./statskontoret-myndighetsforteckning.md) | Statskontoret Myndighetsförteckning | csv | årsarbetskrafter per myndighet |
