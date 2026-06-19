@@ -4,7 +4,7 @@ backend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-api
     pullPolicy: Always
-    tag: 71a104299b65e3314636778e2d189e4f1f73854b
+    tag: 55845dfdcc003887595050f0f83573c158da1229
   imagePullSecrets:
     - name: ghcr-pull-secret
   env:
@@ -15,7 +15,7 @@ frontend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-frontend
     pullPolicy: Always
-    tag: 71a104299b65e3314636778e2d189e4f1f73854b
+    tag: 55845dfdcc003887595050f0f83573c158da1229
   imagePullSecrets:
     - name: ghcr-pull-secret
 ingress:
@@ -36,5 +36,5 @@ umami:
     host: analytics.runevibe.se
     tlsSecretName: analytics-runevibe-tls
   frontend:
-    scriptUrl: ""   # set after website created: https://analytics.runevibe.se/script.js
-    websiteId: ""   # set after website created: UUID from Umami
+    scriptUrl: "" # set after website created: https://analytics.runevibe.se/script.js
+    websiteId: "" # set after website created: UUID from Umami
