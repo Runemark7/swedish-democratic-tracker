@@ -24,3 +24,17 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
+## Self-hosted Umami analytics. First deploy brings up Umami + its Postgres;
+## the tracking tag stays off until umami.frontend.* is filled in after the
+## website is created in the Umami UI (see docs/runbooks/umami-analytics.md).
+## TLS for analytics.runevibe.se is auto-provisioned via the cert-manager
+## annotation inherited from ingress.annotations above. Requires a DNS record:
+## analytics.runevibe.se -> the ingress load balancer.
+umami:
+  enabled: true
+  ingress:
+    host: analytics.runevibe.se
+    tlsSecretName: analytics-runevibe-tls
+  frontend:
+    scriptUrl: ""   # set after website created: https://analytics.runevibe.se/script.js
+    websiteId: ""   # set after website created: UUID from Umami
