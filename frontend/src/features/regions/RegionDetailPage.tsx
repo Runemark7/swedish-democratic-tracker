@@ -3,12 +3,12 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory, useRegionKpiRanks } from "@/hooks/useDemocracy";
 import { MandateComposition, Pill } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
-import { AgendaList } from "@/components/AgendaList";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { REGION_KPI_META } from "@/features/regions/regionKpiMeta";
+import { REGION_BUDGET_DOCS } from "@/features/regions/regionBudgetDocs";
 import type { LiveVote } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -64,7 +64,8 @@ export function RegionDetailPage() {
 
   if (isLoading || !data) return <Skeleton />;
 
-  const { title, subtitle, ruling, liveVotes, agenda, kpis } = data;
+  const { title, subtitle, ruling, liveVotes, kpis } = data;
+  const budgetDoc = code ? REGION_BUDGET_DOCS[code] : undefined;
 
   const allParties = [
     ...ruling.parties,
@@ -366,7 +367,7 @@ export function RegionDetailPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1.3fr 1fr",
+            gridTemplateColumns: isMobile ? "1fr" : budgetDoc ? "1.3fr 1fr" : "1fr",
             gap: 1,
             border: "1px solid var(--color-border)",
             borderTop: "none",
@@ -473,21 +474,49 @@ export function RegionDetailPage() {
             </div>
           </div>
 
-          {/* Right card — AGENDA */}
-          <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                letterSpacing: "0.15em",
-                color: "var(--color-fg-muted)",
-                marginBottom: 16,
-              }}
-            >
-              AGENDA · STYRETS PRIORITERINGAR
+          {/* Right card — REGIONENS PLAN (link to official primary source) */}
+          {budgetDoc && (
+            <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 10,
+                  letterSpacing: "0.15em",
+                  color: "var(--color-fg-muted)",
+                  marginBottom: 16,
+                }}
+              >
+                REGIONENS PLAN
+              </div>
+              <p style={{ margin: "0 0 16px", fontSize: 13, color: "var(--color-fg-muted)", lineHeight: 1.5 }}>
+                Regionens faktiska årsplan beslutas av regionfullmäktige. Vi
+                länkar det officiella dokumentet i stället för att tolka det —
+                läs och dra dina egna slutsatser.
+              </p>
+              <a
+                href={budgetDoc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "baseline",
+                  gap: 8,
+                  fontSize: 14,
+                  color: "var(--color-accent-2)",
+                  textDecoration: "none",
+                  borderBottom: "1px solid var(--color-accent-2)",
+                  paddingBottom: 2,
+                }}
+              >
+                {budgetDoc.label}
+                <span style={{ fontSize: 11 }}>↗</span>
+              </a>
+              <div style={{ marginTop: 14, fontSize: 11, color: "var(--color-fg-muted)", fontFamily: "var(--font-mono)" }}>
+                Källa: {title}
+                <SourceMarker sourceId="region-budget-plan" />
+              </div>
             </div>
-            <AgendaList items={agenda} />
-          </div>
+          )}
         </div>
       </div>
 

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { MandateComposition, Pill } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
-import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useKommun, useKommunList, useKommunBudgetHistory, useKommunKpiRanks } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -396,7 +395,7 @@ export function MunicipalityDetailPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1.3fr 1fr",
+          gridTemplateColumns: "1fr",
           gap: 1,
           background: "var(--color-border)",
           border: "1px solid var(--color-border)",
@@ -508,28 +507,6 @@ export function MunicipalityDetailPage() {
                 <div key={i}>{row}</div>
               );
             })}
-          </div>
-          <div style={{ marginTop: 16 }}>
-          </div>
-        </div>
-
-        {/* Right — AGENDA */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px", display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "2px",
-              color: "var(--color-fg-muted)",
-              textTransform: "uppercase",
-              marginBottom: 16,
-            }}
-          >
-            AGENDA · PRIORITERINGAR
-          </div>
-
-          <div style={{ flex: 1 }}>
-            <AgendaList items={data.agenda} />
           </div>
           <div style={{ marginTop: 16 }}>
           </div>

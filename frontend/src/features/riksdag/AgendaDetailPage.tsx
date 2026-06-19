@@ -106,7 +106,7 @@ export function AgendaDetailPage() {
         paddingTop: 16,
       }}>
         Källa: {item.source}
-        <SourceMarker sourceId="derived-agenda" />
+        <SourceMarker sourceId="national-agenda" />
       </div>
     </div>
   );

@@ -9,8 +9,8 @@ last_verified: 2026-06-08
 verification_status: verified
 verification_notes: ""
 used_by:
-  - / (Beslut idag, Aktuella debatter, Veckans omröstningar, Vad partierna säger, Kommande beslut)
-  - /riksdag (live votes, agenda, mandat, government composition)
+  - / (Beslut idag, Aktuella debatter, Veckans omröstningar, Vad partierna säger)
+  - /riksdag (live votes, mandat, government composition)
   - /votes (alla)
   - /votes/:beteckning/:punkt (vote details)
   - /politicians (alla)
