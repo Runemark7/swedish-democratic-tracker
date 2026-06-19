@@ -36,5 +36,5 @@ umami:
     host: analytics.runevibe.se
     tlsSecretName: analytics-runevibe-tls
   frontend:
-    scriptUrl: "" # set after website created: https://analytics.runevibe.se/script.js
-    websiteId: "" # set after website created: UUID from Umami
+    scriptUrl: "https://analytics.runevibe.se/script.js"
+    websiteId: "a4401c8a-dfdb-46b5-9bce-87b3d4a17d7a"
