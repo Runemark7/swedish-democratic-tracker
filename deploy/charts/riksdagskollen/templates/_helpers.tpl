@@ -36,3 +36,19 @@ Frontend selector labels
 app.kubernetes.io/name: {{ include "riksdagskollen.fullname" . }}-frontend
 app.kubernetes.io/component: frontend
 {{- end }}
+
+{{/*
+Umami selector labels
+*/}}
+{{- define "riksdagskollen.umami.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "riksdagskollen.fullname" . }}-umami
+app.kubernetes.io/component: umami
+{{- end }}
+
+{{/*
+Umami Postgres selector labels
+*/}}
+{{- define "riksdagskollen.umamiDb.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "riksdagskollen.fullname" . }}-umami-db
+app.kubernetes.io/component: umami-db
+{{- end }}
