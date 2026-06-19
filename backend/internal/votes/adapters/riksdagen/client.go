@@ -180,6 +180,12 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 					Roll         string `json:"roll"`
 				} `json:"intressent"`
 			} `json:"dokintressent"`
+			Dokuppgift struct {
+				Uppgift []struct {
+					Kod  string `json:"kod"`
+					Text string `json:"text"`
+				} `json:"uppgift"`
+			} `json:"dokuppgift"`
 		} `json:"dokumentstatus"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
@@ -212,6 +218,18 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 			Party:        i.Partibet,
 			Role:         i.Roll,
 		})
+	}
+	for _, u := range ds.Dokuppgift.Uppgift {
+		switch u.Kod {
+		case "debattdatumtid":
+			status.DebattDate = u.Text
+		case "beslutdatumtid":
+			status.BeslutDate = u.Text
+		case "statustext":
+			status.StatusText = u.Text
+		case "notis":
+			status.Notis = u.Text
+		}
 	}
 	// Preserve existing behaviour: first intressent's party feeds proposal-origin tracing via References.
 	if len(ds.Dokintressent.Intressent) > 0 {

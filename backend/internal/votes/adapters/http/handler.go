@@ -179,6 +179,10 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 			resp["subtitle"] = ds.Subtitle
 			resp["summary"] = ds.Summary
 			resp["bodyHtml"] = ds.BodyHTML
+			resp["debattDate"] = ds.DebattDate
+			resp["beslutDate"] = ds.BeslutDate
+			resp["statusText"] = ds.StatusText
+			resp["notis"] = ds.Notis
 		}
 		jsonOK(w, resp)
 		return
@@ -210,6 +214,10 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		resp["subtitle"] = ds.Subtitle
 		resp["summary"] = ds.Summary
 		resp["bodyHtml"] = ds.BodyHTML
+		resp["debattDate"] = ds.DebattDate
+		resp["beslutDate"] = ds.BeslutDate
+		resp["statusText"] = ds.StatusText
+		resp["notis"] = ds.Notis
 	}
 	jsonOK(w, resp)
 }
