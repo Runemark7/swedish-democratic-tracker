@@ -65,6 +65,12 @@ type DocumentStatus struct {
 	// Inline-rendered on the BeslutDetailPage so users see the proposal,
 	// motivation and debate transcript without leaving the site.
 	BodyHTML string `json:"bodyHtml,omitempty"`
+	// Chamber schedule + plain-language summary parsed from dokumentstatus.dokuppgift.
+	// All raw Riksdagen values, shown verbatim (fact layer).
+	DebattDate string `json:"debattDate,omitempty"` // dokuppgift kod=debattdatumtid, "YYYY-MM-DD HH:MM:SS"
+	BeslutDate string `json:"beslutDate,omitempty"` // dokuppgift kod=beslutdatumtid, "YYYY-MM-DD HH:MM:SS"
+	StatusText string `json:"statusText,omitempty"` // dokuppgift kod=statustext
+	Notis      string `json:"notis,omitempty"`      // dokuppgift kod=notis, "Beslut i korthet" — raw HTML, rendered (not stripped like Summary)
 }
 
 type DocumentReference struct {

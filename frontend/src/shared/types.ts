@@ -108,6 +108,13 @@ export interface VoteDetail {
    *  beslut detail page so users can read the proposal, motivation
    *  and debate transcript without leaving the site. */
   bodyHtml?: string;
+  /** Riksdagen dokuppgift — raw scheduled debate/decision datetimes
+   *  ("YYYY-MM-DD HH:MM:SS") and lifecycle text. Fact layer, shown verbatim. */
+  debattDate?: string;
+  beslutDate?: string;
+  statusText?: string;
+  /** "Beslut i korthet" — plain-Swedish summary (HTML) from Riksdagen. */
+  notis?: string;
 }
 
 export interface Goal {

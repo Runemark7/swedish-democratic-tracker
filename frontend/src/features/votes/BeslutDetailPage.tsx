@@ -30,6 +30,37 @@ function committeeLabel(beteckning: string): string {
   return labels[prefix] ?? prefix;
 }
 
+// Parse a Riksdagen "YYYY-MM-DD HH:MM:SS" datetime to a Date (date part only).
+// Returns null for empty/unparseable input.
+function parseRiksdagDate(raw?: string): Date | null {
+  if (!raw) return null;
+  const datePart = raw.slice(0, 10);
+  const d = new Date(`${datePart}T00:00:00`);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+const SV_DATE = new Intl.DateTimeFormat("sv-SE", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+// Label for the empty Debatten section, derived purely from sourced dates.
+// Never asserts "no debate happened" — states the date + that no anföranden
+// are registered, leaving interpretation to the reader.
+function debattFallbackLabel(debattDate?: string): string {
+  const d = parseRiksdagDate(debattDate);
+  if (!d) return "Inget debattdatum registrerat";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  // Today counts as planned/ongoing — a debate dated today may still lie ahead,
+  // so we don't assert it already happened until the date is strictly past.
+  if (d.getTime() >= today.getTime()) {
+    return `Debatt planerad: ${SV_DATE.format(d)}`;
+  }
+  return `Debatten hölls ${SV_DATE.format(d)} · inga anföranden registrerade här`;
+}
+
 function VoteBar({ pos }: { pos: PartyVotePosition }) {
   const total = pos.jaCount + pos.nejCount + pos.avstarCount + pos.franvarandeCount;
   const pctJa   = total > 0 ? (pos.jaCount  / total) * 100 : 0;
@@ -326,7 +357,22 @@ export function BeslutDetailPage() {
           >
             Sammanfattning
           </div>
-          {data?.summary ? (
+          {data?.notis ? (
+            // Riksdagen "Beslut i korthet" is trusted government HTML. Render it
+            // flush inside the card (matching the summary <p>) — not via
+            // DocumentBody, which adds its own surface/border and would nest a
+            // card inside this card.
+            <div
+              className="riksdagen-doc"
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 14,
+                lineHeight: 1.6,
+                color: "var(--color-fg)",
+              }}
+              dangerouslySetInnerHTML={{ __html: data.notis }}
+            />
+          ) : data?.summary ? (
             <p
               style={{
                 fontFamily: "var(--font-body)",
@@ -461,7 +507,7 @@ export function BeslutDetailPage() {
                 margin: 0,
               }}
             >
-              Inga registrerade anföranden för det här beslutet ännu.
+              {debattFallbackLabel(data?.debattDate)}
             </p>
           )}
           {speeches && speeches.length > 0 && (
