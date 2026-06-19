@@ -1,0 +1,32 @@
+{{- if and .Values.umami.enabled .Values.umami.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "riksdagskollen.fullname" . }}-umami
+  labels:
+    {{- include "riksdagskollen.labels" . | nindent 4 }}
+    {{- include "riksdagskollen.umami.selectorLabels" . | nindent 4 }}
+  annotations:
+    {{- range $k, $v := .Values.ingress.annotations }}
+    {{ $k }}: {{ $v | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.umami.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.umami.ingress.host }}
+      secretName: {{ .Values.umami.ingress.tlsSecretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.umami.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "riksdagskollen.fullname" . }}-umami
+                port:
+                  number: 80
+{{- end }}

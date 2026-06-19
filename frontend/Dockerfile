@@ -21,9 +21,15 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 # Server block template — envsubst'd at start via nginx entrypoint
 COPY nginx-server.conf.template /etc/nginx/templates/default.conf.template
+# Runtime Umami tracking-tag injector — runs before nginx starts
+COPY docker-entrypoint.d/40-umami-analytics.sh /docker-entrypoint.d/40-umami-analytics.sh
+RUN chmod +x /docker-entrypoint.d/40-umami-analytics.sh
 
 # Default backend URL (overridden per environment via env var BACKEND_URL)
 ENV BACKEND_URL=http://backend:8080
+# Umami analytics — empty by default; set per environment to enable tracking
+ENV UMAMI_SCRIPT_URL=""
+ENV UMAMI_WEBSITE_ID=""
 
 # Make dirs writable by nginx so the entrypoint envsubst can write conf
 # and nginx can write tmp/cache at runtime.

@@ -35,6 +35,12 @@ spec:
           env:
             - name: BACKEND_URL
               value: {{ .Values.frontend.backendUrl | quote }}
+            {{- if .Values.umami.enabled }}
+            - name: UMAMI_SCRIPT_URL
+              value: {{ .Values.umami.frontend.scriptUrl | quote }}
+            - name: UMAMI_WEBSITE_ID
+              value: {{ .Values.umami.frontend.websiteId | quote }}
+            {{- end }}
           securityContext:
             {{- toYaml .Values.frontend.securityContext | nindent 12 }}
           resources:

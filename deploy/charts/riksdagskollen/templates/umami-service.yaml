@@ -1,0 +1,16 @@
+{{- if .Values.umami.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "riksdagskollen.fullname" . }}-umami
+  labels:
+    {{- include "riksdagskollen.labels" . | nindent 4 }}
+    {{- include "riksdagskollen.umami.selectorLabels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "riksdagskollen.umami.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: 80
+      targetPort: {{ .Values.umami.port }}
+      protocol: TCP
+{{- end }}
