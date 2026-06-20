@@ -11,7 +11,12 @@
 
 DELETE FROM riksdag_kpis;
 
-ALTER TABLE riksdag_kpis DROP COLUMN target;
+ALTER TABLE riksdag_kpis DROP COLUMN IF EXISTS target;
+
+-- Idempotent: migration 000012 already creates an inline UNIQUE (label, year)
+-- whose auto-generated name is riksdag_kpis_label_year_key, so adding it again
+-- collides on a fresh database. Drop any existing one first, then (re)add.
+ALTER TABLE riksdag_kpis DROP CONSTRAINT IF EXISTS riksdag_kpis_label_year_key;
 
 ALTER TABLE riksdag_kpis
   ADD CONSTRAINT riksdag_kpis_label_year_key UNIQUE (label, year);
