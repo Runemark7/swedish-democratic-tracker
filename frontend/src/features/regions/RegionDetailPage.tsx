@@ -489,10 +489,36 @@ export function RegionDetailPage() {
                 REGIONENS PLAN
               </div>
               <p style={{ margin: "0 0 16px", fontSize: 13, color: "var(--color-fg-muted)", lineHeight: 1.5 }}>
-                Regionens faktiska årsplan beslutas av regionfullmäktige. Vi
-                länkar det officiella dokumentet i stället för att tolka det —
-                läs och dra dina egna slutsatser.
+                {budgetDoc.goals && budgetDoc.goals.length > 0
+                  ? "Regionens egna övergripande mål, ordagrant ur den beslutade planen. Vi tolkar dem inte — läs hela planen och dra dina egna slutsatser."
+                  : "Regionens faktiska årsplan beslutas av regionfullmäktige. Vi länkar det officiella dokumentet i stället för att tolka det — läs och dra dina egna slutsatser."}
               </p>
+              {budgetDoc.goals && budgetDoc.goals.length > 0 && (
+                <div style={{ marginBottom: 18 }}>
+                  {(budgetDoc.goalsLabel || budgetDoc.period) && (
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.1em", color: "var(--color-fg-muted)", marginBottom: 10 }}>
+                      {[budgetDoc.goalsLabel, budgetDoc.period].filter(Boolean).join(" · ").toUpperCase()}
+                    </div>
+                  )}
+                  <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                    {budgetDoc.goals.map((g, i) => (
+                      <li key={i} style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
+                        <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--color-accent-2)", fontSize: 18, lineHeight: 1, minWidth: 18, flexShrink: 0 }}>
+                          {i + 1}
+                        </span>
+                        <span style={{ fontSize: 13, color: "var(--color-fg)", lineHeight: 1.4 }}>
+                          {g.title}
+                          {g.description && (
+                            <span style={{ display: "block", fontSize: 12, color: "var(--color-fg-muted)", marginTop: 2, lineHeight: 1.4 }}>
+                              {g.description}
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
               <a
                 href={budgetDoc.url}
                 target="_blank"
@@ -508,7 +534,7 @@ export function RegionDetailPage() {
                   paddingBottom: 2,
                 }}
               >
-                {budgetDoc.label}
+                {budgetDoc.goals && budgetDoc.goals.length > 0 ? `Läs hela: ${budgetDoc.label}` : budgetDoc.label}
                 <span style={{ fontSize: 11 }}>↗</span>
               </a>
               <div style={{ marginTop: 14, fontSize: 11, color: "var(--color-fg-muted)", fontFamily: "var(--font-mono)" }}>
