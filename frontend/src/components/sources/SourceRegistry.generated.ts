@@ -45,7 +45,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": null,
     "license": "Public domain — respektive regions offentliga handlingar",
     "freshness": "manuell; länkarna pekar på regionens egen budgetsida",
-    "lastVerified": "Fri Jun 19 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Sat Jun 20 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
     "blurb": "Varje region är enligt kommunallagen (11 kap.) skyldig att varje år anta en budget som innehåller mål och riktlinjer för verksamheten — regionens faktiska årsplan. Dokumentet heter olika i olika regioner (\"Mål och budget\", \"Regionplan och budget\", \"Verksamhetsplan med budget\" osv.) och beslutas av regionfullmäktige. Det finns ingen strukturerad, maskinläsbar nationell källa för dessa planer. Vi gör två saker: vi återger regionens egna övergripande mål ordagrant ur det beslutade dokumentet, och vi länkar alltid till hela originalplanen. Vi sammanfattar eller tolkar inte — formuleringarna är regionens egna och hela uppsättningen mål visas, aldrig ett urval.",
     "verificationStatus": "frozen",
     "verificationNotes": null
