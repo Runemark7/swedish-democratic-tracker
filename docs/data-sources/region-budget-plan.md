@@ -17,9 +17,12 @@ Varje region är enligt kommunallagen (11 kap.) skyldig att varje år anta en
 budget som innehåller mål och riktlinjer för verksamheten — regionens
 faktiska årsplan. Dokumentet heter olika i olika regioner ("Mål och
 budget", "Regionplan och budget", "Verksamhetsplan med budget" osv.) och
-beslutas av regionfullmäktige. Vi länkar regionens egen officiella
-budgetsida i stället för att generera eller sammanfatta innehållet — det
-finns ingen strukturerad, maskinläsbar nationell källa för dessa planer.
+beslutas av regionfullmäktige. Det finns ingen strukturerad, maskinläsbar
+nationell källa för dessa planer. Vi gör två saker: vi återger regionens
+egna övergripande mål ordagrant ur det beslutade dokumentet, och vi länkar
+alltid till hela originalplanen. Vi sammanfattar eller tolkar inte —
+formuleringarna är regionens egna och hela uppsättningen mål visas, aldrig
+ett urval.
 
 ## Hur du själv kommer åt datan
 Varje region publicerar sitt budgetdokument på sin egen webbplats. Gå till
@@ -32,10 +35,15 @@ manuellt 2026-06-19 så att de pekar på regionens egen budget-/styrdokumentsida
 - `label` — det namn regionen själv ger dokumentet (t.ex. "Regionplan och
   budget").
 - `url` — officiell sida eller PDF hos regionens egen domän.
+- `goalsLabel` — vad regionen själv kallar målen (t.ex. "Effektmål",
+  "Fokusområden", "Strategiska mål").
+- `period` — den planperiod målen är hämtade ur (t.ex. "2025–2027").
+- `goals` — regionens egna övergripande mål, ordagrant och i sin helhet.
 
 ## Begränsningar och kända problem
-- **Endast länk, inte extraherad data.** Vi visar inte enskilda punkter ur
-  planen — bara en länk till primärkällan. Läsaren bedömer själv.
+- **Mål återges ordagrant, inte tolkat.** Vi visar regionens egna
+  övergripande mål i sin helhet med länk till originalet — vi väljer inte ut
+  eller formulerar om. En region utan reproducerbara mål visas med enbart länk.
 - Vissa regioner saknar en stabil HTML-landningssida och länken pekar då på
   ett dokument (PDF) eller en sida för styrande dokument där den senaste
   budgeten finns.
@@ -45,6 +53,9 @@ manuellt 2026-06-19 så att de pekar på regionens egen budget-/styrdokumentsida
   motsvarande länkar.
 
 ## Hur vi bearbetar
-Ingen bearbetning. Vi underhåller en handkurerad lista där varje regions
-SCB-kod kopplas till namnet på dess budgetdokument och en länk till
-regionens egen budgetsida. Inget innehåll härleds eller tolkas.
+Ingen tolkning. Vi underhåller en handkurerad lista där varje regions
+SCB-kod kopplas till namnet på dess budgetdokument, en länk till regionens
+egen budgetsida, och regionens egna övergripande mål avskrivna ordagrant ur
+det beslutade dokumentet. Vi sammanfattar inte och plockar inte ut delar —
+hela måluppsättningen återges med regionens egna formuleringar, alltid med
+länk till originalet.
