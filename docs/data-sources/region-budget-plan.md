@@ -5,7 +5,7 @@ kind: seed
 upstream: ~
 license: Public domain — respektive regions offentliga handlingar
 freshness: manuell; länkarna pekar på regionens egen budgetsida
-last_verified: 2026-06-19
+last_verified: 2026-06-20
 verification_status: frozen
 verification_notes: ~
 used_by:
@@ -44,6 +44,9 @@ manuellt 2026-06-19 så att de pekar på regionens egen budget-/styrdokumentsida
 - **Mål återges ordagrant, inte tolkat.** Vi visar regionens egna
   övergripande mål i sin helhet med länk till originalet — vi väljer inte ut
   eller formulerar om. En region utan reproducerbara mål visas med enbart länk.
+- I nuläget har 13 av 21 regioner ordagranna mål inlagda. Övriga visas med
+  enbart länk eftersom deras mål är nästlade per nämnd, uppdelade i en matris,
+  eller bara finns i dokument som inte gick att läsa maskinellt.
 - Vissa regioner saknar en stabil HTML-landningssida och länken pekar då på
   ett dokument (PDF) eller en sida för styrande dokument där den senaste
   budgeten finns.
