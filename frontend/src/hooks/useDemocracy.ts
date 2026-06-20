@@ -5,7 +5,7 @@ import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type Rik
 import { speechesApi, type Speech } from "@/features/speeches/api";
 import { votesApi } from "@/features/votes/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
-import type { ElectionResult, KPIRank, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, RegionKPIRankEntry, MunicipalityBudgetSnapshot, MunicipalityAreaDataPoint, BudgetSnapshot } from "@/shared/types";
+import type { ElectionResult, KPIRank, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, RegionKPIRankEntry, RegionPlan, MunicipalityBudgetSnapshot, MunicipalityAreaDataPoint, BudgetSnapshot } from "@/shared/types";
 import { STRIP_KPI_META, STRIP_ORDER, type KpiMeta } from "@/features/municipalities/kpiMeta";
 import { REGION_KPI_META, REGION_STRIP_ORDER } from "@/features/regions/regionKpiMeta";
 
@@ -373,6 +373,16 @@ export function useRegionBudgetHistory(code: string) {
     queryKey: ["region-budget-history", code],
     queryFn: () => regionsApi.getRegionBudgetHistory(code),
     staleTime: 300_000,
+    enabled: !!code,
+  });
+}
+
+// ── Region plan (official annual-plan doc + verbatim overarching goals) ───────
+export function useRegionPlan(code: string) {
+  return useQuery<RegionPlan>({
+    queryKey: ["region-plan", code],
+    queryFn: () => regionsApi.getRegionPlan(code),
+    staleTime: 60 * 60 * 1000,
     enabled: !!code,
   });
 }

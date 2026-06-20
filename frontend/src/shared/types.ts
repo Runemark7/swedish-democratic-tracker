@@ -322,6 +322,20 @@ export interface RegionDetail extends RegionSummary {
   electionResults: ElectionResult[];
 }
 
+export interface RegionPlanGoal {
+  title: string;
+  description?: string;
+}
+
+export interface RegionPlan {
+  code: string;
+  label: string;
+  url: string;
+  goalsLabel?: string;
+  period?: string;
+  goals: RegionPlanGoal[];
+}
+
 export interface RegionBudgetArea {
   name: string;
   value: number;

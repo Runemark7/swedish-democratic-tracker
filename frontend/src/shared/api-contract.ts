@@ -531,6 +531,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/regions/{code}/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Region's official annual-plan document and its own overarching goals (verbatim) */
+        get: operations["getRegionPlan"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/regions/{code}/budget": {
         parameters: {
             query?: never;
@@ -1307,6 +1324,44 @@ export interface components {
         };
         RegionDetail: components["schemas"]["RegionSummary"] & {
             electionResults: components["schemas"]["ElectionResult"][];
+        };
+        RegionPlanGoal: {
+            /**
+             * @description Goal exactly as the plan prints it (verbatim, region's wording)
+             * @example Kollektivtrafiken är tillgänglig och attraktiv
+             */
+            title: string;
+            /**
+             * @description Optional verbatim clarifying line (e.g. perspektiv/målområde)
+             * @example Perspektiv: Invånare
+             */
+            description?: string;
+        };
+        RegionPlan: {
+            /** @example 01 */
+            code: string;
+            /**
+             * @description What the region calls its annual-plan document
+             * @example Budget för Region Stockholm
+             */
+            label: string;
+            /**
+             * @description Official page or document on the region's own domain
+             * @example https://www.regionstockholm.se/om-region-stockholm/ekonomi-och-budget/budget/
+             */
+            url: string;
+            /**
+             * @description What the region calls these goals (e.g. Effektmål, Målområden)
+             * @example Mål i budget
+             */
+            goalsLabel?: string;
+            /**
+             * @description Plan period the goals are taken from
+             * @example 2026
+             */
+            period?: string;
+            /** @description Region's own overarching goals, verbatim and complete (empty for link-only) */
+            goals: components["schemas"]["RegionPlanGoal"][];
         };
         RiksdagFeedItem: {
             /** @example 2025-04-15 */
@@ -2498,6 +2553,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RegionDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getRegionPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Plan document link plus the region's verbatim overarching goals (goals may be empty for link-only regions) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionPlan"];
                 };
             };
             404: components["responses"]["NotFound"];

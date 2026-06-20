@@ -79,6 +79,37 @@ func (r *Repository) GetRegion(ctx context.Context, code string) (*domain.Region
 	return detail, rows.Err()
 }
 
+func (r *Repository) GetRegionPlan(ctx context.Context, code string) (*domain.RegionPlan, error) {
+	plan := &domain.RegionPlan{Goals: []domain.RegionPlanGoal{}}
+	err := r.db.QueryRow(ctx, `
+		SELECT region_code, label, url, COALESCE(goals_label, ''), COALESCE(period, '')
+		FROM region_plan WHERE region_code = $1
+	`, code).Scan(&plan.Code, &plan.Label, &plan.URL, &plan.GoalsLabel, &plan.Period)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := r.db.Query(ctx, `
+		SELECT title, COALESCE(description, '')
+		FROM region_plan_goal
+		WHERE region_code = $1
+		ORDER BY sort_order
+	`, code)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		g := domain.RegionPlanGoal{}
+		if err := rows.Scan(&g.Title, &g.Description); err != nil {
+			return nil, err
+		}
+		plan.Goals = append(plan.Goals, g)
+	}
+	return plan, rows.Err()
+}
+
 func (r *Repository) ListMunicipalities(ctx context.Context, regionCode string) ([]*domain.Municipality, error) {
 	if regionCode != "" {
 		return r.listMunicipalitiesByRegion(ctx, regionCode)

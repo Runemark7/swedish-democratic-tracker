@@ -691,6 +691,29 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /regions/{code}/plan:
+    get:
+      operationId: getRegionPlan
+      tags: [regions]
+      summary: Region's official annual-plan document and its own overarching goals (verbatim)
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "01"
+            description: Two-digit region code (SCB/Valmyndigheten)
+      responses:
+        "200":
+          description: Plan document link plus the region's verbatim overarching goals (goals may be empty for link-only regions)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionPlan"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /regions/{code}/budget:
     get:
       operationId: getRegionBudget
@@ -1833,6 +1856,48 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/ElectionResult"
+
+    RegionPlanGoal:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          description: Goal exactly as the plan prints it (verbatim, region's wording)
+          example: "Kollektivtrafiken är tillgänglig och attraktiv"
+        description:
+          type: string
+          description: Optional verbatim clarifying line (e.g. perspektiv/målområde)
+          example: "Perspektiv: Invånare"
+
+    RegionPlan:
+      type: object
+      required: [code, label, url, goals]
+      properties:
+        code:
+          type: string
+          example: "01"
+        label:
+          type: string
+          description: What the region calls its annual-plan document
+          example: "Budget för Region Stockholm"
+        url:
+          type: string
+          description: Official page or document on the region's own domain
+          example: "https://www.regionstockholm.se/om-region-stockholm/ekonomi-och-budget/budget/"
+        goalsLabel:
+          type: string
+          description: What the region calls these goals (e.g. Effektmål, Målområden)
+          example: "Mål i budget"
+        period:
+          type: string
+          description: Plan period the goals are taken from
+          example: "2026"
+        goals:
+          type: array
+          description: Region's own overarching goals, verbatim and complete (empty for link-only)
+          items:
+            $ref: "#/components/schemas/RegionPlanGoal"
 
     RiksdagFeedItem:
       type: object

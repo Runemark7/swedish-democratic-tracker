@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory, useRegionKpiRanks } from "@/hooks/useDemocracy";
+import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory, useRegionKpiRanks, useRegionPlan } from "@/hooks/useDemocracy";
 import { MandateComposition, Pill } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -8,7 +8,6 @@ import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { REGION_KPI_META } from "@/features/regions/regionKpiMeta";
-import { REGION_BUDGET_DOCS } from "@/features/regions/regionBudgetDocs";
 import type { LiveVote } from "@/types/democracy";
 
 function beslutHref(v: LiveVote): string | null {
@@ -60,12 +59,12 @@ export function RegionDetailPage() {
   const { data: regionKommuner } = useKommunList(code);
   const { data: budgetHistory = [] } = useRegionBudgetHistory(code ?? "");
   const { data: kpiRanks = [] } = useRegionKpiRanks(code ?? "");
+  const { data: budgetDoc } = useRegionPlan(code ?? "");
   const rankMap = new Map(kpiRanks.map((r) => [r.kpi, r]));
 
   if (isLoading || !data) return <Skeleton />;
 
   const { title, subtitle, ruling, liveVotes, kpis } = data;
-  const budgetDoc = code ? REGION_BUDGET_DOCS[code] : undefined;
 
   const allParties = [
     ...ruling.parties,
