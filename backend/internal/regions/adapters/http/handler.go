@@ -27,6 +27,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/regions/budget/area/{areaName}", h.getAreaAcrossRegions)
 	r.Get("/regions/kpi/{kpiCode}/ranking", h.getRegionKPIRanking)
 	r.Get("/regions/{code}", h.getRegion)
+	r.Get("/regions/{code}/plan", h.getRegionPlan)
 	r.Get("/regions/{code}/budget", h.getRegionBudget)
 	r.Get("/regions/{code}/budget/history", h.getRegionBudgetHistory)
 	r.Get("/regions/{code}/kpi", h.getRegionKPI)
@@ -68,6 +69,20 @@ func (h *Handler) getRegion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonOK(w, detail)
+}
+
+func (h *Handler) getRegionPlan(w http.ResponseWriter, r *http.Request) {
+	code := chi.URLParam(r, "code")
+	plan, err := h.svc.GetRegionPlan(r.Context(), code)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			jsonError(w, "region plan not found", http.StatusNotFound)
+			return
+		}
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, plan)
 }
 
 func (h *Handler) getRegionKPI(w http.ResponseWriter, r *http.Request) {

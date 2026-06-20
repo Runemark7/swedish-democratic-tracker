@@ -31,6 +31,23 @@ type MunicipalityDetail struct {
 	ElectionResults []ElectionResult `json:"electionResults"`
 }
 
+// RegionPlan is a region's official annual-plan document plus the region's own
+// overarching goals, transcribed verbatim. Goals is empty for regions whose
+// plan has no cleanly extractable overarching set (link-only).
+type RegionPlan struct {
+	Code       string           `json:"code"`
+	Label      string           `json:"label"`
+	URL        string           `json:"url"`
+	GoalsLabel string           `json:"goalsLabel,omitempty"`
+	Period     string           `json:"period,omitempty"`
+	Goals      []RegionPlanGoal `json:"goals"`
+}
+
+type RegionPlanGoal struct {
+	Title       string `json:"title"`
+	Description string `json:"description,omitempty"`
+}
+
 type ElectionResult struct {
 	Party         string  `json:"party"`
 	Mandates      int     `json:"mandates"`
