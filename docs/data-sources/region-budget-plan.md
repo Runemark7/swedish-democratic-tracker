@@ -56,9 +56,12 @@ manuellt 2026-06-19 så att de pekar på regionens egen budget-/styrdokumentsida
   motsvarande länkar.
 
 ## Hur vi bearbetar
-Ingen tolkning. Vi underhåller en handkurerad lista där varje regions
-SCB-kod kopplas till namnet på dess budgetdokument, en länk till regionens
-egen budgetsida, och regionens egna övergripande mål avskrivna ordagrant ur
-det beslutade dokumentet. Vi sammanfattar inte och plockar inte ut delar —
-hela måluppsättningen återges med regionens egna formuleringar, alltid med
-länk till originalet.
+Ingen tolkning. Datan är handkurerad och ligger som ett seed i databasen
+(migration `000026_region_plan`, tabellerna `region_plan` och
+`region_plan_goal`) och serveras via backendens region-API
+(`GET /api/regions/:code/plan`) precis som regionens övriga uppgifter. Varje
+regions SCB-kod kopplas till namnet på dess budgetdokument, en länk till
+regionens egen budgetsida, och regionens egna övergripande mål avskrivna
+ordagrant ur det beslutade dokumentet. Vi sammanfattar inte och plockar inte
+ut delar — hela måluppsättningen återges med regionens egna formuleringar,
+alltid med länk till originalet.

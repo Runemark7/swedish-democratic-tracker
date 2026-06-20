@@ -133,6 +133,10 @@ func (s *Service) GetRegion(ctx context.Context, code string) (*domain.RegionDet
 	return s.repo.GetRegion(ctx, code)
 }
 
+func (s *Service) GetRegionPlan(ctx context.Context, code string) (*domain.RegionPlan, error) {
+	return s.repo.GetRegionPlan(ctx, code)
+}
+
 func (s *Service) ListMunicipalities(ctx context.Context, regionCode string) ([]*domain.Municipality, error) {
 	return s.repo.ListMunicipalities(ctx, regionCode)
 }
