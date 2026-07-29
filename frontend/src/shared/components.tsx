@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PARTY_COLORS, SPECIFICITY_CONFIG, STATUS_CONFIG, TOPIC_LABELS, alignmentColor, deltaColor, formatBudgetAmount, type GoalStatus } from "./design";
+import { PARTY_COLORS, SPECIFICITY_CONFIG, TOPIC_LABELS, alignmentColor, deltaColor, formatBudgetAmount } from "./design";
 import { DeltaIndicator } from "@/features/budget/components/DeltaIndicator";
 import { contextApi } from "@/features/context/api";
 import type { BudgetTrendEntry, FundingRow, RelatedBudgetArea } from "./types";
@@ -72,19 +72,6 @@ export function TopicTag({ topic }: { topic: string }) {
   return (
     <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-surface-low text-on-surface-variant capitalize">
       {TOPIC_LABELS[topic] ?? topic}
-    </span>
-  );
-}
-
-// ── StatusBadge ───────────────────────────────────────────────────────
-export function StatusBadge({ status }: { status: GoalStatus }) {
-  const cfg = STATUS_CONFIG[status];
-  return (
-    <span
-      className="px-2 py-0.5 rounded text-[10px] font-extrabold tracking-wider"
-      style={{ background: cfg.bg, color: cfg.color }}
-    >
-      {cfg.icon} {cfg.label}
     </span>
   );
 }

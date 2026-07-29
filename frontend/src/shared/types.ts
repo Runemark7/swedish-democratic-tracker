@@ -16,6 +16,7 @@ export type Topic =
   | "bostad"
   | "arbete"
   | "energi"
+  | "pension"
   | "other";
 export type Specificity = "concrete" | "directional" | "rhetorical";
 

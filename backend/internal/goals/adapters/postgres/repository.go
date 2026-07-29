@@ -18,13 +18,14 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
-const selectCols = `id, party, goal_text, topic, specificity, source_document, keywords, relevant_committees, created_at`
+const selectCols = `id, party, goal_text, topic, specificity, source_document, source_url, source_quote, keywords, relevant_committees, created_at`
 
 func (r *Repository) Create(ctx context.Context, g *domain.Goal) error {
-	const q = `INSERT INTO party_goals (party, goal_text, topic, specificity, source_document, keywords, relevant_committees)
-		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, created_at`
+	const q = `INSERT INTO party_goals (party, goal_text, topic, specificity, source_document, source_url, source_quote, keywords, relevant_committees)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, created_at`
 	return r.db.QueryRow(ctx, q,
 		g.Party, g.GoalText, g.Topic, string(g.Specificity), g.SourceDocument,
+		nullIfEmpty(g.SourceURL), nullIfEmpty(g.SourceQuote),
 		g.Keywords, g.RelevantCommittees,
 	).Scan(&g.ID, &g.CreatedAt)
 }
@@ -73,10 +74,24 @@ type scanner interface{ Scan(dest ...any) error }
 func scanGoal(s scanner) (*domain.Goal, error) {
 	var g domain.Goal
 	var specificity string
+	var srcURL, srcQuote *string
 	err := s.Scan(&g.ID, &g.Party, &g.GoalText, &g.Topic, &specificity,
-		&g.SourceDocument, &g.Keywords, &g.RelevantCommittees, &g.CreatedAt)
+		&g.SourceDocument, &srcURL, &srcQuote, &g.Keywords, &g.RelevantCommittees, &g.CreatedAt)
 	g.Specificity = domain.Specificity(specificity)
+	if srcURL != nil {
+		g.SourceURL = *srcURL
+	}
+	if srcQuote != nil {
+		g.SourceQuote = *srcQuote
+	}
 	return &g, err
+}
+
+func nullIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
 }
 
 func scanGoals(rows pgx.Rows) ([]*domain.Goal, error) {
