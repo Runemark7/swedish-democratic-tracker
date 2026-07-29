@@ -105,6 +105,8 @@ type goalWithAlignment struct {
 	Topic              string      `json:"topic"`
 	Specificity        string      `json:"specificity"`
 	SourceDocument     string      `json:"sourceDocument"`
+	SourceURL          string      `json:"sourceUrl,omitempty"`
+	SourceQuote        string      `json:"sourceQuote,omitempty"`
 	Keywords           []string    `json:"keywords,omitempty"`
 	RelevantCommittees []string    `json:"relevantCommittees,omitempty"`
 	RelevantVotes      int         `json:"relevantVotes"`
@@ -160,6 +162,8 @@ func (h *Handler) listGoals(w http.ResponseWriter, r *http.Request) {
 			Topic:              g.Topic,
 			Specificity:        string(g.Specificity),
 			SourceDocument:     g.SourceDocument,
+			SourceURL:          g.SourceURL,
+			SourceQuote:        g.SourceQuote,
 			Keywords:           g.Keywords,
 			RelevantCommittees: g.RelevantCommittees,
 			RelevantVotes:      sc.votes,

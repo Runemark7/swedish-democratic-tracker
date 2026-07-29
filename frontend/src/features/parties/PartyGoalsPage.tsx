@@ -3,10 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
 import { partiesApi } from "./api";
 import {
-  AlignmentRing, PartyBadge, StatBlock, StatusBadge,
+  AlignmentRing, PartyBadge, StatBlock,
   SpecificityBadge, TopicTag, ConsequencePanel,
 } from "@/shared/components";
-import { PARTY_COLORS, goalStatus, TOPIC_LABELS } from "@/shared/design";
+import { PARTY_COLORS, TOPIC_LABELS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import type { GoalWithAlignment } from "@/shared/types";
 
@@ -14,14 +14,14 @@ function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
   const [open, setOpen] = useState(false);
   const pct = goal.alignmentPct ?? 0;
   const votes = goal.relevantVotes ?? 0;
-  const status = goalStatus(pct, votes);
+  const alignedVotes = Math.round((pct / 100) * votes);
 
   return (
     <div
       className="rounded-xl overflow-hidden transition-all"
       style={{
         background: open ? "var(--color-surface-low)" : "var(--color-surface-lowest)",
-        borderLeft: `3px solid ${status === "aligned" ? "#16a34a" : status === "partial" ? "#d97706" : status === "contradiction" ? "#dc2626" : "#9ca3af"}`,
+        borderLeft: "3px solid var(--color-surface-high)",
       }}
     >
       {/* Header (clickable) */}
@@ -32,16 +32,19 @@ function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
         <div className="flex justify-between items-start gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex gap-2 items-center flex-wrap mb-2">
-              <StatusBadge status={status} />
               <SpecificityBadge specificity={goal.specificity} />
               <TopicTag topic={goal.topic} />
             </div>
             <p className="text-sm font-semibold text-on-surface leading-snug">
               &ldquo;{goal.goalText}&rdquo;
             </p>
-            <div className="flex items-center gap-3 mt-2 text-xs text-on-surface-variant">
+            <div className="flex items-center gap-3 mt-2 text-xs text-on-surface-variant flex-wrap">
               <span>{goal.sourceDocument} <SourceMarker sourceId="seed-party-goals" /></span>
-              <span>{votes} relevanta omröstningar <SourceMarker sourceId="riksdagen" /></span>
+              {votes > 0 ? (
+                <span>{alignedVotes} av {votes} relevanta röster i linje <SourceMarker sourceId="riksdagen" /></span>
+              ) : (
+                <span>Ej prövad i någon omröstning ännu <SourceMarker sourceId="riksdagen" /></span>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-3 shrink-0">
@@ -99,10 +102,8 @@ export function PartyGoalsPage() {
 
   const goals = data ?? [];
 
-  // Compute stats
-  const aligned = goals.filter((g) => goalStatus(g.alignmentPct ?? 0, g.relevantVotes ?? 0) === "aligned").length;
-  const partial = goals.filter((g) => goalStatus(g.alignmentPct ?? 0, g.relevantVotes ?? 0) === "partial").length;
-  const contradictions = goals.filter((g) => goalStatus(g.alignmentPct ?? 0, g.relevantVotes ?? 0) === "contradiction").length;
+  // Neutral aggregates only — raw facts, no good/bad bucketing.
+  const totalVotes = goals.reduce((s, g) => s + (g.relevantVotes ?? 0), 0);
   const avgAlignment = goals.length
     ? Math.round(goals.reduce((s, g) => s + (g.alignmentPct ?? 0), 0) / goals.length)
     : 0;
@@ -133,11 +134,10 @@ export function PartyGoalsPage() {
           <div className="flex gap-7 items-center">
             <div className="text-center">
               <AlignmentRing pct={avgAlignment} size={64} color={pc?.bg} />
-              <div className="text-[10px] text-on-surface-variant mt-1 uppercase tracking-wider">Snitt</div>
+              <div className="text-[10px] text-on-surface-variant mt-1 uppercase tracking-wider">Snitt i linje</div>
             </div>
-            <StatBlock value={aligned} label="I linje" accent="#16a34a" small />
-            <StatBlock value={partial} label="Delvis" accent="#d97706" small />
-            <StatBlock value={contradictions} label="Motsägelser" accent="#dc2626" small />
+            <StatBlock value={goals.length} label="Mål" small />
+            <StatBlock value={totalVotes} label="Relevanta röster" small />
           </div>
         </div>
       </div>

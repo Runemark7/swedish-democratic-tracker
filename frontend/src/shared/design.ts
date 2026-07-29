@@ -37,14 +37,9 @@ export function partyShortToName(short: string): string {
 }
 
 // ── Status Configuration ──────────────────────────────────────────────
-export type GoalStatus = "aligned" | "partial" | "contradiction" | "no_vote";
-
-export const STATUS_CONFIG: Record<GoalStatus, { label: string; color: string; bg: string; icon: string }> = {
-  aligned:       { label: "I LINJE",     color: "#16a34a", bg: "#f0fdf4", icon: "✓" },
-  partial:       { label: "DELVIS",      color: "#d97706", bg: "#fffbeb", icon: "~" },
-  contradiction: { label: "MOTSÄGELSE",  color: "#dc2626", bg: "#fef2f2", icon: "✕" },
-  no_vote:       { label: "EJ PRÖVAD",   color: "#9ca3af", bg: "#f9fafb", icon: "—" },
-};
+// Alignment is presented as a neutral fact (percentage + raw vote counts),
+// never as a verdict. No "aligned/contradiction" labels, icons, or good/bad
+// colours — the reader draws the conclusion (fact/interpretation principle).
 
 // ── Specificity Configuration ─────────────────────────────────────────
 export const SPECIFICITY_CONFIG: Record<string, { label: string; color: string }> = {
@@ -65,6 +60,7 @@ export const TOPIC_LABELS: Record<string, string> = {
   invandring: "Invandring",
   forsvar:    "Försvar",
   energi:     "Energi",
+  pension:    "Pension",
   other:      "Övrigt",
 };
 
@@ -110,17 +106,11 @@ export function committeeFromBeteckning(beteckning: string): string | undefined 
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────
-export function alignmentColor(pct: number): string {
-  if (pct >= 75) return "#16a34a";
-  if (pct >= 50) return "#d97706";
-  return "#dc2626";
-}
-
-export function goalStatus(pct: number, votes: number): GoalStatus {
-  if (votes === 0) return "no_vote";
-  if (pct >= 75) return "aligned";
-  if (pct >= 40) return "partial";
-  return "contradiction";
+/** Neutral display colour for alignment figures. Returns a single neutral
+ * tone regardless of percentage: the number is the fact, the colour must not
+ * encode a good/bad judgement (fact/interpretation principle). */
+export function alignmentColor(_pct: number): string {
+  return "#6b7280"; // neutral gray
 }
 
 /** Format KSEK to Swedish budget display: "145,2 mdkr" or "4 350 mnkr" */

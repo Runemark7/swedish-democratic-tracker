@@ -9,7 +9,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.kolada.se/v3",
     "license": "Kommun- och regionkollade — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Samma upstream som [kolada](./kolada.md), men begränsad till de KPI-id:n som beskriver kommunens verksamhetsutgifter per ansvarsområde — skola, omsorg, plan, gata, etc. Separata MD eftersom endpointen, mappningen, och visualiseringen skiljer sig från KPI-stripen.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -21,7 +21,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.kolada.se/v3",
     "license": "Kommun- och regionkollade — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Kolada är Rådet för främjande av kommunala analyser (RKA) sin databas med jämförelsetal för svenska kommuner och regioner — ekonomi, vård, skola, befolkning. Vi använder underlag för KPI-stripen på region- och kommunsidor.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -33,7 +33,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.regeringen.se/rattsliga-dokument/",
     "license": "Public domain — Regeringskansliet",
     "freshness": "manuell; uppdateras när regeringen presenterar nya beslut",
-    "lastVerified": "Fri Jun 19 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Fri Jun 19 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "En manuellt kurerad lista över den sittande regeringens uttalade politiska prioriteringar på nationell nivå. Varje punkt är hämtad ur ett namngivet regeringsdokument — Tidöavtalet, budgetpropositionen, försvarspropositionen eller motsvarande — och bär sin egen primärkälla i `source`-fältet. Det här är inte en härledning eller gissning: det är en sammanställning av vad regeringen själv har skrivit, med källa.",
     "verificationStatus": "frozen",
     "verificationNotes": null
@@ -45,7 +45,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": null,
     "license": "Public domain — respektive regions offentliga handlingar",
     "freshness": "manuell; länkarna pekar på regionens egen budgetsida",
-    "lastVerified": "Sat Jun 20 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Sat Jun 20 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Varje region är enligt kommunallagen (11 kap.) skyldig att varje år anta en budget som innehåller mål och riktlinjer för verksamheten — regionens faktiska årsplan. Dokumentet heter olika i olika regioner (\"Mål och budget\", \"Regionplan och budget\", \"Verksamhetsplan med budget\" osv.) och beslutas av regionfullmäktige. Det finns ingen strukturerad, maskinläsbar nationell källa för dessa planer. Vi gör två saker: vi återger regionens egna övergripande mål ordagrant ur det beslutade dokumentet, och vi länkar alltid till hela originalplanen. Vi sammanfattar eller tolkar inte — formuleringarna är regionens egna och hela uppsättningen mål visas, aldrig ett urval.",
     "verificationStatus": "frozen",
     "verificationNotes": null
@@ -57,7 +57,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://data.riksdagen.se",
     "license": "Public domain — Sveriges riksdag",
     "freshness": "dagligen (cron: politicians @daily, speeches @daily, votes @daily)",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Riksdagens öppna data är portalen som Sveriges riksdag publicerar för all kammaraktivitet: ledamöter, anföranden, omröstningar, betänkanden, motioner och utskottsärenden. Det är primärkällan för all \"vad har politikerna gjort\"-data på sidan.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -69,7 +69,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__AM__AM0401__AM0401A/AKURLBefK/",
     "license": "SCB öppna data — fri användning (CC0)",
     "freshness": "kvartalsvis",
-    "lastVerified": "Wed Jun 10 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Wed Jun 10 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Arbetskraftsundersökningarna (AKU) är SCB:s officiella mätning av arbetsmarknaden. Vi använder det säsongrensade relativa arbetslöshetstalet för hela befolkningen 15–74 år — andelen av arbetskraften som är arbetslös — som nationell indikator på riksdagssidan.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -81,7 +81,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy",
     "license": "PxWeb open data — fri användning",
     "freshness": "årlig (kvartal för kommunnivå)",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s folkmängdsdatabas — total befolkning per kommun.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -93,7 +93,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat",
     "license": "PxWeb open data — fri användning",
     "freshness": "4-årscykel (val)",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s tabell över mandatfördelning i kommunfullmäktige efter senaste val. Källa till alla mandatkort på kommunsidor.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -105,7 +105,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/loner-och-arbetskostnader/konjunkturstatistik-loner-for-statlig-sektor-kls/",
     "license": "SCB öppna data — fri användning (CC0)",
     "freshness": "månadsvis (december-snapshot används som årsavstämning)",
-    "lastVerified": "Sat Jun 06 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s Konjunkturstatistik löner, sysselsättning och arbetstid (KLS) är en månatlig enkät till statliga arbetsgivare om antal anställda. Vi använder Tabell 14 — *Månadsanställda i statlig sektor per myndighet* — ur databasdelen AM0102A. Varje post avser en specifik myndighet (kodad med KLS-myndighetskod) och ett specifikt månadsslut. Vi tar december-snapshoten för varje år och använder dem som årsavstämningar för att bygga personalhistorik.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -117,7 +117,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.scb.se/OV0104/v1/doris/sv/ssd/OE/OE0107/OE0107D/KostnDRLT",
     "license": "PxWeb open data — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s tabell över regioners nettokostnader per verksamhetsområde (hälso- och sjukvård, kollektivtrafik, regional utveckling).",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -129,7 +129,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__PR__PR0101__PR0101A/KPI2020M/",
     "license": "SCB öppna data — fri användning (CC0)",
     "freshness": "månadsvis",
-    "lastVerified": "Wed Jun 10 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Wed Jun 10 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Konsumentprisindex (KPI) är SCB:s officiella mått på prisutvecklingen för hushållens konsumtion. Vi använder seriens publicerade *årsförändring* — hur mycket priserna ändrats de senaste tolv månaderna, dvs. inflationstakten — som nationell indikator på riksdagssidan. Riksbankens inflationsmål är 2 %.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -141,7 +141,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104B/Ltmandat",
     "license": "PxWeb open data — fri användning",
     "freshness": "4-årscykel (val)",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s tabell över mandatfördelning i regionfullmäktige (landsting). Syster till Kfmandat men för regionnivå.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -153,7 +153,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://myndighetsregistret.scb.se",
     "license": "SCB öppna data — fri användning",
     "freshness": "löpande (uppdateras när myndigheter inrättas, avvecklas eller byter namn)",
-    "lastVerified": "Sat Jun 06 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SCB:s Myndighetsregister är den officiella förteckningen över alla statliga myndigheter i Sverige. Det förs av Statistiska centralbyrån på uppdrag av regeringen och innehåller namn, organisationsnummer, typ (förvaltningsmyndighet, domstol, utlandsmyndighet m.m.), huvudman och webbadress för varje myndighet. Registret är källan för hela myndighetslistans struktur på sidan — utan det vet vi inte ens vilka myndigheter som existerar.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -165,7 +165,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.regeringen.se/rattsliga-dokument/proposition/",
     "license": "Public domain — Regeringskansliet",
     "freshness": "engångs per år; uppdateras vid ny budget",
-    "lastVerified": "Sat Jun 06 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Hand-kuraterad data från statens budgetproposition (BP) över flera år. Innehåller anslagna belopp per utgiftsområde (UO 1–27) samt vilken status posten har — föreslagen av regeringen eller beslutad av riksdagen.",
     "verificationStatus": "frozen",
     "verificationNotes": null
@@ -175,10 +175,10 @@ export const SOURCES: Record<string, SourceEntry> = {
     "name": "Partimål (seed)",
     "kind": "seed",
     "upstream": null,
-    "license": "Sammanställt från partiernas valmanifest 2022",
+    "license": "Sammanställt från partiernas valmanifest 2022, valplattform 2026, Tidöavtalet och partiprogram",
     "freshness": "engångs (vid antagande); uppdateras manuellt vid nya manifest",
-    "lastVerified": "Sat Jun 06 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
-    "blurb": "Hand-kuraterade mål från partiernas valmanifest 2022. Varje mål har en citation tillbaka till källtexten — vanligtvis en specifik sida i partiets PDF-manifest. På så sätt kan du för varje mål gå tillbaka och verifiera ordagrant vad partiet skrev i sitt manifest.",
+    "lastVerified": "Sun Jun 21 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "Hand-kuraterade mål från partiernas publicerade dokument — valmanifest 2022, valplattform 2026, Tidöavtalet och partiprogram. Varje mål har en `source_url` till källdokumentet och ett ordagrant `source_quote` ur det. På så sätt kan du för varje mål gå tillbaka och verifiera exakt vad partiet skrev.",
     "verificationStatus": "frozen",
     "verificationNotes": null
   },
@@ -189,7 +189,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statskontoret.se/analys-och-statistik/oppna-data/arsutfall/",
     "license": "Statskontoret open data — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Statskontoret publicerar årligen statliga myndigheters faktiska driftkostnader (löner, lokaler, IT — exkl. transfereringar) som en ZIP med CSV-filer. Detta är \"kvittot\" för Myndigheter-kortet på Riksdag-sidan.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -201,7 +201,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statskontoret.se/analys-och-statistik/oppna-data/myndighetsforteckning/",
     "license": "Statskontoret open data — fri användning",
     "freshness": "årlig (ny version publiceras vanligtvis under Q1 nästkommande år)",
-    "lastVerified": "Sat Jun 06 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Statskontoret publicerar varje år en Myndighetsförteckning — ett XLSX-dokument med longitudinella personaluppgifter för samtliga statliga myndigheter. Centrala måttet är *årsarbetskrafter*: heltidsekvivalenter per myndighet och år, med täckning från 2007 och framåt. Statskontoret beräknar detta mått från arbetsgivardeklarationer till Skatteverket och det är det officiella måttet för personalstyrka i statlig sektor.",
     "verificationStatus": "verified",
     "verificationNotes": "Den exakta XLSX-URL:en innehåller ett hårdkodat filnamn med årstal (statskontorets-myndighetsforteckning-2025.xlsx). URL:en måste uppdateras när Statskontoret publicerar nästa utgåva."
@@ -213,7 +213,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.ted.europa.eu/v3/notices/search",
     "license": "EU public data",
     "freshness": "löpande",
-    "lastVerified": "Sat Jun 06 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "EU:s officiella databas över alla offentliga upphandlingar över tröskelvärdet. Vi använder den för att visa kommunala kontrakt på kommunsidor.",
     "verificationStatus": "unsure",
     "verificationNotes": "Upstream-URL i MD pekade på ted.europa.eu (webbgränssnitt) men backenden anropar api.ted.europa.eu/v3/notices/search; MD uppdaterat till korrekt API-host. Tidigare bash-block med curl mot fel host borttaget. Inga SourceMarker-konsumenter finns i UI idag."
@@ -225,7 +225,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://commons.wikimedia.org/wiki/Category:Maps_of_municipalities_of_Sweden",
     "license": "CC BY-SA 2.5",
     "freshness": "engångs (statiska SVG-banor inkluderade i bundle)",
-    "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
+    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "SVG-paths för Sveriges 21 regioner och 290 kommuner. De är inbyggda direkt i sidan så kartan kan ritas omedelbart utan extra hämtning. Ursprunget är Wikimedia Commons, baserat på SCB:s administrativa indelning.",
     "verificationStatus": "frozen",
     "verificationNotes": "Statisk SVG; CC BY-SA 2.5-attribution renderas nu i kartvyerna."

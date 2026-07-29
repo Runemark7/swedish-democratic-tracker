@@ -3,9 +3,9 @@ id: seed-party-goals
 name: Partimål (seed)
 kind: seed
 upstream: ~
-license: Sammanställt från partiernas valmanifest 2022
+license: Sammanställt från partiernas valmanifest 2022, valplattform 2026, Tidöavtalet och partiprogram
 freshness: engångs (vid antagande); uppdateras manuellt vid nya manifest
-last_verified: 2026-06-06
+last_verified: 2026-06-21
 verification_status: frozen
 verification_notes: ~
 used_by:
@@ -16,15 +16,16 @@ used_by:
 ---
 
 ## Vad det är
-Hand-kuraterade mål från partiernas valmanifest 2022. Varje mål har en
-citation tillbaka till källtexten — vanligtvis en specifik sida i
-partiets PDF-manifest. På så sätt kan du för varje mål gå tillbaka och
-verifiera ordagrant vad partiet skrev i sitt manifest.
+Hand-kuraterade mål från partiernas publicerade dokument — valmanifest 2022,
+valplattform 2026, Tidöavtalet och partiprogram. Varje mål har en `source_url`
+till källdokumentet och ett ordagrant `source_quote` ur det. På så sätt kan du
+för varje mål gå tillbaka och verifiera exakt vad partiet skrev.
 
 ## Hur du själv kommer åt datan
-Manifesten är PDF:er på partiernas egna hemsidor. För varje mål visar
-vi den sida i manifestet som målet är hämtat från, så du kan slå upp
-och läsa originalformuleringen.
+Manifesten och valplattformarna publiceras av partierna själva. För varje
+mål lagrar vi en `source_url` (länk till partiets publicerade dokument) och
+ett `source_quote` (ordagrant citat ur dokumentet som målet bygger på), så
+att du kan klicka dig vidare och läsa originalformuleringen.
 
 Primärkällor:
 - Socialdemokraterna: <https://www.socialdemokraterna.se/var-politik>
@@ -38,18 +39,25 @@ Primärkällor:
 
 ## Schema/fält vi använder
 - `party` — partikod (S, M, SD, C, V, KD, L, MP).
-- `topic` — kategori (Vård, Skola, Skatt, etc).
-- `title` — målets korta rubrik.
-- `description` — full målbeskrivning som vi har formulerat.
+- `goal_text` — målets formulering som vi har skrivit.
+- `topic` — kategori (vård, skola, skatt, etc).
 - `specificity` — vår klassificering: `concrete` (mätbart),
   `directional` (riktning utan siffra), `rhetorical` (slagord).
-- `source_citation` — citat ur manifestet med sidnummer.
+- `source_document` — källetikett (t.ex. "Valmanifest 2022").
+- `source_url` — länk till partiets publicerade källdokument.
+- `source_quote` — ordagrant citat ur källdokumentet som målet bygger på.
+- `keywords` — sökord för att matcha relevanta riksdagsomröstningar.
+- `relevant_committees` — utskott vars omröstningar är relevanta.
 
 ## Begränsningar och kända problem
 - Manifest formuleras ofta vagt. Klassificeringen `concrete` vs
-  `rhetorical` är vår tolkning, inte partiets egen.
-- Endast 2022-valets mål är inlagda. Inför nästa val behöver listan
-  uppdateras manuellt med nya manifest.
+  `directional` är vår tolkning, inte partiets egen.
+- Verifierbarheten backas numera av `source_url` + ordagrant `source_quote`
+  per mål, så att varje mål går att kontrollera mot originaltexten.
+- Täckningen för valet 2026 är ofullständig: i juni 2026 hade endast
+  Socialdemokraterna publicerat en valplattform för 2026. Övriga mål
+  bygger på 2022 års manifest, Tidöavtalet och partiprogram. Listan
+  uppdateras manuellt allteftersom partierna publicerar nya dokument.
 - Vissa mål spänner över flera teman; vi har valt det dominerande
   temat för enklare filtrering.
 
