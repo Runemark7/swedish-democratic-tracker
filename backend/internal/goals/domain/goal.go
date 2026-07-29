@@ -17,6 +17,8 @@ type Goal struct {
 	Topic              string      `json:"topic"`
 	Specificity        Specificity `json:"specificity"`
 	SourceDocument     string      `json:"sourceDocument"`
+	SourceURL          string      `json:"sourceUrl,omitempty"`
+	SourceQuote        string      `json:"sourceQuote,omitempty"`
 	Keywords           []string    `json:"keywords,omitempty"`
 	RelevantCommittees []string    `json:"relevantCommittees,omitempty"`
 	CreatedAt          time.Time   `json:"createdAt"`

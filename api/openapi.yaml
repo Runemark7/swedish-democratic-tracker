@@ -1192,6 +1192,7 @@ components:
         - bostad
         - arbete
         - energi
+        - pension
         - other
 
     VoteResult:
@@ -1400,6 +1401,13 @@ components:
         sourceDocument:
           type: string
           example: "Valmanifest 2022"
+        sourceUrl:
+          type: string
+          description: Live URL to the party's published source document for this goal.
+          example: "https://moderaterna.se/.../valmanifest_2022.pdf"
+        sourceQuote:
+          type: string
+          description: Verbatim excerpt from the source document the goal is derived from.
         keywords:
           type: array
           items:

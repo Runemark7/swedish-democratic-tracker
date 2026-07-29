@@ -972,7 +972,7 @@ export interface components {
          */
         PartyCode: "S" | "M" | "SD" | "C" | "V" | "KD" | "L" | "MP" | "unknown";
         /** @enum {string} */
-        Topic: "sjukvard" | "forsvar" | "invandring" | "skatt" | "skola" | "klimat" | "brott" | "bostad" | "arbete" | "energi" | "other";
+        Topic: "sjukvard" | "forsvar" | "invandring" | "skatt" | "skola" | "klimat" | "brott" | "bostad" | "arbete" | "energi" | "pension" | "other";
         /** @enum {string} */
         VoteResult: "Ja" | "Nej" | "Avstår" | "Frånvarande";
         /**
@@ -1076,6 +1076,13 @@ export interface components {
             specificity: components["schemas"]["Specificity"];
             /** @example Valmanifest 2022 */
             sourceDocument: string;
+            /**
+             * @description Live URL to the party's published source document for this goal.
+             * @example https://moderaterna.se/.../valmanifest_2022.pdf
+             */
+            sourceUrl?: string;
+            /** @description Verbatim excerpt from the source document the goal is derived from. */
+            sourceQuote?: string;
             keywords?: string[];
             relevantCommittees?: string[];
         };
