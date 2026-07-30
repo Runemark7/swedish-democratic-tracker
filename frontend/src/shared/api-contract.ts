@@ -1087,12 +1087,17 @@ export interface components {
             relevantCommittees?: string[];
         };
         GoalWithAlignment: components["schemas"]["Goal"] & {
+            /** @description Vote points matched to this goal. */
             relevantVotes?: number;
+            /** @description Subset of relevantVotes whose direction is determinable and for which the party has a recorded position. Only these are scored. */
+            scoredVotes?: number;
+            /** @description Subset of scoredVotes where the party's position matched the goal. */
+            alignedVotes?: number;
             /**
              * Format: float
-             * @description Percentage of relevant votes aligned with goal direction
+             * @description alignedVotes / scoredVotes as a percentage. Null when scoredVotes is 0 — the direction could not be determined from the record.
              */
-            alignmentPct?: number;
+            alignmentPct?: number | null;
         };
         GoalVoteBreakdown: {
             goal: components["schemas"]["GoalWithAlignment"];
@@ -1118,15 +1123,22 @@ export interface components {
         PartySummary: {
             party: components["schemas"]["PartyCode"];
             totalGoals: number;
-            /** Format: float */
-            avgAlignmentPct: number;
+            /**
+             * Format: float
+             * @description Mean alignment across this party's goals whose direction was determinable. Null when none are scorable.
+             */
+            avgAlignmentPct: number | null;
             topicBreakdown?: components["schemas"]["TopicAlignment"][];
         };
         TopicAlignment: {
             topic: components["schemas"]["Topic"];
+            /** @description All goals in this topic, including unscorable ones. */
             goalCount: number;
-            /** Format: float */
-            alignmentPct: number;
+            /**
+             * Format: float
+             * @description Mean alignment across the scorable goals in this topic. Null when none are scorable.
+             */
+            alignmentPct: number | null;
         };
         Promise: {
             id: number;
