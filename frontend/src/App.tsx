@@ -289,19 +289,18 @@ export default function App() {
         {showRiksdagTabs && (
           <div style={{ display: "flex", borderTop: "1px solid var(--color-border)" }}>
             {[
-              { to: "/",          label: "Partimål & röstning", match: ["/", "/parties"] },
-              { to: "/votes",     label: "Omröstningar",        match: []                },
-              { to: "/budget",    label: "Statsbudget",         match: ["/budget"]       },
-              { to: "/politicians", label: "Enskilda politiker",match: ["/politicians"]  },
-              { to: "/manifestos",  label: "Manifest",          match: ["/manifestos"]  },
+              { to: "/parties",     label: "Partimål & röstning", match: ["/parties"]     },
+              { to: "/votes",       label: "Omröstningar",        match: ["/votes"]       },
+              { to: "/budget",      label: "Statsbudget",         match: ["/budget"]      },
+              { to: "/politicians", label: "Enskilda politiker",  match: ["/politicians"] },
+              { to: "/manifestos",  label: "Manifest",            match: ["/manifestos"]  },
             ].map((tab) => {
-              const active = tab.match.some(
-                (m) => location.pathname === m || (m !== "/" && location.pathname.startsWith(m))
+              // Exact match, or a nested route beneath it (/parties/S/goals).
+              // The trailing slash keeps /votes from matching a sibling like
+              // /votes-archive.
+              const isActive = tab.match.some(
+                (m) => location.pathname === m || location.pathname.startsWith(m + "/")
               );
-              const isPartiesTab  = tab.to === "/" && location.pathname.startsWith("/parties");
-              const isVotesTab    = tab.to === "/votes" && location.pathname === "/votes";
-              const isVoteDetailOnParties = tab.to === "/" && location.pathname.startsWith("/votes/");
-              const isActive = active || isPartiesTab || isVotesTab || isVoteDetailOnParties;
 
               return (
                 <NavLink

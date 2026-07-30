@@ -19,7 +19,7 @@ const navPills = [
 ] as const;
 
 const riksdagTabs = [
-  { to: "/",            label: "Partier",     matches: (p: string) => p === "/" || p.startsWith("/parties") },
+  { to: "/parties",     label: "Partier",     matches: (p: string) => p.startsWith("/parties") },
   { to: "/votes",       label: "Omröstningar",matches: (p: string) => p.startsWith("/votes") },
   { to: "/budget",      label: "Budget",      matches: (p: string) => p.startsWith("/budget") },
   { to: "/politicians", label: "Politiker",   matches: (p: string) => p.startsWith("/politicians") },
