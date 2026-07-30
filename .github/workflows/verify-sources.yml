@@ -46,8 +46,32 @@ jobs:
         if: failure() && github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -euo pipefail
+
+          # The label must exist before `gh issue create --label` will accept it.
+          # Previously it did not, so the alerting step itself failed and the
+          # drift was never reported — the failure was silent exactly when it
+          # mattered. Creating it here is idempotent and self-healing.
+          gh label create data-source-drift \
+            --repo "$REPO" \
+            --color d93f0b \
+            --description "Weekly verify-sources found an unreachable or changed upstream source" \
+            --force
+
+          BODY=$(printf '%s\n' \
+            "Weekly \`verify-sources\` run failed." \
+            "" \
+            "Run: $RUN_URL" \
+            "" \
+            "Download the \`verify-report.json\` artifact from that run for per-source detail." \
+            "" \
+            "Upstream endpoints are occasionally flaky, so a single failure is not proof of real drift — re-run the workflow before editing any source doc.")
+
           gh issue create \
+            --repo "$REPO" \
             --title "data-source drift detected $(date -u +%Y-%m-%d)" \
             --label data-source-drift \
-            --body "Weekly verify-sources run failed. See the workflow artifact \`verify-report.json\` for details."
+            --body "$BODY"
