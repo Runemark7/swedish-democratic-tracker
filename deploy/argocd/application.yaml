@@ -21,6 +21,28 @@ spec:
     server: https://kubernetes.default.svc
     namespace: riksdagskollen
 
+  # StatefulSet.spec.volumeClaimTemplates is immutable, and the API server
+  # defaults fields the chart does not set (apiVersion, kind, volumeMode,
+  # status.phase). ServerSideApply therefore reports a diff that can never be
+  # reconciled, leaving the app permanently OutOfSync.
+  #
+  # With selfHeal enabled that permanent drift consumed the retry budget
+  # (limit: 5), after which the controller logged
+  #   "Skipping auto-sync: already attempted sync to [rev]"
+  # and stopped auto-syncing entirely — including for legitimate new image
+  # tags. Deploys silently stalled for 24h and needed a manual hard refresh.
+  #
+  # Ignoring this immutable field keeps the app Synced so the retry budget
+  # stays available for real changes. Editing volumeClaimTemplates requires
+  # recreating the StatefulSet regardless, so nothing actionable is hidden.
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      name: riksdagskollen-umami-db
+      namespace: riksdagskollen
+      jsonPointers:
+        - /spec/volumeClaimTemplates
+
   syncPolicy:
     automated:
       prune: true
