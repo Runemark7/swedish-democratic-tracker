@@ -25,7 +25,11 @@ export function PartiesPage() {
   }
 
   const parties = data ?? [];
-  const sorted = [...parties].sort((a, b) => b.avgAlignmentPct - a.avgAlignmentPct);
+  // Parties with no scorable goal sort last — they carry no figure to rank by,
+  // and ranking them as 0 would read as "worst", which is not what null means.
+  const sorted = [...parties].sort(
+    (a, b) => (b.avgAlignmentPct ?? -1) - (a.avgAlignmentPct ?? -1),
+  );
 
   return (
     <div>
@@ -52,7 +56,10 @@ export function PartiesPage() {
       <div className="bg-surface-lowest rounded-xl overflow-hidden">
         {sorted.map((p, i) => {
           const pc = PARTY_COLORS[p.party];
-          const avg = Math.round(p.avgAlignmentPct);
+          const avg =
+            p.avgAlignmentPct !== null && p.avgAlignmentPct !== undefined
+              ? Math.round(p.avgAlignmentPct)
+              : null;
           const topics = p.topicBreakdown ?? [];
 
           return (
@@ -128,7 +135,7 @@ export function PartiesPage() {
                     style={{
                       height: "100%",
                       borderRadius: 4,
-                      width: `${Math.min(avg, 100)}%`,
+                      width: avg !== null ? `${Math.min(avg, 100)}%` : "0%",
                       background: pc?.bg ?? "#666",
                       transition: "width 0.7s",
                     }}
@@ -141,10 +148,11 @@ export function PartiesPage() {
                     fontWeight: 700,
                     minWidth: 36,
                     textAlign: "right",
-                    color: alignmentColor(avg),
+                    color: alignmentColor(avg ?? 0),
                   }}
+                  title={avg === null ? "Riktning ej fastställd i någon omröstning ännu" : undefined}
                 >
-                  {avg}%
+                  {avg !== null ? `${avg}%` : "—"}
                   <SourceMarker sourceId="riksdagen" />
                 </span>
               </div>

@@ -51,13 +51,20 @@ type PromiseVoteMatch struct {
 }
 
 // ScorecardRow is a single row from the party_scorecards materialized view.
+//
+// RelevantVotes counts every vote point matched to the goal. ScoredVotes counts
+// the subset whose aligned_direction is determinable and for which the party has
+// a recorded position. AlignmentPct is nil when ScoredVotes is 0 — "not yet
+// determinable" must never render as 0%.
 type ScorecardRow struct {
-	Party         string  `json:"party"`
-	GoalID        int     `json:"goalId"`
-	GoalText      string  `json:"goalText"`
-	Topic         string  `json:"topic"`
-	RelevantVotes int     `json:"relevantVotes"`
-	AlignmentPct  float64 `json:"alignmentPct"`
+	Party         string   `json:"party"`
+	GoalID        int      `json:"goalId"`
+	GoalText      string   `json:"goalText"`
+	Topic         string   `json:"topic"`
+	RelevantVotes int      `json:"relevantVotes"`
+	ScoredVotes   int      `json:"scoredVotes"`
+	AlignedVotes  int      `json:"alignedVotes"`
+	AlignmentPct  *float64 `json:"alignmentPct"`
 }
 
 // RelevanceScore is returned by the AI service for a goal-vote pair.
