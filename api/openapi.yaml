@@ -1424,10 +1424,22 @@ components:
           properties:
             relevantVotes:
               type: integer
+              description: Vote points matched to this goal.
+            scoredVotes:
+              type: integer
+              description: >-
+                Subset of relevantVotes whose direction is determinable and for
+                which the party has a recorded position. Only these are scored.
+            alignedVotes:
+              type: integer
+              description: Subset of scoredVotes where the party's position matched the goal.
             alignmentPct:
               type: number
               format: float
-              description: Percentage of relevant votes aligned with goal direction
+              nullable: true
+              description: >-
+                alignedVotes / scoredVotes as a percentage. Null when scoredVotes
+                is 0 — the direction could not be determined from the record.
 
     GoalVoteBreakdown:
       type: object
@@ -1481,6 +1493,10 @@ components:
         avgAlignmentPct:
           type: number
           format: float
+          nullable: true
+          description: >-
+            Mean alignment across this party's goals whose direction was
+            determinable. Null when none are scorable.
         topicBreakdown:
           type: array
           items:
@@ -1494,9 +1510,14 @@ components:
           $ref: "#/components/schemas/Topic"
         goalCount:
           type: integer
+          description: All goals in this topic, including unscorable ones.
         alignmentPct:
           type: number
           format: float
+          nullable: true
+          description: >-
+            Mean alignment across the scorable goals in this topic. Null when
+            none are scorable.
 
     Promise:
       type: object

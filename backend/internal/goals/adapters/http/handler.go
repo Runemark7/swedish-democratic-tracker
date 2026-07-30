@@ -13,7 +13,7 @@ import (
 )
 
 type Handler struct {
-	goalsSvc   *goals.Service
+	goalsSvc    *goals.Service
 	matchingSvc *matching.Service
 }
 
@@ -30,68 +30,77 @@ func (h *Handler) Routes(r chi.Router) {
 func (h *Handler) listParties(w http.ResponseWriter, r *http.Request) {
 	// Aggregate by party
 	type topicEntry struct {
-		Topic        string  `json:"topic"`
-		GoalCount    int     `json:"goalCount"`
-		AlignmentPct float64 `json:"alignmentPct"`
+		Topic        string   `json:"topic"`
+		GoalCount    int      `json:"goalCount"`
+		AlignmentPct *float64 `json:"alignmentPct"`
 	}
 	type partySummary struct {
 		Party          string       `json:"party"`
 		TotalGoals     int          `json:"totalGoals"`
-		AvgAlignment   float64      `json:"avgAlignmentPct"`
+		AvgAlignment   *float64     `json:"avgAlignmentPct"`
 		TopicBreakdown []topicEntry `json:"topicBreakdown"`
 	}
 
-	parties := map[string]*partySummary{}
-	topicGoals := map[string]map[string][]float64{} // party -> topic -> []pct
-
-	// Seed from all goals so parties appear even without scorecard data.
 	allGoals, err := h.goalsSvc.ListAll(r.Context())
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	for _, g := range allGoals {
-		if _, ok := parties[g.Party]; !ok {
-			parties[g.Party] = &partySummary{Party: g.Party}
-			topicGoals[g.Party] = map[string][]float64{}
-		}
-		parties[g.Party].TotalGoals++
-		topicGoals[g.Party][g.Topic] = append(topicGoals[g.Party][g.Topic], 0)
-	}
-
-	// Overlay actual scorecard alignment percentages where available.
 	scorecards, err := h.matchingSvc.GetAllPartyScorecards(r.Context())
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Alignment per goal, present only where the direction was determinable.
+	pctByGoal := make(map[int]float64, len(scorecards))
 	for _, row := range scorecards {
-		if _, ok := parties[row.Party]; !ok {
-			parties[row.Party] = &partySummary{Party: row.Party}
-			topicGoals[row.Party] = map[string][]float64{}
+		if row.AlignmentPct != nil {
+			pctByGoal[row.GoalID] = *row.AlignmentPct
 		}
-		topicGoals[row.Party][row.Topic] = append(topicGoals[row.Party][row.Topic], row.AlignmentPct)
+	}
+
+	parties := map[string]*partySummary{}
+	topicCounts := map[string]map[string]int{}     // party -> topic -> goals
+	topicPcts := map[string]map[string][]float64{} // party -> topic -> scored pcts
+
+	// Every goal contributes exactly once. Goals whose direction could not be
+	// determined count toward GoalCount but are excluded from the averages —
+	// averaging them in as 0 would state "not in line" where we simply do not know.
+	for _, g := range allGoals {
+		if _, ok := parties[g.Party]; !ok {
+			parties[g.Party] = &partySummary{Party: g.Party}
+			topicCounts[g.Party] = map[string]int{}
+			topicPcts[g.Party] = map[string][]float64{}
+		}
+		parties[g.Party].TotalGoals++
+		topicCounts[g.Party][g.Topic]++
+		if pct, ok := pctByGoal[g.ID]; ok {
+			topicPcts[g.Party][g.Topic] = append(topicPcts[g.Party][g.Topic], pct)
+		}
 	}
 
 	result := make([]*partySummary, 0, len(parties))
 	for party, ps := range parties {
-		// Reset topic breakdown — rebuild from combined data
-		ps.TopicBreakdown = nil
-		var totalPct float64
-		for topic, pcts := range topicGoals[party] {
-			var sum float64
-			for _, p := range pcts {
-				sum += p
-				totalPct += p
+		var partySum float64
+		var partyScored int
+		for topic, count := range topicCounts[party] {
+			entry := topicEntry{Topic: topic, GoalCount: count}
+			if pcts := topicPcts[party][topic]; len(pcts) > 0 {
+				var sum float64
+				for _, p := range pcts {
+					sum += p
+				}
+				avg := sum / float64(len(pcts))
+				entry.AlignmentPct = &avg
+				partySum += sum
+				partyScored += len(pcts)
 			}
-			ps.TopicBreakdown = append(ps.TopicBreakdown, topicEntry{
-				Topic:        topic,
-				GoalCount:    len(pcts),
-				AlignmentPct: sum / float64(len(pcts)),
-			})
+			ps.TopicBreakdown = append(ps.TopicBreakdown, entry)
 		}
-		if ps.TotalGoals > 0 {
-			ps.AvgAlignment = totalPct / float64(ps.TotalGoals)
+		if partyScored > 0 {
+			avg := partySum / float64(partyScored)
+			ps.AvgAlignment = &avg
 		}
 		result = append(result, ps)
 	}
@@ -99,18 +108,20 @@ func (h *Handler) listParties(w http.ResponseWriter, r *http.Request) {
 }
 
 type goalWithAlignment struct {
-	ID                 int         `json:"id"`
-	Party              string      `json:"party"`
-	GoalText           string      `json:"goalText"`
-	Topic              string      `json:"topic"`
-	Specificity        string      `json:"specificity"`
-	SourceDocument     string      `json:"sourceDocument"`
-	SourceURL          string      `json:"sourceUrl,omitempty"`
-	SourceQuote        string      `json:"sourceQuote,omitempty"`
-	Keywords           []string    `json:"keywords,omitempty"`
-	RelevantCommittees []string    `json:"relevantCommittees,omitempty"`
-	RelevantVotes      int         `json:"relevantVotes"`
-	AlignmentPct       float64     `json:"alignmentPct"`
+	ID                 int      `json:"id"`
+	Party              string   `json:"party"`
+	GoalText           string   `json:"goalText"`
+	Topic              string   `json:"topic"`
+	Specificity        string   `json:"specificity"`
+	SourceDocument     string   `json:"sourceDocument"`
+	SourceURL          string   `json:"sourceUrl,omitempty"`
+	SourceQuote        string   `json:"sourceQuote,omitempty"`
+	Keywords           []string `json:"keywords,omitempty"`
+	RelevantCommittees []string `json:"relevantCommittees,omitempty"`
+	RelevantVotes      int      `json:"relevantVotes"`
+	ScoredVotes        int      `json:"scoredVotes"`
+	AlignedVotes       int      `json:"alignedVotes"`
+	AlignmentPct       *float64 `json:"alignmentPct"`
 }
 
 func (h *Handler) listGoals(w http.ResponseWriter, r *http.Request) {
@@ -135,15 +146,20 @@ func (h *Handler) listGoals(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	scoreMap := map[int]struct {
-		votes int
-		pct   float64
-	}{}
+	type goalScore struct {
+		relevant int
+		scored   int
+		aligned  int
+		pct      *float64
+	}
+	scoreMap := map[int]goalScore{}
 	for _, row := range rows {
-		scoreMap[row.GoalID] = struct {
-			votes int
-			pct   float64
-		}{votes: row.RelevantVotes, pct: row.AlignmentPct}
+		scoreMap[row.GoalID] = goalScore{
+			relevant: row.RelevantVotes,
+			scored:   row.ScoredVotes,
+			aligned:  row.AlignedVotes,
+			pct:      row.AlignmentPct,
+		}
 	}
 
 	// Convert to response type with alignment info
@@ -166,7 +182,9 @@ func (h *Handler) listGoals(w http.ResponseWriter, r *http.Request) {
 			SourceQuote:        g.SourceQuote,
 			Keywords:           g.Keywords,
 			RelevantCommittees: g.RelevantCommittees,
-			RelevantVotes:      sc.votes,
+			RelevantVotes:      sc.relevant,
+			ScoredVotes:        sc.scored,
+			AlignedVotes:       sc.aligned,
 			AlignmentPct:       sc.pct,
 		})
 	}

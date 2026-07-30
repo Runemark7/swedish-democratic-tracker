@@ -130,14 +130,19 @@ func (r *Repository) ListMatchesByPromise(ctx context.Context, promiseID int) ([
 	return mm, rows.Err()
 }
 
+// alignment_pct is deliberately not COALESCEd: NULL means "not determinable
+// from the record" and must survive all the way to the API.
+const scorecardColumns = `party, goal_id, goal_text, topic,
+	relevant_votes, scored_votes, aligned_votes, alignment_pct`
+
 func (r *Repository) GetPartyScorecard(ctx context.Context, party string) ([]*domain.ScorecardRow, error) {
-	const q = `SELECT party, goal_id, goal_text, topic, relevant_votes, COALESCE(alignment_pct, 0)
+	const q = `SELECT ` + scorecardColumns + `
 		FROM party_scorecards WHERE party = $1 ORDER BY topic, goal_id`
 	return r.queryScorecards(ctx, q, party)
 }
 
 func (r *Repository) GetAllPartyScorecards(ctx context.Context) ([]*domain.ScorecardRow, error) {
-	const q = `SELECT party, goal_id, goal_text, topic, relevant_votes, COALESCE(alignment_pct, 0)
+	const q = `SELECT ` + scorecardColumns + `
 		FROM party_scorecards ORDER BY party, topic, goal_id`
 	return r.queryScorecards(ctx, q)
 }
@@ -158,7 +163,8 @@ func (r *Repository) queryScorecards(ctx context.Context, q string, args ...any)
 	for rows.Next() {
 		var row domain.ScorecardRow
 		if err := rows.Scan(&row.Party, &row.GoalID, &row.GoalText, &row.Topic,
-			&row.RelevantVotes, &row.AlignmentPct); err != nil {
+			&row.RelevantVotes, &row.ScoredVotes, &row.AlignedVotes,
+			&row.AlignmentPct); err != nil {
 			return nil, err
 		}
 		rr = append(rr, &row)

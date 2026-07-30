@@ -138,7 +138,10 @@ export function PartyDetailPage() {
                 marginTop: 6,
               }}
             >
-              {summary.totalGoals ?? 0} mål · {summary.avgAlignmentPct ?? 0}% i linje
+              {summary.totalGoals ?? 0} mål ·{" "}
+              {summary.avgAlignmentPct !== null && summary.avgAlignmentPct !== undefined
+                ? `${Math.round(summary.avgAlignmentPct)}% i linje`
+                : "riktning ej fastställd"}
             </div>
           )}
         </div>
@@ -219,7 +222,10 @@ export function PartyDetailPage() {
                         marginTop: 4,
                       }}
                     >
-                      {g.topic} · {g.alignmentPct ?? 0}% i linje · {g.relevantVotes ?? 0} röster
+                      {g.topic} ·{" "}
+                      {g.alignmentPct !== null && g.alignmentPct !== undefined
+                        ? `${g.alignmentPct}% i linje · ${g.scoredVotes ?? 0} bedömda röster`
+                        : `riktning ej fastställd · ${g.relevantVotes ?? 0} matchade röster`}
                     </div>
                   </li>
                 ))}

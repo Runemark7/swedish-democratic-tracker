@@ -12,9 +12,10 @@ import type { GoalWithAlignment } from "@/shared/types";
 
 function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
   const [open, setOpen] = useState(false);
-  const pct = goal.alignmentPct ?? 0;
-  const votes = goal.relevantVotes ?? 0;
-  const alignedVotes = Math.round((pct / 100) * votes);
+  const matched = goal.relevantVotes ?? 0;
+  const scored = goal.scoredVotes ?? 0;
+  const aligned = goal.alignedVotes ?? 0;
+  const pct = goal.alignmentPct;
 
   return (
     <div
@@ -40,15 +41,26 @@ function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
             </p>
             <div className="flex items-center gap-3 mt-2 text-xs text-on-surface-variant flex-wrap">
               <span>{goal.sourceDocument} <SourceMarker sourceId="seed-party-goals" /></span>
-              {votes > 0 ? (
-                <span>{alignedVotes} av {votes} relevanta röster i linje <SourceMarker sourceId="riksdagen" /></span>
+              {scored > 0 ? (
+                <span>{aligned} av {scored} relevanta röster i linje <SourceMarker sourceId="riksdagen" /></span>
+              ) : matched > 0 ? (
+                <span>
+                  {matched === 1
+                    ? "1 omröstning matchad, riktning ej fastställd"
+                    : `${matched} omröstningar matchade, riktning ej fastställd`}{" "}
+                  <SourceMarker sourceId="riksdagen" />
+                </span>
               ) : (
                 <span>Ej prövad i någon omröstning ännu <SourceMarker sourceId="riksdagen" /></span>
               )}
             </div>
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            <AlignmentRing pct={pct} />
+            {pct !== null && pct !== undefined ? (
+              <AlignmentRing pct={pct} />
+            ) : (
+              <span className="text-sm text-on-surface-variant" title="Riktning ej fastställd">—</span>
+            )}
             <span
               className="text-lg text-on-surface-variant transition-transform duration-300"
               style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
@@ -63,7 +75,7 @@ function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
       {open && (
         <div className="px-5 pb-5">
           <div className="h-px bg-surface-high mb-4" />
-          {votes > 0 ? (
+          {matched > 0 ? (
             <div>
               <p className="text-[11px] text-on-surface-variant uppercase tracking-widest font-semibold mb-3">
                 Så röstade partiets ledamöter
@@ -102,11 +114,18 @@ export function PartyGoalsPage() {
 
   const goals = data ?? [];
 
-  // Neutral aggregates only — raw facts, no good/bad bucketing.
-  const totalVotes = goals.reduce((s, g) => s + (g.relevantVotes ?? 0), 0);
-  const avgAlignment = goals.length
-    ? Math.round(goals.reduce((s, g) => s + (g.alignmentPct ?? 0), 0) / goals.length)
-    : 0;
+  // Neutral aggregates only — raw facts, no good/bad bucketing. Goals whose
+  // direction could not be determined are excluded from the average rather than
+  // counted as 0: that would assert "not in line" where we simply do not know.
+  const totalScored = goals.reduce((s, g) => s + (g.scoredVotes ?? 0), 0);
+  const scoredGoals = goals.filter(
+    (g) => g.alignmentPct !== null && g.alignmentPct !== undefined,
+  );
+  const avgAlignment = scoredGoals.length
+    ? Math.round(
+        scoredGoals.reduce((s, g) => s + (g.alignmentPct ?? 0), 0) / scoredGoals.length,
+      )
+    : null;
 
   // Group by topic
   const byTopic = goals.reduce<Record<string, GoalWithAlignment[]>>((acc, g) => {
@@ -133,11 +152,21 @@ export function PartyGoalsPage() {
           </div>
           <div className="flex gap-7 items-center">
             <div className="text-center">
-              <AlignmentRing pct={avgAlignment} size={64} color={pc?.bg} />
+              {avgAlignment !== null ? (
+                <AlignmentRing pct={avgAlignment} size={64} color={pc?.bg} />
+              ) : (
+                <div
+                  className="text-2xl text-on-surface-variant flex items-center justify-center"
+                  style={{ width: 64, height: 64 }}
+                  title="Ingen omröstning med fastställd riktning ännu"
+                >
+                  —
+                </div>
+              )}
               <div className="text-[10px] text-on-surface-variant mt-1 uppercase tracking-wider">Snitt i linje</div>
             </div>
             <StatBlock value={goals.length} label="Mål" small />
-            <StatBlock value={totalVotes} label="Relevanta röster" small />
+            <StatBlock value={totalScored} label="Bedömda röster" small />
           </div>
         </div>
       </div>
