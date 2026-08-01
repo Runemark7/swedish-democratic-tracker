@@ -96,12 +96,21 @@ export const COMMITTEES: Record<string, string> = {
   AU:  "Arbetsmarknadsutskottet",
   TU:  "Trafikutskottet",
   KU:  "Konstitutionsutskottet",
+  KrU: "Kulturutskottet",
   UU:  "Utrikesutskottet",
 };
 
-/** Extract committee name from beteckning, e.g. "SoU12" → "Socialutskottet" */
+/** Extract committee name from beteckning, e.g. "SoU12" → "Socialutskottet".
+ *
+ *  The code runs from the start up to and including the final "U", and may
+ *  contain interior uppercase ("MJU") or Swedish vowels ("FöU"). The previous
+ *  pattern allowed only lowercase after the first letter, so "MJU" never
+ *  matched and Miljö- och jordbruksutskottet was invisible site-wide.
+ *
+ *  The lookahead anchors the code to a digit or end-of-string so a trailing
+ *  suffix is tolerated: "AU1y" (yttrande) resolves to "AU". */
 export function committeeFromBeteckning(beteckning: string): string | undefined {
-  const match = beteckning.match(/^([A-ZÅÄÖ][a-zåäöÅÄÖ]*U)/);
+  const match = beteckning.match(/^([A-ZÅÄÖ][A-ZÅÄÖa-zåäö]*U)(?=\d|$)/);
   return match ? COMMITTEES[match[1]] : undefined;
 }
 
