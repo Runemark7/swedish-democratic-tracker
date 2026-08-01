@@ -22,6 +22,40 @@
 - Client tests follow `backend/internal/regions/adapters/kolada/*_test.go`: `httptest.NewServer` plus a `newTestClient(url)` helper injecting `baseURL`.
 - **The frontend has no test runner.** Only `frontend/scripts/__tests__/*.test.mjs` exists, run ad hoc via `node --test`. Frontend tasks below verify by explicit command or browser check, and say so. Do not add a test framework as part of this plan.
 
+## ⚠️ Correction (2026-08-01, during Task 3)
+
+The fetch strategy first written into this plan does not work. Verified against
+the live API:
+
+- **`/voteringlista` ignores `p`.** `p=1`, `p=2` and `p=3` return byte-identical
+  rows (intersection 100 of 100). The earlier observation that page 20 still
+  returned 500 rows was not deep pagination — it was the same first page every
+  time.
+- **`sz` is capped at 10 000.** `sz=50000` and `sz=200000` both return exactly
+  10 000 rows — 95 of 759 vote points for one party-riksmöte.
+
+So a whole party-riksmöte (~81 000 ballots) cannot be retrieved from that
+endpoint at all, and a page-until-short loop would never terminate.
+
+**Corrected strategy — partition by betänkande:**
+
+1. Enumerate voteringar per riksmöte via `/dokumentlista?doktyp=votering&rm=X`,
+   which *does* paginate correctly (`@traffar: 759`, `@sidor: 4`, zero overlap
+   between pages) and supplies the coverage denominator.
+2. Take the distinct `beteckning` values from that list.
+3. Fetch ballots per betänkande via `/voteringlista?rm=X&bet=Y&sz=10000` with
+   **no party filter** — one request returns every party and stays far under the
+   cap (`AU9` = 1 047 rows, 3 vote points, 9 parties).
+
+This is both correct and cheaper: roughly **620 requests** rather than the 1 788
+originally planned, and no per-party loop at all. Betänkanden decided without a
+vote return 0 rows, which is expected (`SoU1`).
+
+**Tasks affected:** Task 3 drops the `Page` field entirely (shipping a parameter
+the API ignores would be the same class of silent failure this plan exists to
+fix). Tasks 4 and 6 must be rewritten around beteckning partitioning before they
+are executed.
+
 ## Mandate period
 
 `2022–2026` comprises exactly four riksmöten: **`2022/23`, `2023/24`, `2024/25`, `2025/26`** — 562 + 589 + 652 + 759 = **2 562 voteringar** (counts from `data.riksdagen.se/dokumentlista/?doktyp=votering&rm=<rm>`, retrieved 2026-08-01).
