@@ -99,6 +99,73 @@ func (c *Client) FetchVotes(ctx context.Context, f ports.FetchVotesFilter) ([]*d
 	return vv, nil
 }
 
+// ListVoteringar enumerates voteringar for a riksmöte, newest first.
+//
+// This uses /dokumentlista rather than /voteringlista because only the former
+// paginates: /voteringlista silently ignores `p` and caps `sz` at 10 000, so it
+// cannot enumerate a riksmöte on its own. The @traffar total returned here is
+// also the coverage denominator the site publishes.
+func (c *Client) ListVoteringar(ctx context.Context, rm string, page, size int) ([]ports.VoteringRef, int, error) {
+	if page == 0 {
+		page = 1
+	}
+	if size == 0 {
+		size = 200
+	}
+	url := fmt.Sprintf(
+		"%s/dokumentlista/?doktyp=votering&rm=%s&utformat=json&sz=%d&p=%d&sort=datum&sortorder=desc",
+		c.baseURL, rm, size, page)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, 0, err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, 0, fmt.Errorf("riksdagen dokumentlista returned %d", resp.StatusCode)
+	}
+
+	var payload struct {
+		Dokumentlista struct {
+			Traffar  string `json:"@traffar"`
+			Dokument []struct {
+				DokID       string `json:"dok_id"`
+				Beteckning  string `json:"beteckning"`
+				Organ       string `json:"organ"`
+				Datum       string `json:"datum"`
+				Systemdatum string `json:"systemdatum"`
+			} `json:"dokument"`
+		} `json:"dokumentlista"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+		return nil, 0, fmt.Errorf("decode dokumentlista: %w", err)
+	}
+
+	total := 0
+	_, _ = fmt.Sscanf(payload.Dokumentlista.Traffar, "%d", &total)
+
+	refs := make([]ports.VoteringRef, 0, len(payload.Dokumentlista.Dokument))
+	for _, d := range payload.Dokumentlista.Dokument {
+		var sd time.Time
+		if t, err := time.Parse("2006-01-02 15:04:05", d.Systemdatum); err == nil {
+			sd = t
+		}
+		refs = append(refs, ports.VoteringRef{
+			Beteckning:  d.Beteckning,
+			Organ:       d.Organ,
+			DokID:       d.DokID,
+			Date:        d.Datum,
+			SystemDatum: sd,
+		})
+	}
+	return refs, total, nil
+}
+
 // FetchDocuments returns recent betänkanden from the given committee organs.
 // status defaults to "Bifall" — >90% of betänkanden pass; full votering lookup is future work.
 // TODO: integrate nämndärenden API (lankadedata.se) for regional/municipal council decisions when available.

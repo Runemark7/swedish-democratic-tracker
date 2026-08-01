@@ -26,6 +26,17 @@ type FetchVotesFilter struct {
 	// paginate correctly and reports @traffar.
 }
 
+// VoteringRef identifies one votering — a single förslagspunkt decided by a
+// vote. Enumerated from /dokumentlista, which (unlike /voteringlista) paginates
+// correctly and reports a total.
+type VoteringRef struct {
+	Beteckning  string // "UbU31"
+	Organ       string // "UbU"
+	DokID       string
+	Date        string // "2026-06-17"
+	SystemDatum time.Time
+}
+
 // RiksdagDocument is a recent betänkande (committee report) from the Riksdagen Open Data API.
 type RiksdagDocument struct {
 	Title      string
@@ -46,6 +57,10 @@ type BetankandeInfo struct {
 
 type RiksdagenVoteClient interface {
 	FetchVotes(ctx context.Context, f FetchVotesFilter) ([]*domain.Vote, error)
+	// ListVoteringar enumerates voteringar for a riksmöte, newest first.
+	// Returns one page plus the total the API reports (@traffar), which is also
+	// the coverage denominator. page is 1-based.
+	ListVoteringar(ctx context.Context, rm string, page, size int) ([]VoteringRef, int, error)
 	FetchDocumentStatus(ctx context.Context, dokID string) (*domain.DocumentStatus, error)
 	// FetchDocuments returns the most recent betänkanden from the given committee organs.
 	FetchDocuments(ctx context.Context, organs []string, count int) ([]RiksdagDocument, error)

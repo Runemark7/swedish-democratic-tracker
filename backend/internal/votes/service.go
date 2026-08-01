@@ -19,6 +19,26 @@ func NewService(repo ports.VoteRepository, riksdagen ports.RiksdagenVoteClient) 
 	return &Service{repo: repo, riksdagen: riksdagen}
 }
 
+// ListVoteringar enumerates voteringar for a riksmöte, newest first, together
+// with the total the API reports.
+func (s *Service) ListVoteringar(ctx context.Context, rm string, page, size int) ([]ports.VoteringRef, int, error) {
+	return s.riksdagen.ListVoteringar(ctx, rm, page, size)
+}
+
+// FetchAndStore fetches one betänkande's ballots and returns what was stored,
+// so callers can track the newest record actually retrieved. SyncVotes discards
+// that, which leaves a caller no way to know how far it really got.
+func (s *Service) FetchAndStore(ctx context.Context, f ports.FetchVotesFilter) ([]*domain.Vote, error) {
+	vv, err := s.riksdagen.FetchVotes(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.repo.UpsertMany(ctx, vv); err != nil {
+		return nil, err
+	}
+	return vv, nil
+}
+
 func (s *Service) SyncVotes(ctx context.Context, f ports.FetchVotesFilter) error {
 	vv, err := s.riksdagen.FetchVotes(ctx, f)
 	if err != nil {

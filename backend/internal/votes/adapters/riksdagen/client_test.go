@@ -101,3 +101,49 @@ func TestFetchVotes_PreservesSystemDatum(t *testing.T) {
 		t.Errorf("SystemDatum = %v, want %v", vv[0].SystemDatum, want)
 	}
 }
+
+const voteringListPage = `{"dokumentlista":{"@traffar":"759","@sidor":"4","dokument":[
+ {"dok_id":"HD19UbU31p2","beteckning":"UbU31","rm":"2025/26","organ":"UbU",
+  "datum":"2026-06-17","systemdatum":"2026-06-17 14:12:03"},
+ {"dok_id":"HD19TU20p9","beteckning":"TU20","rm":"2025/26","organ":"TU",
+  "datum":"2026-06-17","systemdatum":"2026-06-17 13:58:01"}]}}`
+
+// Unlike /voteringlista, /dokumentlista honours `p` and reports a total, so it
+// is the only usable way to enumerate a riksmöte. Results must come back
+// newest-first so the incremental worker can stop at the cursor.
+func TestListVoteringar_ParsesRefsAndTotal(t *testing.T) {
+	var q url.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(voteringListPage))
+	}))
+	defer srv.Close()
+
+	refs, total, err := newTestClient(srv.URL).ListVoteringar(context.Background(), "2025/26", 2, 200)
+	if err != nil {
+		t.Fatalf("ListVoteringar: %v", err)
+	}
+	if total != 759 {
+		t.Errorf("total = %d, want 759", total)
+	}
+	if len(refs) != 2 {
+		t.Fatalf("got %d refs, want 2", len(refs))
+	}
+	if refs[0].Beteckning != "UbU31" || refs[0].Organ != "UbU" {
+		t.Errorf("ref[0] = %+v", refs[0])
+	}
+	want := time.Date(2026, 6, 17, 14, 12, 3, 0, time.UTC)
+	if !refs[0].SystemDatum.Equal(want) {
+		t.Errorf("SystemDatum = %v, want %v", refs[0].SystemDatum, want)
+	}
+	if got := q.Get("p"); got != "2" {
+		t.Errorf("p = %q, want \"2\"", got)
+	}
+	if got := q.Get("sortorder"); got != "desc" {
+		t.Errorf("sortorder = %q, want \"desc\"", got)
+	}
+	if got := q.Get("doktyp"); got != "votering" {
+		t.Errorf("doktyp = %q, want \"votering\"", got)
+	}
+}
