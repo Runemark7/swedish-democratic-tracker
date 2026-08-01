@@ -28,6 +28,10 @@ var MandateRiksmoten = []string{"2022/23", "2023/24", "2024/25", "2025/26"}
 
 const voteringPageSize = 200
 
+// FetchDelay throttles requests to the Riksdagen API. Exported so tests can set
+// it to zero: against fakes the sleep only slows the suite down.
+var FetchDelay = 200 * time.Millisecond
+
 // CurrentRiksmote returns the riksmöte label for a date. A riksmöte runs
 // September to September, so a date before September belongs to the one that
 // opened the previous year.
@@ -95,7 +99,7 @@ func (w *VotesWorker) Run(ctx context.Context) error {
 				newest = v.SystemDatum
 			}
 		}
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(FetchDelay)
 	}
 
 	if newest.IsZero() {

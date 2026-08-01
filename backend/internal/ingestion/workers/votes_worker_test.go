@@ -3,6 +3,7 @@ package workers_test
 import (
 	"context"
 	"errors"
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -93,6 +94,13 @@ type fakeCursors struct{ cur *ingPorts.Cursor }
 
 func (c *fakeCursors) Get(context.Context, string) (*ingPorts.Cursor, error) { return c.cur, nil }
 func (c *fakeCursors) Upsert(_ context.Context, x ingPorts.Cursor) error     { c.cur = &x; return nil }
+
+// TestMain removes the API throttle: these tests use fakes, so the sleep buys
+// nothing and costs seconds per test.
+func TestMain(m *testing.M) {
+	workers.FetchDelay = 0
+	os.Exit(m.Run())
+}
 
 func ref(bet string, sd time.Time) voteports.VoteringRef {
 	return voteports.VoteringRef{Beteckning: bet, SystemDatum: sd}
