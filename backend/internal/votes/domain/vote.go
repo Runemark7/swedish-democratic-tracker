@@ -40,6 +40,10 @@ type Vote struct {
 	ProposalOrigin ProposalOrigin `json:"proposalOrigin"`
 	OriginEnriched bool           `json:"originEnriched"`
 	CreatedAt      time.Time      `json:"createdAt"`
+	// SystemDatum is Riksdagen's own timestamp for the record. It is the only
+	// safe basis for the ingestion cursor; CreatedAt is our insert time and
+	// says nothing about how current the upstream data is.
+	SystemDatum time.Time `json:"systemDatum"`
 }
 
 // Intressent is a politician formally attached to a Riksdagen document.

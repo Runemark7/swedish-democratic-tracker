@@ -14,6 +14,16 @@ type FetchVotesFilter struct {
 	Beteckning   string
 	Size         int
 	Since        time.Time // client-side cutoff: skip votes on or before this date
+	// NOTE: /voteringlista does NOT paginate. Verified 2026-08-01: the `p`
+	// parameter is silently ignored (p=1, p=2 and p=3 return byte-identical
+	// rows) and `sz` is capped at 10 000 regardless of the value requested.
+	// A whole party-riksmöte (~81 000 ballots) therefore cannot be retrieved
+	// by this endpoint alone.
+	//
+	// Callers must instead partition by Beteckning: one request per betänkande
+	// returns every party's ballots for it and stays well under the cap
+	// (AU9 = 1 047 rows). Enumerate betänkanden via /dokumentlista, which does
+	// paginate correctly and reports @traffar.
 }
 
 // RiksdagDocument is a recent betänkande (committee report) from the Riksdagen Open Data API.

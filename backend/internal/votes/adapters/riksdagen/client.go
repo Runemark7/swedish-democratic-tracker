@@ -12,23 +12,29 @@ import (
 	"riksdagskollen/internal/votes/ports"
 )
 
-const baseURL = "https://data.riksdagen.se"
+const defaultBaseURL = "https://data.riksdagen.se"
 
 type Client struct {
-	http *http.Client
+	http    *http.Client
+	baseURL string
 }
 
 func NewClient() *Client {
-	return &Client{http: &http.Client{Timeout: 30 * time.Second}}
+	return &Client{
+		http:    &http.Client{Timeout: 30 * time.Second},
+		baseURL: defaultBaseURL,
+	}
 }
 
 func (c *Client) FetchVotes(ctx context.Context, f ports.FetchVotesFilter) ([]*domain.Vote, error) {
 	size := f.Size
 	if size == 0 {
-		size = 500
+		// The endpoint caps at 10 000 rows and ignores `p`, so ask for the
+		// maximum and partition the work by Beteckning. See FetchVotesFilter.
+		size = 10000
 	}
 	url := fmt.Sprintf("%s/voteringlista/?rm=%s&parti=%s&iid=%s&bet=%s&sz=%d&utformat=json",
-		baseURL, f.Session, f.Party, f.PoliticianID, f.Beteckning, size)
+		c.baseURL, f.Session, f.Party, f.PoliticianID, f.Beteckning, size)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -66,13 +72,20 @@ func (c *Client) FetchVotes(ctx context.Context, f ports.FetchVotesFilter) ([]*d
 
 	vv := make([]*domain.Vote, 0, len(payload.Voteringlista.Votering))
 	for _, v := range payload.Voteringlista.Votering {
-		// Client-side date filter for incremental sync
-		if !f.Since.IsZero() && v.Systemdatum != "" {
-			if t, err := time.Parse("2006-01-02 15:04:05", v.Systemdatum); err == nil && !t.After(f.Since) {
-				continue
+		// Riksdagen's own timestamp. Parsed once: it drives both the
+		// incremental cutoff below and the ingestion cursor high-water mark.
+		var systemDatum time.Time
+		if v.Systemdatum != "" {
+			if t, err := time.Parse("2006-01-02 15:04:05", v.Systemdatum); err == nil {
+				systemDatum = t
 			}
 		}
+		// Client-side date filter for incremental sync
+		if !f.Since.IsZero() && !systemDatum.IsZero() && !systemDatum.After(f.Since) {
+			continue
+		}
 		vv = append(vv, &domain.Vote{
+			SystemDatum:   systemDatum,
 			VoteringID:    v.VoteringID,
 			PoliticianID:  v.IntressentID,
 			Party:         v.Parti,
@@ -91,7 +104,7 @@ func (c *Client) FetchVotes(ctx context.Context, f ports.FetchVotesFilter) ([]*d
 // TODO: integrate nämndärenden API (lankadedata.se) for regional/municipal council decisions when available.
 func (c *Client) FetchDocuments(ctx context.Context, organs []string, count int) ([]ports.RiksdagDocument, error) {
 	url := fmt.Sprintf("%s/dokumentlista/?organ=%s&typ=bet&utformat=json&sz=%d&sort=datum&sortorder=desc",
-		baseURL, strings.Join(organs, ","), count)
+		c.baseURL, strings.Join(organs, ","), count)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -135,7 +148,7 @@ func (c *Client) FetchDocuments(ctx context.Context, organs []string, count int)
 
 // FetchDocumentStatus fetches /dokumentstatus/{dok_id}.json and parses proposal origin.
 func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain.DocumentStatus, error) {
-	url := fmt.Sprintf("%s/dokumentstatus/%s.json", baseURL, dokID)
+	url := fmt.Sprintf("%s/dokumentstatus/%s.json", c.baseURL, dokID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -243,7 +256,7 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 }
 
 func (c *Client) FetchBetankandeByBeteckning(ctx context.Context, beteckning string) (*ports.BetankandeInfo, error) {
-	url := fmt.Sprintf("%s/dokumentlista/?bet=%s&typ=bet&utformat=json&sz=1", baseURL, beteckning)
+	url := fmt.Sprintf("%s/dokumentlista/?bet=%s&typ=bet&utformat=json&sz=1", c.baseURL, beteckning)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
