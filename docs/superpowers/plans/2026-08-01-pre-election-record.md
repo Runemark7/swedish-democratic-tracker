@@ -1,0 +1,1327 @@
+# Pre-election record — Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Make the site hold and honestly present the complete 2022–2026 parliamentary record before the 13 September 2026 election.
+
+**Architecture:** Three ingestion defects currently cap the site at ~1.2% of the record (32 of 2 562 voteringar). Fix them, backfill four riksmöten, then make the site state plainly what it holds — freshness, coverage, and mandate scope — instead of implying completeness it does not have. No new information architecture: the utskott spine is post-election work.
+
+**Tech Stack:** Go 1.26 (pgx/v5, chi), PostgreSQL 17, golang-migrate, React 19 + TypeScript, Riksdagen Open Data API.
+
+## Global Constraints
+
+- Governing decisions: wayfinder ticket [#83](https://github.com/Runemark7/swedish-democratic-tracker/issues/83). Do not re-litigate them.
+- **Election: 13 September 2026.** The Riksdag is in recess — no new votes until after it. Backfill matters; live-catch-up does not.
+- Never present absence as evidence. Partial coverage ships **only** if it states its own incompleteness.
+- Strictly separate FACT from INTERPRETATION (`CONTEXT.md`). No verdicts, scores or rankings.
+- Migrations idempotent (`IF EXISTS` / `IF NOT EXISTS`) — lesson from `000024` (#75).
+- Raw parameterised SQL only. No ORM.
+- Swedish UI strings; English code, comments, commits.
+- Verification gates (CLAUDE.md rule 4): `go build -C backend ./...` and `cd frontend && npx tsc --noEmit` must pass before any task is done.
+- DB integration tests follow `backend/internal/regions/adapters/postgres/budget_repo_test.go`: read `TEST_DATABASE_URL`, `t.Skip` when unset, `ZZ` sentinel fixtures cleaned in `t.Cleanup`.
+- Client tests follow `backend/internal/regions/adapters/kolada/*_test.go`: `httptest.NewServer` plus a `newTestClient(url)` helper injecting `baseURL`.
+- **The frontend has no test runner.** Only `frontend/scripts/__tests__/*.test.mjs` exists, run ad hoc via `node --test`. Frontend tasks below verify by explicit command or browser check, and say so. Do not add a test framework as part of this plan.
+
+## Mandate period
+
+`2022–2026` comprises exactly four riksmöten: **`2022/23`, `2023/24`, `2024/25`, `2025/26`** — 562 + 589 + 652 + 759 = **2 562 voteringar** (counts from `data.riksdagen.se/dokumentlista/?doktyp=votering&rm=<rm>`, retrieved 2026-08-01).
+
+## File structure
+
+| File | Responsibility |
+|---|---|
+| `backend/migrations/000030_party_goal_election_cycle.{up,down}.sql` | vintage column + backfill |
+| `backend/migrations/000031_ingestion_coverage.{up,down}.sql` | per-riksmöte coverage facts |
+| `backend/migrations/000032_mandate_periods.{up,down}.sql` | mandate definition seed |
+| `backend/internal/votes/ports/riksdagen.go` | `FetchVotesFilter.Page` |
+| `backend/internal/votes/adapters/riksdagen/client.go` | injectable `baseURL`, paging |
+| `backend/internal/ingestion/workers/votes.go` | session iteration, cursor correctness |
+| `backend/internal/ingestion/workers/speeches.go` | same, for speeches |
+| `backend/cmd/backfill/main.go` | one-shot backfill runner |
+| `frontend/src/shared/design.ts` | committee regex + map |
+| `frontend/src/App.tsx` | freshness badge |
+
+---
+
+### Task 1: Separate promise vintages
+
+Fixes a **live neutrality defect**: S is the only party showing 2026 campaign material, six weeks before an election. Do this first — it is small, independent, and currently visible in production.
+
+**Files:**
+- Create: `backend/migrations/000030_party_goal_election_cycle.{up,down}.sql`
+- Modify: `backend/internal/goals/domain/goal.go`, `backend/internal/goals/adapters/postgres/repository.go`
+- Test: `backend/internal/goals/adapters/postgres/election_cycle_test.go`
+
+**Interfaces:**
+- Produces: `party_goals.election_cycle TEXT NULL` — `'2022'`, `'2026'`, or NULL for material not tied to an election. Repository list methods exclude `'2026'`.
+
+- [ ] **Step 1: Write the failing test**
+
+```go
+package postgres_test
+
+import (
+	"context"
+	"os"
+	"testing"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+func connectGoalsTestDB(t *testing.T) *pgxpool.Pool {
+	t.Helper()
+	url := os.Getenv("TEST_DATABASE_URL")
+	if url == "" {
+		t.Skip("TEST_DATABASE_URL not set — skipping integration tests")
+	}
+	pool, err := pgxpool.New(context.Background(), url)
+	if err != nil {
+		t.Fatalf("connect test DB: %v", err)
+	}
+	t.Cleanup(pool.Close)
+	return pool
+}
+
+// Every seeded goal must carry a vintage derived from its source document,
+// and no 2026 campaign material may leak into the record view.
+func TestElectionCycle_BackfilledFromSourceDocument(t *testing.T) {
+	pool := connectGoalsTestDB(t)
+	ctx := context.Background()
+
+	cases := map[string]*string{
+		"Valmanifest 2022":   strptr("2022"),
+		"Tidöavtalet 2022":   strptr("2022"),
+		"Valplattform 2022":  strptr("2022"),
+		"Valplattform 2026":  strptr("2026"),
+		"Partiprogram":       nil,
+	}
+	for doc, want := range cases {
+		rows, err := pool.Query(ctx,
+			`SELECT DISTINCT election_cycle FROM party_goals WHERE source_document = $1`, doc)
+		if err != nil {
+			t.Fatalf("query %s: %v", doc, err)
+		}
+		var got []*string
+		for rows.Next() {
+			var v *string
+			if err := rows.Scan(&v); err != nil {
+				t.Fatal(err)
+			}
+			got = append(got, v)
+		}
+		rows.Close()
+		if len(got) == 0 {
+			continue // that source document is not present in this DB
+		}
+		if len(got) != 1 {
+			t.Errorf("%s: expected one cycle value, got %d", doc, len(got))
+			continue
+		}
+		if (got[0] == nil) != (want == nil) || (got[0] != nil && want != nil && *got[0] != *want) {
+			t.Errorf("%s: election_cycle = %v, want %v", doc, deref(got[0]), deref(want))
+		}
+	}
+}
+
+func strptr(s string) *string { return &s }
+func deref(s *string) string {
+	if s == nil {
+		return "<nil>"
+	}
+	return *s
+}
+```
+
+- [ ] **Step 2: Run it to verify it fails**
+
+```bash
+cd backend && TEST_DATABASE_URL='postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable' \
+  go test ./internal/goals/adapters/postgres/ -run TestElectionCycle -v
+```
+
+Expected: FAIL — `column "election_cycle" does not exist`.
+
+If it SKIPs, start postgres: `docker compose -f docker-compose.dev.yml up -d postgres`.
+
+- [ ] **Step 3: Write the migration**
+
+`000030_party_goal_election_cycle.up.sql`:
+
+```sql
+-- Promise vintage. The 2022-2026 voting record can only speak to promises made
+-- at or before the 2022 election; 2026 campaign material is a different question
+-- ("what do they promise now") and must not sit beside a four-year voting record.
+--
+-- NULL means the goal is not tied to an election cycle (standing party programme).
+
+ALTER TABLE party_goals ADD COLUMN IF NOT EXISTS election_cycle TEXT;
+
+ALTER TABLE party_goals DROP CONSTRAINT IF EXISTS party_goals_election_cycle_check;
+ALTER TABLE party_goals
+  ADD CONSTRAINT party_goals_election_cycle_check
+  CHECK (election_cycle IS NULL OR election_cycle IN ('2022', '2026'));
+
+UPDATE party_goals SET election_cycle = '2026'
+  WHERE source_document ILIKE '%2026%' AND election_cycle IS DISTINCT FROM '2026';
+
+UPDATE party_goals SET election_cycle = '2022'
+  WHERE source_document ILIKE '%2022%' AND election_cycle IS NULL;
+
+CREATE INDEX IF NOT EXISTS idx_party_goals_election_cycle
+  ON party_goals (election_cycle);
+```
+
+`000030_party_goal_election_cycle.down.sql`:
+
+```sql
+DROP INDEX IF EXISTS idx_party_goals_election_cycle;
+ALTER TABLE party_goals DROP CONSTRAINT IF EXISTS party_goals_election_cycle_check;
+ALTER TABLE party_goals DROP COLUMN IF EXISTS election_cycle;
+```
+
+- [ ] **Step 4: Apply and re-run the test**
+
+```bash
+make migrate
+cd backend && TEST_DATABASE_URL='postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable' \
+  go test ./internal/goals/adapters/postgres/ -run TestElectionCycle -v
+```
+
+Expected: PASS.
+
+- [ ] **Step 5: Exclude 2026 material from the record view**
+
+In `backend/internal/goals/adapters/postgres/repository.go`, every query that lists goals for display (`ListByParty`, `ListByTopic`, `ListAll`) gains:
+
+```sql
+AND (election_cycle IS NULL OR election_cycle <> '2026')
+```
+
+Add this comment above the shared WHERE fragment:
+
+```go
+// 2026 campaign material is excluded from the record view: the 2022-2026 votes
+// cannot speak to a promise made in 2026. A 2026 platform view ships only when
+// all eight parties are represented (wayfinder #83), and does not exist yet.
+```
+
+- [ ] **Step 6: Verify parity**
+
+```bash
+go build -C backend ./... && echo "GO OK"
+# restart backend, then:
+for p in S M SD C V KD L MP; do
+  echo -n "$p: "
+  curl -s "localhost:8080/api/parties/$p/goals" | python3 -c "
+import json,sys,collections
+print(collections.Counter(g['sourceDocument'] for g in json.load(sys.stdin)))"
+done
+```
+
+Expected: **no party shows any 2026 document.** S drops from 13 goals to 6.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add backend/migrations/000030_* backend/internal/goals/ 
+git commit -m "fix(goals): exclude 2026 campaign material from the 2022-2026 record view"
+```
+
+---
+
+### Task 2: Fix committee resolution (MJU, KrU)
+
+Two committees are invisible today. Independent of everything else.
+
+**Files:**
+- Modify: `frontend/src/shared/design.ts:85-106`
+
+**Interfaces:**
+- Produces: `committeeFromBeteckning(b: string): string | undefined` resolving all 15 committees.
+
+- [ ] **Step 1: Reproduce both bugs**
+
+```bash
+cd /home/rune/Documents/swedish-democratic-tracker
+node -e '
+const re = /^([A-ZÅÄÖ][a-zåäöÅÄÖ]*U)/;
+for (const b of ["MJU12","KrU5","AU9"]) {
+  const m = b.match(re);
+  console.log(b, "->", m ? m[1] : "NULL");
+}'
+```
+
+Expected now: `MJU12 -> NULL` (the class excludes uppercase `J`), `KrU5 -> KrU` (extracts, but is absent from `COMMITTEES`).
+
+- [ ] **Step 2: Fix the regex and add the missing committee**
+
+In `frontend/src/shared/design.ts`, add to `COMMITTEES`:
+
+```ts
+  KrU: "Kulturutskottet",
+```
+
+and replace the extractor:
+
+```ts
+/** Extract committee name from beteckning, e.g. "SoU12" → "Socialutskottet".
+ *  The code is the leading letters up to and including the final "U"; it may
+ *  contain interior uppercase (MJU) and Swedish vowels (FöU). */
+export function committeeFromBeteckning(beteckning: string): string | undefined {
+  const match = beteckning.match(/^([A-ZÅÄÖa-zåäö]*U)(?=\d|$)/);
+  return match ? COMMITTEES[match[1]] : undefined;
+}
+```
+
+- [ ] **Step 3: Verify all 15 resolve**
+
+```bash
+node -e '
+const re = /^([A-ZÅÄÖa-zåäö]*U)(?=\d|$)/;
+const C = ["AU","CU","FiU","FöU","JuU","KU","KrU","MJU","NU","SfU","SkU","SoU","TU","UbU","UU"];
+let bad = 0;
+for (const c of C) { const m = (c+"12").match(re); if (!m || m[1] !== c) { console.log("FAIL", c, m && m[1]); bad++; } }
+console.log(bad === 0 ? "all 15 resolve" : bad + " failing");'
+```
+
+Expected: `all 15 resolve`.
+
+- [ ] **Step 4: Typecheck and commit**
+
+```bash
+cd frontend && npx tsc --noEmit && echo "TSC OK"
+git add frontend/src/shared/design.ts
+git commit -m "fix(committees): resolve MJU and add missing KrU"
+```
+
+---
+
+### Task 3: Make the votes client injectable and paginated
+
+`FetchVotes` issues **one** request with `sz=500` and no `p=`. This is the primary reason prod holds 32 vote points. The API reports no total (`@antal` echoes the page size), so callers must page until a short page.
+
+**Files:**
+- Modify: `backend/internal/votes/ports/riksdagen.go:10-17`, `backend/internal/votes/adapters/riksdagen/client.go:15-31`
+- Test: `backend/internal/votes/adapters/riksdagen/client_test.go`
+
+**Interfaces:**
+- Produces: `FetchVotesFilter.Page int` (1-based; 0 treated as 1). `Client.baseURL` becomes a struct field. `newTestClient(url string) *Client` for tests.
+
+- [ ] **Step 1: Write the failing test**
+
+```go
+package riksdagen
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"sync"
+	"testing"
+	"time"
+
+	"riksdagskollen/internal/votes/ports"
+)
+
+func newTestClient(url string) *Client {
+	return &Client{http: &http.Client{Timeout: 5 * time.Second}, baseURL: url}
+}
+
+func votePage(n int) string {
+	out := `{"voteringlista":{"votering":[`
+	for i := 0; i < n; i++ {
+		if i > 0 {
+			out += ","
+		}
+		out += fmt.Sprintf(`{"votering_id":"v%d","intressent_id":"p%d","namn":"T","parti":"S",`+
+			`"rost":"Ja","beteckning":"AU9","punkt":"1","rm":"2025/26","dok_id":"d",`+
+			`"systemdatum":"2026-06-17 10:00:00"}`, i, i)
+	}
+	return out + `]}}`
+}
+
+func TestFetchVotes_SendsRequestedPage(t *testing.T) {
+	var mu sync.Mutex
+	var seen []string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		seen = append(seen, r.URL.Query().Get("p"))
+		mu.Unlock()
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(votePage(2)))
+	}))
+	defer srv.Close()
+
+	c := newTestClient(srv.URL)
+	if _, err := c.FetchVotes(context.Background(), ports.FetchVotesFilter{
+		Session: "2025/26", Party: "S", Size: 500, Page: 3,
+	}); err != nil {
+		t.Fatalf("FetchVotes: %v", err)
+	}
+	if len(seen) != 1 || seen[0] != "3" {
+		t.Errorf("requested pages = %v, want [3]", seen)
+	}
+}
+
+func TestFetchVotes_DefaultsToPageOne(t *testing.T) {
+	var got string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got = r.URL.Query().Get("p")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(votePage(1)))
+	}))
+	defer srv.Close()
+
+	c := newTestClient(srv.URL)
+	if _, err := c.FetchVotes(context.Background(), ports.FetchVotesFilter{
+		Session: "2025/26", Party: "S",
+	}); err != nil {
+		t.Fatalf("FetchVotes: %v", err)
+	}
+	if got != "1" {
+		t.Errorf("page = %q, want \"1\"", got)
+	}
+}
+
+func TestFetchVotes_ReturnsAllRowsOnPage(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(votePage(7)))
+	}))
+	defer srv.Close()
+
+	vv, err := newTestClient(srv.URL).FetchVotes(context.Background(),
+		ports.FetchVotesFilter{Session: "2025/26", Party: "S"})
+	if err != nil {
+		t.Fatalf("FetchVotes: %v", err)
+	}
+	if len(vv) != 7 {
+		t.Errorf("got %d votes, want 7", len(vv))
+	}
+}
+```
+
+- [ ] **Step 2: Run it to verify it fails**
+
+```bash
+cd backend && go test ./internal/votes/adapters/riksdagen/ -run TestFetchVotes -v
+```
+
+Expected: compile failure — `Page` is not a field of `FetchVotesFilter`, and `Client` has no `baseURL` field.
+
+- [ ] **Step 3: Add the field and the page parameter**
+
+In `ports/riksdagen.go`, add to `FetchVotesFilter`:
+
+```go
+	Page         int       // 1-based page; 0 is treated as 1. The API reports no
+	                       // total, so callers page until a short page comes back.
+```
+
+In `adapters/riksdagen/client.go`, replace the const with a field and thread the page through:
+
+```go
+const defaultBaseURL = "https://data.riksdagen.se"
+
+type Client struct {
+	http    *http.Client
+	baseURL string
+}
+
+func NewClient() *Client {
+	return &Client{
+		http:    &http.Client{Timeout: 30 * time.Second},
+		baseURL: defaultBaseURL,
+	}
+}
+```
+
+and in `FetchVotes`:
+
+```go
+	size := f.Size
+	if size == 0 {
+		size = 500
+	}
+	page := f.Page
+	if page == 0 {
+		page = 1
+	}
+	url := fmt.Sprintf("%s/voteringlista/?rm=%s&parti=%s&iid=%s&bet=%s&sz=%d&p=%d&utformat=json",
+		c.baseURL, f.Session, f.Party, f.PoliticianID, f.Beteckning, size, page)
+```
+
+Replace every other `baseURL` reference in this file with `c.baseURL`.
+
+- [ ] **Step 4: Run the tests**
+
+```bash
+cd backend && go test ./internal/votes/adapters/riksdagen/ -run TestFetchVotes -v
+```
+
+Expected: all three PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add backend/internal/votes/ports/riksdagen.go backend/internal/votes/adapters/riksdagen/
+git commit -m "feat(votes): paginate the Riksdagen vote client"
+```
+
+---
+
+### Task 4: Correct the vote worker's session and cursor
+
+Two defects: `Session: currentSession` is the hardcoded constant `"2024/25"` (`speeches.go:13`), so the worker fetches the session *before* last; and the cursor advances to `now()` unconditionally (`votes.go:47`), even on failure or an empty result, permanently skipping the gap.
+
+**Files:**
+- Modify: `backend/internal/ingestion/workers/votes.go:24-56`
+- Test: `backend/internal/ingestion/workers/votes_worker_test.go`
+
+**Interfaces:**
+- Consumes: `FetchVotesFilter.Page` from Task 3.
+- Produces: `MandateRiksmoten = []string{"2022/23","2023/24","2024/25","2025/26"}` exported from the workers package.
+
+- [ ] **Step 1: Write the failing test**
+
+```go
+package workers_test
+
+import (
+	"context"
+	"errors"
+	"testing"
+	"time"
+
+	ingPorts "riksdagskollen/internal/ingestion/ports"
+	"riksdagskollen/internal/ingestion/workers"
+	"riksdagskollen/internal/votes"
+	votedomain "riksdagskollen/internal/votes/domain"
+	voteports "riksdagskollen/internal/votes/ports"
+)
+
+type fakeVoteClient struct {
+	pages map[string][]*votedomain.Vote // key: rm|party|page
+	err   error
+	calls int
+}
+
+func (f *fakeVoteClient) FetchVotes(_ context.Context, flt voteports.FetchVotesFilter) ([]*votedomain.Vote, error) {
+	f.calls++
+	if f.err != nil {
+		return nil, f.err
+	}
+	return f.pages[key(flt)], nil
+}
+func (f *fakeVoteClient) FetchDocumentStatus(context.Context, string) (*votedomain.DocumentStatus, error) {
+	return nil, nil
+}
+func (f *fakeVoteClient) FetchDocuments(context.Context, []string, int) ([]voteports.RiksdagDocument, error) {
+	return nil, nil
+}
+func (f *fakeVoteClient) FetchBetankandeByBeteckning(context.Context, string) (*voteports.BetankandeInfo, error) {
+	return nil, nil
+}
+
+type fakeVoteRepo struct{ upserted int }
+
+func (r *fakeVoteRepo) UpsertMany(_ context.Context, vv []*votedomain.Vote) error {
+	r.upserted += len(vv)
+	return nil
+}
+
+type fakeCursors struct{ cur *ingPorts.Cursor }
+
+func (c *fakeCursors) Get(context.Context, string) (*ingPorts.Cursor, error) { return c.cur, nil }
+func (c *fakeCursors) Upsert(_ context.Context, x ingPorts.Cursor) error     { c.cur = &x; return nil }
+
+// A failed fetch must not move the cursor forward — otherwise the skipped
+// window is lost permanently, which is how the site fell 11 months behind.
+func TestVotesWorker_CursorUnchangedOnFetchError(t *testing.T) {
+	before := time.Date(2026, 4, 18, 0, 0, 0, 0, time.UTC)
+	cur := &fakeCursors{cur: &ingPorts.Cursor{DataType: "votes", LastDate: &before}}
+	svc := votes.NewService(&fakeVoteRepo{}, &fakeVoteClient{err: errors.New("upstream down")})
+
+	w := workers.NewVotesWorker(svc, cur)
+	_ = w.Run(context.Background())
+
+	if !cur.cur.LastDate.Equal(before) {
+		t.Errorf("cursor moved to %v on error, want unchanged %v", cur.cur.LastDate, before)
+	}
+}
+
+// An empty result is not evidence of freshness.
+func TestVotesWorker_CursorUnchangedWhenNothingFetched(t *testing.T) {
+	before := time.Date(2026, 4, 18, 0, 0, 0, 0, time.UTC)
+	cur := &fakeCursors{cur: &ingPorts.Cursor{DataType: "votes", LastDate: &before}}
+	svc := votes.NewService(&fakeVoteRepo{}, &fakeVoteClient{pages: map[string][]*votedomain.Vote{}})
+
+	w := workers.NewVotesWorker(svc, cur)
+	_ = w.Run(context.Background())
+
+	if !cur.cur.LastDate.Equal(before) {
+		t.Errorf("cursor moved to %v with no rows, want unchanged %v", cur.cur.LastDate, before)
+	}
+}
+
+func TestMandateRiksmoten_CoversTheMandate(t *testing.T) {
+	want := []string{"2022/23", "2023/24", "2024/25", "2025/26"}
+	if len(workers.MandateRiksmoten) != len(want) {
+		t.Fatalf("MandateRiksmoten = %v, want %v", workers.MandateRiksmoten, want)
+	}
+	for i, rm := range want {
+		if workers.MandateRiksmoten[i] != rm {
+			t.Errorf("index %d = %q, want %q", i, workers.MandateRiksmoten[i], rm)
+		}
+	}
+}
+```
+
+Add a `key(flt)` helper in the same file:
+
+```go
+func key(f voteports.FetchVotesFilter) string {
+	return f.Session + "|" + f.Party + "|" + string(rune('0'+f.Page))
+}
+```
+
+- [ ] **Step 2: Run it to verify it fails**
+
+```bash
+cd backend && go test ./internal/ingestion/workers/ -run 'TestVotesWorker|TestMandateRiksmoten' -v
+```
+
+Expected: FAIL — `MandateRiksmoten` undefined, and the cursor tests fail because it advances unconditionally.
+
+- [ ] **Step 3: Rewrite the worker**
+
+Replace `Run` in `backend/internal/ingestion/workers/votes.go`:
+
+```go
+// MandateRiksmoten is the 2022-2026 mandate period: four riksmöten,
+// 2 562 voteringar in total.
+var MandateRiksmoten = []string{"2022/23", "2023/24", "2024/25", "2025/26"}
+
+const votePageSize = 500
+
+func (w *VotesWorker) Run(ctx context.Context) error {
+	var since time.Time
+	if cur, err := w.cursors.Get(ctx, "votes"); err == nil && cur != nil && cur.LastDate != nil {
+		since = *cur.LastDate
+		slog.Info("votes: incremental sync", "since", since.Format("2006-01-02"))
+	}
+
+	// Newest systemdatum actually retrieved. The cursor only ever advances to
+	// this — never to now() — so a failed or empty fetch cannot skip a window.
+	var newest time.Time
+	anyFailed := false
+
+	for _, rm := range MandateRiksmoten {
+		for _, party := range ActiveParties {
+			for page := 1; ; page++ {
+				f := ports.FetchVotesFilter{
+					Session: rm, Party: party, Size: votePageSize, Page: page, Since: since,
+				}
+				vv, err := w.svc.FetchAndStore(ctx, f)
+				if err != nil {
+					slog.Warn("votes sync failed", "rm", rm, "party", party, "page", page, "error", err)
+					anyFailed = true
+					break
+				}
+				for _, v := range vv {
+					if v.SystemDatum.After(newest) {
+						newest = v.SystemDatum
+					}
+				}
+				if len(vv) < votePageSize {
+					break // short page: this party/riksmöte is exhausted
+				}
+				time.Sleep(200 * time.Millisecond)
+			}
+		}
+	}
+
+	if newest.IsZero() {
+		slog.Info("votes: nothing fetched, cursor unchanged", "anyFailed", anyFailed)
+		return nil
+	}
+	if err := w.cursors.Upsert(ctx, ingPorts.Cursor{DataType: "votes", LastDate: &newest}); err != nil {
+		slog.Warn("votes: failed to update cursor", "error", err)
+	}
+	return nil
+}
+```
+
+`SyncVotes` currently returns only `error`, so add a sibling on `votes.Service` in `backend/internal/votes/service.go` that returns what it stored:
+
+```go
+// FetchAndStore fetches one page and returns the rows stored, so callers can
+// page until exhaustion and track the newest record seen.
+func (s *Service) FetchAndStore(ctx context.Context, f ports.FetchVotesFilter) ([]*domain.Vote, error) {
+	vv, err := s.riksdagen.FetchVotes(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.repo.UpsertMany(ctx, vv); err != nil {
+		return nil, err
+	}
+	return vv, nil
+}
+```
+
+`domain.Vote` has no `SystemDatum` field today — only `CreatedAt`, which is our own insert timestamp and useless as a cursor. Add it to `backend/internal/votes/domain/vote.go`:
+
+```go
+	// SystemDatum is Riksdagen's own timestamp for the record. It drives the
+	// ingestion cursor; CreatedAt is our insert time and must not be used.
+	SystemDatum time.Time `json:"systemDatum"`
+```
+
+The client already parses this string for the `Since` filter but discards it. In the row loop in `client.go`, keep it:
+
+```go
+		ts, _ := time.Parse("2006-01-02 15:04:05", v.Systemdatum)
+		// ... existing Since comparison uses ts ...
+		vote.SystemDatum = ts
+```
+
+No migration is needed: the value is only used in-process to compute the cursor high-water mark.
+
+- [ ] **Step 4: Run the tests**
+
+```bash
+cd backend && go test ./internal/ingestion/workers/ -run 'TestVotesWorker|TestMandateRiksmoten' -v
+go build -C backend ./...
+```
+
+Expected: all PASS, build clean.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add backend/internal/ingestion/workers/votes.go backend/internal/ingestion/workers/votes_worker_test.go backend/internal/votes/service.go
+git commit -m "fix(votes): iterate the mandate riksmoten and never advance the cursor past what was fetched"
+```
+
+---
+
+### Task 5: Speeches — same three defects
+
+`speeches.go` shares the hardcoded `currentSession = "2024/25"`, has no pagination (`anforandelista/?...&sz=` only), and advances its cursor to today at line 50.
+
+**Files:**
+- Modify: `backend/internal/ingestion/workers/speeches.go`, `backend/internal/speeches/adapters/riksdagen/client.go`
+- Test: `backend/internal/ingestion/workers/speeches_worker_test.go`
+
+**Interfaces:**
+- Consumes: `MandateRiksmoten` from Task 4.
+
+- [ ] **Step 1: Write the failing test**
+
+```go
+package workers_test
+
+import (
+	"context"
+	"errors"
+	"sync"
+	"testing"
+	"time"
+
+	ingPorts "riksdagskollen/internal/ingestion/ports"
+	"riksdagskollen/internal/ingestion/workers"
+	"riksdagskollen/internal/speeches"
+	speechdomain "riksdagskollen/internal/speeches/domain"
+	speechports "riksdagskollen/internal/speeches/ports"
+)
+
+type fakeSpeechClient struct {
+	mu       sync.Mutex
+	sessions map[string]bool
+	err      error
+}
+
+func (f *fakeSpeechClient) FetchSpeeches(_ context.Context, flt speechports.FetchSpeechesFilter) ([]*speechdomain.Speech, error) {
+	f.mu.Lock()
+	if f.sessions == nil {
+		f.sessions = map[string]bool{}
+	}
+	f.sessions[flt.Session] = true
+	f.mu.Unlock()
+	if f.err != nil {
+		return nil, f.err
+	}
+	return nil, nil
+}
+
+func (f *fakeSpeechClient) FetchSpeechText(context.Context, string, string) (string, error) {
+	return "", nil
+}
+
+type fakeSpeechRepo struct{ upserted int }
+
+func (r *fakeSpeechRepo) UpsertMany(_ context.Context, ss []*speechdomain.Speech) error {
+	r.upserted += len(ss)
+	return nil
+}
+
+type fakeSpeechCursors struct{ cur *ingPorts.Cursor }
+
+func (c *fakeSpeechCursors) Get(context.Context, string) (*ingPorts.Cursor, error) { return c.cur, nil }
+func (c *fakeSpeechCursors) Upsert(_ context.Context, x ingPorts.Cursor) error {
+	c.cur = &x
+	return nil
+}
+
+// A failed fetch must not move the cursor forward — that is how speeches fell
+// eleven months behind while the worker logged success every day.
+func TestSpeechesWorker_CursorUnchangedOnFetchError(t *testing.T) {
+	before := time.Date(2025, 9, 4, 0, 0, 0, 0, time.UTC)
+	cur := &fakeSpeechCursors{cur: &ingPorts.Cursor{DataType: "speeches", LastDate: &before}}
+	svc := speeches.NewService(&fakeSpeechRepo{}, &fakeSpeechClient{err: errors.New("upstream down")})
+
+	w := workers.NewSpeechesWorker(svc, cur)
+	_ = w.Run(context.Background())
+
+	if !cur.cur.LastDate.Equal(before) {
+		t.Errorf("cursor moved to %v on error, want unchanged %v", cur.cur.LastDate, before)
+	}
+}
+
+// An empty result is not evidence of freshness.
+func TestSpeechesWorker_CursorUnchangedWhenNothingFetched(t *testing.T) {
+	before := time.Date(2025, 9, 4, 0, 0, 0, 0, time.UTC)
+	cur := &fakeSpeechCursors{cur: &ingPorts.Cursor{DataType: "speeches", LastDate: &before}}
+	svc := speeches.NewService(&fakeSpeechRepo{}, &fakeSpeechClient{})
+
+	w := workers.NewSpeechesWorker(svc, cur)
+	_ = w.Run(context.Background())
+
+	if !cur.cur.LastDate.Equal(before) {
+		t.Errorf("cursor moved to %v with no rows, want unchanged %v", cur.cur.LastDate, before)
+	}
+}
+
+// The worker must cover the whole mandate, not one hardcoded session.
+func TestSpeechesWorker_UsesMandateRiksmoten(t *testing.T) {
+	client := &fakeSpeechClient{}
+	cur := &fakeSpeechCursors{}
+	svc := speeches.NewService(&fakeSpeechRepo{}, client)
+
+	w := workers.NewSpeechesWorker(svc, cur)
+	_ = w.Run(context.Background())
+
+	for _, rm := range workers.MandateRiksmoten {
+		if !client.sessions[rm] {
+			t.Errorf("riksmöte %s was never requested", rm)
+		}
+	}
+	if client.sessions["2024/25"] && len(client.sessions) == 1 {
+		t.Error("only the hardcoded 2024/25 session was requested")
+	}
+}
+```
+
+If `speeches.NewService` takes its dependencies in a different order or the repository interface has more methods, adjust the fakes to satisfy the real interfaces — do not change the assertions.
+
+- [ ] **Step 2: Run it to verify it fails**
+
+```bash
+cd backend && go test ./internal/ingestion/workers/ -run TestSpeechesWorker -v
+```
+
+Expected: FAIL — only `2024/25` requested; cursor advances regardless.
+
+- [ ] **Step 3: Apply the three fixes**
+
+First, delete `const currentSession = "2024/25"` from `speeches.go:13`. Grep for other users before removing — Task 4 already removed the votes worker's use of it:
+
+```bash
+grep -rn "currentSession" backend/
+```
+
+Add paging to `backend/internal/speeches/ports/riksdagen.go`:
+
+```go
+	Page         int // 1-based page; 0 is treated as 1.
+```
+
+In `backend/internal/speeches/adapters/riksdagen/client.go`, move the base URL onto the struct and send the page:
+
+```go
+const defaultBaseURL = "https://data.riksdagen.se"
+
+type Client struct {
+	http    *http.Client
+	baseURL string
+}
+
+func NewClient() *Client {
+	return &Client{
+		http:    &http.Client{Timeout: 30 * time.Second},
+		baseURL: defaultBaseURL,
+	}
+}
+```
+
+```go
+	page := f.Page
+	if page == 0 {
+		page = 1
+	}
+	url := fmt.Sprintf("%s/anforandelista/?rm=%s&parti=%s&iid=%s&sz=%d&p=%d&anftyp=Akt&utformat=json",
+		c.baseURL, f.Session, f.Party, f.PoliticianID, size, page)
+```
+
+Replace every other `baseURL` reference in that file with `c.baseURL`.
+
+Then rewrite `Run` in `speeches.go` to the same shape as the votes worker:
+
+```go
+const speechPageSize = 500
+
+func (w *SpeechesWorker) Run(ctx context.Context) error {
+	var since time.Time
+	if cur, err := w.cursors.Get(ctx, "speeches"); err == nil && cur != nil && cur.LastDate != nil {
+		since = *cur.LastDate
+		slog.Info("speeches: incremental sync", "since", since.Format("2006-01-02"))
+	}
+
+	// Newest record actually retrieved. The cursor only ever advances to this.
+	var newest time.Time
+
+	for _, rm := range MandateRiksmoten {
+		for _, party := range ActiveParties {
+			for page := 1; ; page++ {
+				f := ports.FetchSpeechesFilter{
+					Session: rm, Party: party, Size: speechPageSize, Page: page, Since: since,
+				}
+				ss, err := w.svc.FetchAndStore(ctx, f)
+				if err != nil {
+					slog.Warn("speeches sync failed", "rm", rm, "party", party, "page", page, "error", err)
+					break
+				}
+				for _, s := range ss {
+					if s.Date.After(newest) {
+						newest = s.Date
+					}
+				}
+				if len(ss) < speechPageSize {
+					break
+				}
+				time.Sleep(200 * time.Millisecond)
+			}
+		}
+	}
+
+	if newest.IsZero() {
+		slog.Info("speeches: nothing fetched, cursor unchanged")
+		return nil
+	}
+	return w.cursors.Upsert(ctx, ingPorts.Cursor{DataType: "speeches", LastDate: &newest})
+}
+```
+
+Add `FetchAndStore` to `backend/internal/speeches/service.go`, mirroring the votes one:
+
+```go
+// FetchAndStore fetches one page and returns the rows stored, so callers can
+// page until exhaustion and track the newest record seen.
+func (s *Service) FetchAndStore(ctx context.Context, f ports.FetchSpeechesFilter) ([]*domain.Speech, error) {
+	ss, err := s.riksdagen.FetchSpeeches(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.repo.UpsertMany(ctx, ss); err != nil {
+		return nil, err
+	}
+	return ss, nil
+}
+```
+
+Use whichever field on `domain.Speech` carries Riksdagen's own date (`Date` above is a placeholder for that real field name — check the struct and use it; do not use an insert timestamp).
+
+- [ ] **Step 4: Run the tests**
+
+```bash
+cd backend && go test ./internal/ingestion/workers/ -run TestSpeechesWorker -v
+go build -C backend ./...
+```
+
+Expected: PASS, build clean.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add backend/internal/ingestion/workers/speeches.go backend/internal/ingestion/workers/speeches_worker_test.go backend/internal/speeches/adapters/riksdagen/
+git commit -m "fix(speeches): paginate, iterate the mandate riksmoten, correct the cursor"
+```
+
+---
+
+### Task 6: Backfill runner and coverage record
+
+~894 000 ballot rows across ~1 788 paged requests. Runs once, out of band, and records what it actually retrieved so the site can state its own coverage.
+
+**Files:**
+- Create: `backend/migrations/000031_ingestion_coverage.{up,down}.sql`, `backend/cmd/backfill/main.go`
+
+**Interfaces:**
+- Produces: table `ingestion_coverage(riksmote TEXT PRIMARY KEY, expected_voteringar INT, ingested_voteringar INT, last_vote_date DATE, checked_at TIMESTAMPTZ)`.
+
+- [ ] **Step 1: Write the migration**
+
+`000031_ingestion_coverage.up.sql`:
+
+```sql
+-- What we actually hold, per riksmöte, so the site can state its own coverage
+-- rather than implying completeness. expected_voteringar comes from Riksdagen's
+-- own document count; ingested_voteringar is what we stored.
+CREATE TABLE IF NOT EXISTS ingestion_coverage (
+  riksmote            TEXT PRIMARY KEY,
+  expected_voteringar INTEGER,
+  ingested_voteringar INTEGER NOT NULL DEFAULT 0,
+  last_vote_date      DATE,
+  checked_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+`000031_ingestion_coverage.down.sql`:
+
+```sql
+DROP TABLE IF EXISTS ingestion_coverage;
+```
+
+- [ ] **Step 2: Write the backfill command**
+
+`backend/cmd/backfill/main.go`:
+
+```go
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"flag"
+	"fmt"
+	"log/slog"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"riksdagskollen/internal/ingestion/workers"
+	"riksdagskollen/internal/votes"
+	votepg "riksdagskollen/internal/votes/adapters/postgres"
+	voterd "riksdagskollen/internal/votes/adapters/riksdagen"
+	voteports "riksdagskollen/internal/votes/ports"
+)
+
+const pageSize = 500
+
+// expectedVoteringar asks Riksdagen how many voteringar a riksmöte contains.
+// This is the denominator the site publishes as its coverage claim.
+func expectedVoteringar(ctx context.Context, rm string) (int, error) {
+	url := fmt.Sprintf(
+		"https://data.riksdagen.se/dokumentlista/?doktyp=votering&rm=%s&utformat=json&sz=1",
+		rm)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return 0, err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	var payload struct {
+		Dokumentlista struct {
+			Traffar string `json:"@traffar"`
+		} `json:"dokumentlista"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+		return 0, err
+	}
+	var n int
+	_, err = fmt.Sscanf(payload.Dokumentlista.Traffar, "%d", &n)
+	return n, err
+}
+
+func main() {
+	only := flag.String("rm", "", "backfill a single riksmöte, e.g. 2025/26")
+	flag.Parse()
+
+	ctx := context.Background()
+	pool, err := pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
+	if err != nil {
+		slog.Error("connect", "error", err)
+		os.Exit(1)
+	}
+	defer pool.Close()
+
+	svc := votes.NewService(votepg.NewRepository(pool), voterd.NewClient())
+
+	riksmoten := workers.MandateRiksmoten
+	if *only != "" {
+		riksmoten = []string{*only}
+	}
+
+	for _, rm := range riksmoten {
+		expected, err := expectedVoteringar(ctx, rm)
+		if err != nil {
+			slog.Warn("expected count failed", "rm", rm, "error", err)
+		}
+		slog.Info("backfill riksmöte", "rm", rm, "expected", expected)
+
+		for _, party := range workers.ActiveParties {
+			stored := 0
+			for page := 1; ; page++ {
+				// Since is deliberately zero: a backfill must not apply the
+				// incremental cutoff, or it re-skips the very gap it is fixing.
+				vv, err := svc.FetchAndStore(ctx, voteports.FetchVotesFilter{
+					Session: rm, Party: party, Size: pageSize, Page: page,
+				})
+				if err != nil {
+					slog.Warn("fetch failed", "rm", rm, "party", party, "page", page, "error", err)
+					break
+				}
+				stored += len(vv)
+				if len(vv) < pageSize {
+					break
+				}
+				time.Sleep(200 * time.Millisecond)
+			}
+			slog.Info("party done", "rm", rm, "party", party, "rows", stored)
+		}
+
+		var ingested int
+		var lastDate *time.Time
+		if err := pool.QueryRow(ctx, `
+			SELECT count(DISTINCT beteckning || ':' || forslagspunkt),
+			       max(system_datum)::date
+			FROM votes WHERE session = $1`, rm).Scan(&ingested, &lastDate); err != nil {
+			slog.Warn("coverage query failed", "rm", rm, "error", err)
+			continue
+		}
+
+		if _, err := pool.Exec(ctx, `
+			INSERT INTO ingestion_coverage
+				(riksmote, expected_voteringar, ingested_voteringar, last_vote_date, checked_at)
+			VALUES ($1, $2, $3, $4, now())
+			ON CONFLICT (riksmote) DO UPDATE SET
+				expected_voteringar = EXCLUDED.expected_voteringar,
+				ingested_voteringar = EXCLUDED.ingested_voteringar,
+				last_vote_date      = EXCLUDED.last_vote_date,
+				checked_at          = now()`,
+			rm, expected, ingested, lastDate); err != nil {
+			slog.Warn("coverage upsert failed", "rm", rm, "error", err)
+		}
+		slog.Info("riksmöte done", "rm", rm, "ingested", ingested, "expected", expected)
+	}
+}
+```
+
+The `max(system_datum)` column above assumes votes persist Riksdagen's date. If the `votes` table has no such column, use `max(created_at)::date` and note in the coverage UI that `last_vote_date` is our ingest date, not the decision date — or add the column in a migration. Prefer adding the column: an ingest date must never be presented as a decision date.
+
+Progress is logged per riksmöte and per party so a multi-hour run is observable. The command is safely re-runnable: `UpsertMany` is idempotent, so an interrupted run can simply be restarted.
+
+- [ ] **Step 3: Dry-run one riksmöte locally**
+
+```bash
+make migrate
+cd backend && DATABASE_URL='postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable' \
+  go run ./cmd/backfill -rm 2025/26
+```
+
+Expected: ~759 voteringar ingested for 2025/26; `ingestion_coverage` row written with `expected_voteringar = 759`.
+
+- [ ] **Step 4: Full run**
+
+```bash
+cd backend && DATABASE_URL='...' go run ./cmd/backfill
+psql "$DATABASE_URL" -c "SELECT * FROM ingestion_coverage ORDER BY riksmote;"
+```
+
+Expected: four rows, `ingested_voteringar` within a few of `expected_voteringar` for each. Investigate any riksmöte more than 2% short before proceeding.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add backend/migrations/000031_* backend/cmd/backfill/
+git commit -m "feat(ingestion): backfill the 2022-2026 record and record coverage"
+```
+
+---
+
+### Task 7: Freshness honesty
+
+`liveDateStr()` (`App.tsx:75-81`) returns `new Date()` — today's browser date, with no connection to the data. The header renders `LIVE · <today>` over an eleven-month-old feed.
+
+**Files:**
+- Modify: `backend/internal/riksdag/adapters/http/handler.go` (add `GET /api/riksdag/freshness`), `frontend/src/App.tsx:75-81,261`
+
+**Interfaces:**
+- Produces: `GET /api/riksdag/freshness` → `{ "latestVoteDate": "2026-06-17", "latestSpeechDate": "2026-06-17" }` (either may be `null`).
+
+- [ ] **Step 1: Add the endpoint**
+
+Query `MAX(systemdatum)::date` from `votes` and from `speeches`, return both. Register the route in `cmd/api/main.go` beside the other `/riksdag/*` routes, and add it to `api/openapi.yaml`, then run `cd frontend && npm run generate:api`.
+
+- [ ] **Step 2: Replace the badge**
+
+In `App.tsx`, delete `liveDateStr()` and render the real date:
+
+```tsx
+// The header must never claim currency it does not have: show the date of the
+// newest record actually held, not today's date.
+{freshness?.latestVoteDate
+  ? `Senaste beslut · ${formatSwedishDate(freshness.latestVoteDate)}`
+  : "Ingen omröstningsdata"}
+```
+
+- [ ] **Step 3: Verify**
+
+```bash
+curl -s localhost:8080/api/riksdag/freshness
+```
+
+Then load `http://localhost:5173/` and confirm the header shows the newest vote date, **not** today's date. With the backfill applied this should read `Senaste beslut · 17 juni 2026`.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add backend/internal/riksdag/ backend/cmd/api/main.go api/openapi.yaml frontend/src/shared/api-contract.ts frontend/src/App.tsx
+git commit -m "fix(ui): show real data freshness instead of today's date"
+```
+
+---
+
+### Task 8: Coverage at the point of use
+
+**Files:**
+- Modify: `backend/internal/riksdag/adapters/http/handler.go` (add `GET /api/riksdag/coverage`), `frontend/src/features/parties/PartyGoalsPage.tsx`
+
+**Interfaces:**
+- Consumes: `ingestion_coverage` from Task 6.
+- Produces: `GET /api/riksdag/coverage` → `{ "mandate": "2022-2026", "expected": 2562, "ingested": 2562, "byRiksmote": [{ "riksmote": "2022/23", "expected": 562, "ingested": 562 }] }`
+
+- [ ] **Step 1: Add the endpoint**
+
+Sum `expected_voteringar` and `ingested_voteringar` across `ingestion_coverage`, plus the per-riksmöte breakdown. Add to `api/openapi.yaml`; regenerate the contract.
+
+- [ ] **Step 2: Render it on the record view**
+
+Above the goals list on `PartyGoalsPage`:
+
+```tsx
+// Completeness is a claim like any other, so it must be checkable. If the
+// backfill is short, the reader sees the shortfall rather than silence.
+<p className="text-xs text-on-surface-variant">
+  Baserat på {coverage.ingested.toLocaleString("sv-SE")} av{" "}
+  {coverage.expected.toLocaleString("sv-SE")} omröstningar 2022–2026
+  <SourceMarker sourceId="riksdagen" />
+  {coverage.ingested < coverage.expected && (
+    <Link to="/data" className="ml-2 underline">Vad saknas?</Link>
+  )}
+</p>
+```
+
+- [ ] **Step 3: Verify**
+
+```bash
+curl -s localhost:8080/api/riksdag/coverage | python3 -m json.tool
+```
+
+Load `/parties/S/goals` and confirm the line renders with real numbers. Temporarily delete one riksmöte's rows and confirm the shortfall and the "Vad saknas?" link appear, then restore.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add backend/internal/riksdag/ api/openapi.yaml frontend/src/shared/api-contract.ts frontend/src/features/parties/PartyGoalsPage.tsx
+git commit -m "feat(ui): state record coverage where the record is used"
+```
+
+---
+
+### Task 9: Mandate scoping and the 14 September relabel
+
+Without this, votes from the incoming parliament flow into the outgoing one's record and misattribute it.
+
+**Files:**
+- Create: `backend/migrations/000032_mandate_periods.{up,down}.sql`
+- Modify: `backend/internal/riksdag/adapters/http/handler.go`, `frontend/src/features/parties/PartyGoalsPage.tsx`
+
+**Interfaces:**
+- Produces: table `mandate_periods(code TEXT PRIMARY KEY, label TEXT, start_date DATE, end_date DATE, riksmoten TEXT[])`, seeded with `('2022-2026', 'Mandatperioden 2022–2026', '2022-09-11', '2026-09-13', ARRAY['2022/23','2023/24','2024/25','2025/26'])`. Exposed on the coverage endpoint as `mandateLabel` and `mandateEnded bool`.
+
+- [ ] **Step 1: Write the migration**
+
+```sql
+CREATE TABLE IF NOT EXISTS mandate_periods (
+  code       TEXT PRIMARY KEY,
+  label      TEXT NOT NULL,
+  start_date DATE NOT NULL,
+  end_date   DATE NOT NULL,
+  riksmoten  TEXT[] NOT NULL
+);
+
+INSERT INTO mandate_periods (code, label, start_date, end_date, riksmoten)
+VALUES ('2022-2026', 'Mandatperioden 2022–2026', '2022-09-11', '2026-09-13',
+        ARRAY['2022/23','2023/24','2024/25','2025/26'])
+ON CONFLICT (code) DO NOTHING;
+```
+
+Down: `DROP TABLE IF EXISTS mandate_periods;`
+
+- [ ] **Step 2: Expose label and ended-state**
+
+Extend the coverage handler to read the mandate row and return `mandateLabel` plus `mandateEnded` (`end_date < CURRENT_DATE`). Update `api/openapi.yaml`; regenerate.
+
+- [ ] **Step 3: Render the scope**
+
+Replace the record heading so it always names the period, and appends `(avslutad)` once ended:
+
+```tsx
+<h2>{coverage.mandateLabel}{coverage.mandateEnded ? " (avslutad)" : ""}</h2>
+```
+
+- [ ] **Step 4: Verify the boundary**
+
+```bash
+psql "$DATABASE_URL" -c "UPDATE mandate_periods SET end_date = '2026-07-01' WHERE code = '2022-2026';"
+curl -s localhost:8080/api/riksdag/coverage | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['mandateLabel'], d['mandateEnded'])"
+```
+
+Expected: `Mandatperioden 2022–2026 True`, and the heading shows `(avslutad)`. Restore:
+
+```bash
+psql "$DATABASE_URL" -c "UPDATE mandate_periods SET end_date = '2026-09-13' WHERE code = '2022-2026';"
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add backend/migrations/000032_* backend/internal/riksdag/ api/openapi.yaml frontend/src/shared/api-contract.ts frontend/src/features/parties/PartyGoalsPage.tsx
+git commit -m "feat: scope the record to a mandate period and relabel when it ends"
+```
+
+---
+
+## Final verification
+
+```bash
+go build -C backend ./...
+cd backend && TEST_DATABASE_URL='postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable' go test ./...
+cd frontend && npx tsc --noEmit
+```
+
+Then against the running stack:
+
+- No party shows any 2026 source document
+- `/api/riksdag/coverage` reports ~2 562 of 2 562
+- The header shows `Senaste beslut · 17 juni 2026`, not today's date
+- `MJU12` and `KrU5` resolve to committee names in the UI
+- A goal page states its coverage above the goals list
