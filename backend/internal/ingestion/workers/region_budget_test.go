@@ -40,12 +40,12 @@ func (m *mockRegionSvc) listRegionCodes() []string {
 }
 
 type mockIngestionRunRepo struct {
-	startErr    error
-	finishErr   error
-	startCalled bool
+	startErr     error
+	finishErr    error
+	startCalled  bool
 	finishCalled bool
-	lastStatus  string // "success" or "error" — inferred from runErr argument
-	lastErr     error
+	lastStatus   string // "success" or "error" — inferred from runErr argument
+	lastErr      error
 }
 
 func (m *mockIngestionRunRepo) StartRun(_ context.Context, _ string) (int64, error) {

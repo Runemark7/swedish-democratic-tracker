@@ -16,6 +16,20 @@ func NewService(repo ports.SpeechRepository, riksdagen ports.RiksdagenSpeechClie
 	return &Service{repo: repo, riksdagen: riksdagen}
 }
 
+// FetchAndStore fetches one party-riksmöte and returns the rows stored, so the
+// caller can detect truncation and track the newest record seen. SyncSpeeches
+// discards both, leaving no way to know how much was actually retrieved.
+func (s *Service) FetchAndStore(ctx context.Context, f ports.FetchSpeechesFilter) ([]*domain.Speech, error) {
+	ss, err := s.riksdagen.FetchSpeeches(ctx, f)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.repo.UpsertMany(ctx, ss); err != nil {
+		return nil, err
+	}
+	return ss, nil
+}
+
 func (s *Service) SyncSpeeches(ctx context.Context, f ports.FetchSpeechesFilter) error {
 	speeches, err := s.riksdagen.FetchSpeeches(ctx, f)
 	if err != nil {

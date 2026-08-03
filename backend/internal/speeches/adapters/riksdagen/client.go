@@ -12,14 +12,18 @@ import (
 	"riksdagskollen/internal/speeches/ports"
 )
 
-const baseURL = "https://data.riksdagen.se"
+const defaultBaseURL = "https://data.riksdagen.se"
 
 type Client struct {
-	http *http.Client
+	http    *http.Client
+	baseURL string
 }
 
 func NewClient() *Client {
-	return &Client{http: &http.Client{Timeout: 30 * time.Second}}
+	return &Client{
+		http:    &http.Client{Timeout: 30 * time.Second},
+		baseURL: defaultBaseURL,
+	}
 }
 
 func (c *Client) FetchSpeeches(ctx context.Context, f ports.FetchSpeechesFilter) ([]*domain.Speech, error) {
@@ -28,7 +32,7 @@ func (c *Client) FetchSpeeches(ctx context.Context, f ports.FetchSpeechesFilter)
 		size = 200
 	}
 	url := fmt.Sprintf("%s/anforandelista/?rm=%s&parti=%s&iid=%s&sz=%d&anftyp=Akt&utformat=json",
-		baseURL, f.Session, f.Party, f.PoliticianID, size)
+		c.baseURL, f.Session, f.Party, f.PoliticianID, size)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -86,7 +90,7 @@ func (c *Client) FetchSpeeches(ctx context.Context, f ports.FetchSpeechesFilter)
 // `anforandetext` body. The list endpoint omits the prose, so this is
 // the only way to populate `speeches.speech_text`.
 func (c *Client) FetchSpeechText(ctx context.Context, dokID, anforandeNummer string) (string, error) {
-	url := fmt.Sprintf("%s/anforande/%s-%s.json", baseURL, dokID, anforandeNummer)
+	url := fmt.Sprintf("%s/anforande/%s-%s.json", c.baseURL, dokID, anforandeNummer)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", err

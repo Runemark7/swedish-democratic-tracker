@@ -153,4 +153,3 @@ func inferDirection(goalParty, proposedBy string) matchdomain.AlignmentDirection
 	// Motion from another party — the goal's party may vote Nej
 	return matchdomain.AlignmentUnclear
 }
-

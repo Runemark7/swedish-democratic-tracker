@@ -2,6 +2,7 @@ package workers
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -21,38 +22,91 @@ func NewVotesWorker(svc *votes.Service, cursors ingPorts.CursorRepository) Votes
 
 func (w *VotesWorker) Name() string { return "fetch-votes" }
 
+// MandateRiksmoten is the 2022-2026 mandate period: four riksmöten, 2 562
+// voteringar in total.
+var MandateRiksmoten = []string{"2022/23", "2023/24", "2024/25", "2025/26"}
+
+const voteringPageSize = 200
+
+// FetchDelay throttles requests to the Riksdagen API. Exported so tests can set
+// it to zero: against fakes the sleep only slows the suite down.
+var FetchDelay = 200 * time.Millisecond
+
+// CurrentRiksmote returns the riksmöte label for a date. A riksmöte runs
+// September to September, so a date before September belongs to the one that
+// opened the previous year.
+func CurrentRiksmote(t time.Time) string {
+	y := t.Year()
+	if t.Month() < time.September {
+		y--
+	}
+	return fmt.Sprintf("%d/%02d", y, (y+1)%100)
+}
+
 func (w *VotesWorker) Run(ctx context.Context) error {
-	// Read cursor for incremental sync
 	var since time.Time
 	if cur, err := w.cursors.Get(ctx, "votes"); err == nil && cur != nil && cur.LastDate != nil {
 		since = *cur.LastDate
-		slog.Info("votes: incremental sync", "since", since.Format("2006-01-02"))
+	}
+	rm := CurrentRiksmote(time.Now().UTC())
+	slog.Info("votes: incremental sync", "riksmote", rm, "since", since.Format("2006-01-02"))
+
+	// Enumerate newest-first and stop at the cursor. /dokumentlista paginates
+	// correctly; /voteringlista does not, which is why the work is partitioned
+	// by beteckning rather than paged.
+	seen := map[string]bool{}
+	var order []string
+	stop := false
+	for page := 1; !stop; page++ {
+		refs, _, err := w.svc.ListVoteringar(ctx, rm, page, voteringPageSize)
+		if err != nil {
+			// Leave the cursor untouched: advancing past a window we failed to
+			// read is what silently lost months of votes.
+			slog.Warn("votes: enumeration failed", "rm", rm, "page", page, "error", err)
+			return nil
+		}
+		if len(refs) == 0 {
+			break
+		}
+		for _, r := range refs {
+			if !since.IsZero() && !r.SystemDatum.After(since) {
+				stop = true
+				break
+			}
+			if r.Beteckning != "" && !seen[r.Beteckning] {
+				seen[r.Beteckning] = true
+				order = append(order, r.Beteckning)
+			}
+		}
+		if len(refs) < voteringPageSize {
+			break
+		}
 	}
 
-	for i, party := range ActiveParties {
-		f := ports.FetchVotesFilter{
-			Session: currentSession,
-			Party:   party,
-			Size:    500,
-			Since:   since,
+	// One request per betänkande returns every party's ballots for it,
+	// including party-less members that a per-party loop would miss.
+	var newest time.Time
+	for _, bet := range order {
+		vv, err := w.svc.FetchAndStore(ctx, ports.FetchVotesFilter{
+			Session: rm, Beteckning: bet, Since: since,
+		})
+		if err != nil {
+			slog.Warn("votes: fetch failed", "rm", rm, "bet", bet, "error", err)
+			continue
 		}
-		if err := w.svc.SyncVotes(ctx, f); err != nil {
-			slog.Warn("votes sync failed for party, continuing", "party", party, "error", err)
+		for _, v := range vv {
+			if v.SystemDatum.After(newest) {
+				newest = v.SystemDatum
+			}
 		}
-		if i < len(ActiveParties)-1 {
-			time.Sleep(200 * time.Millisecond)
-		}
+		time.Sleep(FetchDelay)
 	}
 
-	// Update cursor to today
-	now := time.Now().UTC().Truncate(24 * time.Hour)
-	if err := w.cursors.Upsert(ctx, ingPorts.Cursor{
-		DataType: "votes",
-		LastDate: &now,
-	}); err != nil {
-		slog.Warn("votes: failed to update cursor", "error", err)
+	if newest.IsZero() {
+		slog.Info("votes: nothing fetched, cursor unchanged", "betankanden", len(order))
+		return nil
 	}
-	return nil
+	return w.cursors.Upsert(ctx, ingPorts.Cursor{DataType: "votes", LastDate: &newest})
 }
 
 type EnrichOriginsWorker struct {
