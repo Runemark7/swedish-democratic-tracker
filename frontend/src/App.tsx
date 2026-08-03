@@ -32,6 +32,7 @@ import { SearchPage } from "./features/search/SearchPage";
 import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
 import { DebateDetailPage } from "./features/speeches/DebateDetailPage";
 import { DataIndexPage } from "./features/data/DataIndexPage";
+import { OmSajtenPage } from "./features/about/OmSajtenPage";
 import { DataSourcePage } from "./features/data/DataSourcePage";
 import { useTheme } from "./contexts/ThemeContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
@@ -372,6 +373,7 @@ export default function App() {
           <Route path="/sok"                                   element={<SearchPage />} />
           <Route path="/anforanden/:id"                        element={<SpeechDetailPage />} />
           <Route path="/debatt/:dokId"                         element={<DebateDetailPage />} />
+          <Route path="/om-sajten"                             element={<OmSajtenPage />} />
           <Route path="/data"                                  element={<DataIndexPage />} />
           <Route path="/data/:id"                              element={<DataSourcePage />} />
         </Routes>
@@ -384,19 +386,27 @@ export default function App() {
           textAlign: "center",
         }}
       >
-        <Link
-          to="/data"
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 11,
-            color: "var(--color-fg-muted)",
-            textDecoration: "none",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-          }}
-        >
-          Datakällor
-        </Link>
+        <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
+          {[
+            { to: "/om-sajten", label: "Om sajten" },
+            { to: "/data", label: "Datakällor" },
+          ].map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                color: "var(--color-fg-muted)",
+                textDecoration: "none",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              {l.label}
+            </Link>
+          ))}
+        </div>
       </footer>
     </div>
   );
