@@ -124,3 +124,8 @@ type ExpenditureUpdate struct {
 	Year            int
 	History         []YearlyExpenditureSCB
 }
+
+// CoverageRepository reports how much of a mandate period's record we hold.
+type CoverageRepository interface {
+	GetRecordCoverage(ctx context.Context, code string) (*domain.RecordCoverage, error)
+}

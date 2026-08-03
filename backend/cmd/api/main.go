@@ -19,56 +19,57 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	// Feature: politicians
+	"riksdagskollen/internal/politicians"
 	politiciansHTTP "riksdagskollen/internal/politicians/adapters/http"
 	politiciansPG "riksdagskollen/internal/politicians/adapters/postgres"
 	politiciansRD "riksdagskollen/internal/politicians/adapters/riksdagen"
-	"riksdagskollen/internal/politicians"
 
 	// Feature: speeches
+	"riksdagskollen/internal/speeches"
+	speechesHTTP "riksdagskollen/internal/speeches/adapters/http"
 	speechesPG "riksdagskollen/internal/speeches/adapters/postgres"
 	speechesRD "riksdagskollen/internal/speeches/adapters/riksdagen"
-	speechesHTTP "riksdagskollen/internal/speeches/adapters/http"
-	"riksdagskollen/internal/speeches"
 
 	// Feature: votes
+	"riksdagskollen/internal/votes"
 	votesHTTP "riksdagskollen/internal/votes/adapters/http"
 	votesPG "riksdagskollen/internal/votes/adapters/postgres"
 	votesRD "riksdagskollen/internal/votes/adapters/riksdagen"
-	"riksdagskollen/internal/votes"
 
 	// Feature: goals + matching
+	"riksdagskollen/internal/goals"
 	goalsHTTP "riksdagskollen/internal/goals/adapters/http"
 	goalsPG "riksdagskollen/internal/goals/adapters/postgres"
-	"riksdagskollen/internal/goals"
+	"riksdagskollen/internal/matching"
 	matchingPG "riksdagskollen/internal/matching/adapters/postgres"
 	matchingStub "riksdagskollen/internal/matching/adapters/stub"
-	"riksdagskollen/internal/matching"
 
 	// Feature: promises
+	"riksdagskollen/internal/promises"
 	promisesHTTP "riksdagskollen/internal/promises/adapters/http"
 	promisesPG "riksdagskollen/internal/promises/adapters/postgres"
-	"riksdagskollen/internal/promises"
 
 	// Feature: budget
+	"riksdagskollen/internal/budget"
 	budgetHTTP "riksdagskollen/internal/budget/adapters/http"
 	budgetPG "riksdagskollen/internal/budget/adapters/postgres"
-	"riksdagskollen/internal/budget"
 
 	// Feature: context
+	topiccontext "riksdagskollen/internal/context"
 	contextHTTP "riksdagskollen/internal/context/adapters/http"
 	contextPG "riksdagskollen/internal/context/adapters/postgres"
-	topiccontext "riksdagskollen/internal/context"
 
 	// Feature: regions + municipalities
+	"riksdagskollen/internal/regions"
 	regionsHTTP "riksdagskollen/internal/regions/adapters/http"
 	koladaAdapter "riksdagskollen/internal/regions/adapters/kolada"
 	regionsPG "riksdagskollen/internal/regions/adapters/postgres"
 	scbAdapter "riksdagskollen/internal/regions/adapters/scb"
 	tedAdapter "riksdagskollen/internal/regions/adapters/ted"
-	"riksdagskollen/internal/regions"
 	"riksdagskollen/internal/regions/seeder"
 
 	// Feature: riksdag
+	"riksdagskollen/internal/riksdag"
 	riksdagHTTP "riksdagskollen/internal/riksdag/adapters/http"
 	riksdagMF "riksdagskollen/internal/riksdag/adapters/myndighetsforteckning"
 	riksdagPG "riksdagskollen/internal/riksdag/adapters/postgres"
@@ -78,18 +79,17 @@ import (
 	riksdagSCBMacro "riksdagskollen/internal/riksdag/adapters/scbmacro"
 	riksdagStatic "riksdagskollen/internal/riksdag/adapters/static"
 	riksdagSK "riksdagskollen/internal/riksdag/adapters/statskontoret"
-	"riksdagskollen/internal/riksdag"
 
 	// Feature: parties
+	"riksdagskollen/internal/parties"
 	partiesHTTP "riksdagskollen/internal/parties/adapters/http"
 	partiesPG "riksdagskollen/internal/parties/adapters/postgres"
-	"riksdagskollen/internal/parties"
 
 	// Feature: ministers
+	"riksdagskollen/internal/ministers"
 	ministersHTTP "riksdagskollen/internal/ministers/adapters/http"
 	ministersPG "riksdagskollen/internal/ministers/adapters/postgres"
 	ministersRD "riksdagskollen/internal/ministers/adapters/riksdagen"
-	"riksdagskollen/internal/ministers"
 
 	// Ingestion
 	"riksdagskollen/internal/ingestion"
@@ -186,6 +186,7 @@ func main() {
 	riksdagSvc := riksdag.NewServiceWithSCB(riksdagSK.NewClient(), riksdagStatic.NewClient(), riksdagSCB.NewClient())
 	kpiRepo := riksdagPG.NewKpiRepository(db)
 	riksdagSvc.SetKpiRepo(kpiRepo)
+	riksdagSvc.SetCoverageRepo(riksdagPG.NewCoverageRepository(db))
 	riksdagSvc.SetGovRepo(riksdagPG.NewGovRepository(db))
 	riksdagSvc.SetAgendaRepo(riksdagPG.NewAgendaRepository(db))
 	riksdagSvc.SetLiveVotesRepo(riksdagPG.NewLiveVotesRepository(db))

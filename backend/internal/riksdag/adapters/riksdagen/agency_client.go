@@ -29,11 +29,11 @@ func stripHTML(s string) string {
 }
 
 type dokument struct {
-	DokID         string `json:"dok_id"`
-	Datum         string `json:"datum"`
-	Titel         string `json:"titel"`
+	DokID          string `json:"dok_id"`
+	Datum          string `json:"datum"`
+	Titel          string `json:"titel"`
 	Sammanfattning string `json:"sammanfattning"`
-	Typ           string `json:"typ"`
+	Typ            string `json:"typ"`
 }
 
 type dokumentlista struct {
