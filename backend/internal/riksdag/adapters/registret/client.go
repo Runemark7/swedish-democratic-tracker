@@ -47,12 +47,12 @@ var groups = []group{
 }
 
 var (
-	rowRe    = regexp.MustCompile(`(?s)<tr[^>]*>(.*?)</tr>`)
-	cellRe   = regexp.MustCompile(`(?s)<td[^>]*>(.*?)</td>`)
-	tagRe    = regexp.MustCompile(`<[^>]+>`)
-	orgNrRe  = regexp.MustCompile(`^\d{6}-\d{4}$`)
-	cfarRe   = regexp.MustCompile(`^\d{6,10}$`)
-	lopnrRe  = regexp.MustCompile(`^\d+$`)
+	rowRe   = regexp.MustCompile(`(?s)<tr[^>]*>(.*?)</tr>`)
+	cellRe  = regexp.MustCompile(`(?s)<td[^>]*>(.*?)</td>`)
+	tagRe   = regexp.MustCompile(`<[^>]+>`)
+	orgNrRe = regexp.MustCompile(`^\d{6}-\d{4}$`)
+	cfarRe  = regexp.MustCompile(`^\d{6,10}$`)
+	lopnrRe = regexp.MustCompile(`^\d+$`)
 )
 
 func cleanCell(s string) string {

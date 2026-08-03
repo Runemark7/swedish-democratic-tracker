@@ -465,3 +465,31 @@ export interface RiksdagDocumentFull extends RiksdagDocument {
   intressenter: Intressent[];
 }
 
+
+// ── Record coverage ───────────────────────────────────────────────────
+export interface MandatePeriod {
+  code: string;
+  label: string;
+  /** Once the period has ended the record is final. */
+  ended: boolean;
+}
+
+export interface RiksmoteRecord {
+  riksmote: string;
+  expected: number;
+  ingested: number;
+  unreachable: number;
+  lastDecisionDate: string | null;
+}
+
+export interface RecordCoverage {
+  mandate: MandatePeriod;
+  /** Riksdagen's own count of voteringar in the period, not ours. */
+  expected: number;
+  ingested: number;
+  /** Listed upstream but carrying no beteckning, so not fetchable. */
+  unreachable: number;
+  /** Date of the newest decision held. Never an ingest timestamp. */
+  lastDecisionDate: string | null;
+  byRiksmote: RiksmoteRecord[];
+}

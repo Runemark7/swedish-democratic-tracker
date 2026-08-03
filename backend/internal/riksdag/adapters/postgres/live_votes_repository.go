@@ -20,22 +20,22 @@ func NewLiveVotesRepository(db *pgxpool.Pool) *LiveVotesRepository {
 
 // betecknigToTag maps a riksdag committee code prefix to a display tag.
 var beteckningToTag = map[string]string{
-	"AU":   "Arbetsmarknad",
-	"CU":   "Bostäder",
-	"FiU":  "Ekonomi",
-	"FöU":  "Försvar",
-	"JuU":  "Rättsväsen",
-	"KrU":  "Kultur",
-	"KU":   "Demokrati",
-	"MJU":  "Miljö",
-	"NU":   "Näringsliv",
-	"SfU":  "Välfärd",
-	"SkU":  "Skatt",
-	"SoU":  "Hälsa",
-	"TU":   "Infrastruktur",
-	"UbU":  "Utbildning",
-	"UU":   "Utrikes",
-	"KE":   "Konstitution",
+	"AU":  "Arbetsmarknad",
+	"CU":  "Bostäder",
+	"FiU": "Ekonomi",
+	"FöU": "Försvar",
+	"JuU": "Rättsväsen",
+	"KrU": "Kultur",
+	"KU":  "Demokrati",
+	"MJU": "Miljö",
+	"NU":  "Näringsliv",
+	"SfU": "Välfärd",
+	"SkU": "Skatt",
+	"SoU": "Hälsa",
+	"TU":  "Infrastruktur",
+	"UbU": "Utbildning",
+	"UU":  "Utrikes",
+	"KE":  "Konstitution",
 }
 
 func tagFromBeteckning(b string) string {

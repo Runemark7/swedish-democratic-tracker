@@ -5,7 +5,8 @@ import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type Rik
 import { speechesApi, type Speech } from "@/features/speeches/api";
 import { votesApi } from "@/features/votes/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
-import type { ElectionResult, KPIRank, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, RegionKPIRankEntry, RegionPlan, MunicipalityBudgetSnapshot, MunicipalityAreaDataPoint, BudgetSnapshot } from "@/shared/types";
+import type {
+  RecordCoverage, ElectionResult, KPIRank, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, RegionKPIRankEntry, RegionPlan, MunicipalityBudgetSnapshot, MunicipalityAreaDataPoint, BudgetSnapshot } from "@/shared/types";
 import { STRIP_KPI_META, STRIP_ORDER, type KpiMeta } from "@/features/municipalities/kpiMeta";
 import { REGION_KPI_META, REGION_STRIP_ORDER } from "@/features/regions/regionKpiMeta";
 
@@ -514,6 +515,17 @@ export function useKommun(code: string) {
     },
     staleTime: 30_000,
     enabled: !!code,
+  });
+}
+
+// ── Record coverage ───────────────────────────────────────────────────────────
+/** How much of the mandate record the site holds, and when its newest decision
+ *  was taken. Both are stated in the UI rather than implied. */
+export function useRecordCoverage() {
+  return useQuery<RecordCoverage>({
+    queryKey: ["record-coverage"],
+    queryFn: () => fetch("/api/riksdag/coverage").then((r) => r.json()),
+    staleTime: 5 * 60_000,
   });
 }
 
