@@ -147,6 +147,69 @@ func (r *Repository) UpdateProposalOrigin(ctx context.Context, voteringID, polit
 	return err
 }
 
+// ListVotePointsWithoutOrigin returns distinct vote points still needing origin
+// resolution. Enriching per ballot instead re-fetches the same document once
+// per member — ~349 times per vote point.
+func (r *Repository) ListVotePointsWithoutOrigin(ctx context.Context, limit int) ([]ports.VotePoint, error) {
+	const q = `SELECT DISTINCT ON (beteckning, forslagspunkt)
+			beteckning, forslagspunkt, session, COALESCE(dok_id, '')
+		FROM votes
+		WHERE origin_enriched = false
+		ORDER BY beteckning, forslagspunkt
+		LIMIT $1`
+
+	rows, err := r.db.Query(ctx, q, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var pp []ports.VotePoint
+	for rows.Next() {
+		var v ports.VotePoint
+		if err := rows.Scan(&v.Beteckning, &v.Forslagspunkt, &v.Session, &v.DokID); err != nil {
+			return nil, err
+		}
+		pp = append(pp, v)
+	}
+	return pp, rows.Err()
+}
+
+// UpdateProposalOriginForPoint applies one origin to every ballot on the point
+// and reports how many rows it touched.
+func (r *Repository) UpdateProposalOriginForPoint(ctx context.Context, beteckning, forslagspunkt string, o domain.ProposalOrigin) (int64, error) {
+	const q = `
+		UPDATE votes SET
+			proposed_by_party = $3,
+			proposal_type     = $4,
+			proposal_dok_id   = $5,
+			document_title    = $6,
+			origin_enriched   = true
+		WHERE beteckning = $1 AND forslagspunkt = $2`
+
+	var proposalType *string
+	if o.ProposalType != "" {
+		s := string(o.ProposalType)
+		proposalType = &s
+	}
+	var proposedBy, dokID, title *string
+	if o.ProposedByParty != "" {
+		proposedBy = &o.ProposedByParty
+	}
+	if o.ProposalDokID != "" {
+		dokID = &o.ProposalDokID
+	}
+	if o.DocumentTitle != "" {
+		title = &o.DocumentTitle
+	}
+
+	tag, err := r.db.Exec(ctx, q, beteckning, forslagspunkt, proposedBy, proposalType, dokID, title)
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
+}
+
 func (r *Repository) ListWithoutOrigin(ctx context.Context, limit int) ([]*domain.Vote, error) {
 	const q = `SELECT id, votering_id, politician_id, party, vote_result, beteckning, forslagspunkt,
 		session, dok_id, proposed_by_party, proposal_type, proposal_dok_id, document_title, origin_enriched, created_at

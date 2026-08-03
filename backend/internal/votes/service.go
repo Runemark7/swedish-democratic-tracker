@@ -47,21 +47,33 @@ func (s *Service) SyncVotes(ctx context.Context, f ports.FetchVotesFilter) error
 	return s.repo.UpsertMany(ctx, vv)
 }
 
-// EnrichOrigins fetches proposal-origin data for votes that haven't been enriched yet.
+// EnrichOrigins resolves proposal origin for vote points that lack it, and
+// returns how many points were enriched.
+//
+// Origin is a property of the vote point, not of an individual ballot: every
+// member voting on AU9:1 shares one proposal. Resolving per ballot re-fetched
+// the same document once per member — roughly 349 times per point — which made
+// the full 2022-2026 record (~895 000 ballots) a multi-day job instead of a
+// few minutes. One request per point, applied to every ballot on it.
 func (s *Service) EnrichOrigins(ctx context.Context, batchSize int) (int, error) {
-	vv, err := s.repo.ListWithoutOrigin(ctx, batchSize)
+	points, err := s.repo.ListVotePointsWithoutOrigin(ctx, batchSize)
 	if err != nil {
 		return 0, err
 	}
 
 	enriched := 0
-	for _, v := range vv {
-		origin, err := s.resolveOrigin(ctx, v)
+	for _, p := range points {
+		origin, err := s.resolveOrigin(ctx, &domain.Vote{
+			Beteckning:    p.Beteckning,
+			Forslagspunkt: p.Forslagspunkt,
+			Session:       p.Session,
+			DokID:         p.DokID,
+		})
 		if err != nil {
 			// Log and continue — don't abort the whole batch
 			continue
 		}
-		if err := s.repo.UpdateProposalOrigin(ctx, v.VoteringID, v.PoliticianID, origin); err != nil {
+		if _, err := s.repo.UpdateProposalOriginForPoint(ctx, p.Beteckning, p.Forslagspunkt, origin); err != nil {
 			return enriched, err
 		}
 		enriched++
