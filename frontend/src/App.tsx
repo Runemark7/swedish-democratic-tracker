@@ -35,6 +35,7 @@ import { DataIndexPage } from "./features/data/DataIndexPage";
 import { DataSourcePage } from "./features/data/DataSourcePage";
 import { useTheme } from "./contexts/ThemeContext";
 import { useMediaQuery } from "./hooks/useMediaQuery";
+import { useRecordCoverage } from "./hooks/useDemocracy";
 import { MobileNav } from "./components/MobileNav";
 
 // ── Section detection ─────────────────────────────────────────────────────
@@ -72,12 +73,18 @@ function isRiksdagSection(pathname: string): boolean {
 }
 
 // ── Live date string ───────────────────────────────────────────────────────
-function liveDateStr(): string {
-  const d = new Date();
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${dd}.${mm}.${yyyy}`;
+/** Format an ISO date as Swedish "17 juni 2026".
+ *
+ *  This replaces a helper that returned today's date and rendered it as
+ *  "LIVE · <today>", which claimed currency the data never had: the badge read
+ *  as live while the newest decision behind it was months old. The header now
+ *  states the date of the newest decision actually held. */
+function decisionDateStr(iso: string): string {
+  const months = ["januari", "februari", "mars", "april", "maj", "juni",
+    "juli", "augusti", "september", "oktober", "november", "december"];
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  return `${d} ${months[m - 1]} ${y}`;
 }
 
 // ── Three-bar logo icon ────────────────────────────────────────────────────
@@ -176,6 +183,7 @@ export default function App() {
   }
 
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const { data: coverage } = useRecordCoverage();
   const section = sectionFromPath(location.pathname);
   const showRiksdagTabs = isRiksdagSection(location.pathname);
 
@@ -258,7 +266,9 @@ export default function App() {
                   flexShrink: 0,
                 }}
               />
-              LIVE · {liveDateStr()}
+              {coverage?.lastDecisionDate
+                ? `Senaste beslut · ${decisionDateStr(coverage.lastDecisionDate)}`
+                : "Ingen omröstningsdata"}
             </div>
 
             {/* Theme toggle */}

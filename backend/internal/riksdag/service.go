@@ -28,8 +28,10 @@ type Service struct {
 	liveVotesRepo   ports.LiveVotesRepository   // optional
 	agencyIntelRepo ports.AgencyIntelRepository // optional
 	authorityRepo   ports.AuthorityRepository   // optional; backs ListMyndigheter
+	coverageRepo    ports.CoverageRepository    // optional; backs GetRecordCoverage
 }
 
+func (s *Service) SetCoverageRepo(r ports.CoverageRepository)       { s.coverageRepo = r }
 func (s *Service) SetKpiRepo(r ports.KpiRepository)                 { s.kpiRepo = r }
 func (s *Service) SetGovRepo(r ports.GovRepository)                 { s.govRepo = r }
 func (s *Service) SetAgendaRepo(r ports.AgendaRepository)           { s.agendaRepo = r }
@@ -382,4 +384,17 @@ func toSlug(name string) string {
 		}
 	}
 	return b.String()
+}
+
+// MandateCode is the period the site currently presents. When the 2026-2030
+// period opens this becomes a lookup rather than a constant.
+const MandateCode = "2022-2026"
+
+// GetRecordCoverage reports how much of the mandate record the site holds, so
+// the figure can be stated where the record is used rather than implied.
+func (s *Service) GetRecordCoverage(ctx context.Context) (*domain.RecordCoverage, error) {
+	if s.coverageRepo == nil {
+		return nil, nil
+	}
+	return s.coverageRepo.GetRecordCoverage(ctx, MandateCode)
 }

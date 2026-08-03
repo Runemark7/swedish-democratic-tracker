@@ -1120,6 +1120,31 @@ export interface components {
              */
             partyAlignmentPct?: number;
         };
+        RecordCoverage: {
+            mandate: components["schemas"]["MandatePeriod"];
+            /** @description Riksdagen's count of voteringar in the mandate period. */
+            expected: number;
+            /** @description How many of those the site holds. */
+            ingested: number;
+            /** @description Voteringar Riksdagen lists that carry no beteckning and therefore cannot be fetched. Reported so a shortfall is explained rather than left as an unexplained gap. */
+            unreachable: number;
+            /** @description Date of the newest decision held. Not an ingest timestamp. */
+            lastDecisionDate?: string | null;
+            byRiksmote: components["schemas"]["RiksmoteRecord"][];
+        };
+        MandatePeriod: {
+            code: string;
+            label: string;
+            /** @description Whether the period has closed. Once it has, the record is final and the incoming parliament accumulates a separate one. */
+            ended: boolean;
+        };
+        RiksmoteRecord: {
+            riksmote: string;
+            expected: number;
+            ingested: number;
+            unreachable: number;
+            lastDecisionDate?: string | null;
+        };
         PartySummary: {
             party: components["schemas"]["PartyCode"];
             totalGoals: number;

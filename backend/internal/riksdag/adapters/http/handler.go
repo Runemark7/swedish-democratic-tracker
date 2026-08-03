@@ -24,6 +24,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/riksdag/authorities/stats", h.getAuthorityStats)
 	r.Get("/riksdag/authorities/list", h.listMyndigheter)
 	r.Get("/riksdag/authorities/{slug}", h.getAuthority)
+	r.Get("/riksdag/coverage", h.getCoverage)
 	r.Get("/riksdag/kpis", h.getKpis)
 	r.Get("/riksdag/government", h.getGovernment)
 	r.Get("/riksdag/agenda", h.getAgenda)
@@ -154,4 +155,21 @@ func jsonError(w http.ResponseWriter, msg string, code int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	_ = json.NewEncoder(w).Encode(map[string]string{"error": msg})
+}
+
+// getCoverage reports how much of the mandate record the site holds, plus when
+// the newest decision it holds was taken. Both are stated rather than implied:
+// a site that shows a record without saying how complete it is invites the
+// reader to assume it is complete.
+func (h *Handler) getCoverage(w http.ResponseWriter, r *http.Request) {
+	cov, err := h.svc.GetRecordCoverage(r.Context())
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if cov == nil {
+		jsonError(w, "coverage not available", http.StatusNotFound)
+		return
+	}
+	jsonOK(w, cov)
 }

@@ -1482,6 +1482,63 @@ components:
           format: float
           description: What % of party members voted in the aligned direction
 
+    RecordCoverage:
+      type: object
+      required: [mandate, expected, ingested, unreachable, byRiksmote]
+      properties:
+        mandate:
+          $ref: "#/components/schemas/MandatePeriod"
+        expected:
+          type: integer
+          description: Riksdagen's count of voteringar in the mandate period.
+        ingested:
+          type: integer
+          description: How many of those the site holds.
+        unreachable:
+          type: integer
+          description: >-
+            Voteringar Riksdagen lists that carry no beteckning and therefore
+            cannot be fetched. Reported so a shortfall is explained rather than
+            left as an unexplained gap.
+        lastDecisionDate:
+          type: string
+          nullable: true
+          description: Date of the newest decision held. Not an ingest timestamp.
+        byRiksmote:
+          type: array
+          items:
+            $ref: "#/components/schemas/RiksmoteRecord"
+
+    MandatePeriod:
+      type: object
+      required: [code, label, ended]
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        ended:
+          type: boolean
+          description: >-
+            Whether the period has closed. Once it has, the record is final and
+            the incoming parliament accumulates a separate one.
+
+    RiksmoteRecord:
+      type: object
+      required: [riksmote, expected, ingested, unreachable]
+      properties:
+        riksmote:
+          type: string
+        expected:
+          type: integer
+        ingested:
+          type: integer
+        unreachable:
+          type: integer
+        lastDecisionDate:
+          type: string
+          nullable: true
+
     PartySummary:
       type: object
       required: [party, totalGoals, avgAlignmentPct]

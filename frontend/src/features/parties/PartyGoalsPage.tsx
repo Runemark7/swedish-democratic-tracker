@@ -8,6 +8,7 @@ import {
 } from "@/shared/components";
 import { PARTY_COLORS, TOPIC_LABELS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { useRecordCoverage } from "@/hooks/useDemocracy";
 import type { GoalWithAlignment } from "@/shared/types";
 
 function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
@@ -108,6 +109,9 @@ export function PartyGoalsPage() {
     queryFn: () => partiesApi.listGoals(party),
     enabled: !!party,
   });
+  // Must sit above the early returns: a hook called conditionally breaks the
+  // rules of hooks once isLoading flips.
+  const { data: coverage } = useRecordCoverage();
 
   if (isLoading) return <div className="text-on-surface-variant py-16 text-center text-sm">Laddar mål...</div>;
   if (error) return <div className="text-contradiction py-16 text-center text-sm">Kunde inte ladda mål.</div>;
@@ -149,6 +153,29 @@ export function PartyGoalsPage() {
               </h2>
             </div>
             <p className="text-xs text-on-surface-variant">{goals.length} mål från valmanifest och partiprogram</p>
+            {coverage && (
+              <p className="text-[11px] text-on-surface-variant mt-1 leading-relaxed">
+                {/* The record is bound to a named mandate period so votes from
+                    the next parliament are never attributed to this one. */}
+                <span className="font-semibold">
+                  {coverage.mandate.label}
+                  {coverage.mandate.ended ? " (avslutad)" : ""}
+                </span>
+                {" · "}
+                {/* Completeness is a claim, so it is stated rather than implied. */}
+                {coverage.ingested.toLocaleString("sv-SE")} av{" "}
+                {coverage.expected.toLocaleString("sv-SE")} omröstningar
+                <SourceMarker sourceId="riksdagen" />
+                {coverage.ingested < coverage.expected && (
+                  <>
+                    {" "}
+                    <Link to="/data" className="underline">
+                      Vad saknas?
+                    </Link>
+                  </>
+                )}
+              </p>
+            )}
           </div>
           <div className="flex gap-7 items-center">
             <div className="text-center">
