@@ -130,10 +130,7 @@ func (r *Repository) ListMatchesByPromise(ctx context.Context, promiseID int) ([
 	return mm, rows.Err()
 }
 
-// alignment_pct is deliberately not COALESCEd: NULL means "not determinable
-// from the record" and must survive all the way to the API.
-const scorecardColumns = `party, goal_id, goal_text, topic,
-	relevant_votes, scored_votes, aligned_votes, alignment_pct`
+const scorecardColumns = `party, goal_id, goal_text, topic, relevant_votes`
 
 func (r *Repository) GetPartyScorecard(ctx context.Context, party string) ([]*domain.ScorecardRow, error) {
 	const q = `SELECT ` + scorecardColumns + `
@@ -163,12 +160,10 @@ func (r *Repository) queryScorecards(ctx context.Context, q string, args ...any)
 	for rows.Next() {
 		var row domain.ScorecardRow
 		if err := rows.Scan(&row.Party, &row.GoalID, &row.GoalText, &row.Topic,
-			&row.RelevantVotes, &row.ScoredVotes, &row.AlignedVotes,
-			&row.AlignmentPct); err != nil {
+			&row.RelevantVotes); err != nil {
 			return nil, err
 		}
 		rr = append(rr, &row)
 	}
 	return rr, rows.Err()
 }
-

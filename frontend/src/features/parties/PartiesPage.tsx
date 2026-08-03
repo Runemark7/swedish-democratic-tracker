@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { partiesApi } from "./api";
 import { PartyBadge } from "@/shared/components";
-import { PARTY_COLORS, alignmentColor } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 
 export function PartiesPage() {
@@ -25,11 +24,10 @@ export function PartiesPage() {
   }
 
   const parties = data ?? [];
-  // Parties with no scorable goal sort last — they carry no figure to rank by,
-  // and ranking them as 0 would read as "worst", which is not what null means.
-  const sorted = [...parties].sort(
-    (a, b) => (b.avgAlignmentPct ?? -1) - (a.avgAlignmentPct ?? -1),
-  );
+  // Alphabetical. The alignment percentage that previously ordered this list
+  // was retired, and ordering parties by any derived figure is a ranking —
+  // an editorial act the site does not perform.
+  const sorted = [...parties].sort((a, b) => a.party.localeCompare(b.party, "sv"));
 
   return (
     <div>
@@ -38,8 +36,8 @@ export function PartiesPage() {
           Partimål & röstning
         </h2>
         <p className="text-sm text-on-surface-variant leading-relaxed max-w-lg">
-          Hur väl matchar partiernas röstning i riksdagen deras egna uttalade mål?
-          Välj ett parti i menyn ovan för att se detaljerna.
+          Varje partis uttalade mål, bredvid hur partiet faktiskt röstade i
+          riksdagen. Välj ett parti för att se målen och omröstningarna.
         </p>
       </div>
 
@@ -55,11 +53,6 @@ export function PartiesPage() {
       {/* Compact summary table */}
       <div className="bg-surface-lowest rounded-xl overflow-hidden">
         {sorted.map((p, i) => {
-          const pc = PARTY_COLORS[p.party];
-          const avg =
-            p.avgAlignmentPct !== null && p.avgAlignmentPct !== undefined
-              ? Math.round(p.avgAlignmentPct)
-              : null;
           const topics = p.topicBreakdown ?? [];
 
           return (
@@ -128,34 +121,6 @@ export function PartiesPage() {
                 )}
               </div>
 
-              {/* Alignment bar */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0, width: 140 }}>
-                <div style={{ flex: 1, height: 8, borderRadius: 4, background: "var(--color-surface-high)", overflow: "hidden" }}>
-                  <div
-                    style={{
-                      height: "100%",
-                      borderRadius: 4,
-                      width: avg !== null ? `${Math.min(avg, 100)}%` : "0%",
-                      background: pc?.bg ?? "#666",
-                      transition: "width 0.7s",
-                    }}
-                  />
-                </div>
-                <span
-                  style={{
-                    fontSize: 14,
-                    fontFamily: "var(--font-mono)",
-                    fontWeight: 700,
-                    minWidth: 36,
-                    textAlign: "right",
-                    color: alignmentColor(avg ?? 0),
-                  }}
-                  title={avg === null ? "Riktning ej fastställd i någon omröstning ännu" : undefined}
-                >
-                  {avg !== null ? `${avg}%` : "—"}
-                  <SourceMarker sourceId="riksdagen" />
-                </span>
-              </div>
             </Link>
           );
         })}

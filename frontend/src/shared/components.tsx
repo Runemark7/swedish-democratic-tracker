@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PARTY_COLORS, SPECIFICITY_CONFIG, TOPIC_LABELS, alignmentColor, deltaColor, formatBudgetAmount } from "./design";
+import { PARTY_COLORS, SPECIFICITY_CONFIG, TOPIC_LABELS, deltaColor, formatBudgetAmount } from "./design";
 import { DeltaIndicator } from "@/features/budget/components/DeltaIndicator";
 import { contextApi } from "@/features/context/api";
 import type { BudgetTrendEntry, FundingRow, RelatedBudgetArea } from "./types";
@@ -19,31 +19,6 @@ export function PartyBadge({ party, size = "sm" }: { party: string; size?: "sm" 
   );
 }
 
-// ── AlignmentRing (SVG donut) ─────────────────────────────────────────
-export function AlignmentRing({ pct, size = 56, color }: { pct: number; size?: number; color?: string }) {
-  const r = (size - 6) / 2;
-  const circ = 2 * Math.PI * r;
-  const offset = circ - (pct / 100) * circ;
-  const ringColor = color ?? alignmentColor(pct);
-  return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--color-surface-high)" strokeWidth="4" />
-        <circle
-          cx={size / 2} cy={size / 2} r={r} fill="none" stroke={ringColor}
-          strokeWidth="4" strokeDasharray={circ} strokeDashoffset={offset}
-          strokeLinecap="round" className="transition-all duration-700 ease-out"
-        />
-      </svg>
-      <div
-        className="absolute inset-0 flex items-center justify-center font-mono font-extrabold"
-        style={{ fontSize: size * 0.23, color: ringColor }}
-      >
-        {Math.round(pct)}%
-      </div>
-    </div>
-  );
-}
 
 // ── StatBlock ─────────────────────────────────────────────────────────
 export function StatBlock({ value, label, accent, small }: {

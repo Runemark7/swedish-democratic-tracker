@@ -126,52 +126,32 @@ export function OmSajtenPage() {
           </ul>
         </Section>
 
-        <Section eyebrow="Metod" title="Varför de flesta mål saknar procent">
+        <Section eyebrow="Metod" title="Varför sajten inte räknar ut någon procent">
           <p style={{ margin: "0 0 10px" }}>
-            Det här är sajtens tydligaste begränsning, och den är medveten.
+            Sajten visade tidigare en siffra av typen &rdquo;4 av 5 relevanta
+            röster i linje&rdquo;. Den är borttagen, och det är värt att förklara
+            varför — för det säger något om hur sajten är tänkt att fungera.
           </p>
           <p style={{ margin: "0 0 10px" }}>
-            För att kunna säga att en röst ligger &rdquo;i linje&rdquo; med ett
-            löfte måste man veta åt vilket håll ett ja respektive ett nej pekar i
-            just den omröstningen. Ett NEJ till ett vårdförslag kan lika gärna
-            betyda att förslaget kom från ett annat parti med andra villkor som
-            att partiet är emot sakfrågan.
+            För att räkna ut en sådan siffra måste man veta åt vilket håll ett ja
+            respektive ett nej pekar i varje omröstning. Sajten härledde det ur
+            vem som hade lagt förslaget. Det blev systematiskt fel.
           </p>
           <p style={{ margin: "0 0 10px" }}>
-            Där riktningen inte går att fastställa ur underlaget skriver sajten{" "}
-            <em>&rdquo;riktning ej fastställd&rdquo;</em> och visar ett streck i
-            stället för en procentsats. Den gissar inte.
+            Ett oppositionsparti lägger en motion. Utskottet föreslår att den
+            avslås. Omröstningen gäller utskottets förslag — så partiet röstar
+            nej, och härledningen, som väntade sig ja, bokförde det som att
+            partiet svek sitt eget löfte. Mätt över hela mandatperioden gav det{" "}
+            <strong>68,6 % för regeringspartierna mot 43,2 % för oppositionen</strong>
+            {" "}— en skillnad som inte mätte löftesuppfyllelse alls, utan bara
+            hur ofta en grov tumregel råkade stämma.
           </p>
           <p style={{ margin: 0, color: "var(--color-fg-muted)", fontSize: 13 }}>
-            Det innebär att en majoritet av målen i dag saknar procentsats. Det
-            är avsiktligt: en påhittad siffra vore sämre än ingen siffra.
-          </p>
-        </Section>
-
-        <Section eyebrow="Metod" title="Hur procenten räknas fram">
-          <p style={{ margin: "0 0 10px" }}>
-            När riktningen går att fastställa jämförs partiets hållning i varje
-            sådan omröstning med löftets riktning.
-          </p>
-          <ul style={{ margin: "0 0 10px", paddingLeft: 18, listStyle: "disc" }}>
-            <li style={{ marginBottom: 6 }}>
-              Partiets hållning är <strong>majoriteten av avlagda röster</strong>{" "}
-              bland partiets ledamöter i den omröstningen.
-            </li>
-            <li style={{ marginBottom: 6 }}>
-              <strong>Frånvaro räknas inte.</strong> Att inte rösta är ingen
-              hållning, och skulle annars dra ner varje siffra utan att säga
-              något om partiet.
-            </li>
-            <li>
-              Nämnaren är bara de omröstningar där riktningen är fastställd —
-              aldrig alla matchade omröstningar.
-            </li>
-          </ul>
-          <p style={{ margin: 0 }}>
-            Därför står det till exempel <em>&rdquo;4 av 5 relevanta röster i
-            linje&rdquo;</em> och inte bara &rdquo;80 %&rdquo;: de råa talen är
-            det som går att kontrollera.
+            Siffran gick inte att justera fram till rätthet: riktningen beror på
+            vad ett betänkande faktiskt föreslår, vilket inte går att härleda ur
+            vem som lagt förslaget. Därför räknar sajten inte längre ut något
+            tal. Löftet och rösterna visas bredvid varandra, med källa på båda,
+            och du drar slutsatsen.
           </p>
         </Section>
 
