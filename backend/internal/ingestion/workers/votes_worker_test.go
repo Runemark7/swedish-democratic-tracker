@@ -90,6 +90,14 @@ func (r *fakeVoteRepo) ListDistinctByCommitteePrefix(context.Context, string) ([
 	return nil, nil
 }
 
+func (r *fakeVoteRepo) ListVotePointsWithoutOrigin(context.Context, int) ([]voteports.VotePoint, error) {
+	return nil, nil
+}
+
+func (r *fakeVoteRepo) UpdateProposalOriginForPoint(context.Context, string, string, votedomain.ProposalOrigin) (int64, error) {
+	return 0, nil
+}
+
 type fakeCursors struct{ cur *ingPorts.Cursor }
 
 func (c *fakeCursors) Get(context.Context, string) (*ingPorts.Cursor, error) { return c.cur, nil }
