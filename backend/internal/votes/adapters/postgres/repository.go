@@ -82,20 +82,27 @@ func (r *Repository) ListByBeteckning(ctx context.Context, beteckning, punkt str
 
 func (r *Repository) UpsertMany(ctx context.Context, vv []*domain.Vote) error {
 	const q = `
-		INSERT INTO votes (votering_id, politician_id, party, vote_result, beteckning, forslagspunkt, session, dok_id)
-		SELECT $1, $2, $3, $4, $5, $6, $7, $8
+		INSERT INTO votes (votering_id, politician_id, party, vote_result, beteckning, forslagspunkt, session, dok_id, system_datum)
+		SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9
 		WHERE EXISTS (SELECT 1 FROM politicians WHERE intressent_id = $2)
 		ON CONFLICT (votering_id, politician_id) DO UPDATE SET
 			vote_result   = EXCLUDED.vote_result,
 			beteckning    = EXCLUDED.beteckning,
 			forslagspunkt = EXCLUDED.forslagspunkt,
 			session       = EXCLUDED.session,
-			dok_id        = EXCLUDED.dok_id`
+			dok_id        = EXCLUDED.dok_id,
+			system_datum  = EXCLUDED.system_datum`
 
 	batch := &pgx.Batch{}
 	for _, v := range vv {
+		// system_datum may be zero for rows that predate the column; store NULL
+		// rather than year 1, so "no date" is distinguishable from a real one.
+		var sd any
+		if !v.SystemDatum.IsZero() {
+			sd = v.SystemDatum
+		}
 		batch.Queue(q, v.VoteringID, v.PoliticianID, v.Party, string(v.VoteResult),
-			v.Beteckning, v.Forslagspunkt, v.Session, v.DokID)
+			v.Beteckning, v.Forslagspunkt, v.Session, v.DokID, sd)
 	}
 	br := r.db.SendBatch(ctx, batch)
 	defer br.Close()
