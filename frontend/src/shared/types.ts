@@ -472,6 +472,8 @@ export interface RiksmoteRecord {
   ingested: number;
   unreachable: number;
   lastDecisionDate: string | null;
+  /** When this riksmöte's `expected` was last read from Riksdagen. */
+  denominatorCheckedAt: string | null;
 }
 
 export interface RecordCoverage {
@@ -483,5 +485,13 @@ export interface RecordCoverage {
   unreachable: number;
   /** Date of the newest decision held. Never an ingest timestamp. */
   lastDecisionDate: string | null;
+  /**
+   * When `expected` was last read from Riksdagen — the oldest such date across
+   * the period's riksmöten, since the figure is only as fresh as its stalest
+   * part. `ingested` is counted live and always current. Null means the
+   * denominator has never been established, in which case no share of the
+   * total can be stated.
+   */
+  denominatorCheckedAt: string | null;
   byRiksmote: RiksmoteRecord[];
 }
