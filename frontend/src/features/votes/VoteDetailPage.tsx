@@ -13,18 +13,38 @@ interface CommitteeProposal {
   forslag: string;
 }
 
+/**
+ * The fields we read from Riksdagen's utskottsforslag endpoint. Everything is
+ * optional because this is somebody else's JSON: the endpoint is undocumented
+ * and returns a bare object rather than an array when a betänkande has exactly
+ * one förslagspunkt.
+ */
+interface RawUtskottsforslag {
+  punkt?: string | number;
+  rubrik?: string;
+  forslag?: string;
+}
+
+interface RawUtskottsforslagResponse {
+  utskottsforslag?: {
+    dokutskottsforslag?: {
+      utskottsforslag?: RawUtskottsforslag | RawUtskottsforslag[];
+    };
+  };
+}
+
 async function fetchProposalDescription(dokId: string, punkt: string): Promise<CommitteeProposal | null> {
   try {
     const res = await fetch(`https://data.riksdagen.se/utskottsforslag/${dokId}.json`);
     if (!res.ok) return null;
-    const data = await res.json();
-    const proposals: any[] = [].concat(
-      data?.utskottsforslag?.dokutskottsforslag?.utskottsforslag ?? []
-    );
-    const match = proposals.find((p: any) => String(p.punkt) === String(punkt));
+    const data: RawUtskottsforslagResponse = await res.json();
+    const raw = data?.utskottsforslag?.dokutskottsforslag?.utskottsforslag;
+    // Single-punkt betänkanden arrive as one object, not a one-element array.
+    const proposals: RawUtskottsforslag[] = raw == null ? [] : Array.isArray(raw) ? raw : [raw];
+    const match = proposals.find((p) => String(p.punkt) === String(punkt));
     if (!match) return null;
     return {
-      punkt: match.punkt,
+      punkt: String(match.punkt ?? ""),
       rubrik: match.rubrik ?? "",
       forslag: (match.forslag ?? "")
         .replace(/<BR\s*\/?>/gi, "\n")

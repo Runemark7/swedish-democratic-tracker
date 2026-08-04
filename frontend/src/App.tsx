@@ -34,7 +34,7 @@ import { DebateDetailPage } from "./features/speeches/DebateDetailPage";
 import { DataIndexPage } from "./features/data/DataIndexPage";
 import { OmSajtenPage } from "./features/about/OmSajtenPage";
 import { DataSourcePage } from "./features/data/DataSourcePage";
-import { useTheme } from "./contexts/ThemeContext";
+import { useTheme } from "./contexts/theme";
 import { useMediaQuery } from "./hooks/useMediaQuery";
 import { useRecordCoverage } from "./hooks/useDemocracy";
 import { MobileNav } from "./components/MobileNav";
@@ -173,6 +173,13 @@ function PillNav({ to, label, active }: PillNavProps) {
 export default function App() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  // These must sit above the /dela early return: a hook called after a
+  // conditional return changes the hook count between renders, so any
+  // client-side navigation to or from a share page would throw. Today /dela is
+  // only ever opened as a fresh page load (VoteDetailPage builds it as an
+  // absolute URL), which is the only reason this has not bitten yet.
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const { data: coverage } = useRecordCoverage();
 
   // Share-only pages render without app chrome
   if (location.pathname.endsWith("/dela")) {
@@ -183,8 +190,6 @@ export default function App() {
     );
   }
 
-  const isMobile = useMediaQuery("(max-width: 640px)");
-  const { data: coverage } = useRecordCoverage();
   const section = sectionFromPath(location.pathname);
   const showRiksdagTabs = isRiksdagSection(location.pathname);
 
