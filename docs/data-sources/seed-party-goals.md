@@ -12,7 +12,6 @@ used_by:
   - /parties (partiscorecards)
   - /parties/:party/goals (mållista)
   - /parties/:party/goals/:goalId/votes (målets omröstningar)
-  - /manifestos (manifestöversikt)
 ---
 
 ## Vad det är

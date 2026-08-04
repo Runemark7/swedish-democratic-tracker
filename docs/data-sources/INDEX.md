@@ -16,6 +16,7 @@ skapar `SourceRegistry.generated.ts`.
 | [ted](./ted.md) | TED Tenders Electronic Daily | api | upphandling |
 | [statskontoret-arsutfall](./statskontoret-arsutfall.md) | Statskontoret årsutfall | csv | myndigheters driftkostnader |
 | [seed-party-goals](./seed-party-goals.md) | Partimål (seed) | seed | partimål och scorecards |
+| [party-manifestos](./party-manifestos.md) | Partiernas valmanifest (katalog) | seed | valmanifestkatalogen (/manifestos) |
 | [seed-budget-data](./seed-budget-data.md) | Statsbudget (seed) | seed | budget per UO |
 | [national-agenda](./national-agenda.md) | Nationell politisk agenda (seed) | seed | nationell agenda (/, /riksdag, /agenda/:id) |
 | [region-budget-plan](./region-budget-plan.md) | Regioners mål och budget (seed) | seed | region: länk till officiell budget (/region/:code) |
