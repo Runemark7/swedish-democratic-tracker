@@ -57,6 +57,7 @@ func (s *Scheduler) RegisterDefaults(
 	ew workers.EnrichOriginsWorker,
 	kw workers.KeywordMatcherWorker,
 	rw workers.RefreshScorecardsWorker,
+	cw workers.CoverageWorker,
 ) error {
 	schedules := []struct {
 		spec   string
@@ -68,10 +69,13 @@ func (s *Scheduler) RegisterDefaults(
 		{"@daily", &ew},
 		{"@daily", &kw},
 		{"@weekly", &rw},
+		// Runs after the fetch so the denominator is never read before the
+		// votes it is a denominator for.
+		{"@daily", &cw},
 	}
 
 	// Store ordered sync workers (dependency order)
-	s.syncWorkers = []Worker{&pw, &sw, &vw, &ew, &kw, &rw}
+	s.syncWorkers = []Worker{&pw, &sw, &vw, &ew, &kw, &rw, &cw}
 
 	for _, entry := range schedules {
 		if err := s.Register(entry.spec, entry.worker); err != nil {

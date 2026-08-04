@@ -250,6 +250,7 @@ func main() {
 	enrichWorker := workers.NewEnrichOriginsWorker(voteSvc)
 	keywordWorker := workers.NewKeywordMatcherWorker(goalSvc, voteSvc, matchSvc)
 	refreshWorker := workers.NewRefreshScorecardsWorker(matchSvc)
+	coverageWorker := workers.NewCoverageWorker(voteSvc, ingestionPG.NewCoverageRepo(db))
 
 	agencyIntelWorker := workers.NewAgencyIntelWorker(riksdagRD.NewAgencyClient(), agencyIntelRepo, agencyInfoList())
 	authoritiesWorker := workers.NewAuthoritiesWorker(riksdagRegistret.NewClient(), authorityRepo)
@@ -258,7 +259,7 @@ func main() {
 	nationalKpisWorker := workers.NewNationalKpisWorker(riksdagSCBMacro.NewClient(), kpiRepo)
 
 	sched := ingestion.NewScheduler()
-	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker); err != nil {
+	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker, coverageWorker); err != nil {
 		slog.Error("failed to register ingestion workers", "error", err)
 		os.Exit(1)
 	}
