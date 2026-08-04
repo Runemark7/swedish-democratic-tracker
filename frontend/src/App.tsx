@@ -37,6 +37,7 @@ import { DataSourcePage } from "./features/data/DataSourcePage";
 import { useTheme } from "./contexts/theme";
 import { useMediaQuery } from "./hooks/useMediaQuery";
 import { useRecordCoverage } from "./hooks/useDemocracy";
+import { swedishDate } from "./shared/dates";
 import { MobileNav } from "./components/MobileNav";
 
 // ── Section detection ─────────────────────────────────────────────────────
@@ -71,21 +72,6 @@ function isRiksdagSection(pathname: string): boolean {
     pathname.startsWith("/politicians") ||
     pathname.startsWith("/manifestos")
   );
-}
-
-// ── Live date string ───────────────────────────────────────────────────────
-/** Format an ISO date as Swedish "17 juni 2026".
- *
- *  This replaces a helper that returned today's date and rendered it as
- *  "LIVE · <today>", which claimed currency the data never had: the badge read
- *  as live while the newest decision behind it was months old. The header now
- *  states the date of the newest decision actually held. */
-function decisionDateStr(iso: string): string {
-  const months = ["januari", "februari", "mars", "april", "maj", "juni",
-    "juli", "augusti", "september", "oktober", "november", "december"];
-  const [y, m, d] = iso.split("-").map(Number);
-  if (!y || !m || !d) return iso;
-  return `${d} ${months[m - 1]} ${y}`;
 }
 
 // ── Three-bar logo icon ────────────────────────────────────────────────────
@@ -273,7 +259,7 @@ export default function App() {
                 }}
               />
               {coverage?.lastDecisionDate
-                ? `Senaste beslut · ${decisionDateStr(coverage.lastDecisionDate)}`
+                ? `Senaste beslut · ${swedishDate(coverage.lastDecisionDate)}`
                 : "Ingen omröstningsdata"}
             </div>
 

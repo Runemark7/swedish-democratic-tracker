@@ -1121,6 +1121,8 @@ export interface components {
             unreachable: number;
             /** @description Date of the newest decision held. Not an ingest timestamp. */
             lastDecisionDate?: string | null;
+            /** @description When `expected` was last read from Riksdagen — the oldest such date across the period's riksmöten, since the figure is only as fresh as its stalest part. `ingested` is counted live and always current; `expected`, `unreachable` and `lastDecisionDate` come from a separate enumeration pass, so their age is stated rather than implied. Null means the denominator has never been established. */
+            denominatorCheckedAt?: string | null;
             byRiksmote: components["schemas"]["RiksmoteRecord"][];
         };
         MandatePeriod: {
@@ -1135,6 +1137,8 @@ export interface components {
             ingested: number;
             unreachable: number;
             lastDecisionDate?: string | null;
+            /** @description When this riksmöte's `expected` was last read from Riksdagen. */
+            denominatorCheckedAt?: string | null;
         };
         PartySummary: {
             party: components["schemas"]["PartyCode"];

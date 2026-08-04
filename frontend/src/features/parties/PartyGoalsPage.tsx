@@ -9,6 +9,7 @@ import {
 import { PARTY_COLORS, TOPIC_LABELS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useRecordCoverage } from "@/hooks/useDemocracy";
+import { swedishDate } from "@/shared/dates";
 import type { GoalWithAlignment } from "@/shared/types";
 
 function GoalCard({ goal, party }: { goal: GoalWithAlignment; party: string }) {
@@ -142,10 +143,19 @@ export function PartyGoalsPage() {
                   {coverage.mandate.ended ? " (avslutad)" : ""}
                 </span>
                 {" · "}
-                {/* Completeness is a claim, so it is stated rather than implied. */}
-                {coverage.ingested.toLocaleString("sv-SE")} av{" "}
-                {coverage.expected.toLocaleString("sv-SE")} omröstningar
+                {/* Completeness is a claim, so it is stated rather than implied.
+                    The count we hold is read live; Riksdagen's count is fetched
+                    on a schedule, so its date is stated too — a denominator of
+                    unknown age is what let this figure drift toward looking more
+                    complete than it was. */}
+                {coverage.ingested.toLocaleString("sv-SE")}
+                {coverage.expected > 0
+                  ? ` av ${coverage.expected.toLocaleString("sv-SE")} omröstningar`
+                  : " omröstningar (Riksdagens antal för perioden saknas)"}
                 <SourceMarker sourceId="riksdagen" />
+                {coverage.expected > 0 && coverage.denominatorCheckedAt && (
+                  <> · Riksdagens antal hämtat {swedishDate(coverage.denominatorCheckedAt)}</>
+                )}
                 {coverage.ingested < coverage.expected && (
                   <>
                     {" "}

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useRecordCoverage } from "@/hooks/useDemocracy";
 import { SOURCES } from "@/components/sources/SourceRegistry";
+import { swedishDate } from "@/shared/dates";
 
 /** A section with a mono eyebrow, matching /data. */
 function Section({ eyebrow, title, children }: {
@@ -161,10 +162,31 @@ export function OmSajtenPage() {
               <p style={{ margin: "0 0 10px" }}>
                 Sajten visar {coverage.mandate.label.toLowerCase()} och innehåller{" "}
                 <strong>
-                  {coverage.ingested.toLocaleString("sv-SE")} av{" "}
-                  {coverage.expected.toLocaleString("sv-SE")}
+                  {coverage.ingested.toLocaleString("sv-SE")}
+                  {coverage.expected > 0 && (
+                    <> av {coverage.expected.toLocaleString("sv-SE")}</>
+                  )}
                 </strong>{" "}
-                omröstningar. Nämnaren är Riksdagens egen räkning, inte vår.
+                omröstningar.{" "}
+                {coverage.expected > 0 ? (
+                  <>
+                    Nämnaren är Riksdagens egen räkning, inte vår
+                    {coverage.denominatorCheckedAt && (
+                      <>, hämtad från deras API den{" "}
+                        {swedishDate(coverage.denominatorCheckedAt)}</>
+                    )}
+                    . Täljaren räknas ur de omröstningar vi har, varje gång sidan
+                    läses.
+                  </>
+                ) : (
+                  /* Without Riksdagen's count there is no denominator, so no
+                     completeness can be claimed. Saying so beats printing a
+                     fraction over zero. */
+                  <>
+                    Hur många omröstningar Riksdagen räknar för perioden har vi
+                    inte kunnat hämta, så vi vet inte hur stor andel detta är.
+                  </>
+                )}
               </p>
               {coverage.ingested < coverage.expected && (
                 <p style={{ margin: "0 0 10px" }}>
