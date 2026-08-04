@@ -130,14 +130,11 @@ export interface Goal {
 }
 
 export interface GoalWithAlignment extends Goal {
-  /** Vote points matched to this goal. */
+  /** Vote points matched to this goal — a fact about our matching.
+   *  The alignment percentage was retired: it systematically disadvantaged
+   *  opposition parties, scoring a party that voted Nej to the rejection of its
+   *  own motion as having broken its own promise. */
   relevantVotes?: number;
-  /** Subset of relevantVotes whose direction is determinable. Only these are scored. */
-  scoredVotes?: number;
-  /** Subset of scoredVotes where the party's position matched the goal. */
-  alignedVotes?: number;
-  /** null when scoredVotes is 0 — direction not determinable from the record. */
-  alignmentPct?: number | null;
 }
 
 export interface GoalVoteMatch {
@@ -150,7 +147,6 @@ export interface GoalVoteMatch {
   proposalType?: ProposalType;
   contextNote?: string;
   documentTitle?: string;
-  partyAlignmentPct?: number;
 }
 
 export interface GoalVoteBreakdown {
@@ -160,17 +156,13 @@ export interface GoalVoteBreakdown {
 
 export interface TopicAlignment {
   topic: Topic;
-  /** All goals in this topic, including unscorable ones. */
+  /** All goals in this topic. */
   goalCount: number;
-  /** null when no goal in this topic is scorable. */
-  alignmentPct: number | null;
 }
 
 export interface PartySummary {
   party: PartyCode;
   totalGoals: number;
-  /** null when none of this party's goals are scorable. */
-  avgAlignmentPct: number | null;
   topicBreakdown?: TopicAlignment[];
 }
 
