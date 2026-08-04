@@ -1,20 +1,9 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { ThemeContext, type Theme } from "./theme";
 
-type Theme = "dark" | "light";
-
-interface ThemeContextValue {
-  theme: Theme;
-  toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
-  toggleTheme: () => {},
-});
-
-export function useTheme() {
-  return useContext(ThemeContext);
-}
+// The context, its type and useTheme live in ./theme so that this file exports
+// only a component — Fast Refresh cannot preserve state across edits to a file
+// that also exports non-components.
 
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem("sdt-theme");
