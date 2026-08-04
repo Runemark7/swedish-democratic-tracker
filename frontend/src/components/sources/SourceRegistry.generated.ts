@@ -38,6 +38,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "verificationStatus": "frozen",
     "verificationNotes": null
   },
+  "party-manifestos": {
+    "id": "party-manifestos",
+    "name": "Partiernas valmanifest (katalog)",
+    "kind": "seed",
+    "upstream": null,
+    "license": "Partiernas egna publicerade dokument; länkas, återges inte",
+    "freshness": "manuell — uppdateras när ett parti publicerar ett nytt dokument",
+    "lastVerified": "Tue Aug 04 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "En katalog över de valmanifest och valplattformar partierna själva har publicerat, från 2014 till 2026. Katalogen innehåller inga citat och ingen sammanfattning av politiken — den pekar på partiets eget dokument så att du kan läsa originaltexten.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
   "region-budget-plan": {
     "id": "region-budget-plan",
     "name": "Regioners mål och budget (seed)",

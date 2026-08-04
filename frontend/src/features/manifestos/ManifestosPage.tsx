@@ -11,9 +11,18 @@ interface Manifesto {
   type: "valmanifest" | "valplattform" | "partiprogram" | "politiska-riktlinjer";
   url: string;
   pdfUrl?: string;
-  status: "published" | "expected";
+  // Only two states, and both mean a document exists. `draft` is the party's
+  // own marking — "preliminär", "utkast" — reproduced, not our judgement of
+  // how finished it is. A document we do not hold has no entry at all: see
+  // MISSING_NOTE for why absence is never rendered as a status.
+  status: "published" | "draft";
   summary?: string;
 }
+
+// All eight parties, listed for every year so a year with gaps still shows the
+// gaps — that is the point. Alphabetical: any size- or seat-based order would
+// rank the parties, which is an editorial act the site does not perform.
+const CATALOGUE_PARTIES: PartyCode[] = ["C", "KD", "L", "M", "MP", "S", "SD", "V"];
 
 const PARTY_NAMES: Record<PartyCode, string> = {
   S:       "Socialdemokraterna",
@@ -36,14 +45,15 @@ const TYPE_LABELS: Record<Manifesto["type"], string> = {
 
 const MANIFESTOS: Manifesto[] = [
   // === 2026 ===
+  // Verified against each party's own publication 2026-08-04. Moderaterna and
+  // Kristdemokraterna have no entry: we hold no manifesto document for them,
+  // which the page states as our gap rather than as their silence.
+  { party: "C",  year: 2026, title: "Sverige kan mer – Centerpartiets valmanifest 2026", type: "valmanifest", url: "https://val2026.centerpartiet.se/", status: "published", summary: "314 reformer inom sju områden." },
+  { party: "L",  year: 2026, title: "För din frihet – Liberalernas valmanifest 2026", type: "valmanifest", url: "https://www.liberalerna.se/pressmeddelanden/liberalerna-presenterar-valmanifest-infor-valet-2026-for-din-frihet", status: "published", summary: "Skola, trygghet, vård, ekonomi och frihet i vardagen." },
+  { party: "MP", year: 2026, title: "Miljöpartiets valmanifest 2026 (utkast)", type: "valmanifest", url: "https://www.mp.se/valmanifest-2026-utkast/", status: "draft" },
   { party: "S",  year: 2026, title: "Plan för Sverige – Socialdemokraternas valplattform 2026", type: "valplattform", url: "https://www.socialdemokraterna.se/nyheter/nyheter/2026-02-05-plan-for-sverige---socialdemokraterna-presenterar-valplattform-2026", status: "published", summary: "Fokus på ekonomi, välfärd, trygghet och jobb." },
-  { party: "M",  year: 2026, title: "Moderaternas valmanifest 2026",           type: "valmanifest", url: "https://moderaterna.se/valmanifest", status: "expected", summary: "Förväntas presenteras inför valet september 2026." },
-  { party: "SD", year: 2026, title: "Sverigedemokraternas valmanifest 2026",   type: "valmanifest", url: "https://sd.se",                     status: "expected", summary: "Förväntas presenteras inför valet september 2026." },
-  { party: "C",  year: 2026, title: "Centerpartiets valmanifest 2026",         type: "valmanifest", url: "https://centerpartiet.se",          status: "expected", summary: "Förväntas presenteras inför valet september 2026." },
-  { party: "V",  year: 2026, title: "Vänsterpartiets valplattform 2026",       type: "valplattform", url: "https://vansterpartiet.se",        status: "expected", summary: "Förväntas presenteras inför valet september 2026." },
-  { party: "KD", year: 2026, title: "Kristdemokraternas valmanifest 2026",     type: "valmanifest", url: "https://kristdemokraterna.se",      status: "expected", summary: "Förväntas presenteras inför valet september 2026." },
-  { party: "L",  year: 2026, title: "Liberalernas valmanifest 2026",           type: "valmanifest", url: "https://liberalerna.se",            status: "expected", summary: "Förväntas presenteras inför valet september 2026." },
-  { party: "MP", year: 2026, title: "Miljöpartiets valmanifest 2026",          type: "valmanifest", url: "https://mp.se",                     status: "expected", summary: "Förväntas presenteras inför valet september 2026." },
+  { party: "SD", year: 2026, title: "Valplattform 2026", type: "valplattform", url: "https://www.sd.se/wp-content/uploads/2026/07/valplattform-2026.pdf", pdfUrl: "https://www.sd.se/wp-content/uploads/2026/07/valplattform-2026.pdf", status: "published" },
+  { party: "V",  year: 2026, title: "Preliminär valplattform 2026, efter beslut på kongressen", type: "valplattform", url: "https://www.vansterpartiet.se/wp-content/uploads/2026/04/Preliminar-Valplattform-efter-beslut-pa-kongressen-2026.pdf", pdfUrl: "https://www.vansterpartiet.se/wp-content/uploads/2026/04/Preliminar-Valplattform-efter-beslut-pa-kongressen-2026.pdf", status: "draft" },
   // === 2022 ===
   { party: "S",  year: 2022, title: "Vårt Sverige kan bättre – Socialdemokraternas valmanifest 2022", type: "valmanifest", url: "https://www.socialdemokraterna.se/5.36cb33a81817fcdd3ec4a8d.html", pdfUrl: "https://snd.gu.se/sv/vivill/party/s/v/2022", status: "published", summary: "Gängkriminalitet, sjukvård, klimatomställning och ekonomi." },
   { party: "M",  year: 2022, title: "Så får vi ordning på Sverige – Moderaternas valmanifest 2022",   type: "valmanifest", url: "https://moderaterna.se/nyhet/moderaternasvalmanifest/", pdfUrl: "https://moderaterna.se/app/uploads/2022/08/moderaternas_valmanifest_2022_webversion.pdf", status: "published", summary: "250 reformer inom trygghet, ekonomi, energi, invandring, vård och skola." },
@@ -77,63 +87,94 @@ const YEARS = [2026, 2022, 2018, 2014];
 
 function ManifestoCard({ m }: { m: Manifesto }) {
   const pc = PARTY_COLORS[m.party];
-  const isExpected = m.status === "expected";
+  const isDraft = m.status === "draft";
 
   return (
     <div
       className="rounded-xl p-5 flex flex-col gap-3"
-      style={{
-        background: isExpected ? "var(--color-surface-low)" : "var(--color-surface-lowest)",
-        border: isExpected ? "1px dashed var(--color-surface-high)" : "none",
-        opacity: isExpected ? 0.75 : 1,
-      }}
+      style={{ background: "var(--color-surface-lowest)" }}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <PartyBadge party={m.party} size="lg" />
           <span className="text-sm font-semibold text-on-surface">{PARTY_NAMES[m.party]}</span>
         </div>
+        {/* The party's own marking, reproduced. A draft is not ranked below a
+            final document here — the reader decides what an utkast is worth. */}
         <span
           className="text-[10px] font-extrabold px-2 py-0.5 rounded shrink-0"
-          style={isExpected
-            ? { background: "#f9fafb", color: "#9ca3af" }
+          style={isDraft
+            ? { background: "var(--color-surface-high)", color: "var(--color-on-surface-variant)" }
             : { background: pc?.light ?? "#f0fdf4", color: pc?.bg ?? "#16a34a" }
           }
         >
-          {isExpected ? "Förväntas" : "Publicerat"}
+          {isDraft ? "Utkast" : "Publicerat"}
         </span>
       </div>
 
       <div>
-        <p className="text-[11px] text-on-surface-variant mb-0.5">{TYPE_LABELS[m.type]} <SourceMarker sourceId="seed-party-goals" /></p>
+        <p className="text-[11px] text-on-surface-variant mb-0.5">{TYPE_LABELS[m.type]} <SourceMarker sourceId="party-manifestos" /></p>
         <p className="text-xs font-medium text-on-surface leading-snug">{m.title}</p>
+        {isDraft && (
+          <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Partiet har publicerat ett utkast, inte ett slutligt dokument.
+          </p>
+        )}
         {m.summary && (
           <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">{m.summary}</p>
         )}
       </div>
 
-      {!isExpected && (
-        <div className="flex gap-2 mt-auto">
+      <div className="flex gap-2 mt-auto">
+        <a
+          href={m.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[11px] font-semibold text-primary hover:underline"
+        >
+          Läs {isDraft ? "utkastet" : "manifestet"} →
+        </a>
+        {m.pdfUrl && m.pdfUrl !== m.url && (
           <a
-            href={m.url}
+            href={m.pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] font-semibold text-primary hover:underline"
+            className="text-[11px] font-semibold text-on-surface-variant hover:underline"
           >
-            Läs manifest →
+            PDF
           </a>
-          {m.pdfUrl && m.pdfUrl !== m.url && (
-            <a
-              href={m.pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] font-semibold text-on-surface-variant hover:underline"
-            >
-              PDF
-            </a>
-          )}
-        </div>
-      )}
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A party we hold no document for, in this year.
+ *
+ * The sentence names our catalogue as the gap. It deliberately does not say
+ * the party has published nothing — we cannot source a negative about a party,
+ * only state what our own register contains. The predecessor of this card said
+ * "förväntas presenteras inför valet september 2026", which predicted party
+ * behaviour and was wrong about Centerpartiet for roughly a month.
+ */
+function MissingCard({ party, year }: { party: PartyCode; year: number }) {
+  return (
+    <div
+      className="rounded-xl p-5 flex flex-col gap-3"
+      style={{
+        background: "var(--color-surface-low)",
+        border: "1px dashed var(--color-surface-high)",
+      }}
+    >
+      <div className="flex items-center gap-2.5">
+        <PartyBadge party={party} size="lg" />
+        <span className="text-sm font-semibold text-on-surface">{PARTY_NAMES[party]}</span>
+      </div>
+      <p className="text-xs text-on-surface-variant leading-relaxed">
+        Vi har inget registrerat dokument för {year}.{" "}
+        <SourceMarker sourceId="party-manifestos" />
+      </p>
     </div>
   );
 }
@@ -141,7 +182,12 @@ function ManifestoCard({ m }: { m: Manifesto }) {
 export function ManifestosPage() {
   const [selectedYear, setSelectedYear] = useState(2026);
 
-  const yearManifestos = MANIFESTOS.filter((m) => m.year === selectedYear);
+  // Every party appears for every year, so the years where we hold nothing are
+  // visible rather than silently short.
+  const byParty = new Map(
+    MANIFESTOS.filter((m) => m.year === selectedYear).map((m) => [m.party, m]),
+  );
+  const held = CATALOGUE_PARTIES.filter((p) => byParty.has(p)).length;
 
   return (
     <div>
@@ -150,7 +196,15 @@ export function ManifestosPage() {
           Valmanifest
         </h2>
         <p className="text-sm text-on-surface-variant leading-relaxed">
-          Partiernas officiella valmanifest och valplattformar från 2014 till 2026.
+          De valmanifest och valplattformar partierna själva har publicerat,
+          2014–2026. Vi länkar dokumenten och sammanfattar dem inte.
+        </p>
+        {/* Coverage stated at the point of use, and framed as a fact about our
+            catalogue — never as a claim about which parties have published. */}
+        <p className="text-xs text-on-surface-variant leading-relaxed mt-1.5">
+          För {selectedYear} har vi registrerat dokument från {held} av{" "}
+          {CATALOGUE_PARTIES.length} partier.{" "}
+          <SourceMarker sourceId="party-manifestos" />
         </p>
       </div>
 
@@ -178,9 +232,12 @@ export function ManifestosPage() {
 
       {/* ── Manifesto grid ────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {yearManifestos.map((m) => (
-          <ManifestoCard key={`${m.party}-${m.year}`} m={m} />
-        ))}
+        {CATALOGUE_PARTIES.map((party) => {
+          const m = byParty.get(party);
+          return m
+            ? <ManifestoCard key={`${party}-${selectedYear}`} m={m} />
+            : <MissingCard key={`${party}-${selectedYear}`} party={party} year={selectedYear} />;
+        })}
       </div>
     </div>
   );
