@@ -2,21 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
 import { partiesApi } from "./api";
 import {
-  AlignmentRing, PartyBadge, TopicTag, SpecificityBadge,
+  PartyBadge, TopicTag, SpecificityBadge,
   ProposalOriginTag,
 } from "@/shared/components";
-import { PARTY_COLORS, alignmentColor, committeeFromBeteckning } from "@/shared/design";
+import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import type { GoalVoteMatch } from "@/shared/types";
 
-const DIRECTION_STYLES: Record<string, { color: string; bg: string; label: string }> = {
-  Ja:          { color: "#16a34a", bg: "#f0fdf4", label: "Ja" },
-  Nej:         { color: "#dc2626", bg: "#fef2f2", label: "Nej" },
-  "Avstår":    { color: "#d97706", bg: "#fffbeb", label: "Avstår" },
-};
-
 function VoteMatchCard({ match }: { match: GoalVoteMatch }) {
-  const dir = DIRECTION_STYLES[match.alignedDirection] ?? { color: "#9ca3af", bg: "#f9fafb", label: match.alignedDirection };
   const relevance = Math.round(match.relevanceScore * 100);
   const committee = committeeFromBeteckning(match.beteckning);
 
@@ -51,27 +44,10 @@ function VoteMatchCard({ match }: { match: GoalVoteMatch }) {
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0">
-          <span
-            className="text-[10px] font-extrabold px-2.5 py-1 rounded"
-            style={{ background: dir.bg, color: dir.color }}
-          >
-            {dir.label}
-          </span>
           <span className="text-[10px] font-mono text-on-surface-variant">
             {relevance}% relevans
             <SourceMarker sourceId="riksdagen" />
           </span>
-          {match.partyAlignmentPct != null && (
-            <div className="flex items-center gap-1.5">
-              <div
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ background: alignmentColor(match.partyAlignmentPct) }}
-              />
-              <span className="text-[10px] font-mono font-semibold text-on-surface-variant">
-                {match.partyAlignmentPct.toFixed(0)}% röstade rätt
-              </span>
-            </div>
-          )}
         </div>
       </div>
     </Link>
@@ -117,9 +93,6 @@ export function GoalVotesPage() {
               </p>
               <p className="text-xs text-on-surface-variant">{goal.sourceDocument} <SourceMarker sourceId="seed-party-goals" /></p>
             </div>
-            {goal.alignmentPct != null && (
-              <AlignmentRing pct={goal.alignmentPct} size={64} color={pc?.bg} />
-            )}
           </div>
         </div>
       )}

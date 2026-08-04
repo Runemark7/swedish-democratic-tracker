@@ -103,9 +103,6 @@ func seedBallots(t *testing.T, pool *pgxpool.Pool, bet, punkt string, results []
 
 type scorecard struct {
 	relevantVotes int
-	scoredVotes   int
-	alignedVotes  int
-	alignmentPct  *float64
 }
 
 func readScorecard(t *testing.T, pool *pgxpool.Pool, goalID int) scorecard {
@@ -116,107 +113,34 @@ func readScorecard(t *testing.T, pool *pgxpool.Pool, goalID int) scorecard {
 	}
 	var sc scorecard
 	err := pool.QueryRow(ctx, `
-		SELECT relevant_votes, scored_votes, aligned_votes, alignment_pct
+		SELECT relevant_votes
 		FROM party_scorecards WHERE goal_id = $1`, goalID).
-		Scan(&sc.relevantVotes, &sc.scoredVotes, &sc.alignedVotes, &sc.alignmentPct)
+		Scan(&sc.relevantVotes)
 	if err != nil {
 		t.Fatalf("read scorecard: %v", err)
 	}
 	return sc
 }
 
-func TestScorecard_UnclearMatchesAreNotScored(t *testing.T) {
+// relevant_votes survives the retirement of the alignment percentage: it counts
+// vote points matched to a goal, which is a fact about our matching rather than
+// a judgement about the party. Direction is deliberately not consulted.
+func TestScorecard_CountsMatchedVotePointsRegardlessOfDirection(t *testing.T) {
 	pool := connectScorecardTestDB(t)
 	cleanScorecardFixtures(t, pool)
 	t.Cleanup(func() { cleanScorecardFixtures(t, pool) })
 	seedParty(t, pool)
 
-	goalID := seedGoal(t, pool, "unclear only")
+	goalID := seedGoal(t, pool, "counts matches")
 	seedMatch(t, pool, goalID, "ZZ1", "1", "unclear")
-	seedBallots(t, pool, "ZZ1", "1", []string{"Ja", "Ja", "Nej"})
-
-	sc := readScorecard(t, pool, goalID)
-
-	if sc.relevantVotes != 1 {
-		t.Errorf("relevantVotes = %d, want 1", sc.relevantVotes)
-	}
-	if sc.scoredVotes != 0 {
-		t.Errorf("scoredVotes = %d, want 0", sc.scoredVotes)
-	}
-	if sc.alignmentPct != nil {
-		t.Errorf("alignmentPct = %v, want nil (undeterminable must not read as 0)", *sc.alignmentPct)
-	}
-}
-
-func TestScorecard_PartyPositionIsMajorityOfCastBallots(t *testing.T) {
-	pool := connectScorecardTestDB(t)
-	cleanScorecardFixtures(t, pool)
-	t.Cleanup(func() { cleanScorecardFixtures(t, pool) })
-	seedParty(t, pool)
-
-	goalID := seedGoal(t, pool, "majority position")
-	seedMatch(t, pool, goalID, "ZZ2", "1", "Ja")
-	// Majority Ja despite one dissenter; absences must not count against it.
-	seedBallots(t, pool, "ZZ2", "1", []string{"Ja", "Ja", "Nej", "Frånvarande", "Frånvarande"})
-
-	sc := readScorecard(t, pool, goalID)
-
-	if sc.scoredVotes != 1 {
-		t.Errorf("scoredVotes = %d, want 1", sc.scoredVotes)
-	}
-	if sc.alignedVotes != 1 {
-		t.Errorf("alignedVotes = %d, want 1", sc.alignedVotes)
-	}
-	if sc.alignmentPct == nil || *sc.alignmentPct != 100 {
-		t.Errorf("alignmentPct = %v, want 100", sc.alignmentPct)
-	}
-}
-
-func TestScorecard_MixedScoredAndUnclear(t *testing.T) {
-	pool := connectScorecardTestDB(t)
-	cleanScorecardFixtures(t, pool)
-	t.Cleanup(func() { cleanScorecardFixtures(t, pool) })
-	seedParty(t, pool)
-
-	goalID := seedGoal(t, pool, "mixed")
-	seedMatch(t, pool, goalID, "ZZ3", "1", "Ja")      // party votes Ja  -> aligned
-	seedMatch(t, pool, goalID, "ZZ3", "2", "Nej")     // party votes Ja  -> not aligned
-	seedMatch(t, pool, goalID, "ZZ3", "3", "unclear") // excluded entirely
-	seedBallots(t, pool, "ZZ3", "1", []string{"Ja", "Ja"})
-	seedBallots(t, pool, "ZZ3", "2", []string{"Ja", "Ja"})
-	seedBallots(t, pool, "ZZ3", "3", []string{"Ja", "Ja"})
+	seedMatch(t, pool, goalID, "ZZ1", "2", "Ja")
+	seedMatch(t, pool, goalID, "ZZ2", "1", "Nej")
+	seedBallots(t, pool, "ZZ1", "1", []string{"Ja", "Ja"})
 
 	sc := readScorecard(t, pool, goalID)
 
 	if sc.relevantVotes != 3 {
-		t.Errorf("relevantVotes = %d, want 3", sc.relevantVotes)
-	}
-	if sc.scoredVotes != 2 {
-		t.Errorf("scoredVotes = %d, want 2 (unclear excluded)", sc.scoredVotes)
-	}
-	if sc.alignedVotes != 1 {
-		t.Errorf("alignedVotes = %d, want 1", sc.alignedVotes)
-	}
-	if sc.alignmentPct == nil || *sc.alignmentPct != 50 {
-		t.Errorf("alignmentPct = %v, want 50", sc.alignmentPct)
-	}
-}
-
-func TestScorecard_NoVotesRecordedIsNotScored(t *testing.T) {
-	pool := connectScorecardTestDB(t)
-	cleanScorecardFixtures(t, pool)
-	t.Cleanup(func() { cleanScorecardFixtures(t, pool) })
-	seedParty(t, pool)
-
-	goalID := seedGoal(t, pool, "matched but no ballots")
-	seedMatch(t, pool, goalID, "ZZ4", "1", "Ja") // no votes rows seeded
-
-	sc := readScorecard(t, pool, goalID)
-
-	if sc.scoredVotes != 0 {
-		t.Errorf("scoredVotes = %d, want 0", sc.scoredVotes)
-	}
-	if sc.alignmentPct != nil {
-		t.Errorf("alignmentPct = %v, want nil", *sc.alignmentPct)
+		t.Errorf("relevantVotes = %d, want 3 — every matched vote point counts, "+
+			"whatever direction was inferred", sc.relevantVotes)
 	}
 }

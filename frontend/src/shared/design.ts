@@ -115,12 +115,6 @@ export function committeeFromBeteckning(beteckning: string): string | undefined 
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────
-/** Neutral display colour for alignment figures. Returns a single neutral
- * tone regardless of percentage: the number is the fact, the colour must not
- * encode a good/bad judgement (fact/interpretation principle). */
-export function alignmentColor(_pct: number): string {
-  return "#6b7280"; // neutral gray
-}
 
 /** Format KSEK to Swedish budget display: "145,2 mdkr" or "4 350 mnkr" */
 export function formatBudgetAmount(ksek: number): string {
