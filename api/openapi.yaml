@@ -31,6 +31,8 @@ tags:
     description: National level — state agency expenditure data
   - name: ministers
     description: Cabinet ministers and their proposals
+  - name: committees
+    description: Riksdag committees (utskott) and the utgiftsområden they bereder
 
 paths:
   /riksdag/authorities:
@@ -1116,6 +1118,54 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Speech"
+
+  /committees:
+    get:
+      operationId: listCommittees
+      summary: Committees that decided at least one votering in a mandate period
+      tags: [committees]
+      parameters:
+        - name: period
+          in: query
+          required: true
+          schema: { type: string }
+          description: Mandate period code, e.g. "2022-2026".
+      responses:
+        "200":
+          description: Committees, alphabetical by code
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Committee" }
+
+  /committees/{code}:
+    get:
+      operationId: getCommittee
+      summary: One committee with the utgiftsområden it bereder
+      tags: [committees]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+        - name: period
+          in: query
+          required: true
+          schema: { type: string }
+        - name: year
+          in: query
+          required: false
+          schema: { type: integer }
+          description: Budget year for the amounts. Defaults to the newest held.
+      responses:
+        "200":
+          description: The committee
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Committee" }
+        "404":
+          description: The committee decided nothing in that period
 
 components:
   parameters:
@@ -2574,3 +2624,36 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Proposal'
+
+    Committee:
+      type: object
+      required: [code, name, voteringar, expenditureAreas]
+      properties:
+        code:
+          type: string
+          description: Canonical committee code, e.g. "SoU". ALL-CAPS vintages are normalised.
+        name:
+          type: string
+          description: >-
+            Swedish name, or the code itself when we have no name for it. The
+            lookup is a display aid and never a gate on what the record contains.
+        voteringar:
+          type: integer
+          description: >-
+            Distinct vote points decided in the period. A count of the record,
+            not a measure of importance — never presented as a ranking.
+        expenditureAreas:
+          type: array
+          description: >-
+            Utgiftsområden the committee bereder, per the Bilaga to
+            riksdagsordningen. Amounts only, never a share of the total: a share
+            would understate a committee whose remit exceeds its areas.
+          items: { $ref: "#/components/schemas/CommitteeExpenditureArea" }
+
+    CommitteeExpenditureArea:
+      type: object
+      required: [code, name, amountKsek]
+      properties:
+        code: { type: string }
+        name: { type: string }
+        amountKsek: { type: integer, format: int64 }

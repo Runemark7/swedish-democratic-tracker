@@ -95,6 +95,11 @@ import (
 	"riksdagskollen/internal/ingestion"
 	ingestionPG "riksdagskollen/internal/ingestion/adapters/postgres"
 	"riksdagskollen/internal/ingestion/workers"
+
+	// Feature: committees
+	committeesFeature "riksdagskollen/internal/committees"
+	committeesHTTP "riksdagskollen/internal/committees/adapters/http"
+	committeesPG "riksdagskollen/internal/committees/adapters/postgres"
 )
 
 func main() {
@@ -205,6 +210,9 @@ func main() {
 	ministersSvc := ministers.NewService(ministersRepo, ministersRDClient)
 	ministersHandler := ministersHTTP.NewHandler(ministersSvc)
 
+	committeesSvc := committeesFeature.NewService(committeesPG.NewRepository(db))
+	committeesHandler := committeesHTTP.NewHandler(committeesSvc)
+
 	// -- Router --
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -231,6 +239,7 @@ func main() {
 		riksdagHandler.Routes(r)
 		partiesHandler.Routes(r)
 		ministersHandler.Routes(r)
+		committeesHandler.Routes(r)
 
 		// TODO: return aggregate 24h decision counts per level for the homepage pulse strip.
 		// Shape: { riksdag: number, region: number, kommun: number, total: number, buckets: number[] }

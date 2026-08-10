@@ -953,6 +953,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/committees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Committees that decided at least one votering in a mandate period */
+        get: operations["listCommittees"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/committees/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One committee with the utgiftsområden it bereder */
+        get: operations["getCommittee"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1786,6 +1820,22 @@ export interface components {
         MinisterDetail: {
             minister?: components["schemas"]["Minister"];
             proposals?: components["schemas"]["Proposal"][];
+        };
+        Committee: {
+            /** @description Canonical committee code, e.g. "SoU". ALL-CAPS vintages are normalised. */
+            code: string;
+            /** @description Swedish name, or the code itself when we have no name for it. The lookup is a display aid and never a gate on what the record contains. */
+            name: string;
+            /** @description Distinct vote points decided in the period. A count of the record, not a measure of importance — never presented as a ranking. */
+            voteringar: number;
+            /** @description Utgiftsområden the committee bereder, per the Bilaga to riksdagsordningen. Amounts only, never a share of the total: a share would understate a committee whose remit exceeds its areas. */
+            expenditureAreas: components["schemas"]["CommitteeExpenditureArea"][];
+        };
+        CommitteeExpenditureArea: {
+            code: string;
+            name: string;
+            /** Format: int64 */
+            amountKsek: number;
         };
     };
     responses: {
@@ -2925,6 +2975,62 @@ export interface operations {
             };
             /** @description Upstream SCB API error */
             502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listCommittees: {
+        parameters: {
+            query: {
+                /** @description Mandate period code, e.g. "2022-2026". */
+                period: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Committees, alphabetical by code */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Committee"][];
+                };
+            };
+        };
+    };
+    getCommittee: {
+        parameters: {
+            query: {
+                period: string;
+                /** @description Budget year for the amounts. Defaults to the newest held. */
+                year?: number;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The committee */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Committee"];
+                };
+            };
+            /** @description The committee decided nothing in that period */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
