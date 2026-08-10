@@ -111,3 +111,39 @@ func TestAreasFor_IgnoresProposedBudgetYear(t *testing.T) {
 		t.Errorf("FiU areas = %d, want 4 (a second budget_years row for 2026 must not double the result)", len(got))
 	}
 }
+
+// NewestDecidedBudgetYear must skip a newer 'proposed' row and report the
+// newest 'decided' one — a proposal is not yet the record, so a caller that
+// defaults to it would show a figure that could still change.
+func TestNewestDecidedBudgetYear_SkipsProposedYear(t *testing.T) {
+	pool := connectTestDB(t)
+	repo := postgres.NewRepository(pool)
+	ctx := context.Background()
+
+	before, err := repo.NewestDecidedBudgetYear(ctx)
+	if err != nil {
+		t.Fatalf("NewestDecidedBudgetYear (baseline): %v", err)
+	}
+
+	var proposedID int
+	err = pool.QueryRow(ctx,
+		`INSERT INTO budget_years (year, status) VALUES ($1, 'proposed') RETURNING id`,
+		before+1,
+	).Scan(&proposedID)
+	if err != nil {
+		t.Fatalf("insert proposed budget_years row: %v", err)
+	}
+	t.Cleanup(func() {
+		if _, err := pool.Exec(ctx, `DELETE FROM budget_years WHERE id = $1`, proposedID); err != nil {
+			t.Errorf("cleanup: delete budget_years id=%d: %v", proposedID, err)
+		}
+	})
+
+	got, err := repo.NewestDecidedBudgetYear(ctx)
+	if err != nil {
+		t.Fatalf("NewestDecidedBudgetYear: %v", err)
+	}
+	if got != before {
+		t.Errorf("NewestDecidedBudgetYear = %d, want %d (a proposed year must not count as decided)", got, before)
+	}
+}

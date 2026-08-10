@@ -2,6 +2,7 @@ package committees
 
 import (
 	"context"
+	"errors"
 
 	"riksdagskollen/internal/committees/domain"
 	"riksdagskollen/internal/committees/ports"
@@ -20,7 +21,10 @@ func (s *Service) List(ctx context.Context, periodCode string) ([]domain.Committ
 	return s.repo.ListForPeriod(ctx, periodCode)
 }
 
-// Get returns one committee with its utgiftsområden for the given budget year.
+// Get returns one committee with its utgiftsområden for the given budget
+// year. Pass budgetYear 0 to resolve it to the newest decided budget year,
+// rather than a hardcoded guess that would go stale the moment a newer year
+// is seeded.
 //
 // Returns nil when the committee decided nothing in the period: a page that
 // invented a committee out of a URL would claim something the record does not.
@@ -33,7 +37,19 @@ func (s *Service) Get(ctx context.Context, periodCode, code string, budgetYear i
 		if all[i].Code != code {
 			continue
 		}
-		areas, err := s.repo.AreasFor(ctx, code, budgetYear)
+		year := budgetYear
+		if year == 0 {
+			year, err = s.repo.NewestDecidedBudgetYear(ctx)
+			if err != nil {
+				return nil, err
+			}
+			if year == 0 {
+				// No decided budget year exists at all. This is a real state
+				// and must not be papered over with a guessed year.
+				return nil, errors.New("no decided budget year available")
+			}
+		}
+		areas, err := s.repo.AreasFor(ctx, code, year)
 		if err != nil {
 			return nil, err
 		}

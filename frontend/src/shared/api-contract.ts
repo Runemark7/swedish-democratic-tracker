@@ -3009,7 +3009,7 @@ export interface operations {
         parameters: {
             query: {
                 period: string;
-                /** @description Budget year for the amounts. Defaults to the newest held. */
+                /** @description Budget year for the amounts. Defaults to the newest year with decided figures. */
                 year?: number;
             };
             header?: never;
@@ -3029,13 +3029,7 @@ export interface operations {
                     "application/json": components["schemas"]["Committee"];
                 };
             };
-            /** @description The committee decided nothing in that period */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+            404: components["responses"]["NotFound"];
         };
     };
 }

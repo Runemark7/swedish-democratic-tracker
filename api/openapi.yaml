@@ -1157,7 +1157,9 @@ paths:
           in: query
           required: false
           schema: { type: integer }
-          description: Budget year for the amounts. Defaults to the newest held.
+          description: >-
+            Budget year for the amounts. Defaults to the newest year with
+            decided figures.
       responses:
         "200":
           description: The committee
@@ -1165,7 +1167,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Committee" }
         "404":
-          description: The committee decided nothing in that period
+          $ref: "#/components/responses/NotFound"
 
 components:
   parameters:

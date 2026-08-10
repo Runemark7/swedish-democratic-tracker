@@ -17,4 +17,11 @@ type Repository interface {
 	// AreasFor returns the utgiftsområden a committee bereder, with the amount
 	// allocated in the given budget year. Never a share of the total.
 	AreasFor(ctx context.Context, utskottCode string, budgetYear int) ([]domain.ExpenditureArea, error)
+
+	// NewestDecidedBudgetYear returns the most recent budget year with decided
+	// figures, used when a caller does not name a year. Selecting on
+	// status = 'decided' matches how the budget feature picks a year.
+	// Returns 0, nil when no budget year has been decided yet — a real state,
+	// not an error.
+	NewestDecidedBudgetYear(ctx context.Context) (int, error)
 }

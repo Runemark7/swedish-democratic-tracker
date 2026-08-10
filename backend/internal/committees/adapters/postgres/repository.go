@@ -113,3 +113,22 @@ func (r *Repository) AreasFor(ctx context.Context, utskottCode string, budgetYea
 	}
 	return out, rows.Err()
 }
+
+// NewestDecidedBudgetYear returns the most recent budget year with decided
+// figures, matching how the budget feature pins to status = 'decided' (see
+// GetYearDetail in internal/budget/adapters/postgres/repository.go).
+//
+// max() over an empty set is a single row holding NULL, not zero rows, so
+// COALESCE folds "no decided year yet" to 0 rather than requiring a
+// pgx.ErrNoRows branch. 0 is a real state the caller must check for, not an
+// error: the query itself did not fail.
+func (r *Repository) NewestDecidedBudgetYear(ctx context.Context) (int, error) {
+	var year int
+	err := r.db.QueryRow(ctx,
+		`SELECT COALESCE(max(year), 0) FROM budget_years WHERE status = 'decided'`,
+	).Scan(&year)
+	if err != nil {
+		return 0, err
+	}
+	return year, nil
+}

@@ -25,8 +25,6 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/committees/{code}", h.get)
 }
 
-const defaultBudgetYear = 2026
-
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	period := r.URL.Query().Get("period")
 	if period == "" {
@@ -47,7 +45,9 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "period is required", http.StatusBadRequest)
 		return
 	}
-	year := defaultBudgetYear
+	// year 0 means "not specified" — the service resolves it to the newest
+	// decided budget year rather than us guessing one here.
+	year := 0
 	if y := r.URL.Query().Get("year"); y != "" {
 		parsed, err := strconv.Atoi(y)
 		if err != nil {
