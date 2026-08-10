@@ -72,7 +72,9 @@ The record contains `UFöU` (11 voteringar in 2022–2026) which today's fronten
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: `func CommitteeCode(beteckning string) string` — returns the canonical committee code, or `""` when the beteckning carries none.
+- Produces:
+  - `func CommitteeCode(beteckning string) string` — canonical code from a full beteckning (`"UBU14"` → `"UbU"`), or `""` when it carries none.
+  - `func Canonical(rawCode string) string` — canonical form of a bare code (`"UBU"` → `"UbU"`), or `""` when it is not a committee code. Task 4 needs this because its SQL yields a bare prefix; appending a fake digit to reuse `CommitteeCode` would be a hack.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -172,33 +174,43 @@ func CommitteeCode(beteckning string) string {
 	if end >= 0 {
 		raw = beteckning[:end]
 	}
-	if raw == "" {
+	return Canonical(raw)
+}
+
+// Canonical returns the canonical spelling of a bare committee code.
+//
+// Every committee code ends in "U" (utskott), which is what distinguishes a code
+// from any other beteckning prefix: "prop." must not be mistaken for one.
+func Canonical(rawCode string) string {
+	upper := strings.ToUpper(rawCode)
+	if rawCode == "" || !strings.HasSuffix(upper, "U") {
 		return ""
 	}
-	if canon, ok := canonicalCodes[strings.ToUpper(raw)]; ok {
+	if canon, ok := canonicalCodes[upper]; ok {
 		return canon
 	}
 	// An unknown code is returned as-is rather than dropped. A code we have
 	// never seen is a fact about the record, and hiding it would silently
 	// remove real voteringar from every derived list.
-	return raw
+	return rawCode
 }
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd backend && go test ./internal/committees/domain/ -run TestCommitteeCode -v`
-Expected: PASS.
+Expected: PASS, all cases including `{"prop.2025/26:1", ""}` — `prop.` does not end in `U`, so `Canonical` rejects it.
 
-Note the `{"prop.2025/26:1", ""}` case: `prop.` contains no digit before `.`, so `raw` becomes `prop.` and is returned as-is — which fails. Fix by requiring the code to end in `U`:
+Add one case to the test for the bare-code entry point, since Task 4 depends on it:
 
 ```go
-	if raw == "" || !strings.HasSuffix(strings.ToUpper(raw), "U") {
-		return ""
+	if got := domain.Canonical("UBU"); got != "UbU" {
+		t.Errorf("Canonical(UBU) = %q, want UbU", got)
+	}
+	if got := domain.Canonical("prop."); got != "" {
+		t.Errorf("Canonical(prop.) = %q, want empty", got)
 	}
 ```
-
-Place that check before the lookup, re-run, and confirm PASS.
 
 - [ ] **Step 5: Commit**
 
@@ -653,6 +665,7 @@ package postgres
 
 import (
 	"context"
+	"sort"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -694,7 +707,7 @@ func (r *Repository) ListForPeriod(ctx context.Context, periodCode string) ([]do
 		if err := rows.Scan(&raw, &n); err != nil {
 			return nil, err
 		}
-		code := domain.CommitteeCode(raw + "1")
+		code := domain.Canonical(raw)
 		if code == "" {
 			continue
 		}
@@ -715,16 +728,8 @@ func (r *Repository) ListForPeriod(ctx context.Context, periodCode string) ([]do
 	}
 	// Alphabetical by code. Any other order — by volume, by "importance" — is a
 	// ranking, and ranking is an editorial act.
-	sortCommittees(out)
+	sort.Slice(out, func(i, j int) bool { return out[i].Code < out[j].Code })
 	return out, nil
-}
-
-func sortCommittees(cs []domain.Committee) {
-	for i := 1; i < len(cs); i++ {
-		for j := i; j > 0 && cs[j-1].Code > cs[j].Code; j-- {
-			cs[j-1], cs[j] = cs[j], cs[j-1]
-		}
-	}
 }
 
 // AreasFor returns the utgiftsområden a committee bereder with their amounts.
