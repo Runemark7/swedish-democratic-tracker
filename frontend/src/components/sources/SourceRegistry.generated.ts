@@ -230,6 +230,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "verificationStatus": "unsure",
     "verificationNotes": "Upstream-URL i MD pekade på ted.europa.eu (webbgränssnitt) men backenden anropar api.ted.europa.eu/v3/notices/search; MD uppdaterat till korrekt API-host. Tidigare bash-block med curl mot fel host borttaget. Inga SourceMarker-konsumenter finns i UI idag."
   },
+  "utskott-utgiftsomrade": {
+    "id": "utskott-utgiftsomrade",
+    "name": "Utskottens utgiftsområden (riksdagsordningen)",
+    "kind": "seed",
+    "upstream": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/riksdagsordning-2014801_sfs-2014-801/",
+    "license": "Svensk författningssamling — fri användning",
+    "freshness": "ändras genom lagändring; kontrolleras vid ny lydelse",
+    "lastVerified": "Wed Aug 05 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "Vilket utskott som bereder vilket utgiftsområde (UO) är inte vår tolkning — det är lag. Fördelningen står i Bilagan (tilläggsbestämmelse 7.5.1) till riksdagsordningen (2014:801), den författning som reglerar riksdagens arbetsformer. Det är **inte** hämtat från riksdagen.se:s sidor om de enskilda utskotten, som beskriver ansvarsområden i löptext utan att lista en maskinläsbar koppling till UO-koder.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
   "wikimedia-svg": {
     "id": "wikimedia-svg",
     "name": "Sverige-karta SVG (Wikimedia Commons)",
