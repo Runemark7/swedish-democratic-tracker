@@ -536,7 +536,7 @@ is permanent."
 - Test: `backend/internal/committees/adapters/postgres/repository_test.go`
 
 **Interfaces:**
-- Consumes: `domain.Committee`, `domain.ExpenditureArea`, `domain.CommitteeCode`, `domain.DisplayName`.
+- Consumes: `domain.Committee`, `domain.ExpenditureArea`, `domain.Canonical` (the SQL yields a bare code, so this is the right entry point — not `CommitteeCode`, which expects a full beteckning), `domain.DisplayName`.
 - Produces:
   - `ports.Repository` with `ListForPeriod(ctx context.Context, periodCode string) ([]domain.Committee, error)` and `AreasFor(ctx context.Context, utskottCode string, budgetYear int) ([]domain.ExpenditureArea, error)`.
 
