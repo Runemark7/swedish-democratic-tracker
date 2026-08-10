@@ -8,12 +8,15 @@ package domain
 type Committee struct {
 	Code string `json:"code"`
 	Name string `json:"name"`
-	// Voteringar is how many distinct vote points the committee decided in the
-	// period. A count of the record, not a measure of importance.
+	// Voteringar is how many voteringar the committee decided in the period,
+	// counted as the record identifies them (one votering_id each). A
+	// förslagspunkt decided by two voteringar counts twice because the record
+	// holds two. A count of the record, not a measure of importance.
 	Voteringar int `json:"voteringar"`
 	// ExpenditureAreas are the utgiftsområden the committee bereder, per the
 	// Bilaga to riksdagsordningen. Empty for a joint committee, which handles
-	// no expenditure area of its own.
+	// no expenditure area of its own, and empty on the list endpoint, which
+	// does not query them per committee.
 	ExpenditureAreas []ExpenditureArea `json:"expenditureAreas"`
 }
 

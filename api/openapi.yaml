@@ -1132,12 +1132,22 @@ paths:
           description: Mandate period code, e.g. "2022-2026".
       responses:
         "200":
-          description: Committees, alphabetical by code
+          description: >-
+            Committees, alphabetical by code. expenditureAreas is empty here —
+            only GET /committees/{code} populates it.
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/Committee" }
+        "404":
+          description: >-
+            No such mandate period. A period we do not hold is refused rather
+            than answered with an empty list, which would read as "this
+            parliament decided nothing".
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
 
   /committees/{code}:
     get:
@@ -1149,6 +1159,9 @@ paths:
           in: path
           required: true
           schema: { type: string }
+          description: >-
+            Committee code, matched case-insensitively — "fiu" and "FiU" are the
+            same committee.
         - name: period
           in: query
           required: true
@@ -1159,15 +1172,21 @@ paths:
           schema: { type: integer }
           description: >-
             Budget year for the amounts. Defaults to the newest year with
-            decided figures.
+            decided figures. A year without decided figures is a 400, never a
+            200 carrying zero amounts.
       responses:
         "200":
-          description: The committee
+          description: The committee, with the utgiftsområden it bereder
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Committee" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "404":
-          $ref: "#/components/responses/NotFound"
+          description: No such mandate period, or that committee decided nothing in it
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
 
 components:
   parameters:
@@ -2642,14 +2661,19 @@ components:
         voteringar:
           type: integer
           description: >-
-            Distinct vote points decided in the period. A count of the record,
-            not a measure of importance — never presented as a ranking.
+            How many voteringar the committee decided in the period, counted as
+            the record itself identifies a votering (one votering_id). A
+            förslagspunkt decided by two voteringar therefore counts twice,
+            because the record holds two. A count of the record, not a measure
+            of importance — never presented as a ranking.
         expenditureAreas:
           type: array
           description: >-
             Utgiftsområden the committee bereder, per the Bilaga to
             riksdagsordningen. Amounts only, never a share of the total: a share
             would understate a committee whose remit exceeds its areas.
+            Populated only by GET /committees/{code}; the list endpoint returns
+            it empty rather than issuing one query per committee.
           items: { $ref: "#/components/schemas/CommitteeExpenditureArea" }
 
     CommitteeExpenditureArea:

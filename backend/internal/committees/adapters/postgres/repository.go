@@ -19,49 +19,18 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 
 // ListForPeriod derives the committees from the beteckningar in the record.
 //
-// The prefix is taken in SQL and then canonicalised in Go, so the ALL-CAPS
-// vintage in 2002-2006 collapses onto the same committee rather than appearing
-// as a second one.
+// The prefix rule lives in domain.CommitteeCode and nowhere else, so the
+// ALL-CAPS vintage in 2002-2006 collapses onto the same committee rather than
+// appearing as a second one.
 func (r *Repository) ListForPeriod(ctx context.Context, periodCode string) ([]domain.Committee, error) {
-	rows, err := r.db.Query(ctx, `
-		SELECT substring(v.beteckning from '^[A-Za-zÅÄÖåäö]+') AS code,
-		       count(DISTINCT v.beteckning || ':' || v.forslagspunkt)  AS voteringar
-		FROM votes v
-		JOIN mandate_periods p ON v.session = ANY(p.riksmoten)
-		WHERE p.code = $1
-		  AND substring(v.beteckning from '^[A-Za-zÅÄÖåäö]+') <> ''
-		GROUP BY 1`, periodCode)
+	counts, err := r.countVoteringar(ctx, periodCode, "")
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	// Canonicalise in Go, then merge: two casings are one committee.
-	merged := map[string]int{}
-	for rows.Next() {
-		var raw string
-		var n int
-		if err := rows.Scan(&raw, &n); err != nil {
-			return nil, err
-		}
-		code := domain.Canonical(raw)
-		if code == "" {
-			continue
-		}
-		merged[code] += n
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	out := make([]domain.Committee, 0, len(merged))
-	for code, n := range merged {
-		out = append(out, domain.Committee{
-			Code:             code,
-			Name:             domain.DisplayName(code),
-			Voteringar:       n,
-			ExpenditureAreas: []domain.ExpenditureArea{},
-		})
+	out := make([]domain.Committee, 0, len(counts))
+	for code, n := range counts {
+		out = append(out, committee(code, n))
 	}
 	// Alphabetical by code. Any other order — by volume, by "importance" — is a
 	// ranking, and ranking is an editorial act.
@@ -69,18 +38,130 @@ func (r *Repository) ListForPeriod(ctx context.Context, periodCode string) ([]do
 	return out, nil
 }
 
+// FindInPeriod returns one committee as the record shows it in the period, or
+// nil when it decided nothing there.
+//
+// Scoped to a single code so the detail page does not re-derive every
+// committee in the period just to read one of them.
+func (r *Repository) FindInPeriod(ctx context.Context, periodCode, code string) (*domain.Committee, error) {
+	if code == "" {
+		return nil, nil
+	}
+	counts, err := r.countVoteringar(ctx, periodCode, code)
+	if err != nil {
+		return nil, err
+	}
+	n, ok := counts[code]
+	if !ok {
+		return nil, nil
+	}
+	c := committee(code, n)
+	return &c, nil
+}
+
+// PeriodExists reports whether the mandate period is one the record knows.
+//
+// Needed because "no committees" and "no such period" are different facts: a
+// typo'd or pre-record period must not be answered with an empty list, which
+// reads as "this parliament decided nothing".
+func (r *Repository) PeriodExists(ctx context.Context, periodCode string) (bool, error) {
+	var exists bool
+	err := r.db.QueryRow(ctx,
+		`SELECT EXISTS (SELECT 1 FROM mandate_periods WHERE code = $1)`, periodCode,
+	).Scan(&exists)
+	return exists, err
+}
+
+// DecidedBudgetYearExists reports whether the year has decided figures.
+//
+// A year we hold no allocations for would otherwise render every area at 0 tkr
+// — "FiU bereder UO2: 0 tkr" — which is a false statement, not a missing one.
+func (r *Repository) DecidedBudgetYearExists(ctx context.Context, year int) (bool, error) {
+	var exists bool
+	err := r.db.QueryRow(ctx,
+		`SELECT EXISTS (SELECT 1 FROM budget_years WHERE year = $1 AND status = 'decided')`, year,
+	).Scan(&exists)
+	return exists, err
+}
+
+// countVoteringar folds the record's distinct voteringar into a count per
+// canonical committee code.
+//
+// Counted per votering_id — the record's own identity for a votering. The
+// obvious alternative, (beteckning, förslagspunkt), is wrong twice over:
+// betänkande numbering restarts each riksmöte, so 2022/23 FiU1 and 2023/24 FiU1
+// collapse into one, and it also discards the 18 förslagspunkter in 2022-2026
+// on which Riksdagen genuinely held two voteringar (e.g. 2023/24 NU1 punkt 2).
+// Both are facts of the record, and both were being deleted from the total.
+//
+// codeFilter, when non-empty, narrows the scan to one committee. It is only a
+// narrowing predicate: the authoritative code is always derived in Go by
+// domain.CommitteeCode, so a beteckning that merely starts with the same
+// letters can never be counted under the wrong committee.
+func (r *Repository) countVoteringar(ctx context.Context, periodCode, codeFilter string) (map[string]int, error) {
+	query := `
+		SELECT DISTINCT v.beteckning, v.votering_id
+		FROM votes v
+		JOIN mandate_periods p ON v.session = ANY(p.riksmoten)
+		WHERE p.code = $1
+		  AND v.beteckning <> ''`
+	args := []any{periodCode}
+	if codeFilter != "" {
+		// starts_with, not LIKE: the code comes from a URL path and must not be
+		// able to smuggle in wildcards.
+		query += `
+		  AND starts_with(upper(v.beteckning), upper($2))`
+		args = append(args, codeFilter)
+	}
+
+	rows, err := r.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	merged := map[string]int{}
+	for rows.Next() {
+		var beteckning, voteringID string
+		if err := rows.Scan(&beteckning, &voteringID); err != nil {
+			return nil, err
+		}
+		code := domain.CommitteeCode(beteckning)
+		if code == "" {
+			continue
+		}
+		// One row is one distinct votering, so this is an increment and never a
+		// sum of pre-aggregated counts.
+		merged[code]++
+	}
+	return merged, rows.Err()
+}
+
+func committee(code string, voteringar int) domain.Committee {
+	return domain.Committee{
+		Code:             code,
+		Name:             domain.DisplayName(code),
+		Voteringar:       voteringar,
+		ExpenditureAreas: []domain.ExpenditureArea{},
+	}
+}
+
 // AreasFor returns the utgiftsområden a committee bereder with their amounts.
 //
-// The allocation in force is the newest one whose in_force_from has passed.
+// The allocation in force is resolved per utgiftsområde: the newest row for
+// that UO whose in_force_from has passed. A global max(in_force_from) would be
+// correct only if every future revision re-inserted all 27 rows, and
+// docs/data-sources/utskott-utgiftsomrade.md prescribes the opposite — add one
+// row for the UO that moved and leave the rest untouched. On that documented
+// path a global max would return only the single new row, so every other
+// committee page would show zero utgiftsområden with no error anywhere.
 func (r *Repository) AreasFor(ctx context.Context, utskottCode string, budgetYear int) ([]domain.ExpenditureArea, error) {
 	rows, err := r.db.Query(ctx, `
 		WITH in_force AS (
-			SELECT uo_code, utskott_code
-			FROM utskott_utgiftsomrade m
-			WHERE in_force_from = (
-				SELECT max(in_force_from) FROM utskott_utgiftsomrade
-				WHERE in_force_from <= CURRENT_DATE
-			)
+			SELECT DISTINCT ON (uo_code) uo_code, utskott_code
+			FROM utskott_utgiftsomrade
+			WHERE in_force_from <= CURRENT_DATE
+			ORDER BY uo_code, in_force_from DESC
 		)
 		SELECT ea.code, ea.name, COALESCE(ba.amount_ksek, 0)
 		FROM in_force f
@@ -97,7 +178,11 @@ func (r *Repository) AreasFor(ctx context.Context, utskottCode string, budgetYea
 		      AND ba.source = 'government'
 		      AND ba.party IS NULL
 		WHERE f.utskott_code = $1
-		ORDER BY (regexp_replace(ea.code, '\D', '', 'g'))::int`, utskottCode, budgetYear)
+		-- sort_order, as every other query over this table does (see
+		-- internal/budget/adapters/postgres/repository.go). Casting the digits
+		-- out of ea.code gives the same order today but *errors* on a code that
+		-- holds no digits, turning a display detail into a failed request.
+		ORDER BY ea.sort_order`, utskottCode, budgetYear)
 	if err != nil {
 		return nil, err
 	}

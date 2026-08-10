@@ -1826,9 +1826,9 @@ export interface components {
             code: string;
             /** @description Swedish name, or the code itself when we have no name for it. The lookup is a display aid and never a gate on what the record contains. */
             name: string;
-            /** @description Distinct vote points decided in the period. A count of the record, not a measure of importance — never presented as a ranking. */
+            /** @description How many voteringar the committee decided in the period, counted as the record itself identifies a votering (one votering_id). A förslagspunkt decided by two voteringar therefore counts twice, because the record holds two. A count of the record, not a measure of importance — never presented as a ranking. */
             voteringar: number;
-            /** @description Utgiftsområden the committee bereder, per the Bilaga to riksdagsordningen. Amounts only, never a share of the total: a share would understate a committee whose remit exceeds its areas. */
+            /** @description Utgiftsområden the committee bereder, per the Bilaga to riksdagsordningen. Amounts only, never a share of the total: a share would understate a committee whose remit exceeds its areas. Populated only by GET /committees/{code}; the list endpoint returns it empty rather than issuing one query per committee. */
             expenditureAreas: components["schemas"]["CommitteeExpenditureArea"][];
         };
         CommitteeExpenditureArea: {
@@ -2994,7 +2994,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Committees, alphabetical by code */
+            /** @description Committees, alphabetical by code. expenditureAreas is empty here — only GET /committees/{code} populates it. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3003,24 +3003,34 @@ export interface operations {
                     "application/json": components["schemas"]["Committee"][];
                 };
             };
+            /** @description No such mandate period. A period we do not hold is refused rather than answered with an empty list, which would read as "this parliament decided nothing". */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
     getCommittee: {
         parameters: {
             query: {
                 period: string;
-                /** @description Budget year for the amounts. Defaults to the newest year with decided figures. */
+                /** @description Budget year for the amounts. Defaults to the newest year with decided figures. A year without decided figures is a 400, never a 200 carrying zero amounts. */
                 year?: number;
             };
             header?: never;
             path: {
+                /** @description Committee code, matched case-insensitively — "fiu" and "FiU" are the same committee. */
                 code: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description The committee */
+            /** @description The committee, with the utgiftsområden it bereder */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3029,7 +3039,16 @@ export interface operations {
                     "application/json": components["schemas"]["Committee"];
                 };
             };
-            404: components["responses"]["NotFound"];
+            400: components["responses"]["BadRequest"];
+            /** @description No such mandate period, or that committee decided nothing in it */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
     };
 }
