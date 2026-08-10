@@ -31,6 +31,10 @@ func TestCommitteeCode(t *testing.T) {
 		{"MJU1", "MJU"},
 		// Suffixed beteckning (yttrande) still resolves.
 		{"AU1y", "AU"},
+		// Unknown committee codes must survive rather than be dropped; making the lookup
+		// a gate is what previously hid 11 real UFöU voteringar. This is a regression
+		// test: a future edit that returns "" for unmapped codes must fail here.
+		{"ZZU12", "ZZU"},
 		// No committee in the beteckning.
 		{"", ""},
 		{"1234", ""},
@@ -47,5 +51,11 @@ func TestCommitteeCode(t *testing.T) {
 	}
 	if got := domain.Canonical("prop."); got != "" {
 		t.Errorf("Canonical(prop.) = %q, want empty", got)
+	}
+	// Regression test: unknown code ending in U must survive. This defends the
+	// critical behavior that losing an unknown code loses voteringar; earlier this
+	// hid 11 UFöU voteringar from the frontend.
+	if got := domain.Canonical("ZZU"); got != "ZZU" {
+		t.Errorf("Canonical(ZZU) = %q, want ZZU", got)
 	}
 }
