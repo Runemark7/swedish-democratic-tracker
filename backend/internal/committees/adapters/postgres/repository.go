@@ -85,7 +85,12 @@ func (r *Repository) AreasFor(ctx context.Context, utskottCode string, budgetYea
 		SELECT ea.code, ea.name, COALESCE(ba.amount_ksek, 0)
 		FROM in_force f
 		JOIN expenditure_areas ea ON ea.code = f.uo_code
-		LEFT JOIN budget_years by2 ON by2.year = $2
+		-- budget_years permits more than one row per year (decided vs. proposed,
+		-- UNIQUE (year, status)). The rest of the codebase always pins to the
+		-- decided one (see internal/budget/adapters/postgres/repository.go);
+		-- omitting the filter here would join both rows for a dual-status year
+		-- and silently double every area's amount.
+		LEFT JOIN budget_years by2 ON by2.year = $2 AND by2.status = 'decided'
 		LEFT JOIN budget_allocations ba
 		       ON ba.expenditure_area_id = ea.id
 		      AND ba.budget_year_id = by2.id

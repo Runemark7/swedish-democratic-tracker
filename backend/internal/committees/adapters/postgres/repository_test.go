@@ -77,3 +77,37 @@ func TestAreasFor_NoShareOfTotal(t *testing.T) {
 		}
 	}
 }
+
+// budget_years permits more than one row per year (UNIQUE (year, status),
+// status in {'decided', 'proposed'}). Without pinning to status = 'decided',
+// AreasFor's join on budget_years fans out one row per matching budget_years
+// row and doubles every area's amount — an authoritative-looking wrong
+// number. This inserts a second, 'proposed' row for 2026 to prove the
+// repository does not do that, then deletes exactly the row it inserted.
+func TestAreasFor_IgnoresProposedBudgetYear(t *testing.T) {
+	pool := connectTestDB(t)
+	repo := postgres.NewRepository(pool)
+	ctx := context.Background()
+
+	var proposedID int
+	err := pool.QueryRow(ctx,
+		`INSERT INTO budget_years (year, status) VALUES ($1, 'proposed') RETURNING id`,
+		2026,
+	).Scan(&proposedID)
+	if err != nil {
+		t.Fatalf("insert proposed budget_years row: %v", err)
+	}
+	t.Cleanup(func() {
+		if _, err := pool.Exec(ctx, `DELETE FROM budget_years WHERE id = $1`, proposedID); err != nil {
+			t.Errorf("cleanup: delete budget_years id=%d: %v", proposedID, err)
+		}
+	})
+
+	got, err := repo.AreasFor(ctx, "FiU", 2026)
+	if err != nil {
+		t.Fatalf("AreasFor: %v", err)
+	}
+	if len(got) != 4 {
+		t.Errorf("FiU areas = %d, want 4 (a second budget_years row for 2026 must not double the result)", len(got))
+	}
+}
