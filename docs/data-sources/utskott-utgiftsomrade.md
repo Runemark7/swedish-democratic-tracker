@@ -9,8 +9,7 @@ last_verified: 2026-08-05
 verification_status: verified
 verification_notes: ~
 used_by:
-  - /committees (utgiftsområden per utskott)
-  - /committees/:code (KOSTAR-raden)
+  - /committees/:code (utgiftsområden per utskott, KOSTAR-raden)
 ---
 
 ## Vad det är
@@ -24,6 +23,14 @@ en maskinläsbar koppling till UO-koder.
 Fördelningen är en strikt partition: alla 27 utgiftsområden har exakt ett
 utskott, och varje utskott som förekommer i bilagan har minst ett
 utgiftsområde. Inget UO saknas och inget UO har mer än en huvudman.
+Påståendet är inte bara text: `uo_code` har en främmandenyckel mot
+`expenditure_areas.code` (migration 000036), så en felstavad UO-kod avvisas
+av databasen i stället för att tyst tappa ett utgiftsområde från en
+utskottssida.
+
+Listan visas bara på `/committees/:code`. Listendpointen `/committees`
+returnerar `expenditureAreas` tomt — den slår inte upp fördelningen per
+utskott.
 
 ## Hur du själv kommer åt datan
 Riksdagsordningen med samtliga bilagor och tilläggsbestämmelser publiceras
@@ -59,7 +66,10 @@ som används här — se "Begränsningar" nedan.
   rör inte någon av de 27 UO-utskott-kopplingarna som redan finns i denna
   tabell — den påverkar alltså ingenting som sajten visar idag. Om en
   framtida lagändring faktiskt omfördelar ett UO läggs en ny rad till med
-  ett senare `in_force_from`, den gamla raden behålls oförändrad.
+  ett senare `in_force_from`, den gamla raden behålls oförändrad. Läsningen
+  väljer den senaste ikraftträdda raden **per `uo_code`**, aldrig ett globalt
+  `max(in_force_from)`: en delrevidering med en enda ny rad ska flytta just
+  det UO:t och lämna de övriga 26 orörda.
 - Detta är en engångs-seed, inte ett API. Den uppdateras manuellt när
   bilagan ändras i sak, inte på ett fast schema.
 
