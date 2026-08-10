@@ -466,7 +466,9 @@ docker exec swedish-democratic-tracker-postgres-1 psql -U riksdagskollen -d riks
   WHERE m.uo_code IS NULL;"
 ```
 
-Expected: `rows = 27`, `uo = 27`, `utskott = 12`, and the second query returns **zero rows** — no orphan UO. If any UO is unmatched, the codes in `expenditure_areas` differ from `UO1`…`UO27`; fix the seed to match the existing codes rather than changing `expenditure_areas`.
+Expected: `rows = 27`, `uo = 27`, `utskott = 15`, and the second query returns **zero rows** — no orphan UO.
+
+The 15 matters: it means every one of the 15 standing committees bereder at least one utgiftsområde, which is the "no orphans either way" half of the strict partition. A lower number would mean some committee handles no expenditure area, contradicting #84. If any UO is unmatched, the codes in `expenditure_areas` differ from `UO1`…`UO27`; fix the seed to match the existing codes rather than changing `expenditure_areas`.
 
 - [ ] **Step 5: Write the data source doc**
 
