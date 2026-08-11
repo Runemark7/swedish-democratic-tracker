@@ -112,20 +112,6 @@ func (s *Service) ListAgenda(ctx context.Context) ([]domain.AgendaItem, error) {
 	return s.agendaRepo.ListAgenda(ctx)
 }
 
-func (s *Service) GetAgendaItem(ctx context.Context, id int) (*domain.AgendaItem, error) {
-	if s.agendaRepo == nil {
-		return nil, errors.New("agenda repository not configured")
-	}
-	item, err := s.agendaRepo.GetAgendaItem(ctx, id)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrNotFound
-		}
-		return nil, err
-	}
-	return item, nil
-}
-
 func (s *Service) ListLiveVotes(ctx context.Context, limit int) ([]domain.LiveVote, error) {
 	if s.liveVotesRepo == nil {
 		return nil, errors.New("live votes repository not configured")

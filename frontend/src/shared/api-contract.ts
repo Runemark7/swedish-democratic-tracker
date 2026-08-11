@@ -72,23 +72,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/riksdag/agenda/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get a single agenda item */
-        get: operations["getRiksdagAgendaItem"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/party-meta": {
         parameters: {
             query?: never;
@@ -1769,13 +1752,18 @@ export interface components {
             /** @description Dok ID of the related document (interpellation, betänkande, etc.) */
             relatedDokId?: string;
         };
+        /** @description One whole government document, not a point extracted from one. Carries no description and no status: a description would be our paraphrase of the document's words, and a status ('active', 'in_progress') would be our unsourced claim about how the government is progressing. The list of documents is ours — a missing document means we have not registered it, never that it does not exist. */
         RiksdagAgendaItem: {
             id: number;
             title: string;
-            description: string;
+            /** @description The document's short designation, e.g. "Prop. 2025/26:1". */
             source: string;
-            /** @enum {string} */
-            status: "active" | "in_progress" | "completed";
+            /** @description Who published it — a ministry, or the parties to an agreement. */
+            issuer: string;
+            /** @description Link to the document itself, in full. */
+            url: string;
+            /** @description Publication date as YYYY-MM-DD, null when we hold none. */
+            published?: string | null;
         };
         Party: {
             code?: string;
@@ -1987,35 +1975,6 @@ export interface operations {
             };
             /** @description Upstream data source unavailable */
             502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getRiksdagAgendaItem: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Agenda item details */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RiksdagAgendaItem"];
-                };
-            };
-            /** @description Agenda item not found */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };

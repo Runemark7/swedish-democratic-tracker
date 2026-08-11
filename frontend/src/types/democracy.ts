@@ -99,12 +99,19 @@ export interface AuthorityDetail extends Authority {
   recentDecisions: AgencyDecision[];
 }
 
+/** One whole government document we have registered.
+ *
+ *  Deliberately carries no description and no status. A description would be our
+ *  paraphrase rather than the document's words; a status would be our unsourced
+ *  claim about how the government is progressing, stale from the moment it is
+ *  written. Title, issuer, date and link let the reader read the source itself. */
 export interface AgendaItem {
   id: number;
   title: string;
-  description: string;
   source: string;
-  status: "active" | "in_progress" | "completed";
+  issuer: string;
+  url: string;
+  published: string | null;
 }
 
 export interface LevelData {

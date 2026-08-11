@@ -18,7 +18,7 @@ skapar `SourceRegistry.generated.ts`.
 | [seed-party-goals](./seed-party-goals.md) | Partimål (seed) | seed | partimål och scorecards |
 | [party-manifestos](./party-manifestos.md) | Partiernas valmanifest (katalog) | seed | valmanifestkatalogen (/manifestos) |
 | [seed-budget-data](./seed-budget-data.md) | Statsbudget (seed) | seed | budget per UO |
-| [national-agenda](./national-agenda.md) | Nationell politisk agenda (seed) | seed | nationell agenda (/, /riksdag, /agenda/:id) |
+| [national-agenda](./national-agenda.md) | Regeringens dokument (katalog) | seed | regeringens dokument (/regering) |
 | [region-budget-plan](./region-budget-plan.md) | Regioners mål och budget (seed) | seed | region: länk till officiell budget (/region/:code) |
 | [wikimedia-svg](./wikimedia-svg.md) | Sverige-karta SVG | seed | region/kommun-kartor |
 | [scb-myndighetsregistret](./scb-myndighetsregistret.md) | SCB Myndighetsregistret | api | myndighetsnamn, org-nummer, typ |
