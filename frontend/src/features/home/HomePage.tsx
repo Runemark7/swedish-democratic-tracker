@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useRiksdag, useRecentSpeeches } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Pill } from "@/components/charts";
-import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { PanelCard } from "./components/PanelCard";
 import { PartySpeechCard } from "./components/PartySpeechCard";
@@ -59,7 +58,6 @@ export function HomePage() {
   }
 
   const liveVotes = riksdag.liveVotes ?? [];
-  const agenda = riksdag.agenda ?? [];
 
   // Show the 5 most recent decisions on top, the next 5 below.
   // Riksdagen often goes weeks without votes (recess, summer); strict
@@ -369,15 +367,10 @@ export function HomePage() {
           })}
         </PanelCard>
 
-        {/* Panel 5 — Kommande beslut */}
-        <PanelCard
-          title="KOMMANDE BESLUT"
-          showAllHref="/votes"
-          isEmpty={agenda.length === 0}
-          emptyText="Ingen agenda publicerad."
-        >
-          <AgendaList items={agenda.slice(0, 5)} />
-        </PanelCard>
+        {/* The government-document index moved to /regering. It was titled
+            "KOMMANDE BESLUT", which the documents are not, and it is
+            government-level material that does not belong on a page about the
+            Riksdag. */}
       </div>
 
       {/* ── Panel 4 — Vad partierna säger (full width) ───────────────── */}

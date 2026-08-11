@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useRiksdag, useRiksdagBudgetHistory } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { MandateComposition, Pill, Trend } from "@/components/charts";
-import { AgendaList } from "@/components/AgendaList";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import type { Authority, LiveVote } from "@/types/democracy";
@@ -341,7 +340,6 @@ export function RiksdagPage() {
   if (isLoading || !data) return <Skeleton />;
 
   const { ruling, liveVotes, kpis, authorities } = data;
-  const agenda = data.agenda ?? [];
 
   const totalSeats = [...ruling.parties, ...(ruling.support ?? []), ...ruling.opposition].reduce((s, p) => s + p.seats, 0);
 
@@ -703,26 +701,10 @@ export function RiksdagPage() {
           </div>
         </div>
 
-        {/* Right card — AGENDA */}
-        <div
-          style={{
-            background: "var(--color-sdt-surface)",
-            padding: isMobile ? 16 : 24,
-          }}
-        >
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "0.15em",
-              color: "var(--color-fg-muted)",
-              marginBottom: 16,
-            }}
-          >
-            AGENDA · STYRETS PRIORITERINGAR
-          </div>
-          <AgendaList items={agenda} />
-        </div>
+        {/* The government-document index moved to /regering. It was headed
+            "STYRETS PRIORITERINGAR", which named our own selection of five
+            points as the government's priorities, and it is government-level
+            material rather than something about the Riksdag. */}
       </div>
     </div>
   );

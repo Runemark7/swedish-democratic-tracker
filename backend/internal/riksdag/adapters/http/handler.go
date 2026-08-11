@@ -28,7 +28,6 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/riksdag/kpis", h.getKpis)
 	r.Get("/riksdag/government", h.getGovernment)
 	r.Get("/riksdag/agenda", h.getAgenda)
-	r.Get("/riksdag/agenda/{id}", h.getAgendaItem)
 	r.Get("/riksdag/live-votes", h.getLiveVotes)
 }
 
@@ -115,26 +114,6 @@ func (h *Handler) getAgenda(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonOK(w, items)
-}
-
-func (h *Handler) getAgendaItem(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		jsonError(w, "invalid agenda id", http.StatusBadRequest)
-		return
-	}
-
-	item, err := h.svc.GetAgendaItem(r.Context(), id)
-	if err != nil {
-		if errors.Is(err, riksdag.ErrNotFound) {
-			jsonError(w, "agenda item not found", http.StatusNotFound)
-			return
-		}
-		jsonError(w, "failed to fetch agenda item", http.StatusInternalServerError)
-		return
-	}
-	jsonOK(w, item)
 }
 
 func (h *Handler) getLiveVotes(w http.ResponseWriter, r *http.Request) {

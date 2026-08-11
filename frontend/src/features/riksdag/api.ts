@@ -71,12 +71,15 @@ export interface RiksdagGovernment {
 
 // ── Agenda API types (from /api/riksdag/agenda) ────────────────────────────────
 
+/** One whole government document. No description and no status by design —
+ *  see the RiksdagAgendaItem schema in api/openapi.yaml. */
 export interface RiksdagAgendaItem {
   id: number;
   title: string;
-  description: string;
   source: string;
-  status: string;
+  issuer: string;
+  url: string;
+  published: string | null;
 }
 
 // ── Live votes API types (from /api/riksdag/live-votes) ───────────────────────
@@ -141,12 +144,6 @@ export const riksdagApi = {
   getAgenda: (): Promise<RiksdagAgendaItem[]> =>
     fetch("/api/riksdag/agenda").then((r) => {
       if (!r.ok) throw new Error(`riksdag/agenda: ${r.status}`);
-      return r.json();
-    }),
-
-  getAgendaItem: (id: number): Promise<RiksdagAgendaItem> =>
-    fetch(`/api/riksdag/agenda/${id}`).then((r) => {
-      if (!r.ok) throw new Error(`riksdag/agenda/${id}: ${r.status}`);
       return r.json();
     }),
 
