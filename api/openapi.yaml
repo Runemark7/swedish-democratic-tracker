@@ -121,27 +121,6 @@ paths:
         "502":
           description: Upstream data source unavailable
 
-  /riksdag/agenda/{id}:
-    get:
-      operationId: getRiksdagAgendaItem
-      tags: [riksdag]
-      summary: Get a single agenda item
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Agenda item details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RiksdagAgendaItem"
-        "404":
-          description: Agenda item not found
-
   /party-meta:
     get:
       operationId: listPartyMeta
@@ -2574,19 +2553,32 @@ components:
 
     RiksdagAgendaItem:
       type: object
+      description: >-
+        One whole government document, not a point extracted from one. Carries no
+        description and no status: a description would be our paraphrase of the
+        document's words, and a status ('active', 'in_progress') would be our
+        unsourced claim about how the government is progressing. The list of
+        documents is ours — a missing document means we have not registered it,
+        never that it does not exist.
       properties:
         id:
           type: integer
         title:
           type: string
-        description:
-          type: string
         source:
           type: string
-        status:
+          description: The document's short designation, e.g. "Prop. 2025/26:1".
+        issuer:
           type: string
-          enum: [active, in_progress, completed]
-      required: [id, title, description, source, status]
+          description: Who published it — a ministry, or the parties to an agreement.
+        url:
+          type: string
+          description: Link to the document itself, in full.
+        published:
+          type: string
+          nullable: true
+          description: Publication date as YYYY-MM-DD, null when we hold none.
+      required: [id, title, source, issuer, url]
 
     Party:
       type: object

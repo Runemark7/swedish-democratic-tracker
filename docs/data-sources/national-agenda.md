@@ -1,53 +1,71 @@
 ---
 id: national-agenda
-name: Nationell politisk agenda (seed)
+name: Regeringens dokument (katalog)
 kind: seed
 upstream: https://www.regeringen.se/rattsliga-dokument/
-license: Public domain — Regeringskansliet
-freshness: manuell; uppdateras när regeringen presenterar nya beslut
-last_verified: 2026-06-19
-verification_status: frozen
+license: Regeringens dokument är offentliga; Tidöavtalet publiceras av partierna själva
+freshness: manuell; uppdateras när ett nytt program- eller budgetdokument registreras
+last_verified: 2026-08-11
+verification_status: verified
 verification_notes: ~
 used_by:
-  - / (Kommande beslut-panel)
-  - /riksdag (Agenda-kortet)
-  - /agenda/:id (agendadetalj)
+  - /regering (katalogen över regeringens program- och budgetdokument)
 ---
 
 ## Vad det är
-En manuellt kurerad lista över den sittande regeringens uttalade
-politiska prioriteringar på nationell nivå. Varje punkt är hämtad ur ett
-namngivet regeringsdokument — Tidöavtalet, budgetpropositionen,
-försvarspropositionen eller motsvarande — och bär sin egen primärkälla i
-`source`-fältet. Det här är inte en härledning eller gissning: det är en
-sammanställning av vad regeringen själv har skrivit, med källa.
+En katalog över regeringens program- och budgetdokument för mandatperioden.
+Katalogen pekar på dokumenten i sin helhet. Den innehåller inga
+sammanfattningar, inga citat och ingen bedömning av hur långt regeringen har
+kommit med något.
+
+Varje post består av titel, dokumentbeteckning, avsändare, publiceringsdatum
+och en länk till dokumentet.
 
 ## Hur du själv kommer åt datan
-Källdokumenten är offentliga och publiceras av Regeringskansliet på
-regeringen.se. Tidöavtalet finns under "Rättsliga dokument →
-Överenskommelse"; budget- och försvarspropositioner under "Rättsliga
-dokument → Proposition". Sök på dokumentets titel (t.ex. "Tidöavtalet"
-eller "Budgetpropositionen 2024") för att läsa originaltexten och
-verifiera varje punkt själv.
+Dokumenten publiceras av avsändaren själv. Katalogen lagrar en `url` till den
+publiceringen, och länken går till hela dokumentet — inte till vår läsning av
+det.
+
+Kontrollerade 2026-08-11:
+
+- Tidöavtalet – Överenskommelse för Sverige, 2022-10-14:
+  <https://www.liberalerna.se/wp-content/uploads/tidoavtalet-overenskommelse-for-sverige-slutlig.pdf>
+- Budgetpropositionen för 2026 (Prop. 2025/26:1), Finansdepartementet,
+  2025-09-22:
+  <https://www.regeringen.se/rattsliga-dokument/proposition/2025/09/2025261/>
+
+Tidöavtalet är en överenskommelse mellan fyra partier och inte en statlig
+handling, så det finns ingen neutral utgivare att länka till. Vi länkar den
+version en av de undertecknande partierna publicerar, och säger det här.
 
 ## Schema/fält vi använder
-- `title` — kort rubrik för prioriteringen.
-- `description` — beskrivning i klartext.
-- `source` — det namngivna regeringsdokument punkten bygger på
-  (t.ex. "Tidöavtalet 2022").
-- `status` — `active`, `in_progress`, `completed` eller `cancelled`.
+- `title` — dokumentets titel som avsändaren skrivit den.
+- `source` — dokumentbeteckning, t.ex. "Prop. 2025/26:1".
+- `issuer` — vem som publicerat dokumentet: ett departement, eller parterna
+  bakom en överenskommelse.
+- `url` — länk till hela dokumentet.
+- `published` — publiceringsdatum.
+- `sort_order` — visningsordning.
 
 ## Begränsningar och kända problem
-- **Endast nationell nivå.** Det finns ingen motsvarande strukturerad
-  källa för regioners eller kommuners årsplaner, så agendan visas inte på
-  region- och kommunsidor.
-- Listan uppdateras inte automatiskt — den speglar dokumenten vid senaste
-  manuella genomgång (se `last_verified`), inte realtidsbeslut.
-- Formuleringen i `title`/`description` är en förkortning av regeringens
-  text; den fullständiga lydelsen finns alltid i den länkade primärkällan.
+- **Katalogen är vår, inte regeringens.** Att ett dokument saknas betyder att vi
+  inte har registrerat det — inte att det inte finns. Sidan skriver det.
+- **Vi sammanfattar inte och vi betygsätter inte.** Tidigare innehöll den här
+  källan fem handplockade punkter ur dokument som Tidöavtalet, var och en med en
+  beskrivning som vi hade formulerat och en `status` (`active`,
+  `in_progress`) som vi hade satt. Statusen var ett påstående om nuläget — hur
+  regeringen låg till — utan källa, och den hade inte rörts sedan raderna lades
+  in 2026-05-19. Att välja fem punkter ur hundratals är dessutom ett redaktionellt
+  val. Både beskrivningarna och statusen är borttagna; se
+  [#102](https://github.com/Runemark7/swedish-democratic-tracker/issues/102).
+- **Urvalet av dokument är ett val vi gör**, och det är synligt: läsaren kan
+  invända mot vilka dokument vi har registrerat. Det är en invändning som går att
+  bemöta, till skillnad från en omskrivning läsaren inte kan jämföra med
+  originalet.
+- **Uppdatering kräver driftsättning.** Katalogen ligger i en seed-migration, så
+  ett nytt dokument kräver en ny version av sajten.
 
 ## Hur vi bearbetar
-Vi läser regeringens egna policydokument, plockar ut konkreta åtgärder
-och sammanfattar varje åtgärd i en rad med titel, beskrivning, status och
-namngiven källa. Inga punkter härleds eller genereras — om en åtgärd inte
-står i ett offentligt regeringsdokument tas den inte med.
+Ingen bearbetning: dokumenten läses inte in, sammanfattas inte och tolkas inte.
+Katalogen består av titel, beteckning, avsändare, datum och länk, kontrollerade
+mot avsändarens egen publicering.

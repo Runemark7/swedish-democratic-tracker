@@ -257,7 +257,14 @@ function mapGovernment(gov: RiksdagGovernment): LevelData["ruling"] {
 }
 
 function mapAgenda(items: RiksdagAgendaItem[]): AgendaItem[] {
-  return items.map(i => ({ id: i.id, title: i.title, description: i.description, source: i.source, status: i.status as AgendaItem["status"] }));
+  return items.map(i => ({
+    id: i.id,
+    title: i.title,
+    source: i.source,
+    issuer: i.issuer,
+    url: i.url,
+    published: i.published,
+  }));
 }
 
 function mapLiveVotes(votes: RiksdagLiveVote[]): LiveVote[] {

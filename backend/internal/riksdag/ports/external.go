@@ -100,8 +100,10 @@ type GovRepository interface {
 }
 
 type AgendaRepository interface {
+	// ListAgenda returns the government documents we have registered. There is
+	// no single-item read: an item is a title and a link to a primary source, so
+	// a detail view would add nothing the list does not carry.
 	ListAgenda(ctx context.Context) ([]domain.AgendaItem, error)
-	GetAgendaItem(ctx context.Context, id int) (*domain.AgendaItem, error)
 }
 
 type LiveVotesRepository interface {

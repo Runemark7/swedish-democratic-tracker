@@ -28,14 +28,14 @@ export const SOURCES: Record<string, SourceEntry> = {
   },
   "national-agenda": {
     "id": "national-agenda",
-    "name": "Nationell politisk agenda (seed)",
+    "name": "Regeringens dokument (katalog)",
     "kind": "seed",
     "upstream": "https://www.regeringen.se/rattsliga-dokument/",
-    "license": "Public domain — Regeringskansliet",
-    "freshness": "manuell; uppdateras när regeringen presenterar nya beslut",
-    "lastVerified": "Fri Jun 19 2026 02:00:00 GMT+0200 (Central European Summer Time)",
-    "blurb": "En manuellt kurerad lista över den sittande regeringens uttalade politiska prioriteringar på nationell nivå. Varje punkt är hämtad ur ett namngivet regeringsdokument — Tidöavtalet, budgetpropositionen, försvarspropositionen eller motsvarande — och bär sin egen primärkälla i `source`-fältet. Det här är inte en härledning eller gissning: det är en sammanställning av vad regeringen själv har skrivit, med källa.",
-    "verificationStatus": "frozen",
+    "license": "Regeringens dokument är offentliga; Tidöavtalet publiceras av partierna själva",
+    "freshness": "manuell; uppdateras när ett nytt program- eller budgetdokument registreras",
+    "lastVerified": "Tue Aug 11 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "blurb": "En katalog över regeringens program- och budgetdokument för mandatperioden. Katalogen pekar på dokumenten i sin helhet. Den innehåller inga sammanfattningar, inga citat och ingen bedömning av hur långt regeringen har kommit med något.",
+    "verificationStatus": "verified",
     "verificationNotes": null
   },
   "party-manifestos": {
