@@ -953,6 +953,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/committees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Committees that decided at least one votering in a mandate period */
+        get: operations["listCommittees"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/committees/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One committee with the utgiftsområden it bereder */
+        get: operations["getCommittee"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1786,6 +1820,22 @@ export interface components {
         MinisterDetail: {
             minister?: components["schemas"]["Minister"];
             proposals?: components["schemas"]["Proposal"][];
+        };
+        Committee: {
+            /** @description Canonical committee code, e.g. "SoU". ALL-CAPS vintages are normalised. */
+            code: string;
+            /** @description Swedish name, or the code itself when we have no name for it. The lookup is a display aid and never a gate on what the record contains. */
+            name: string;
+            /** @description How many voteringar the committee decided in the period, counted as the record itself identifies a votering (one votering_id). A förslagspunkt decided by two voteringar therefore counts twice, because the record holds two. A count of the record, not a measure of importance — never presented as a ranking. */
+            voteringar: number;
+            /** @description Utgiftsområden the committee bereder, per the Bilaga to riksdagsordningen. Amounts only, never a share of the total: a share would understate a committee whose remit exceeds its areas. Populated only by GET /committees/{code}; the list endpoint returns it empty rather than issuing one query per committee. */
+            expenditureAreas: components["schemas"]["CommitteeExpenditureArea"][];
+        };
+        CommitteeExpenditureArea: {
+            code: string;
+            name: string;
+            /** Format: int64 */
+            amountKsek: number;
         };
     };
     responses: {
@@ -2929,6 +2979,75 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    listCommittees: {
+        parameters: {
+            query: {
+                /** @description Mandate period code, e.g. "2022-2026". */
+                period: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Committees, alphabetical by code. expenditureAreas is empty here — only GET /committees/{code} populates it. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Committee"][];
+                };
+            };
+            /** @description No such mandate period. A period we do not hold is refused rather than answered with an empty list, which would read as "this parliament decided nothing". */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCommittee: {
+        parameters: {
+            query: {
+                period: string;
+                /** @description Budget year for the amounts. Defaults to the newest year with decided figures. A year without decided figures is a 400, never a 200 carrying zero amounts. */
+                year?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Committee code, matched case-insensitively — "fiu" and "FiU" are the same committee. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The committee, with the utgiftsområden it bereder */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Committee"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            /** @description No such mandate period, or that committee decided nothing in it */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
             };
         };
     };

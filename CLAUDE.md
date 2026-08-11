@@ -141,6 +141,7 @@ graph TD
             BS["budget"]
             RS["regions / municipalities"]
             RKS["riksdag / myndigheter"]
+            CS["committees"]
         end
 
         subgraph ingestion["Ingestion scheduler (cron)"]
@@ -168,6 +169,7 @@ graph TD
         KLS["SCB KLS AM0102\napi.scb.se — månadsanställda statlig sektor"]
         AKU["SCB AKU AM0401\napi.scb.se — arbetslöshetstal"]
         KPIINF["SCB KPI PR0101\napi.scb.se — inflationstakt årsförändring"]
+        RO["Riksdagsordningen 2014:801\nBilaga tb 7.5.1 — utskott→utgiftsområde"]
     end
 
     DB[(PostgreSQL 17)]
@@ -185,6 +187,7 @@ graph TD
     RS -->|procurement| TED
     RKS -->|agency expenditure ZIP/CSV| SK
     RKS -->|KLS headcount PxWeb POST| KLS
+    CS -->|statutory allocation| RO
     SD -->|2022 mandates + population| SC
     SD --> DB
 
