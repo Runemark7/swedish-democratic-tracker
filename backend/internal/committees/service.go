@@ -74,6 +74,11 @@ func (s *Service) Get(ctx context.Context, periodCode, code string, budgetYear i
 		return nil, err
 	}
 	c.ExpenditureAreas = areas
+	// The resolved year travels with the amounts. Callers cannot infer it:
+	// budgetYear 0 means "newest decided", which is a moving target, and an
+	// amount presented without its year quietly means something different once
+	// a newer budget is seeded.
+	c.BudgetYear = year
 	return c, nil
 }
 

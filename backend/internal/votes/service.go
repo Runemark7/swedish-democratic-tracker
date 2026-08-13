@@ -2,6 +2,7 @@ package votes
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -9,6 +10,13 @@ import (
 	"riksdagskollen/internal/votes/domain"
 	"riksdagskollen/internal/votes/ports"
 )
+
+// ErrPeriodNotFound mirrors committees.ErrPeriodNotFound's message exactly —
+// same status, same words — for a mandate period the record does not hold.
+// Kept as votes' own sentinel rather than importing the committees package:
+// the votes repository already queries mandate_periods directly, so no
+// cross-feature dependency is needed to answer this.
+var ErrPeriodNotFound = errors.New("unknown mandate period")
 
 type Service struct {
 	repo      ports.VoteRepository
@@ -143,6 +151,26 @@ func (s *Service) ListByPolitician(ctx context.Context, f ports.ListVotesFilter)
 
 func (s *Service) ListDistinctByCommitteePrefix(ctx context.Context, prefix string) ([]ports.VoteSummary, error) {
 	return s.repo.ListDistinctByCommitteePrefix(ctx, prefix)
+}
+
+// ListByCommitteeWithPositions returns the committee's voteringar — the RÖSTAT
+// row on the committee page — in one mandate period, with each party's
+// dominant position, plus the total count for pagination.
+//
+// Refuses an unrecognised period with ErrPeriodNotFound rather than answering
+// it with an empty page: 200 {"items":[],"total":0} for ?period=2018-2022 is
+// indistinguishable from a committee that decided nothing, which is a claim
+// about the record this endpoint is in no position to make — the same
+// reasoning committees.Service.Get already applies to GET /committees/{code}.
+func (s *Service) ListByCommitteeWithPositions(ctx context.Context, periodCode, code string, limit, offset int) ([]ports.CommitteeVotering, int, error) {
+	ok, err := s.repo.PeriodExists(ctx, periodCode)
+	if err != nil {
+		return nil, 0, err
+	}
+	if !ok {
+		return nil, 0, ErrPeriodNotFound
+	}
+	return s.repo.ListByCommitteeWithPositions(ctx, periodCode, code, limit, offset)
 }
 
 func (s *Service) ListDistinctVotes(ctx context.Context, f ports.ListDistinctVotesFilter) (ports.ListDistinctVotesResult, error) {

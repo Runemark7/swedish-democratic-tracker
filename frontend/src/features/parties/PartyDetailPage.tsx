@@ -1,12 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { partiesApi } from "./api";
+import { committeesApi } from "@/features/committees/api";
 import { politiciansApi } from "@/features/politicians/api";
 import { regeringApi } from "@/features/regering/api";
 import { PARTY_COLORS, partyShortToName } from "@/shared/design";
-import { useSpeechesByParty } from "@/hooks/useDemocracy";
+import { useRecordCoverage, useSpeechesByParty } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { GoalCard } from "@/shared/GoalCard";
+import { SourceMarker } from "@/components/sources/SourceMarker";
+import { swedishDate } from "@/shared/dates";
+import type { Goal } from "@/shared/types";
 
 type Tab = "mal" | "anforanden" | "politiker";
 
@@ -47,6 +52,22 @@ export function PartyDetailPage() {
     staleTime: 60_000,
   });
 
+  // The record is bound to a named mandate period, so the committee list is
+  // the one the period's record actually shows — never a hardcoded vintage.
+  const { data: coverage, isError: coverageError } = useRecordCoverage();
+  const period = coverage?.mandate.code;
+  // Without the period the committee query never runs, so it reports neither
+  // loading nor error. Treating that silence as "loaded" is what let a coverage
+  // outage publish every goal as lacking a committee in our reading.
+  const periodPending = !period && !coverageError;
+
+  const { data: committees, isLoading: loadingCommittees, isError: committeesError } = useQuery({
+    queryKey: ["committees", period],
+    queryFn: () => committeesApi.listCommittees(period!),
+    enabled: !!period && tab === "mal",
+    staleTime: 5 * 60_000,
+  });
+
   const { data: speeches, isLoading: loadingSpeeches } = useSpeechesByParty(
     tab === "anforanden" ? party : undefined,
     50,
@@ -69,6 +90,32 @@ export function PartyDetailPage() {
     .filter((m) => m.party === party && m.active);
 
   const pc = PARTY_COLORS[party];
+
+  // One subject taxonomy: committees. `topic` survives only as a tag on the
+  // card. Every committee in the period is listed, not only those where this
+  // party has goals — an absent row would read as the subject not existing.
+  //
+  // A goal whose remit spans several committees appears under each of them, so
+  // the section counts deliberately do not sum to the party's total. That is
+  // stated on the page rather than left for the reader to infer from arithmetic.
+  const goalList: Goal[] = goals ?? [];
+  const byCommittee = new Map<string, Goal[]>();
+  for (const c of committees ?? []) byCommittee.set(c.code, []);
+  const placed = new Set<number>();
+  for (const g of goalList) {
+    for (const code of g.relevantCommittees ?? []) {
+      const bucket = byCommittee.get(code);
+      if (bucket) {
+        bucket.push(g);
+        placed.add(g.id);
+      }
+    }
+  }
+  // A goal carrying no committee, or one naming a committee absent from the
+  // period's record, would otherwise vanish from a page that still claims to
+  // show the party's goals. None exist today; this is here so that if one ever
+  // does, it is visible rather than silently dropped.
+  const unplaced = goalList.filter((g) => !placed.has(g.id));
 
   return (
     <div className="sdt-page" style={{ paddingBottom: 64 }}>
@@ -190,54 +237,127 @@ export function PartyDetailPage() {
       >
         {tab === "mal" && (
           <section>
-            {loadingGoals && (
+            {(loadingGoals || loadingCommittees || periodPending) && (
               <div style={{ fontSize: 13, color: "var(--color-fg-muted)" }}>Laddar mål...</div>
             )}
-            {!loadingGoals && (!goals || goals.length === 0) && (
-              <p style={{ fontStyle: "italic", color: "var(--color-fg-muted)", fontSize: 13 }}>
-                Inga registrerade mål för {partyShortToName(party)}.
-              </p>
+
+            {/* Without the committee list there are no areas to order the goals
+                by, and every goal falls through to "Utan utskottsområde" — a
+                section whose caption says the goal names no committee in our
+                reading, which for all 73 of them is false. The goals are still
+                facts, so they are shown; only the ordering is missing. */}
+            {!loadingGoals && (committeesError || coverageError) && (
+              <>
+                <p className="text-sm text-on-surface-variant leading-relaxed mb-4">
+                  Vi kunde inte hämta utskottsindelningen just nu, så målen visas
+                  utan områden. Det säger inget om vilka områden målen rör —
+                  försök igen.
+                </p>
+                <div className="space-y-3">
+                  {goalList.map((g) => (
+                    <GoalCard key={g.id} goal={g} party={party} />
+                  ))}
+                </div>
+              </>
             )}
-            {goals && goals.length > 0 && (
-              <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-                {goals.map((g) => (
-                  <li
-                    key={g.id}
-                    style={{
-                      borderBottom: "1px solid var(--color-border)",
-                      padding: "12px 0",
-                    }}
-                  >
-                    <div style={{ fontFamily: "var(--font-serif)", fontSize: 15, color: "var(--color-fg)" }}>
-                      {g.goalText}
+
+            {!loadingGoals && !loadingCommittees && !committeesError && !coverageError && !periodPending && (
+              <>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  {goalList.length} mål från valmanifest och partiprogram, ordnade
+                  efter utskottets område. Ett mål som rör flera områden visas under
+                  vart och ett, så summan av områdena är större än antalet mål.{" "}
+                  <SourceMarker sourceId="seed-party-goals" />
+                </p>
+
+                {coverage && (
+                  <p className="text-[11px] text-on-surface-variant mt-1 mb-5 leading-relaxed">
+                    {/* The record is bound to a named mandate period so votes from
+                        the next parliament are never attributed to this one. */}
+                    <span className="font-semibold">
+                      {coverage.mandate.label}
+                      {coverage.mandate.ended ? " (avslutad)" : ""}
+                    </span>
+                    {" · "}
+                    {/* Completeness is a claim, so it is stated rather than implied.
+                        The count we hold is read live; Riksdagen's count is fetched
+                        on a schedule, so its date is stated too — a denominator of
+                        unknown age is what let this figure drift toward looking more
+                        complete than it was. */}
+                    {coverage.ingested.toLocaleString("sv-SE")}
+                    {coverage.expected > 0
+                      ? ` av ${coverage.expected.toLocaleString("sv-SE")} omröstningar`
+                      : " omröstningar (Riksdagens antal för perioden saknas)"}
+                    <SourceMarker sourceId="riksdagen" />
+                    {coverage.expected > 0 && coverage.denominatorCheckedAt && (
+                      <> · Riksdagens antal hämtat {swedishDate(coverage.denominatorCheckedAt)}</>
+                    )}
+                    {coverage.ingested < coverage.expected && (
+                      <>
+                        {" "}
+                        <Link to="/data" className="underline">
+                          Vad saknas?
+                        </Link>
+                      </>
+                    )}
+                  </p>
+                )}
+
+                {(committees ?? []).map((c) => {
+                  const gg = byCommittee.get(c.code) ?? [];
+                  return (
+                    <section key={c.code} className="mb-8">
+                      <h3 className="font-display text-base font-semibold text-on-surface mb-3 pb-1">
+                        <Link to={`/committees/${c.code}`} className="hover:underline">
+                          {c.name}
+                        </Link>
+                      </h3>
+                      {gg.length > 0 ? (
+                        <div className="space-y-3">
+                          {gg.map((g) => (
+                            <GoalCard key={g.id} goal={g} party={party} />
+                          ))}
+                        </div>
+                      ) : (
+                        /* Our seed reading is the gap, never the party's silence.
+                           "Inga mål inom detta område" would read as the party
+                           having nothing to say about the subject. */
+                        <p className="text-sm text-on-surface-variant">
+                          Vi har inga inlästa mål från {partyShortToName(party)} inom
+                          detta område. <SourceMarker sourceId="seed-party-goals" />
+                        </p>
+                      )}
+                    </section>
+                  );
+                })}
+
+                {unplaced.length > 0 && (
+                  <section className="mb-8">
+                    <h3 className="font-display text-base font-semibold text-on-surface mb-3 pb-1">
+                      Utan utskottsområde
+                    </h3>
+                    <p className="text-sm text-on-surface-variant mb-3">
+                      Dessa mål saknar utskottsområde i vår inläsning, eller pekar på
+                      ett utskott som inte finns i periodens register. De visas här så
+                      att de inte försvinner ur listan.{" "}
+                      <SourceMarker sourceId="seed-party-goals" />
+                    </p>
+                    <div className="space-y-3">
+                      {unplaced.map((g) => (
+                        <GoalCard key={g.id} goal={g} party={party} />
+                      ))}
                     </div>
-                    <div
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: 11,
-                        color: "var(--color-fg-muted)",
-                        marginTop: 4,
-                      }}
-                    >
-                      {g.topic} · {g.relevantVotes ?? 0} matchade omröstningar
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                  </section>
+                )}
+
+                {goalList.length === 0 && (
+                  <p style={{ fontStyle: "italic", color: "var(--color-fg-muted)", fontSize: 13 }}>
+                    Vi har inga inlästa mål från {partyShortToName(party)}.{" "}
+                    <SourceMarker sourceId="seed-party-goals" />
+                  </p>
+                )}
+              </>
             )}
-            <Link
-              to={`/parties/${party}/goals`}
-              style={{
-                display: "inline-block",
-                marginTop: 16,
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                color: "var(--color-accent)",
-                textDecoration: "none",
-              }}
-            >
-              Visa fullständig målvy →
-            </Link>
           </section>
         )}
 

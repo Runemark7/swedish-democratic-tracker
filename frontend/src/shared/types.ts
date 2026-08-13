@@ -458,6 +458,77 @@ export interface RiksdagDocumentFull extends RiksdagDocument {
 }
 
 
+// ── Committees (utskott) ──────────────────────────────────────────────
+// Mirrors components["schemas"]["Committee"] in api-contract.ts, which this
+// file hand-duplicates. A field that differs in name or nullability fails tsc,
+// and that failure is the only check there is.
+
+export interface CommitteeExpenditureArea {
+  code: string;
+  name: string;
+  amountKsek: number;
+}
+
+export interface Committee {
+  code: string;
+  name: string;
+  /** Voteringar decided in the period, counted as the record identifies one
+   *  (votering_id). A count of the record, never a ranking. */
+  voteringar: number;
+  /** Populated only by GET /committees/{code}; the list endpoint returns it
+   *  empty rather than issuing one query per committee. */
+  expenditureAreas: CommitteeExpenditureArea[];
+  /** The budget year `expenditureAreas` amounts were allocated for. 0 from the
+   *  list endpoint, which populates no amounts. The caller cannot derive it:
+   *  the detail endpoint resolves an unspecified year to the newest decided
+   *  one, which moves as budgets are seeded. */
+  budgetYear: number;
+}
+
+/**
+ * How a party's members voted on one förslagspunkt.
+ *
+ * "Delad" means they split evenly between two or more positions. It exists so
+ * the record does not resolve a tie to whichever position happens to sort
+ * first — that rule once published "L: Frånvarande" for a votering where eight
+ * L members voted Ja.
+ */
+export interface PartyPosition {
+  party: PartyCode;
+  position: "Ja" | "Nej" | "Avstår" | "Frånvarande" | "Delad";
+}
+
+/**
+ * One decided förslagspunkt with every party's position.
+ *
+ * Carries no date. Votes hold only `system_datum`, which is when Riksdagen last
+ * touched the row, so rendering it as a decision date would repeat a bug the
+ * site already removed.
+ */
+export interface CommitteeVotering {
+  /** Distinguishes the förslagspunkter decided by two separate voteringar —
+   *  same beteckning and förslagspunkt, different votering, possibly
+   *  contradictory party positions. Without it they read as one decision
+   *  contradicting itself. */
+  voteringId: string;
+  beteckning: string;
+  forslagspunkt: string;
+  documentTitle: string;
+  riksmote: string;
+  /** True when the record holds more than one votering for this (riksmöte,
+   *  beteckning, förslagspunkt). Computed server-side over the committee's
+   *  whole record: a pair can straddle a page boundary, so a page counting its
+   *  own duplicates marks neither half. */
+  decidedByMultipleVoteringar: boolean;
+  partyPositions: PartyPosition[];
+}
+
+export interface CommitteeVoteringPage {
+  items: CommitteeVotering[];
+  /** Total for the committee, independent of paging. */
+  total: number;
+}
+
 // ── Record coverage ───────────────────────────────────────────────────
 export interface MandatePeriod {
   code: string;

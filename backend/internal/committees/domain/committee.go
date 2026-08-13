@@ -18,6 +18,12 @@ type Committee struct {
 	// no expenditure area of its own, and empty on the list endpoint, which
 	// does not query them per committee.
 	ExpenditureAreas []ExpenditureArea `json:"expenditureAreas"`
+	// BudgetYear is the year the amounts in ExpenditureAreas were allocated
+	// for. An amount with no year is a number whose meaning changes silently
+	// the moment a newer budget is seeded, so the year the service actually
+	// resolved travels with the amounts rather than being left for the reader
+	// to guess. Zero on the list endpoint, which populates no amounts.
+	BudgetYear int `json:"budgetYear"`
 }
 
 // ExpenditureArea is one utgiftsområde with the amount allocated to it.

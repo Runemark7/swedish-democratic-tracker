@@ -1167,6 +1167,98 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
 
+  /committees/{code}/goals:
+    get:
+      operationId: listGoalsByCommittee
+      summary: Party goals whose relevant_committees contains this committee
+      description: >-
+        The LOVAT row. Goals are the parties' own stated aims, alphabetical by
+        party. An empty result means our seed data holds no goals for this area,
+        which the caller must state as our gap and never as the parties' silence.
+      tags: [committees]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: >-
+            Goals, alphabetical by party. relevantVotes is not computed on
+            this endpoint and is always 0 here — it is not a claim that
+            nothing matched. The matching service scores one party's
+            scorecard at a time, and this endpoint spans every party;
+            read relevantVotes from GET /parties/{party}/goals instead.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/GoalWithAlignment" }
+
+  /committees/{code}/votes:
+    get:
+      operationId: listVotesByCommittee
+      summary: Voteringar decided by this committee, with each party's position
+      description: >-
+        The RÖSTAT row. Each item is one förslagspunkt with the dominant
+        position every party took, stated as fact only, alphabetical by party
+        within a votering, no share or rank. A party appears as "Delad" when
+        its members split evenly between two or more positions, rather than
+        the record silently picking one. Ballots cast under no party
+        affiliation ("-") are excluded — they remain in the record and on the
+        decision page, they simply do not occupy a party's slot here. Carries
+        no decision date: votes hold only system_datum, which is when
+        Riksdagen last touched the record, so the record cannot be shown in
+        chronological order. Ordered by riksmöte, then the numeric part of the
+        beteckning, then the numeric förslagspunkt.
+      tags: [committees]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+          description: >-
+            Committee code, matched case-insensitively — "sou" and "SoU" are
+            the same committee.
+        - name: period
+          in: query
+          required: true
+          schema: { type: string }
+          description: >-
+            Mandate period code, e.g. "2022-2026" — required for the same
+            reason GET /committees/{code} requires it: an unscoped query would
+            blend mandate periods together the moment the record holds more
+            than one.
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: A page of voteringar plus the total for the committee
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CommitteeVoteringPage" }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: >-
+            No such mandate period. A period we do not hold is refused rather
+            than answered with an empty page, which would read as "this
+            committee decided nothing".
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
 components:
   parameters:
     PartyParam:
@@ -1479,6 +1571,83 @@ components:
                 The alignment percentage was retired: it systematically
                 disadvantaged opposition parties, scoring a party that voted Nej
                 to the rejection of its own motion as breaking its own promise.
+
+    PartyPosition:
+      type: object
+      required: [party, position]
+      description: >-
+        How one party voted on a förslagspunkt — the position most of its
+        members took. Stated as fact, never scored against a promise. Never
+        carries the record's "-" placeholder for ballots with no party
+        affiliation: this is a per-party list, and "-" is not a party.
+      properties:
+        party:
+          $ref: "#/components/schemas/PartyCode"
+        position:
+          type: string
+          enum: [Ja, Nej, Avstår, Frånvarande, Delad]
+          description: >-
+            The position this party's members took. "Delad" means the
+            party's members split evenly between two or more positions —
+            partiets ledamöter delade sig jämnt mellan två eller flera
+            positioner — and is emitted instead of resolving the tie to
+            whichever position happens to sort first.
+
+    CommitteeVotering:
+      type: object
+      required:
+        [voteringId, beteckning, forslagspunkt, documentTitle, riksmote,
+         decidedByMultipleVoteringar, partyPositions]
+      description: >-
+        One decided förslagspunkt with every party's position. Carries no
+        date: votes hold only system_datum, which is when Riksdagen last
+        touched the record, so presenting it as a decision date would repeat
+        a bug the site already removed.
+      properties:
+        voteringId:
+          type: string
+          description: >-
+            Distinguishes the 18 förslagspunkter in 2022-2026 that were
+            genuinely decided by two separate voteringar — same beteckning
+            and förslagspunkt, different votering, possibly contradictory
+            party positions.
+        beteckning:
+          type: string
+        forslagspunkt:
+          type: string
+        documentTitle:
+          type: string
+        riksmote:
+          type: string
+          example: "2024/25"
+        decidedByMultipleVoteringar:
+          type: boolean
+          description: >-
+            True when the record holds more than one votering for this
+            (riksmöte, beteckning, förslagspunkt). Such a pair renders as two
+            rows that are identical apart from their party positions, which can
+            be opposite — without this flag they read as parties reversing
+            themselves on one question for no reason.
+
+            Computed server-side over the committee's whole record before
+            paging, because a caller sees one page at a time and a pair can
+            straddle a page boundary: NU7 punkt 2 in 2025/26 sits at indices
+            149 and 150, so a client counting duplicates within its own page
+            marks neither half.
+        partyPositions:
+          type: array
+          items: { $ref: "#/components/schemas/PartyPosition" }
+
+    CommitteeVoteringPage:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/CommitteeVotering" }
+        total:
+          type: integer
+          description: Total voteringar for this committee, independent of paging
 
     GoalVoteBreakdown:
       type: object
@@ -2640,7 +2809,7 @@ components:
 
     Committee:
       type: object
-      required: [code, name, voteringar, expenditureAreas]
+      required: [code, name, voteringar, expenditureAreas, budgetYear]
       properties:
         code:
           type: string
@@ -2667,6 +2836,19 @@ components:
             Populated only by GET /committees/{code}; the list endpoint returns
             it empty rather than issuing one query per committee.
           items: { $ref: "#/components/schemas/CommitteeExpenditureArea" }
+        budgetYear:
+          type: integer
+          description: >-
+            The budget year the amounts in expenditureAreas were allocated for.
+            Without a year an amount silently changes meaning the moment a newer
+            budget is seeded, and the caller cannot derive it: omitting ?year=
+            resolves to "the newest decided year", which is a moving target.
+
+            0 on GET /committees, which populates no amounts and so has no year
+            to report. Present but 0 rather than omitted, so a caller that finds
+            0 knows it is looking at the list shape and not at a year we failed
+            to resolve.
+          example: 2026
 
     CommitteeExpenditureArea:
       type: object
