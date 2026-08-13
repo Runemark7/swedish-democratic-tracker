@@ -98,6 +98,14 @@ func (r *fakeVoteRepo) UpdateProposalOriginForPoint(context.Context, string, str
 	return 0, nil
 }
 
+func (r *fakeVoteRepo) ListByCommitteeWithPositions(context.Context, string, string, int, int) ([]voteports.CommitteeVotering, int, error) {
+	return nil, 0, nil
+}
+
+func (r *fakeVoteRepo) PeriodExists(context.Context, string) (bool, error) {
+	return false, nil
+}
+
 type fakeCursors struct{ cur *ingPorts.Cursor }
 
 func (c *fakeCursors) Get(context.Context, string) (*ingPorts.Cursor, error) { return c.cur, nil }

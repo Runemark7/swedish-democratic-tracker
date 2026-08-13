@@ -34,3 +34,7 @@ func (s *Service) ListByParty(ctx context.Context, party string) ([]*domain.Goal
 func (s *Service) ListByTopic(ctx context.Context, party, topic string) ([]*domain.Goal, error) {
 	return s.repo.ListByTopic(ctx, party, topic)
 }
+
+func (s *Service) ListByCommittee(ctx context.Context, code string) ([]*domain.Goal, error) {
+	return s.repo.ListByCommittee(ctx, code)
+}

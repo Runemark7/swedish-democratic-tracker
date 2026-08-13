@@ -40,6 +40,12 @@ func (r *enrichRepo) ListDistinctVotes(context.Context, ports.ListDistinctVotesF
 func (r *enrichRepo) ListDistinctByCommitteePrefix(context.Context, string) ([]ports.VoteSummary, error) {
 	return nil, nil
 }
+func (r *enrichRepo) ListByCommitteeWithPositions(context.Context, string, string, int, int) ([]ports.CommitteeVotering, int, error) {
+	return nil, 0, nil
+}
+func (r *enrichRepo) PeriodExists(context.Context, string) (bool, error) {
+	return false, nil
+}
 
 type enrichClient struct{ calls int }
 

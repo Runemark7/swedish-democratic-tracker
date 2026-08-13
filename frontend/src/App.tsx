@@ -1,8 +1,8 @@
-import { Routes, Route, NavLink, useLocation, Link } from "react-router-dom";
+import { Routes, Route, NavLink, useLocation, Link, Navigate, useParams } from "react-router-dom";
 import { PartiesPage } from "./features/parties/PartiesPage";
 import { PartyDetailPage } from "./features/parties/PartyDetailPage";
-import { PartyGoalsPage } from "./features/parties/PartyGoalsPage";
 import { GoalVotesPage } from "./features/parties/GoalVotesPage";
+import { CommitteePage } from "./features/committees/CommitteePage";
 import { PoliticiansPage } from "./features/politicians/PoliticiansPage";
 import { PoliticianPage } from "./features/politicians/PoliticianPage";
 import { VotesPage } from "./features/votes/VotesPage";
@@ -155,6 +155,20 @@ function PillNav({ to, label, active }: PillNavProps) {
 }
 
 // ── Main App ───────────────────────────────────────────────────────────────
+/**
+ * /parties/:party/goals used to be a separate full record view. That view now
+ * lives in the party page's Mål tab, so the old URL redirects rather than 404s —
+ * it has been linked and shared.
+ *
+ * The redirect is absolute on purpose. A relative <Navigate to=".." /> resolves
+ * against the route hierarchy, and because this route is declared flat that
+ * lands on /parties, the list, rather than the party the reader asked for.
+ */
+function GoalsRedirect() {
+  const { party = "" } = useParams<{ party: string }>();
+  return <Navigate to={`/parties/${party}`} replace />;
+}
+
 export default function App() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
@@ -340,7 +354,8 @@ export default function App() {
           <Route path="/riksdag/myndigheter/:slug"             element={<AuthorityDetailPage />} />
           <Route path="/parties"                               element={<PartiesPage />} />
           <Route path="/parties/:party"                        element={<PartyDetailPage />} />
-          <Route path="/parties/:party/goals"                  element={<PartyGoalsPage />} />
+          <Route path="/committees/:code"                      element={<CommitteePage />} />
+          <Route path="/parties/:party/goals"                  element={<GoalsRedirect />} />
           <Route path="/parties/:party/goals/:goalId/votes"    element={<GoalVotesPage />} />
           <Route path="/politicians"                           element={<PoliticiansPage />} />
           <Route path="/politicians/:id"                       element={<PoliticianPage />} />

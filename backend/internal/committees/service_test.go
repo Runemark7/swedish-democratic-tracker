@@ -18,6 +18,9 @@ type stubRepo struct {
 	inPeriod     map[string]int
 	areas        []domain.ExpenditureArea
 	listCalls    int
+	// areasYear records the year the service actually queried amounts for, so
+	// a test can check the year it reports is that same year.
+	areasYear int
 }
 
 func (s *stubRepo) ListForPeriod(_ context.Context, _ string) ([]domain.Committee, error) {
@@ -45,7 +48,8 @@ func (s *stubRepo) DecidedBudgetYearExists(_ context.Context, year int) (bool, e
 	return s.decidedYears[year], nil
 }
 
-func (s *stubRepo) AreasFor(_ context.Context, _ string, _ int) ([]domain.ExpenditureArea, error) {
+func (s *stubRepo) AreasFor(_ context.Context, _ string, year int) ([]domain.ExpenditureArea, error) {
+	s.areasYear = year
 	return s.areas, nil
 }
 
@@ -104,6 +108,37 @@ func TestGet_UnspecifiedYearResolvesToNewestDecided(t *testing.T) {
 	}
 	if len(c.ExpenditureAreas) != 1 {
 		t.Errorf("areas = %d, want 1", len(c.ExpenditureAreas))
+	}
+}
+
+// The amounts must carry the year they were allocated for. "Newest decided"
+// is a moving target, so a caller cannot work the year out for itself, and an
+// undated amount silently changes meaning the moment a newer budget lands.
+func TestGet_ReportsTheBudgetYearTheAmountsCameFrom(t *testing.T) {
+	repo := newStub()
+	svc := committees.NewService(repo)
+
+	c, err := svc.Get(context.Background(), "2022-2026", "FiU", 0)
+	if err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+	if c.BudgetYear != repo.areasYear {
+		t.Errorf("BudgetYear = %d but amounts were read for %d — the reported year must be "+
+			"the year the amounts came from", c.BudgetYear, repo.areasYear)
+	}
+	if c.BudgetYear != 2026 {
+		t.Errorf("BudgetYear = %d, want 2026 (the newest decided year)", c.BudgetYear)
+	}
+
+	// An explicitly requested year must be reported back, not replaced by the
+	// newest one.
+	repo.decidedYears[2024] = true
+	c, err = svc.Get(context.Background(), "2022-2026", "FiU", 2024)
+	if err != nil {
+		t.Fatalf("Get(year=2024): %v", err)
+	}
+	if c.BudgetYear != 2024 {
+		t.Errorf("Get(year=2024) BudgetYear = %d, want 2024", c.BudgetYear)
 	}
 }
 

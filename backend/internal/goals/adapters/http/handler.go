@@ -7,9 +7,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	committeedomain "riksdagskollen/internal/committees/domain"
 	"riksdagskollen/internal/goals"
 	goaldomain "riksdagskollen/internal/goals/domain"
 	"riksdagskollen/internal/matching"
+	matchingdomain "riksdagskollen/internal/matching/domain"
 )
 
 type Handler struct {
@@ -25,6 +27,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/parties", h.listParties)
 	r.Get("/parties/{party}/goals", h.listGoals)
 	r.Get("/parties/{party}/goals/{goalId}/votes", h.goalVotes)
+	r.Get("/committees/{code}/goals", h.listByCommittee)
 }
 
 func (h *Handler) listParties(w http.ResponseWriter, r *http.Request) {
@@ -138,6 +141,42 @@ func (h *Handler) listGoals(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, result)
 }
 
+// listByCommittee serves the LOVAT row on the committee page: the party
+// goals whose relevant_committees contains this committee, alphabetical by
+// party. It reuses goalWithAlignment, the same DTO /parties/{party}/goals
+// returns, so the committee page and the party pages never disagree about a
+// goal's shape. relevantVotes is left at its zero value here — this
+// endpoint spans every party rather than one, and the matching service's
+// scorecard is computed per party.
+func (h *Handler) listByCommittee(w http.ResponseWriter, r *http.Request) {
+	// Canonicalise before querying: relevant_committees containment is exact,
+	// so a raw path segment like "sou" would silently return zero goals.
+	code := committeedomain.Canonical(chi.URLParam(r, "code"))
+
+	goalsSlice, err := h.goalsSvc.ListByCommittee(r.Context(), code)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	result := make([]goalWithAlignment, 0, len(goalsSlice))
+	for _, g := range goalsSlice {
+		result = append(result, goalWithAlignment{
+			ID:                 g.ID,
+			Party:              g.Party,
+			GoalText:           g.GoalText,
+			Topic:              g.Topic,
+			Specificity:        string(g.Specificity),
+			SourceDocument:     g.SourceDocument,
+			SourceURL:          g.SourceURL,
+			SourceQuote:        g.SourceQuote,
+			Keywords:           g.Keywords,
+			RelevantCommittees: g.RelevantCommittees,
+		})
+	}
+	jsonOK(w, result)
+}
+
 func (h *Handler) goalVotes(w http.ResponseWriter, r *http.Request) {
 	goalID, err := strconv.Atoi(chi.URLParam(r, "goalId"))
 	if err != nil {
@@ -159,6 +198,14 @@ func (h *Handler) goalVotes(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+	// A goal our keywords matched nothing on has an empty list of matches, not
+	// a null one. A nil slice marshals to JSON null, and the schema says this
+	// field is an array — the one goal in the record with no hits (M 52,
+	// "bidragstak") white-screened the page that exists to say we found
+	// nothing.
+	if matches == nil {
+		matches = []*matchingdomain.GoalVoteMatch{}
 	}
 
 	jsonOK(w, map[string]any{"goal": goal, "matches": matches})

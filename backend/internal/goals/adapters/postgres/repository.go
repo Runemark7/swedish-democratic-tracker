@@ -85,6 +85,26 @@ func (r *Repository) ListByTopic(ctx context.Context, party, topic string) ([]*d
 	return scanGoals(rows)
 }
 
+// ListByCommittee returns goals whose relevant_committees array contains code.
+//
+// Uses array containment (@>) rather than unnest+join: relevant_committees is a
+// text[] and containment is exact, so a code is never matched as a substring of
+// another — "NU" must not match "UFöU".
+// Applies recordViewFilter like every other query in this file. Without it the
+// committee page would surface goals that the party pages hide, and the two
+// surfaces would disagree about what the record contains.
+func (r *Repository) ListByCommittee(ctx context.Context, code string) ([]*domain.Goal, error) {
+	q := "SELECT " + selectCols + " FROM party_goals" +
+		" WHERE relevant_committees @> ARRAY[$1]::text[] AND " + recordViewFilter +
+		" ORDER BY party, id"
+	rows, err := r.db.Query(ctx, q, code)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanGoals(rows)
+}
+
 type scanner interface{ Scan(dest ...any) error }
 
 func scanGoal(s scanner) (*domain.Goal, error) {

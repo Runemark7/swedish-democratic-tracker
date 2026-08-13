@@ -2,11 +2,13 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 
+	committeedomain "riksdagskollen/internal/committees/domain"
 	"riksdagskollen/internal/votes"
 	"riksdagskollen/internal/votes/domain"
 	"riksdagskollen/internal/votes/ports"
@@ -27,6 +29,7 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/votes/{beteckning}/{punkt}", h.getDetail)
 	r.Get("/documents/{dokId}/full", h.getDocumentFull)
 	r.Get("/documents/{dokId}", h.getDocument)
+	r.Get("/committees/{code}/votes", h.listByCommittee)
 }
 
 func (h *Handler) listByPolitician(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +69,59 @@ func (h *Handler) listAll(w http.ResponseWriter, r *http.Request) {
 		"total":    result.Total,
 		"page":     f.Page,
 		"pageSize": f.PageSize,
+	})
+}
+
+// listByCommittee serves the RÖSTAT row on the committee page: the
+// committee's voteringar with each party's dominant position, alphabetical
+// by party within a votering. States positions as fact only — no share, no
+// rank, no comparison to the LOVAT goals shown alongside it; the reader
+// connects the two.
+func (h *Handler) listByCommittee(w http.ResponseWriter, r *http.Request) {
+	// Required, no default — mirrors GET /committees/{code} exactly. An
+	// unscoped query would blend mandate periods together the moment the
+	// record holds more than one.
+	period := r.URL.Query().Get("period")
+	if period == "" {
+		jsonError(w, "period is required", http.StatusBadRequest)
+		return
+	}
+
+	// Canonicalise before querying, same as /committees/{code}/goals: a raw
+	// path segment like "sou" must behave like "SoU".
+	code := committeedomain.Canonical(chi.URLParam(r, "code"))
+
+	// A code Canonical does not recognise as a committee (no "U" suffix, e.g.
+	// "%" or "_") comes back "". The repository's prefix match is
+	// starts_with(beteckning, code), and starts_with(x, "") is true for every
+	// x — so an empty code would smuggle in exactly the wildcard-match-everything
+	// the starts_with predicate was chosen over LIKE to prevent. Refuse it here,
+	// before it reaches the query, rather than let the predicate answer it.
+	if code == "" {
+		jsonOK(w, map[string]any{"items": []ports.CommitteeVotering{}, "total": 0})
+		return
+	}
+
+	limit := queryInt(r, "limit", 50)
+	if limit > 200 {
+		limit = 200
+	}
+	offset := queryInt(r, "offset", 0)
+
+	items, total, err := h.svc.ListByCommitteeWithPositions(r.Context(), period, code, limit, offset)
+	if err != nil {
+		if errors.Is(err, votes.ErrPeriodNotFound) {
+			jsonError(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// The repository never returns nil — a zero-row result comes back as an
+	// explicit []ports.CommitteeVotering{}, so no nil-guard is needed here.
+	jsonOK(w, map[string]any{
+		"items": items,
+		"total": total,
 	})
 }
 

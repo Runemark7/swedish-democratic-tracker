@@ -970,6 +970,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/committees/{code}/goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Party goals whose relevant_committees contains this committee
+         * @description The LOVAT row. Goals are the parties' own stated aims, alphabetical by party. An empty result means our seed data holds no goals for this area, which the caller must state as our gap and never as the parties' silence.
+         */
+        get: operations["listGoalsByCommittee"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/committees/{code}/votes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Voteringar decided by this committee, with each party's position
+         * @description The RÖSTAT row. Each item is one förslagspunkt with the dominant position every party took, stated as fact only, alphabetical by party within a votering, no share or rank. A party appears as "Delad" when its members split evenly between two or more positions, rather than the record silently picking one. Ballots cast under no party affiliation ("-") are excluded — they remain in the record and on the decision page, they simply do not occupy a party's slot here. Carries no decision date: votes hold only system_datum, which is when Riksdagen last touched the record, so the record cannot be shown in chronological order. Ordered by riksmöte, then the numeric part of the beteckning, then the numeric förslagspunkt.
+         */
+        get: operations["listVotesByCommittee"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1106,6 +1146,36 @@ export interface components {
         GoalWithAlignment: components["schemas"]["Goal"] & {
             /** @description Vote points matched to this goal — a fact about our matching. The alignment percentage was retired: it systematically disadvantaged opposition parties, scoring a party that voted Nej to the rejection of its own motion as breaking its own promise. */
             relevantVotes?: number;
+        };
+        /** @description How one party voted on a förslagspunkt — the position most of its members took. Stated as fact, never scored against a promise. Never carries the record's "-" placeholder for ballots with no party affiliation: this is a per-party list, and "-" is not a party. */
+        PartyPosition: {
+            party: components["schemas"]["PartyCode"];
+            /**
+             * @description The position this party's members took. "Delad" means the party's members split evenly between two or more positions — partiets ledamöter delade sig jämnt mellan två eller flera positioner — and is emitted instead of resolving the tie to whichever position happens to sort first.
+             * @enum {string}
+             */
+            position: "Ja" | "Nej" | "Avstår" | "Frånvarande" | "Delad";
+        };
+        /** @description One decided förslagspunkt with every party's position. Carries no date: votes hold only system_datum, which is when Riksdagen last touched the record, so presenting it as a decision date would repeat a bug the site already removed. */
+        CommitteeVotering: {
+            /** @description Distinguishes the 18 förslagspunkter in 2022-2026 that were genuinely decided by two separate voteringar — same beteckning and förslagspunkt, different votering, possibly contradictory party positions. */
+            voteringId: string;
+            beteckning: string;
+            forslagspunkt: string;
+            documentTitle: string;
+            /** @example 2024/25 */
+            riksmote: string;
+            /**
+             * @description True when the record holds more than one votering for this (riksmöte, beteckning, förslagspunkt). Such a pair renders as two rows that are identical apart from their party positions, which can be opposite — without this flag they read as parties reversing themselves on one question for no reason.
+             *     Computed server-side over the committee's whole record before paging, because a caller sees one page at a time and a pair can straddle a page boundary: NU7 punkt 2 in 2025/26 sits at indices 149 and 150, so a client counting duplicates within its own page marks neither half.
+             */
+            decidedByMultipleVoteringar: boolean;
+            partyPositions: components["schemas"]["PartyPosition"][];
+        };
+        CommitteeVoteringPage: {
+            items: components["schemas"]["CommitteeVotering"][];
+            /** @description Total voteringar for this committee, independent of paging */
+            total: number;
         };
         GoalVoteBreakdown: {
             goal: components["schemas"]["GoalWithAlignment"];
@@ -1818,6 +1888,12 @@ export interface components {
             voteringar: number;
             /** @description Utgiftsområden the committee bereder, per the Bilaga to riksdagsordningen. Amounts only, never a share of the total: a share would understate a committee whose remit exceeds its areas. Populated only by GET /committees/{code}; the list endpoint returns it empty rather than issuing one query per committee. */
             expenditureAreas: components["schemas"]["CommitteeExpenditureArea"][];
+            /**
+             * @description The budget year the amounts in expenditureAreas were allocated for. Without a year an amount silently changes meaning the moment a newer budget is seeded, and the caller cannot derive it: omitting ?year= resolves to "the newest decided year", which is a moving target.
+             *     0 on GET /committees, which populates no amounts and so has no year to report. Present but 0 rather than omitted, so a caller that finds 0 knows it is looking at the list shape and not at a year we failed to resolve.
+             * @example 2026
+             */
+            budgetYear: number;
         };
         CommitteeExpenditureArea: {
             code: string;
@@ -3000,6 +3076,66 @@ export interface operations {
             };
             400: components["responses"]["BadRequest"];
             /** @description No such mandate period, or that committee decided nothing in it */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listGoalsByCommittee: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Goals, alphabetical by party. relevantVotes is not computed on this endpoint and is always 0 here — it is not a claim that nothing matched. The matching service scores one party's scorecard at a time, and this endpoint spans every party; read relevantVotes from GET /parties/{party}/goals instead. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalWithAlignment"][];
+                };
+            };
+        };
+    };
+    listVotesByCommittee: {
+        parameters: {
+            query: {
+                /** @description Mandate period code, e.g. "2022-2026" — required for the same reason GET /committees/{code} requires it: an unscoped query would blend mandate periods together the moment the record holds more than one. */
+                period: string;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Committee code, matched case-insensitively — "sou" and "SoU" are the same committee. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A page of voteringar plus the total for the committee */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitteeVoteringPage"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            /** @description No such mandate period. A period we do not hold is refused rather than answered with an empty page, which would read as "this committee decided nothing". */
             404: {
                 headers: {
                     [name: string]: unknown;
