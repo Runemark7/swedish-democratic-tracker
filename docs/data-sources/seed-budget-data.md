@@ -12,6 +12,7 @@ used_by:
   - /budget (budgetöversikt)
   - /budget/areas/:code (UO-historik)
   - /riksdag (Budget-kortet)
+  - /committees/:code (beloppen i KOSTAR-raden)
 ---
 
 ## Vad det är

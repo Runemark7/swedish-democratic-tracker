@@ -44,9 +44,12 @@ function VoteMatchCard({ match }: { match: GoalVoteMatch }) {
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0">
+          {/* No source marker. The relevance figure is our keyword score, not
+              anything Riksdagen published; marking it "riksdagen" attributed
+              our own computation to the record. Its provenance is stated once
+              above the list instead. */}
           <span className="text-[10px] font-mono text-on-surface-variant">
             {relevance}% relevans
-            <SourceMarker sourceId="riksdagen" />
           </span>
         </div>
       </div>
@@ -71,7 +74,12 @@ export function GoalVotesPage() {
     return <div className="text-contradiction py-16 text-center text-sm">Kunde inte ladda röstningar.</div>;
   }
 
-  const { goal, matches } = data ?? { goal: null, matches: [] };
+  const { goal } = data ?? { goal: null };
+  // `?? []` and not just the destructuring default: the API answered `matches:
+  // null` for a goal with no hits, and `null` survives a default that only
+  // fires on `undefined`. That crashed the page whose whole job is to say we
+  // found nothing.
+  const matches = data?.matches ?? [];
 
   return (
     <div>
@@ -98,30 +106,45 @@ export function GoalVotesPage() {
       )}
 
       {/* ── Info banner ────────────────────────────────────────────── */}
+      {/* Same voice as the shared GoalCard: the keywords are ours, and a hit is
+          not the record having tested the goal. "Omröstningar som matchats till
+          detta mål" said the opposite — that something matched them — and on a
+          goal with no hits it promised rows that are not below it. */}
       <div className="bg-[#f0f9ff] rounded-lg p-4 mb-5">
         <p className="text-xs text-[#0369a1] leading-relaxed m-0">
-          Nedan visas de riksdagsomröstningar som matchats till detta mål.
-          Varje omröstning visar <strong>vilket parti som initierade förslaget</strong>.
+          Nedan visas omröstningar vars titel nämner våra nyckelord. Nyckelorden
+          är våra, inte partiets, och en träff betyder inte att omröstningen
+          prövade målet.
         </p>
       </div>
 
       {/* ── Vote matches ───────────────────────────────────────────── */}
-      <h3 className="font-display text-base font-semibold text-on-surface mb-3">
-        Matchade omröstningar ({matches.length})
+      {/* No count. A number of hits reads as a score for the goal — how much
+          the party has been tested on it — when it only counts titles our
+          keywords happened to land on. */}
+      <h3 className="font-display text-base font-semibold text-on-surface mb-1">
+        Omröstningar vars titel nämner våra nyckelord
       </h3>
+      {/* Stated once, here, because the hits and the percentage are ours and
+          nothing on the record says a votering belongs to this goal. */}
+      <p className="text-xs text-on-surface-variant mb-3">
+        Träffarna och deras relevanssiffra är våra, beräknade på nyckelord vi
+        valt. <SourceMarker sourceId="seed-party-goals" />
+      </p>
       <div className="space-y-3">
         {matches.map((m, i) => (
           <VoteMatchCard key={i} match={m} />
         ))}
       </div>
-      {matches.length > 0 && (
-        <div className="mt-4">
-        </div>
-      )}
 
       {matches.length === 0 && (
+        /* Our search is the gap, never the record. This page is now reachable
+           for any goal carrying keywords, not only ones with hits, so the
+           no-hit case is on the page rather than hypothetical. */
         <p className="text-on-surface-variant text-center py-16 text-sm">
-          Inga relevanta omröstningar hittades för detta mål.
+          Våra nyckelord gav ingen träff bland omröstningarnas titlar. Det
+          betyder inte att målet är oprövat — bara att vår sökning inte hittade
+          något. <SourceMarker sourceId="seed-party-goals" />
         </p>
       )}
     </div>

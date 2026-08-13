@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { api } from "@/shared/api-client";
 import { regionsApi } from "@/features/regions/api";
 import { municipalitiesApi } from "@/features/municipalities/api";
 import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type RiksdagGovernment, type RiksdagAgendaItem, type RiksdagLiveVote, type RegisteredAuthorityList, type MyndigheterListFilter, type AuthorityStats } from "@/features/riksdag/api";
@@ -530,8 +531,14 @@ export function useKommun(code: string) {
  *  was taken. Both are stated in the UI rather than implied. */
 export function useRecordCoverage() {
   return useQuery<RecordCoverage>({
+    // Through the shared client, so a non-2xx becomes a rejected query rather
+    // than a resolved one carrying `{error: "..."}`. Read straight from
+    // `fetch(...).then(r => r.json())`, a 503 here left `isError` false and
+    // every consumer reading `coverage.mandate.code` off an error body — the
+    // failure then surfaced as a page stating something false about the
+    // record rather than as a failure.
     queryKey: ["record-coverage"],
-    queryFn: () => fetch("/api/riksdag/coverage").then((r) => r.json()),
+    queryFn: () => api.get<RecordCoverage>("/riksdag/coverage"),
     staleTime: 5 * 60_000,
   });
 }

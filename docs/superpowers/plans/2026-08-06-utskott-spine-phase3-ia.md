@@ -38,6 +38,33 @@
 
 That is precisely the invented committee→regional relevance mapping #103 ruled does not honestly exist, and it is in production. Task 5 removes it.
 
+## Carried in from Phase 2: two grains for one record, on linked pages
+
+Phase 2 left a divergence this phase has to decide on. It is recorded here because
+Phase 2 deliberately did not resolve it, and the numbers look like a bug to anyone
+who meets them cold.
+
+- `/parties/:party` publishes **2 558 av 2 562 omröstningar**. Its coverage query counts
+  `DISTINCT beteckning||':'||forslagspunkt` per session.
+- `/committees/:code` headers count `DISTINCT votering_id` and sum to **2 576** across all
+  committees.
+- The 18-row gap is exactly the 18 förslagspunkter in 2022-2026 that Riksdagen decided with
+  two separate voteringar. The committee grain counts each of those twice; the coverage
+  grain collapses each to one.
+- Both numbers are correct for their own grain. Neither is wrong, and neither query is
+  broken. Coverage compares against Riksdagen's own förslagspunkt-grained denominator, and
+  RÖSTAT must show two rows where the record holds two voteringar with different party
+  positions.
+- Phase 2 is the first branch to render both on pages that link to each other: a party
+  page's committee headings link straight to `/committees/:code`. Its fix was scope-limited
+  to naming the grain on the committee page (`Räknat per votering. En förslagspunkt som
+  avgjordes av två voteringar räknas som två.`); no query was changed and `/parties/:party`
+  does not name its grain.
+
+Whether the two surfaces should report one grain, and if so which, is a Phase 3 decision to
+make with the human — it is a question about what "an omröstning" means to a reader, not a
+defect to patch.
+
 ## File Structure
 
 | File | Responsibility |

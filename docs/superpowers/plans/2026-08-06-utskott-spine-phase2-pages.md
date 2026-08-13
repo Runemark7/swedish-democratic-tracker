@@ -10,6 +10,20 @@
 
 **Depends on:** Phase 1 (`docs/superpowers/plans/2026-08-05-utskott-spine-phase1-data.md`) — `GET /api/committees` and `GET /api/committees/{code}` must exist, and `domain.CommitteeCode` must be the single place a code is parsed.
 
+> **Amended 2026-08-11, before execution.** A pre-flight check against the dev database
+> found three defects in this plan's own code. Task 2 keyed a votering on
+> beteckning+förslagspunkt without `session`, which reproduces the 27% undercount from
+> Phase 1 — 76 for AU against a true 116 — and would have merged two riksmöten's party
+> positions into one row; its test asserted a floor of 76, so it would have passed on the
+> wrong number. Task 1's SQL omitted `recordViewFilter`, which every other goals query
+> applies. Task 4's redirect resolved to `/parties` rather than the party.
+>
+> A second pass before Task 2 found three more. The query matched with `LIKE`, so a code of
+> `%` arriving from the URL path would have served all 2 576 voteringar as a single
+> committee's record. `total` came from a second COUNT query carrying its own copy of the
+> predicate, free to drift from the rows beneath it. And Task 4's verification expected MP
+> to hold goals in 3 committees when it holds 5. All six are corrected below.
+
 ## Global Constraints
 
 - **Go 1.26.1, Node 25.9.0.** Parameterised SQL only. Never import an adapter into domain. `cmd/api/main.go` is the only wiring point.
@@ -179,10 +193,13 @@ In `backend/internal/goals/adapters/postgres/repository.go`, add:
 // Uses array containment (@>) rather than unnest+join: relevant_committees is a
 // text[] and containment is exact, so a code is never matched as a substring of
 // another — "NU" must not match "UFöU".
+// Applies recordViewFilter like every other query in this file. Without it the
+// committee page would surface goals that the party pages hide, and the two
+// surfaces would disagree about what the record contains.
 func (r *Repository) ListByCommittee(ctx context.Context, code string) ([]*domain.Goal, error) {
-	q := `SELECT ` + selectCols + ` FROM party_goals
-	      WHERE relevant_committees @> ARRAY[$1]::text[]
-	      ORDER BY party, id`
+	q := "SELECT " + selectCols + " FROM party_goals" +
+		" WHERE relevant_committees @> ARRAY[$1]::text[] AND " + recordViewFilter +
+		" ORDER BY party, id"
 	rows, err := r.db.Query(ctx, q, code)
 	if err != nil {
 		return nil, err
@@ -274,10 +291,13 @@ KrU has no seeded goals and the caller states that as our gap."
   ```
   `ListByCommitteeWithPositions(ctx, code string, limit, offset int) ([]CommitteeVotering, int, error)` — returns page plus total.
 
-**Two traps this task must avoid.** The existing `ListDistinctByCommitteePrefix` (`votes/adapters/postgres/repository.go:275`) is **not** reusable as-is:
+**Five traps this task must avoid.** The existing `ListDistinctByCommitteePrefix` (`votes/adapters/postgres/repository.go:275`) is **not** reusable as-is:
 
 1. It filters `origin_enriched = true`, which would silently drop voteringar whose origin has not been enriched — RÖSTAT is a record of how parties voted and must not depend on enrichment.
 2. It orders by `beteckning` as text, so `AU10` sorts before `AU9`.
+3. **The prefix predicate is `starts_with(upper(...), upper($1))`, never `LIKE`.** The code arrives from a URL path; under `LIKE` a code of `%` matches every beteckning in the table, serving all 2 576 voteringar as one committee's record. The committees feature already ruled on this (`committees/adapters/postgres/repository.go:110`, *"starts_with, not LIKE: the code comes from a URL path and must not be able to smuggle in wildcards"*). Verified against the dev database on 2026-08-11.
+4. **The total is the folded length, not a second COUNT query.** The function already materialises every row before paging, so a separate count adds a second copy of the predicate that can drift from the rows beneath it.
+5. **A votering is identified by `votering_id`, never by `beteckning` + `forslagspunkt`.** Beteckning numbering restarts each riksmöte, so keying without `session` collapses `AU5` in 2022/23 into `AU5` in 2024/25 — which undercounts AU by 34% (76 against a true 116) *and* merges two different decisions' party positions into one row. This is the defect that shipped through five reviews in Phase 1. Verified against the dev database on 2026-08-11: `votering_id` is never null and never spans more than one (beteckning, förslagspunkt, session), so it is the whole key. Use it in all four places — the count query, the window partition, the join, and the Go fold.
 
 Also note: **`votes` carries no decision date** — only `system_datum`, which is when Riksdagen last touched the record and must never be shown as a decision date. So RÖSTAT cannot be ordered chronologically. Order by riksmöte, then the numeric part of the beteckning, then the numeric förslagspunkt.
 
@@ -321,11 +341,16 @@ func TestListByCommitteeWithPositions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListByCommitteeWithPositions: %v", err)
 	}
-	// AU holds 76 voteringar in 2022-2026. The count must not depend on
-	// origin_enriched: RÖSTAT reports how parties voted, and enrichment is a
-	// separate concern that would silently shrink the record.
-	if total < 76 {
-		t.Errorf("total = %d, want at least 76 — is the query gating on origin_enriched?", total)
+	// AU holds 116 voteringar in 2022-2026, counted as count(DISTINCT votering_id)
+	// against the dev database. Two separate bugs each shrink this number, so an
+	// exact assertion is used rather than a floor — a floor would pass on both:
+	//   - gating on origin_enriched drops unenriched voteringar
+	//   - keying on beteckning+forslagspunkt without session collapses riksmöten
+	//     into each other and yields 76
+	if total != 116 {
+		t.Errorf("total = %d, want 116. 76 means the query keys on beteckning+forslagspunkt "+
+			"without session and has collapsed riksmöten; a value below 76 means it gates "+
+			"on origin_enriched", total)
 	}
 	if len(got) == 0 {
 		t.Fatal("no voteringar returned for AU")
@@ -365,6 +390,25 @@ func TestListByCommittee_NumericOrdering(t *testing.T) {
 			t.Errorf("beteckning out of numeric order in %s: %d after %d", v.Riksmote, n, prev)
 		}
 		prev, prevRm = n, v.Riksmote
+	}
+}
+
+// A code arrives from a URL path. Under a LIKE predicate "%" matches every
+// beteckning in the table, so /committees/%/votes would serve the entire record
+// as one committee's. starts_with treats it as a literal and matches nothing.
+func TestListByCommittee_WildcardIsNotSmuggled(t *testing.T) {
+	pool := connectVotesCommitteeDB(t)
+	repo := postgres.NewRepository(pool)
+
+	for _, code := range []string{"%", "_", "%%"} {
+		got, total, err := repo.ListByCommitteeWithPositions(context.Background(), code, 20, 0)
+		if err != nil {
+			t.Fatalf("ListByCommitteeWithPositions(%q): %v", code, err)
+		}
+		if total != 0 || len(got) != 0 {
+			t.Errorf("code %q returned total=%d rows=%d, want 0 — the predicate is "+
+				"treating it as a wildcard instead of a literal", code, total, len(got))
+		}
 	}
 }
 
@@ -437,71 +481,78 @@ import (
 	"riksdagskollen/internal/votes/ports"
 )
 
-// betNum extracts the numeric part of a beteckning for ordering. As SQL:
-// regexp_replace strips everything but digits, so "AU10" → 10 and "AU9" → 9.
-// Ordering on the raw text would put AU10 before AU9.
+// The unit of this query is votering_id, which is the whole key: beteckning
+// numbering restarts each riksmöte, so keying on beteckning+forslagspunkt
+// silently folds AU5/2022-23 into AU5/2024-25 — both undercounting the record
+// and blending two decisions' party positions into one row.
+//
+// Ordering: votes carry no decision date (only system_datum, which is when
+// Riksdagen last touched the row), so chronological order is unavailable and
+// must not be faked. Order by riksmöte, then the numeric part of the beteckning
+// — regexp_replace strips non-digits so "AU10" → 10 sorts after "AU9" → 9,
+// which ordering the raw text would get backwards. NULLIF guards the cast: a
+// beteckning with no digits would otherwise make ''::int raise.
 const committeeVoteringQuery = `
 WITH pos AS (
-	SELECT beteckning, forslagspunkt, session, party, vote_result,
-	       count(*) AS n,
+	SELECT votering_id, party, vote_result,
 	       row_number() OVER (
-	           PARTITION BY beteckning, forslagspunkt, party
+	           PARTITION BY votering_id, party
 	           ORDER BY count(*) DESC, vote_result
 	       ) AS rn
 	FROM votes
-	WHERE beteckning LIKE $1 || '%'
-	GROUP BY beteckning, forslagspunkt, session, party, vote_result
+	WHERE starts_with(upper(beteckning), upper($1))
+	GROUP BY votering_id, party, vote_result
 ),
 pts AS (
-	SELECT DISTINCT beteckning, forslagspunkt, session,
-	       max(document_title) AS document_title
+	SELECT votering_id,
+	       min(beteckning)                  AS beteckning,
+	       min(forslagspunkt)               AS forslagspunkt,
+	       min(session)                     AS session,
+	       COALESCE(max(document_title), '') AS document_title
 	FROM votes
-	WHERE beteckning LIKE $1 || '%'
-	GROUP BY beteckning, forslagspunkt, session
+	WHERE starts_with(upper(beteckning), upper($1))
+	GROUP BY votering_id
 )
-SELECT p.beteckning, p.forslagspunkt, COALESCE(p.document_title, ''), p.session,
+SELECT p.votering_id, p.beteckning, p.forslagspunkt, p.document_title, p.session,
        pos.party, pos.vote_result
 FROM pts p
-JOIN pos ON pos.beteckning = p.beteckning
-        AND pos.forslagspunkt = p.forslagspunkt
-        AND pos.rn = 1
+JOIN pos ON pos.votering_id = p.votering_id AND pos.rn = 1
 ORDER BY p.session,
-         (regexp_replace(p.beteckning, '\D', '', 'g'))::int,
-         (regexp_replace(p.forslagspunkt, '\D', '', 'g'))::int,
+         NULLIF(regexp_replace(p.beteckning, '\D', '', 'g'), '')::int,
+         NULLIF(regexp_replace(p.forslagspunkt, '\D', '', 'g'), '')::int,
          pos.party`
 
 // ListByCommitteeWithPositions returns the committee's voteringar, each with the
 // dominant position per party.
 //
-// The prefix match is deliberately `LIKE code || '%'`, which also catches a
-// suffixed beteckning such as "AU1y". A code that is a prefix of another — "NU"
-// against "NU12" — is fine, but note "U" would match everything; callers pass a
-// canonical code from domain.CommitteeCode, never a fragment.
+// The prefix match is starts_with, never LIKE. The code arrives from a URL path,
+// and under LIKE a code of "%" matches every beteckning in the table — 2 576
+// voteringar served as though they were one committee's record. The committees
+// feature already settled this at
+// committees/adapters/postgres/repository.go:110; this query follows it.
+//
+// No committee code is a prefix of another (AU CU FiU FöU JuU KrU KU MJU NU SfU
+// SkU SoU TU UbU UFöU UU), so the prefix needs no further correction. Callers
+// still pass a canonical code from domain.Canonical, never a fragment.
 func (r *Repository) ListByCommitteeWithPositions(ctx context.Context, code string, limit, offset int) ([]ports.CommitteeVotering, int, error) {
-	var total int
-	if err := r.db.QueryRow(ctx, `
-		SELECT count(*) FROM (
-			SELECT DISTINCT beteckning, forslagspunkt
-			FROM votes WHERE beteckning LIKE $1 || '%'
-		) s`, code).Scan(&total); err != nil {
-		return nil, 0, err
-	}
-
 	rows, err := r.db.Query(ctx, committeeVoteringQuery, code)
 	if err != nil {
 		return nil, 0, err
 	}
 	defer rows.Close()
 
-	// Rows arrive one per (votering, party); fold them into voteringar.
+	// Rows arrive one per (votering, party); fold them into voteringar. The fold
+	// key is votering_id for the same reason the SQL groups on it — folding on
+	// beteckning+forslagspunkt would merge riksmöten back together here even if
+	// the query kept them apart.
 	var out []ports.CommitteeVotering
 	idx := map[string]int{}
 	for rows.Next() {
-		var bet, punkt, title, rm, party, result string
-		if err := rows.Scan(&bet, &punkt, &title, &rm, &party, &result); err != nil {
+		var vid, bet, punkt, title, rm, party, result string
+		if err := rows.Scan(&vid, &bet, &punkt, &title, &rm, &party, &result); err != nil {
 			return nil, 0, err
 		}
-		key := bet + ":" + punkt
+		key := vid
 		i, ok := idx[key]
 		if !ok {
 			out = append(out, ports.CommitteeVotering{
@@ -520,6 +571,12 @@ func (r *Repository) ListByCommitteeWithPositions(ctx context.Context, code stri
 		return nil, 0, err
 	}
 
+	// The total is the folded length, not a second COUNT query. Two queries with
+	// two copies of the predicate can drift apart, and a total that disagrees
+	// with the rows beneath it is exactly the kind of authoritative-looking wrong
+	// number this site exists to avoid.
+	total := len(out)
+
 	// Page after folding, so a page is always whole voteringar.
 	if offset >= len(out) {
 		return []ports.CommitteeVotering{}, total, nil
@@ -535,7 +592,7 @@ func (r *Repository) ListByCommitteeWithPositions(ctx context.Context, code stri
 - [ ] **Step 5: Run tests to verify they pass**
 
 Run: `cd backend && TEST_DATABASE_URL="postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable" go test ./internal/votes/adapters/postgres/ -run TestListByCommittee -v`
-Expected: PASS. `total` for AU should be **76**. If it comes back lower, an enrichment filter has crept in.
+Expected: PASS. `total` for AU must be exactly **116**. **76** means the query keyed on beteckning+forslagspunkt and collapsed the riksmöten; anything below 76 means an enrichment filter has crept in.
 
 - [ ] **Step 6: Expose the endpoint, verify, commit**
 
@@ -548,6 +605,12 @@ go build -C backend ./... && cd frontend && npm run generate:api && npx tsc --no
 ```bash
 git add backend/internal/votes/ api/openapi.yaml frontend/src/shared/api-contract.ts
 git commit -m "feat: committee voteringar with party positions for RÖSTAT
+
+Keys on votering_id throughout — count, window partition, join and fold.
+Beteckning numbering restarts each riksmöte, so keying on
+beteckning+forslagspunkt collapses AU5/2022-23 into AU5/2024-25: it
+undercounts AU by 34% (76 against 116) and merges two decisions' party
+positions into one row.
 
 Deliberately does not reuse ListDistinctByCommitteePrefix: that filters
 origin_enriched = true, which would drop real voteringar from a record of
@@ -685,11 +748,20 @@ In `PartyDetailPage.tsx`, make the "Mål" tab the full record view:
 
 In `App.tsx`, replace the `/parties/:party/goals` route with a redirect so existing links and any shared URLs keep working:
 
+The route is declared flat, so a relative `<Navigate to=".." />` resolves against the route hierarchy and lands on `/parties` — the list, not the party. Redirect to the party explicitly:
+
 ```tsx
-<Route path="/parties/:party/goals" element={<Navigate to=".." replace />} />
+function GoalsRedirect() {
+  const { party } = useParams();
+  return <Navigate to={`/parties/${party}`} replace />;
+}
 ```
 
-Import `Navigate` from `react-router-dom`. Keep `/parties/:party/goals/:goalId/votes` working — `GoalVotesPage` is still reachable from the card's keyword-match link.
+```tsx
+<Route path="/parties/:party/goals" element={<GoalsRedirect />} />
+```
+
+Import `Navigate` and `useParams` from `react-router-dom`. Keep `/parties/:party/goals/:goalId/votes` working — `GoalVotesPage` is still reachable from the card's keyword-match link, and it must stay declared *after* this redirect route so the more specific path still matches.
 
 - [ ] **Step 4: Delete the old page and confirm nothing references it**
 
@@ -702,7 +774,7 @@ grep -rn "PartyGoalsPage" frontend/src || echo "no references remain"
 
 With the API and dev server running as in Task 3 Step 5, check in a browser:
 
-- `/parties/MP` — Mål tab groups by committee, shows **3 populated and the remaining committees captioned**, and no vote count appears anywhere.
+- `/parties/MP` — Mål tab groups by committee, shows **5 populated and the remaining committees captioned**, and no vote count appears anywhere. (The plan originally said 3; verified against the dev database on 2026-08-11, MP has goals in 5 committees. Full distribution: C 8, KD 6, L 10, M 10, MP 5, S 6, SD 8, V 8.)
 - `/parties/L` — 10 populated.
 - `/parties/S/goals` — redirects to `/parties/S`.
 - `grep -rn "matchade omröstningar\|Ej prövad" frontend/src` returns **nothing**.
