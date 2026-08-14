@@ -25,7 +25,7 @@ func NewHandler(svc *votes.Service) *Handler {
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/politicians/{id}/votes", h.listByPolitician)
 	r.Get("/votes", h.listAll)
-	r.Get("/votes/riksdag-feed", h.riksdagFeed)
+	r.Get("/votes/recent", h.recent)
 	r.Get("/votes/{beteckning}/{punkt}", h.getDetail)
 	r.Get("/documents/{dokId}/full", h.getDocumentFull)
 	r.Get("/documents/{dokId}", h.getDocument)
@@ -278,43 +278,44 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, resp)
 }
 
-// organTag maps a Riksdag committee abbreviation to a readable Swedish topic tag.
-var organTag = map[string]string{
-	"SoU": "Vård",
-	"TU":  "Trafik",
-	"UbU": "Skola",
-	"CU":  "Plan",
-}
-
-func (h *Handler) riksdagFeed(w http.ResponseWriter, r *http.Request) {
-	level := r.URL.Query().Get("level")
-	if level != "region" && level != "kommun" {
-		jsonError(w, `level must be "region" or "kommun"`, http.StatusBadRequest)
-		return
+// recent serves the complete, dated betänkande feed the front page's timeline
+// is built on: every committee, no selection. Unlike riksdagFeed, it applies
+// no committee list — see the NOTE on FetchDocuments for why one would be
+// inert on the upstream call anyway.
+func (h *Handler) recent(w http.ResponseWriter, r *http.Request) {
+	count := queryInt(r, "count", 40)
+	if count > 200 {
+		count = 200
 	}
 
-	docs, err := h.svc.GetRiksdagFeed(r.Context(), level)
+	docs, err := h.svc.GetRecentBetankanden(r.Context(), count)
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	type feedItem struct {
-		Time       string `json:"time"`
-		Title      string `json:"title"`
-		Status     string `json:"status"`
-		Tag        string `json:"tag,omitempty"`
-		Beteckning string `json:"beteckning,omitempty"`
+	// decided and decisionDate travel with every item because the list mixes
+	// decided betänkanden with ones that are only planned, and `date` cannot
+	// tell them apart — it is a publication date on both.
+	type recentItem struct {
+		Title        string `json:"title"`
+		Organ        string `json:"organ"`
+		Date         string `json:"date"`
+		Beteckning   string `json:"beteckning"`
+		Decided      bool   `json:"decided"`
+		DecisionDate string `json:"decisionDate"`
+		Status       string `json:"status"`
 	}
-	items := make([]feedItem, 0, len(docs))
+	items := make([]recentItem, 0, len(docs))
 	for _, d := range docs {
-		tag := organTag[d.Organ]
-		items = append(items, feedItem{
-			Time:       d.Date,
-			Title:      d.Title,
-			Status:     "Bifall", // >90% of betänkanden pass; real votering lookup is future work
-			Tag:        tag,
-			Beteckning: d.Beteckning,
+		items = append(items, recentItem{
+			Title:        d.Title,
+			Organ:        d.Organ,
+			Date:         d.Date,
+			Beteckning:   d.Beteckning,
+			Decided:      d.Decided(),
+			DecisionDate: d.DecisionDate,
+			Status:       d.Status,
 		})
 	}
 	jsonOK(w, items)

@@ -1,29 +1,13 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useRegion, useRegionList, useKommunList, useRegionBudgetHistory, useRegionKpiRanks, useRegionPlan } from "@/hooks/useDemocracy";
-import { MandateComposition, Pill } from "@/components/charts";
+import { MandateComposition } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
 import { SwedenKommunMap } from "@/features/municipalities/components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { REGION_KPI_META } from "@/features/regions/regionKpiMeta";
-import type { LiveVote } from "@/types/democracy";
-
-function beslutHref(v: LiveVote): string | null {
-  if (!v.beteckning) return null;
-  const p = new URLSearchParams({ title: v.title, status: v.status, tag: v.tag, time: v.time });
-  return `/beslut/${encodeURIComponent(v.beteckning)}?${p}`;
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function pillTone(status: string): "pass" | "fail" | "pending" | "neutral" {
-  if (status === "Bifall") return "pass";
-  if (status === "Avslag") return "fail";
-  if (status === "Återremiss") return "pending";
-  return "neutral";
-}
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
@@ -64,7 +48,7 @@ export function RegionDetailPage() {
 
   if (isLoading || !data) return <Skeleton />;
 
-  const { title, subtitle, ruling, liveVotes, kpis } = data;
+  const { title, subtitle, ruling, kpis } = data;
 
   const allParties = [
     ...ruling.parties,
@@ -366,7 +350,7 @@ export function RegionDetailPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : budgetDoc ? "1.3fr 1fr" : "1fr",
+            gridTemplateColumns: "1fr",
             gap: 1,
             border: "1px solid var(--color-border)",
             borderTop: "none",
@@ -374,105 +358,6 @@ export function RegionDetailPage() {
             background: "var(--color-border)",
           }}
         >
-          {/* Left card — PULS */}
-          <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 16,
-              }}
-            >
-              <span
-                className="animate-pulse-dot"
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: "var(--color-pulse)",
-                  display: "inline-block",
-                  flexShrink: 0,
-                }}
-              />
-              <div>
-                <div
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 10,
-                    letterSpacing: "0.15em",
-                    color: "var(--color-fg-muted)",
-                  }}
-                >
-                  RIKSDAG · RELEVANTA BESLUT
-                </div>
-                <div
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 9,
-                    letterSpacing: "0.08em",
-                    color: "var(--color-fg-muted)",
-                    opacity: 0.6,
-                    marginTop: 2,
-                  }}
-                >
-                  Riksdagsbeslut som berör regional nivå
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {liveVotes.map((v, i) => {
-                const href = beslutHref(v);
-                const row = (
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "18px 70px 1fr auto",
-                      gap: 12,
-                      alignItems: "center",
-                      cursor: href ? "pointer" : "default",
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: 7,
-                        height: 7,
-                        borderRadius: "50%",
-                        background: i < 2 ? "var(--color-pulse)" : "var(--color-accent)",
-                        display: "inline-block",
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
-                      {v.time}
-                    </span>
-                    <span
-                      style={{ fontSize: 13, color: "var(--color-fg)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-                      title={v.title}
-                    >
-                      {v.title}
-                      <SourceMarker sourceId="riksdagen" />
-                      {v.tag && (
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", marginLeft: 6, verticalAlign: "middle" }}>
-                          [{v.tag}]
-                        </span>
-                      )}
-                    </span>
-                    <Pill tone={pillTone(v.status)}>{v.status}</Pill>
-                  </div>
-                );
-                return href ? (
-                  <Link key={i} to={href} style={{ textDecoration: "none", color: "inherit" }}>
-                    {row}
-                  </Link>
-                ) : (
-                  <div key={i}>{row}</div>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Right card — REGIONENS PLAN (link to official primary source) */}
           {budgetDoc && (
             <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : 24 }}>
