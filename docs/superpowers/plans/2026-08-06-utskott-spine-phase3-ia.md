@@ -65,6 +65,73 @@ Whether the two surfaces should report one grain, and if so which, is a Phase 3 
 make with the human — it is a question about what "an omröstning" means to a reader, not a
 defect to patch.
 
+## Carried in from Phase 2: deferred minors
+
+Every item below was found by a review during Phase 2, triaged **ship-as-is**, and merged
+knowingly in #112. None is a live defect. They are recorded here because the execution
+ledger they lived in was git-ignored scratch, so without this section the only trace of
+them would be gone. Treat this as a menu for Phase 3, not a backlog that must be emptied.
+
+**Performance**
+
+- `upper(beteckning)` in the committee votes predicate defeats `idx_votes_beteckning`
+  (`btree (beteckning, forslagspunkt)`), so each request does two sequential scans of
+  ~899 000 rows. Measured 0.31–0.40 s per committee. A functional index on
+  `upper(beteckning)` is the obvious fix and is a migration, not a query change.
+
+**Correctness that today's data does not exercise**
+
+- **The two committee counts can diverge by construction.** The header counts
+  `DISTINCT (beteckning, votering_id)` (`committees/adapters/postgres/repository.go`), while
+  RÖSTAT groups by `votering_id` alone and takes `min(beteckning)`. A `votering_id` carrying
+  two beteckningar would count twice in the header and once in RÖSTAT. Separately, RÖSTAT's
+  inner join filters `party <> '-'`, so a votering whose every ballot is unaffiliated is
+  counted by the header and dropped by RÖSTAT. Zero rows of either kind exist today, and no
+  test pins the invariant. They agreed for all 16 committees when checked.
+- The votes repository's Go-side committee filter is case-sensitive while its SQL predicate
+  is case-insensitive; only the HTTP handler's `domain.Canonical` call keeps the two layers
+  aligned.
+- `domain.Canonical` returns an unrecognised code verbatim (its own test pins
+  `Canonical("ZZU") == "ZZU"`). A future committee code outside `canonicalCodes` would
+  therefore answer zero rows for a lowercase URL and rows for the exact spelling — the kind
+  of casing gate the committees handler exists to remove.
+- The empty-canonical-code guard runs *before* the period check, so
+  `/api/committees/%/votes?period=2018-2022` answers `200 {"items":[],"total":0}` where the
+  sibling endpoint 404s. It survives only for codes `Canonical` rejects outright; a
+  plausible-but-unknown code such as `ZZU` correctly 404s.
+
+**Test hygiene**
+
+- The `limit > 200` cap has no test — deleting it leaves all four handler tests green.
+- `TestListByCommittee_UnknownPeriod`'s message assertion sits inside
+  `if err := json.Unmarshal(...); err == nil`, so an unparseable body silently skips the
+  message check (the status assertion still fires).
+- `repo.calls != 0` in `TestListByCommittee_MissingPeriod` cannot fail under deletion of the
+  guard it documents, because `PeriodExists("")` short-circuits a layer down. It is
+  defence-in-depth against a future reordering, not the discriminating assertion.
+
+**Architecture**
+
+- The goals HTTP adapter imports `committees/domain` for `Canonical`, and now `matching/domain`
+  as well. Neither breaks the "never import an adapter into a domain" rule and both match
+  existing precedent, but the coupling is accumulating in one handler.
+- Go's nil slice marshals to JSON `null`. One handler crashed the frontend on it during
+  Phase 2 and was fixed; whether other handlers can return `null` where the contract says
+  array was never audited.
+
+**Presentation**
+
+- `GoalVotesPage` match cards now carry no `SourceMarker` at all. Removing the misattributed
+  Riksdagen marker was the ruling, but it left genuinely record-derived fields (beteckning,
+  förslagspunkt, proposal origin) untagged, against CLAUDE.md rule 11(d).
+- Both rows of a double-decided förslagspunkt link to the same `/votes/{bet}/{punkt}`, which
+  merges the two voteringar — so the note telling the reader they are different decisions
+  cannot be followed through to see the difference.
+- `ORDER BY … pos.party, pt.votering_id` interleaves a duplicate pair's rows. The map-based
+  fold reassembles them deterministically, so this is cosmetic.
+- The mandate-period and coverage line still sits on the party page's Mål tab, which now
+  shows no votes at all.
+
 ## File Structure
 
 | File | Responsibility |
