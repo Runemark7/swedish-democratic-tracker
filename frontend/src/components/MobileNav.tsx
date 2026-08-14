@@ -1,33 +1,14 @@
-import { NavLink, useLocation } from "react-router-dom";
-
-type NavSection = "start" | "riksdag" | "region" | "kommun" | "regering" | "sok";
+import { NavLink } from "react-router-dom";
+import { PRIMARY_NAV, FORDJUPNING_NAV, RIKSDAG_SUB_NAV, isActive, isRiksdagSection } from "@/shared/nav";
 
 interface MobileNavProps {
-  section: NavSection;
-  isRiksdagSection: boolean;
+  pathname: string;
   theme: "dark" | "light";
   toggleTheme: () => void;
 }
 
-const navPills = [
-  { key: "start",    to: "/",         label: "◆ START"     },
-  { key: "riksdag",  to: "/riksdag",  label: "I RIKSDAG"   },
-  { key: "region",   to: "/region",   label: "II REGION"   },
-  { key: "kommun",   to: "/kommun",   label: "III KOMMUN"  },
-  { key: "regering", to: "/regering", label: "IV REGERING" },
-  { key: "sok",      to: "/sok",      label: "⌕ SÖK"       },
-] as const;
-
-const riksdagTabs = [
-  { to: "/parties",     label: "Partier",     matches: (p: string) => p.startsWith("/parties") },
-  { to: "/votes",       label: "Omröstningar",matches: (p: string) => p.startsWith("/votes") },
-  { to: "/budget",      label: "Budget",      matches: (p: string) => p.startsWith("/budget") },
-  { to: "/politicians", label: "Politiker",   matches: (p: string) => p.startsWith("/politicians") },
-  { to: "/manifestos",  label: "Manifest",    matches: (p: string) => p.startsWith("/manifestos") },
-];
-
-export function MobileNav({ section, isRiksdagSection, theme, toggleTheme }: MobileNavProps) {
-  const location = useLocation();
+export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
+  const showRiksdagTabs = isRiksdagSection(pathname);
 
   const topRowStyle: React.CSSProperties = {
     position: "sticky",
@@ -145,18 +126,18 @@ export function MobileNav({ section, isRiksdagSection, theme, toggleTheme }: Mob
         </button>
       </div>
 
-      {/* Row 2 — chamber pills */}
+      {/* Row 2 — primary pills */}
       <div style={pillRowStyle}>
         <div
           className="mobile-scroll-pills"
           style={{ gap: 6, padding: "6px 14px", height: 44, alignItems: "center" }}
         >
-          {navPills.map((pill) => {
-            const active = section === pill.key;
+          {PRIMARY_NAV.map((item) => {
+            const active = isActive(item, pathname);
             return (
               <NavLink
-                key={pill.key}
-                to={pill.to}
+                key={item.to}
+                to={item.to}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -175,14 +156,72 @@ export function MobileNav({ section, isRiksdagSection, theme, toggleTheme }: Mob
                   flexShrink: 0,
                 }}
               >
-                {pill.label}
+                {item.label}
               </NavLink>
             );
           })}
         </div>
 
-        {/* Row 2b — Riksdag sub-tabs */}
-        {isRiksdagSection && (
+        {/* Row 2b — Fördjupning: the four levels of government, as reference */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "0 14px 6px",
+            borderTop: "1px solid var(--color-border)",
+          }}
+        >
+          <span
+            style={{
+              flexShrink: 0,
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--color-fg-muted)",
+              paddingTop: 6,
+            }}
+          >
+            Fördjupning
+          </span>
+          <div
+            className="mobile-scroll-pills"
+            style={{ gap: 6, paddingTop: 6, height: 32, alignItems: "center" }}
+          >
+            {FORDJUPNING_NAV.map((item) => {
+              const active = isActive(item, pathname);
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    height: 32,
+                    padding: "0 14px",
+                    borderRadius: 999,
+                    border: active ? "none" : "1px solid var(--color-border)",
+                    background: active ? "var(--color-fg)" : "transparent",
+                    color: active ? "var(--color-bg)" : "var(--color-fg-muted)",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 11,
+                    letterSpacing: "1.1px",
+                    textTransform: "uppercase",
+                    textDecoration: "none",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                  }}
+                >
+                  {item.label}
+                </NavLink>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Row 2c — Riksdag sub-tabs */}
+        {showRiksdagTabs && (
           <div
             className="mobile-scroll-pills"
             style={{
@@ -191,8 +230,8 @@ export function MobileNav({ section, isRiksdagSection, theme, toggleTheme }: Mob
               padding: "0 14px",
             }}
           >
-            {riksdagTabs.map((tab) => {
-              const active = tab.matches(location.pathname);
+            {RIKSDAG_SUB_NAV.map((tab) => {
+              const active = isActive(tab, pathname);
               return (
                 <NavLink
                   key={tab.to}

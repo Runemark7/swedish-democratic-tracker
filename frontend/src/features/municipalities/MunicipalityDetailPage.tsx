@@ -1,26 +1,12 @@
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { MandateComposition, Pill } from "@/components/charts";
+import { MandateComposition } from "@/components/charts";
 import { BudgetHistorySection } from "@/features/budget/components/BudgetHistorySection";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useKommun, useKommunList, useKommunBudgetHistory, useKommunKpiRanks } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { BottomSheet } from "@/components/BottomSheet";
-import type { LiveVote } from "@/types/democracy";
 
-
-function beslutHref(v: LiveVote): string | null {
-  if (!v.beteckning) return null;
-  const p = new URLSearchParams({ title: v.title, status: v.status, tag: v.tag, time: v.time });
-  return `/beslut/${encodeURIComponent(v.beteckning)}?${p}`;
-}
-
-function pillTone(status: LiveVote["status"]): "pass" | "fail" | "pending" | "neutral" {
-  if (status === "Bifall") return "pass";
-  if (status === "Avslag") return "fail";
-  if (status === "Återremiss") return "pending";
-  return "neutral";
-}
 
 export function MunicipalityDetailPage() {
   const { code } = useParams<{ code: string }>();
@@ -389,128 +375,6 @@ export function MunicipalityDetailPage() {
           />
         </div>
 
-      </div>
-
-      {/* ── Bottom grid ────────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gap: 1,
-          background: "var(--color-border)",
-          border: "1px solid var(--color-border)",
-          borderTop: "none",
-          margin: isMobile ? "1px 14px 28px" : "1px 32px 28px",
-        }}
-      >
-        {/* Left — PULS */}
-        <div style={{ background: "var(--color-sdt-surface)", padding: isMobile ? 16 : "24px 28px", display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "2px",
-              color: "var(--color-fg-muted)",
-              textTransform: "uppercase",
-              marginBottom: 16,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <span
-              className="animate-pulse-dot"
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "var(--color-pulse)",
-                display: "inline-block",
-                flexShrink: 0,
-              }}
-            />
-            <div>
-              <div>RIKSDAG · RELEVANTA BESLUT</div>
-              <div
-                style={{
-                  fontSize: 9,
-                  letterSpacing: "0.08em",
-                  opacity: 0.6,
-                  marginTop: 2,
-                  textTransform: "none",
-                }}
-              >
-                Riksdagsbeslut som berör kommunal nivå
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 0, flex: 1 }}>
-            {data.liveVotes.map((vote, i) => {
-              const href = beslutHref(vote);
-              const row = (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 12,
-                    padding: "10px 0",
-                    borderBottom: i < data.liveVotes.length - 1 ? "1px solid var(--color-border)" : "none",
-                    cursor: href ? "pointer" : "default",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontSize: 10,
-                      color: "var(--color-fg-muted)",
-                      whiteSpace: "nowrap",
-                      paddingTop: 2,
-                      minWidth: 64,
-                    }}
-                  >
-                    {vote.time}
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: "var(--color-fg)", marginBottom: 4, lineHeight: 1.35, display: "flex", alignItems: "baseline", gap: 4 }}>
-                      {vote.title}
-                      <SourceMarker sourceId="riksdagen" />
-                    </div>
-                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-mono)",
-                          fontSize: 10,
-                          color: "var(--color-fg-muted)",
-                          background: "var(--color-track)",
-                          borderRadius: 2,
-                          padding: "1px 6px",
-                        }}
-                      >
-                        {vote.tag}
-                      </span>
-                      <Pill tone={pillTone(vote.status)}>{vote.status}</Pill>
-                      {vote.margin && (
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
-                          {vote.margin}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-              return href ? (
-                <Link key={i} to={href} style={{ textDecoration: "none", color: "inherit" }}>
-                  {row}
-                </Link>
-              ) : (
-                <div key={i}>{row}</div>
-              );
-            })}
-          </div>
-          <div style={{ marginTop: 16 }}>
-          </div>
-        </div>
       </div>
 
       {/* Mobile floating BYT KOMMUN button + BottomSheet */}

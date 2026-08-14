@@ -2,6 +2,7 @@ package riksdagen
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -79,4 +80,33 @@ func TestLiveSmoke(t *testing.T) {
 	}
 	t.Logf("total=%d bet=%s ballots=%d parties=%d",
 		total, p1[0].Beteckning, len(vv), len(parties))
+}
+
+// TestFetchRecentBetankanden_Live exercises the real endpoint. It asserts
+// only that returned documents carry a Date and an Organ — not a committee
+// count, since organ is inert upstream and any count assertion would pass
+// whether or not a filter were applied (see the NOTE on FetchDocuments).
+// Riksdagen intermittently returns zero hits for an identical query, so an
+// empty result is not treated as a failure.
+func TestFetchRecentBetankanden_Live(t *testing.T) {
+	if os.Getenv("RIKSDAGEN_SMOKE") == "" {
+		t.Skip("set RIKSDAGEN_SMOKE=1 to run")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	c := NewClient()
+
+	docs, err := c.FetchRecentBetankanden(ctx, 40)
+	if err != nil {
+		t.Fatalf("FetchRecentBetankanden: %v", err)
+	}
+	for _, d := range docs {
+		if d.Date == "" {
+			t.Errorf("doc %+v missing Date", d)
+		}
+		if d.Organ == "" {
+			t.Errorf("doc %+v missing Organ", d)
+		}
+	}
+	t.Logf("got %d recent betänkanden", len(docs))
 }

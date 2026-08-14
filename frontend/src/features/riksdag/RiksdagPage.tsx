@@ -339,7 +339,7 @@ export function RiksdagPage() {
 
   if (isLoading || !data) return <Skeleton />;
 
-  const { ruling, liveVotes, kpis, authorities } = data;
+  const { ruling, liveVotes = [], kpis, authorities } = data;
 
   const totalSeats = [...ruling.parties, ...(ruling.support ?? []), ...ruling.opposition].reduce((s, p) => s + p.seats, 0);
 

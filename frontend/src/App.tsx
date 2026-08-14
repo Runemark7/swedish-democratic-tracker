@@ -27,7 +27,6 @@ import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { MyndigheterListPage } from "./features/riksdag/MyndigheterListPage";
 import { RegeringPage } from "./features/regering/RegeringPage";
 import { MinisterDetailPage } from "./features/regering/MinisterDetailPage";
-import { SearchPage } from "./features/search/SearchPage";
 import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
 import { DebateDetailPage } from "./features/speeches/DebateDetailPage";
 import { DataIndexPage } from "./features/data/DataIndexPage";
@@ -38,40 +37,7 @@ import { useMediaQuery } from "./hooks/useMediaQuery";
 import { useRecordCoverage } from "./hooks/useDemocracy";
 import { swedishDate } from "./shared/dates";
 import { MobileNav } from "./components/MobileNav";
-
-// ── Section detection ─────────────────────────────────────────────────────
-type NavSection = "start" | "riksdag" | "region" | "kommun" | "regering" | "sok";
-
-function sectionFromPath(pathname: string): NavSection {
-  if (
-    pathname.startsWith("/riksdag") ||
-    pathname.startsWith("/parties") ||
-    pathname.startsWith("/votes") ||
-    pathname.startsWith("/budget") ||
-    pathname.startsWith("/politicians") ||
-    pathname.startsWith("/manifestos") ||
-    pathname === "/"
-  ) {
-    if (pathname === "/") return "start";
-    return "riksdag";
-  }
-  if (pathname.startsWith("/region")) return "region";
-  if (pathname.startsWith("/kommun")) return "kommun";
-  if (pathname.startsWith("/sok")) return "sok";
-  if (pathname.startsWith("/regering")) return "regering";
-  return "start";
-}
-
-function isRiksdagSection(pathname: string): boolean {
-  return (
-    pathname.startsWith("/riksdag") ||
-    pathname.startsWith("/parties") ||
-    pathname.startsWith("/votes") ||
-    pathname.startsWith("/budget") ||
-    pathname.startsWith("/politicians") ||
-    pathname.startsWith("/manifestos")
-  );
-}
+import { PRIMARY_NAV, FORDJUPNING_NAV, RIKSDAG_SUB_NAV, isActive, isRiksdagSection } from "./shared/nav";
 
 // ── Three-bar logo icon ────────────────────────────────────────────────────
 function TreKammareLogo() {
@@ -189,24 +155,14 @@ export default function App() {
     );
   }
 
-  const section = sectionFromPath(location.pathname);
-  const showRiksdagTabs = isRiksdagSection(location.pathname);
-
-  const navPills = [
-    { key: "start",    to: "/",         label: "◆ START"     },
-    { key: "riksdag",  to: "/riksdag",  label: "I RIKSDAG"   },
-    { key: "region",   to: "/region",  label: "II REGION"   },
-    { key: "kommun",   to: "/kommun",  label: "III KOMMUN"  },
-    { key: "regering", to: "/regering", label: "IV REGERING" },
-    { key: "sok",      to: "/sok",     label: "⌕ SÖK"       },
-  ] as const;
+  const pathname = location.pathname;
+  const showRiksdagTabs = isRiksdagSection(pathname);
 
   return (
     <div className="sdt-page">
       {/* ── Mobile nav (≤640 px) ──────────────────────────────────────── */}
       <MobileNav
-        section={section}
-        isRiksdagSection={showRiksdagTabs}
+        pathname={pathname}
         theme={theme}
         toggleTheme={toggleTheme}
       />
@@ -236,12 +192,12 @@ export default function App() {
           <TreKammareLogo />
 
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            {navPills.map((pill) => (
+            {PRIMARY_NAV.map((item) => (
               <PillNav
-                key={pill.key}
-                to={pill.to}
-                label={pill.label}
-                active={section === pill.key}
+                key={item.to}
+                to={item.to}
+                label={item.label}
+                active={isActive(item, pathname)}
               />
             ))}
           </div>
@@ -300,22 +256,42 @@ export default function App() {
           </div>
         </div>
 
+        {/* ── Fördjupning: the four levels of government, as reference ── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "8px 0",
+            borderTop: "1px solid var(--color-border)",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 11,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--color-fg-muted)",
+            }}
+          >
+            Fördjupning
+          </span>
+          {FORDJUPNING_NAV.map((item) => (
+            <PillNav
+              key={item.to}
+              to={item.to}
+              label={item.label}
+              active={isActive(item, pathname)}
+            />
+          ))}
+        </div>
+
         {/* ── Riksdag feature sub-tabs ────────────────────────────────── */}
         {showRiksdagTabs && (
           <div style={{ display: "flex", borderTop: "1px solid var(--color-border)" }}>
-            {[
-              { to: "/parties",     label: "Partimål & röstning", match: ["/parties"]     },
-              { to: "/votes",       label: "Omröstningar",        match: ["/votes"]       },
-              { to: "/budget",      label: "Statsbudget",         match: ["/budget"]      },
-              { to: "/politicians", label: "Enskilda politiker",  match: ["/politicians"] },
-              { to: "/manifestos",  label: "Manifest",            match: ["/manifestos"]  },
-            ].map((tab) => {
-              // Exact match, or a nested route beneath it (/parties/S/goals).
-              // The trailing slash keeps /votes from matching a sibling like
-              // /votes-archive.
-              const isActive = tab.match.some(
-                (m) => location.pathname === m || location.pathname.startsWith(m + "/")
-              );
+            {RIKSDAG_SUB_NAV.map((tab) => {
+              const active = isActive(tab, pathname);
 
               return (
                 <NavLink
@@ -325,12 +301,12 @@ export default function App() {
                     display: "block",
                     padding: "10px 20px",
                     fontSize: 13,
-                    fontWeight: isActive ? 700 : 500,
+                    fontWeight: active ? 700 : 500,
                     textDecoration: "none",
-                    borderBottom: isActive
+                    borderBottom: active
                       ? "2px solid var(--color-fg)"
                       : "2px solid transparent",
-                    color: isActive ? "var(--color-fg)" : "var(--color-fg-muted)",
+                    color: active ? "var(--color-fg)" : "var(--color-fg-muted)",
                     transition: "color 0.15s",
                     whiteSpace: "nowrap",
                   }}
@@ -374,7 +350,6 @@ export default function App() {
           <Route path="/kommun"                                element={<MunicipalityLandingPage />} />
           <Route path="/kommun/jämför"                         element={<MunicipalityComparePage />} />
           <Route path="/kommun/:code"                          element={<MunicipalityDetailPage />} />
-          <Route path="/sok"                                   element={<SearchPage />} />
           <Route path="/anforanden/:id"                        element={<SpeechDetailPage />} />
           <Route path="/debatt/:dokId"                         element={<DebateDetailPage />} />
           <Route path="/om-sajten"                             element={<OmSajtenPage />} />
