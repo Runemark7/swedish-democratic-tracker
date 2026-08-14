@@ -147,3 +147,112 @@ func TestListVoteringar_ParsesRefsAndTotal(t *testing.T) {
 		t.Errorf("doktyp = %q, want \"votering\"", got)
 	}
 }
+
+// The organ parameter must not be sent at all.
+//
+// Riksdagen ignores `organ` on /dokumentlista — organ=SoU returns betänkanden
+// from AU, JuU and UbU — so no assertion about the organs that come *back* can
+// detect whether we filtered. The only thing that can fail is what we send.
+// A planned betänkande must not come back looking decided.
+//
+// /dokumentlista mixes betänkanden the chamber has decided with ones merely
+// scheduled, and sorts both on `datum` — so the planned ones arrive at the top.
+// On 2026-08-14 that was 15 of 40, five in the first eight rows, two with a
+// justeringsdag four months out. A caller that cannot tell them apart publishes
+// a future event as a past one, which is what the front page did.
+//
+// `datum` is deliberately not the signal: it is populated on both, and on every
+// decided betänkande checked it fell one to six days before `beslutsdag`.
+func TestFetchRecentBetankanden_DistinguishesPlannedFromDecided(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"dokumentlista":{"dokument":[
+			{"titel":"Decided","organ":"UbU","datum":"2026-08-12","beteckning":"UbU30",
+			 "beslutsdag":"2026-08-13","status":"Webbpublicering"},
+			{"titel":"Planned","organ":"AU","datum":"2026-08-12","beteckning":"AU9",
+			 "status":"planerat"}]}}`))
+	}))
+	defer srv.Close()
+
+	docs, err := newTestClient(srv.URL).FetchRecentBetankanden(context.Background(), 40)
+	if err != nil {
+		t.Fatalf("FetchRecentBetankanden: %v", err)
+	}
+	if len(docs) != 2 {
+		t.Fatalf("got %d documents, want 2", len(docs))
+	}
+
+	decided, planned := docs[0], docs[1]
+	if !decided.Decided() {
+		t.Error("UbU30 has a beslutsdag but reports not decided")
+	}
+	if decided.DecisionDate != "2026-08-13" {
+		t.Errorf("decision date = %q, want \"2026-08-13\"", decided.DecisionDate)
+	}
+	if decided.DecisionDate == decided.Date {
+		t.Error("decision date equals datum; the two are distinct fields and must stay so")
+	}
+	if decided.Status != "Webbpublicering" {
+		t.Errorf("status = %q, want \"Webbpublicering\"", decided.Status)
+	}
+
+	if planned.Decided() {
+		t.Error("AU9 has no beslutsdag but reports decided — a planned betänkande " +
+			"would render as a decision that has already happened")
+	}
+	if planned.DecisionDate != "" {
+		t.Errorf("planned decision date = %q, want empty", planned.DecisionDate)
+	}
+	if planned.Status != "planerat" {
+		t.Errorf("planned status = %q, want \"planerat\"", planned.Status)
+	}
+}
+
+func TestFetchRecentBetankanden_SendsNoOrganFilter(t *testing.T) {
+	var q url.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"dokumentlista":{"dokument":[
+			{"titel":"T","organ":"SoU","datum":"2026-08-12","beteckning":"SoU1"}]}}`))
+	}))
+	defer srv.Close()
+
+	docs, err := newTestClient(srv.URL).FetchRecentBetankanden(context.Background(), 40)
+	if err != nil {
+		t.Fatalf("FetchRecentBetankanden: %v", err)
+	}
+	if _, ok := q["organ"]; ok {
+		t.Errorf("client sent organ=%q; a complete feed must send no organ filter", q.Get("organ"))
+	}
+	if got := q.Get("typ"); got != "bet" {
+		t.Errorf("typ = %q, want \"bet\"", got)
+	}
+	if got := q.Get("sz"); got != "40" {
+		t.Errorf("sz = %q, want \"40\"", got)
+	}
+	if len(docs) != 1 || docs[0].Organ != "SoU" || docs[0].Date != "2026-08-12" {
+		t.Errorf("parsed %+v, want one SoU doc dated 2026-08-12", docs)
+	}
+}
+
+// FetchDocuments must keep sending its organ parameter unchanged, even though
+// Riksdagen ignores it: this test exists so the refactor that adds
+// FetchRecentBetankanden cannot silently change the older call's behaviour.
+func TestFetchDocuments_StillSendsOrgan(t *testing.T) {
+	var q url.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"dokumentlista":{"dokument":[]}}`))
+	}))
+	defer srv.Close()
+
+	if _, err := newTestClient(srv.URL).FetchDocuments(context.Background(),
+		[]string{"SoU", "TU"}, 5); err != nil {
+		t.Fatalf("FetchDocuments: %v", err)
+	}
+	if got := q.Get("organ"); got != "SoU,TU" {
+		t.Errorf("organ = %q, want \"SoU,TU\"", got)
+	}
+}

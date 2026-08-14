@@ -276,15 +276,18 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/votes/riksdag-feed": {
+    "/votes/recent": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Recent Riksdag betänkanden relevant to a given governance level */
-        get: operations["getRiksdagFeed"];
+        /**
+         * Complete, dated feed of recent betänkanden across every committee
+         * @description No committee filter is applied. Riksdagen ignores the `organ` parameter on the underlying /dokumentlista endpoint, so a curated subset would only look filtered — this endpoint returns the same complete feed and states that plainly.
+         */
+        get: operations["getRecentBetankanden"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1479,17 +1482,36 @@ export interface components {
             /** @description Region's own overarching goals, verbatim and complete (empty for link-only) */
             goals: components["schemas"]["RegionPlanGoal"][];
         };
-        RiksdagFeedItem: {
-            /** @example 2025-04-15 */
-            time: string;
+        RecentBetankande: {
             /** @example Betänkande om sjukvårdsreform */
             title: string;
-            /** @example Bifall */
+            /**
+             * @description Committee abbreviation. No committee filter is applied, so any Riksdag committee can appear here — not only the handful named elsewhere in this spec (e.g. AU, FiU, JuU, KU, NU, SkU, SoU, TU, UbU, UU, CU, and others).
+             * @example SoU
+             */
+            organ: string;
+            /**
+             * @description Riksdagen's `datum` — when the document was published or last touched, never when the chamber decided. On every decided betänkande checked on 2026-08-14, `decisionDate` fell one to six days after this. Must not be rendered as a decision date.
+             * @example 2026-08-12
+             */
+            date: string;
+            /** @example SoU1 */
+            beteckning: string;
+            /**
+             * @description Whether the chamber has decided this betänkande. The list carries betänkanden that are only planned, and because it sorts on `date` they appear among the newest — 15 of 40 on 2026-08-14, five of them in the first eight. A caller that ignores this field will present a future event as a past one.
+             * @example true
+             */
+            decided: boolean;
+            /**
+             * @description Riksdagen's `beslutsdag`. Empty when the betänkande has not been decided, which is the authoritative signal for `decided`.
+             * @example 2026-08-13
+             */
+            decisionDate: string;
+            /**
+             * @description Riksdagen's own lifecycle word, passed through verbatim — e.g. "Webbpublicering" for a published decision, "planerat" for one scheduled but not yet written. Never translated into a claim of ours.
+             * @example Webbpublicering
+             */
             status: string;
-            /** @example Vård */
-            tag?: string;
-            /** @example SoU2425:12 */
-            beteckning?: string;
         };
         RiksdagDocument: {
             dokId: string;
@@ -2346,10 +2368,10 @@ export interface operations {
             404: components["responses"]["NotFound"];
         };
     };
-    getRiksdagFeed: {
+    getRecentBetankanden: {
         parameters: {
-            query: {
-                level: "region" | "kommun";
+            query?: {
+                count?: number;
             };
             header?: never;
             path?: never;
@@ -2357,13 +2379,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Recent betänkanden with beteckning for deep-linking */
+            /** @description Recent betänkanden, newest first */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RiksdagFeedItem"][];
+                    "application/json": components["schemas"]["RecentBetankande"][];
                 };
             };
         };

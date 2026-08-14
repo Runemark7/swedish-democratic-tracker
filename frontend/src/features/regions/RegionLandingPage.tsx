@@ -4,6 +4,7 @@ import { regionsApi } from "./api";
 import { SwedenRegionMap } from "./components/SwedenRegionMap";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { whoDecidesSentence } from "@/shared/design";
 import type { RegionSummary } from "@/shared/types";
 
 function RegionCard({ region }: { region: RegionSummary }) {
@@ -252,6 +253,19 @@ export function RegionLandingPage() {
           </div>
         </div>
       </div>
+
+      <p
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 11,
+          color: "var(--color-fg-muted)",
+          letterSpacing: "0.05em",
+          margin: "0",
+          padding: isMobile ? "8px 14px 0" : "12px 32px 0",
+        }}
+      >
+        {whoDecidesSentence("region")}
+      </p>
 
       {isLoading && (
         <div style={{ padding: "40px 32px" }}>

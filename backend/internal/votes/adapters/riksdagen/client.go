@@ -169,9 +169,36 @@ func (c *Client) ListVoteringar(ctx context.Context, rm string, page, size int) 
 // FetchDocuments returns recent betänkanden from the given committee organs.
 // status defaults to "Bifall" — >90% of betänkanden pass; full votering lookup is future work.
 // TODO: integrate nämndärenden API (lankadedata.se) for regional/municipal council decisions when available.
+//
+// NOTE: Riksdagen ignores `organ` on /dokumentlista. Verified 2026-08-14:
+// organ=SoU returns 74 783 hits whose organs include AU, JuU and UbU, and
+// omitting the parameter gives the identical result. Callers that need a
+// specific committee must filter the returned documents themselves — passing
+// organs here selects nothing.
 func (c *Client) FetchDocuments(ctx context.Context, organs []string, count int) ([]ports.RiksdagDocument, error) {
-	url := fmt.Sprintf("%s/dokumentlista/?organ=%s&typ=bet&utformat=json&sz=%d&sort=datum&sortorder=desc",
-		c.baseURL, strings.Join(organs, ","), count)
+	return c.fetchDocumentList(ctx, strings.Join(organs, ","), count)
+}
+
+// FetchRecentBetankanden returns the most recently published betänkanden across
+// every committee, newest first.
+//
+// Sends no organ parameter. A feed filtered to committees we chose would
+// publish a worldview while claiming to show what happened; the period is the
+// selection, and the calendar defines the period.
+//
+// This does not change what Riksdagen returns — see the note on FetchDocuments.
+func (c *Client) FetchRecentBetankanden(ctx context.Context, count int) ([]ports.RiksdagDocument, error) {
+	return c.fetchDocumentList(ctx, "", count)
+}
+
+// fetchDocumentList fetches /dokumentlista, filtered to betänkanden and sorted
+// newest first. organParam is included in the query only when non-empty.
+func (c *Client) fetchDocumentList(ctx context.Context, organParam string, count int) ([]ports.RiksdagDocument, error) {
+	url := fmt.Sprintf("%s/dokumentlista/?typ=bet&utformat=json&sz=%d&sort=datum&sortorder=desc",
+		c.baseURL, count)
+	if organParam != "" {
+		url += "&organ=" + organParam
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -187,6 +214,12 @@ func (c *Client) FetchDocuments(ctx context.Context, organs []string, count int)
 		return nil, fmt.Errorf("riksdagen dokumentlista API returned %d", resp.StatusCode)
 	}
 
+	// beslutsdag and status are decoded because datum alone cannot tell a
+	// decided betänkande from a planned one, and the list carries both. Dropping
+	// them is what let planned betänkanden for a coming riksmöte render as the
+	// most recent decisions. `beslutad` is deliberately not decoded: it arrives
+	// with an inconsistent JSON type, and an empty beslutsdag answers the same
+	// question without the guesswork.
 	var payload struct {
 		Dokumentlista struct {
 			Dokument []struct {
@@ -194,6 +227,8 @@ func (c *Client) FetchDocuments(ctx context.Context, organs []string, count int)
 				Organ      string `json:"organ"`
 				Datum      string `json:"datum"`
 				Beteckning string `json:"beteckning"`
+				Beslutsdag string `json:"beslutsdag"`
+				Status     string `json:"status"`
 			} `json:"dokument"`
 		} `json:"dokumentlista"`
 	}
@@ -204,10 +239,12 @@ func (c *Client) FetchDocuments(ctx context.Context, organs []string, count int)
 	docs := make([]ports.RiksdagDocument, 0, len(payload.Dokumentlista.Dokument))
 	for _, d := range payload.Dokumentlista.Dokument {
 		docs = append(docs, ports.RiksdagDocument{
-			Title:      d.Titel,
-			Organ:      d.Organ,
-			Date:       d.Datum,
-			Beteckning: d.Beteckning,
+			Title:        d.Titel,
+			Organ:        d.Organ,
+			Date:         d.Datum,
+			Beteckning:   d.Beteckning,
+			DecisionDate: d.Beslutsdag,
+			Status:       d.Status,
 		})
 	}
 	return docs, nil

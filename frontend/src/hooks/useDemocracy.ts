@@ -65,21 +65,6 @@ function formatSwedishDate(isoDate: string): string {
   return `${d.getDate()} ${months[d.getMonth()]}`;
 }
 
-// Fetch recent Riksdag committee decisions relevant to the given level.
-// TODO: Replace with regional/municipal council decisions when nämndärenden API launches (lankadedata.se).
-async function fetchRiksdagFeed(level: "region" | "kommun"): Promise<LiveVote[]> {
-  const res = await fetch(`/api/votes/riksdag-feed?level=${level}`);
-  if (!res.ok) throw new Error(`riksdag-feed: ${res.status}`);
-  const items: { time: string; title: string; status: string; tag?: string; beteckning?: string }[] = await res.json();
-  return items.map((item) => ({
-    time: formatSwedishDate(item.time),
-    title: item.title,
-    status: item.status as LiveVote["status"],
-    tag: item.tag ?? "",
-    beteckning: item.beteckning,
-  }));
-}
-
 // ── Municipality budget helpers ────────────────────────────────────────────────
 
 const SPENDING_NAMES: Record<string, string> = {
@@ -336,9 +321,8 @@ export function useRegion(code: string) {
   return useQuery<LevelData>({
     queryKey: ["region", code],
     queryFn: async () => {
-      const [detail, feed, budgetAreas, kpiItems] = await Promise.all([
+      const [detail, budgetAreas, kpiItems] = await Promise.all([
         regionsApi.getRegion(code),
-        fetchRiksdagFeed("region").catch(() => []),
         regionsApi.getRegionBudget(code).catch(() => []),
         regionsApi.getRegionKPIs(code).catch(() => [] as MunicipalityKPIItem[]),
       ]);
@@ -366,7 +350,6 @@ export function useRegion(code: string) {
           parties: governing,
           opposition,
         },
-        liveVotes: feed,
         budget,
         kpis: kpiItemsToStrip(kpiItems, REGION_STRIP_KPI_META, REGION_STRIP_ORDER),
       } satisfies LevelData;
@@ -486,9 +469,8 @@ export function useKommun(code: string) {
   return useQuery<LevelData>({
     queryKey: ["kommun", code],
     queryFn: async () => {
-      const [detail, feed, kpiItems, spendingItems] = await Promise.all([
+      const [detail, kpiItems, spendingItems] = await Promise.all([
         municipalitiesApi.getMunicipality(code),
-        fetchRiksdagFeed("kommun").catch(() => []),
         municipalitiesApi.getMunicipalityKPIs(code).catch(() => [] as MunicipalityKPIItem[]),
         municipalitiesApi.getMunicipalitySpending(code).catch(() => [] as MunicipalityKPIItem[]),
       ]);
@@ -516,7 +498,6 @@ export function useKommun(code: string) {
           parties: governing,
           opposition,
         },
-        liveVotes: feed,
         budget,
         kpis,
       } satisfies LevelData;
@@ -540,15 +521,6 @@ export function useRecordCoverage() {
     queryKey: ["record-coverage"],
     queryFn: () => api.get<RecordCoverage>("/riksdag/coverage"),
     staleTime: 5 * 60_000,
-  });
-}
-
-// ── Recent speeches ───────────────────────────────────────────────────────────
-export function useRecentSpeeches(limit = 100) {
-  return useQuery<Speech[]>({
-    queryKey: ["speeches-recent", limit],
-    queryFn: () => speechesApi.listRecent(limit),
-    staleTime: 60_000,
   });
 }
 
