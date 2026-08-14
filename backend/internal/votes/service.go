@@ -195,18 +195,9 @@ func (s *Service) GetDocumentStatus(ctx context.Context, dokID string) (*domain.
 	return s.riksdagen.FetchDocumentStatus(ctx, dokID)
 }
 
-// GetRiksdagFeed returns recent betänkanden from committees relevant to the given level.
-// level "region"  → SoU (healthcare), TU (transit)
-// level "kommun"  → UbU (education), CU (housing/planning), SoU
-func (s *Service) GetRiksdagFeed(ctx context.Context, level string) ([]ports.RiksdagDocument, error) {
-	var organs []string
-	switch level {
-	case "region":
-		organs = []string{"SoU", "TU"}
-	case "kommun":
-		organs = []string{"UbU", "CU", "SoU"}
-	default:
-		return nil, fmt.Errorf("unknown level %q: must be region or kommun", level)
-	}
-	return s.riksdagen.FetchDocuments(ctx, organs, 5)
+// GetRecentBetankanden returns the most recently published betänkanden across
+// every committee, newest first — the complete feed the front page's timeline
+// is built on. It applies no committee selection.
+func (s *Service) GetRecentBetankanden(ctx context.Context, count int) ([]ports.RiksdagDocument, error) {
+	return s.riksdagen.FetchRecentBetankanden(ctx, count)
 }

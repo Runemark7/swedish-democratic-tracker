@@ -381,27 +381,34 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /votes/riksdag-feed:
+  /votes/recent:
     get:
-      operationId: getRiksdagFeed
+      operationId: getRecentBetankanden
       tags: [votes]
-      summary: Recent Riksdag betänkanden relevant to a given governance level
+      summary: Complete, dated feed of recent betänkanden across every committee
+      description: >-
+        No committee filter is applied. Riksdagen ignores the `organ`
+        parameter on the underlying /dokumentlista endpoint, so a curated
+        subset would only look filtered — this endpoint returns the same
+        complete feed and states that plainly.
       parameters:
-        - name: level
+        - name: count
           in: query
-          required: true
+          required: false
           schema:
-            type: string
-            enum: [region, kommun]
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 40
       responses:
         "200":
-          description: Recent betänkanden with beteckning for deep-linking
+          description: Recent betänkanden, newest first
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/RiksdagFeedItem"
+                  $ref: "#/components/schemas/RecentBetankande"
 
   /votes/{beteckning}/{punkt}:
     get:
@@ -2193,25 +2200,55 @@ components:
           items:
             $ref: "#/components/schemas/RegionPlanGoal"
 
-    RiksdagFeedItem:
+    RecentBetankande:
       type: object
-      required: [time, title, status]
+      required: [title, organ, date, beteckning, decided, decisionDate, status]
       properties:
-        time:
-          type: string
-          example: "2025-04-15"
         title:
           type: string
           example: "Betänkande om sjukvårdsreform"
-        status:
+        organ:
           type: string
-          example: "Bifall"
-        tag:
+          description: >-
+            Committee abbreviation. No committee filter is applied, so any
+            Riksdag committee can appear here — not only the handful named
+            elsewhere in this spec (e.g. AU, FiU, JuU, KU, NU, SkU, SoU, TU,
+            UbU, UU, CU, and others).
+          example: "SoU"
+        date:
           type: string
-          example: "Vård"
+          description: >-
+            Riksdagen's `datum` — when the document was published or last
+            touched, never when the chamber decided. On every decided
+            betänkande checked on 2026-08-14, `decisionDate` fell one to six
+            days after this. Must not be rendered as a decision date.
+          example: "2026-08-12"
         beteckning:
           type: string
-          example: "SoU2425:12"
+          example: "SoU1"
+        decided:
+          type: boolean
+          description: >-
+            Whether the chamber has decided this betänkande. The list carries
+            betänkanden that are only planned, and because it sorts on `date`
+            they appear among the newest — 15 of 40 on 2026-08-14, five of them
+            in the first eight. A caller that ignores this field will present a
+            future event as a past one.
+          example: true
+        decisionDate:
+          type: string
+          description: >-
+            Riksdagen's `beslutsdag`. Empty when the betänkande has not been
+            decided, which is the authoritative signal for `decided`.
+          example: "2026-08-13"
+        status:
+          type: string
+          description: >-
+            Riksdagen's own lifecycle word, passed through verbatim — e.g.
+            "Webbpublicering" for a published decision, "planerat" for one
+            scheduled but not yet written. Never translated into a claim of
+            ours.
+          example: "Webbpublicering"
 
     RiksdagDocument:
       type: object

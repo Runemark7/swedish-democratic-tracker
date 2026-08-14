@@ -164,59 +164,102 @@ Deleted: `frontend/src/features/search/SearchPage.tsx`, `frontend/src/features/r
 **Interfaces:**
 - Produces: `FetchRecentBetankanden(ctx context.Context, count int) ([]RiksdagDocument, error)`; `GET /api/votes/recent?count=40` → `RiksdagDocument[]` with `title`, `organ`, `date`, `beteckning`.
 
-The existing `FetchDocuments(ctx, organs, count)` already does the right upstream call — `/dokumentlista/?organ=…&typ=bet&utformat=json&sz=N&sort=datum&sortorder=desc` (`client.go:172-174`) — and `RiksdagDocument` already carries `Date`, `Organ` and `Beteckning`. The only change needed is **omitting the organ filter**, which turns a curated feed into a complete one.
+The existing `FetchDocuments(ctx, organs, count)` already does the right upstream call — `/dokumentlista/?organ=…&typ=bet&utformat=json&sz=N&sort=datum&sortorder=desc` (`client.go:172-174`) — and `RiksdagDocument` already carries `Date`, `Organ` and `Beteckning`.
+
+> **Corrected 2026-08-14. `organ` is inert; the feed is already complete.** This task
+> originally said the only change needed was "omitting the organ filter, which turns a
+> curated feed into a complete one". Tested directly against `data.riksdagen.se`:
+> `organ=SoU` returns 74 783 hits whose organs are `AU, JuU, UbU`; `organ=SoU,TU` behaves
+> the same; omitting `organ` is identical. **Riksdagen ignores the parameter on this
+> endpoint.**
+>
+> Two consequences. First, the change is still worth making — an inert parameter that looks
+> like a filter is worse than no parameter — but it changes nothing about what the feed
+> returns, and the commit message must not claim otherwise. Second, the completeness
+> assertion in the test below (*"is an organ filter still applied?"*) **cannot fail**: it
+> passes whether or not the filter is present, because the filter does nothing. It is
+> replaced in Step 1 by a test that can fail.
+>
+> It also means the defect Task 5 removes is worse than #103 described: region pages never
+> showed "SoU and TU", they showed the newest betänkanden from any committee at all,
+> labelled as regionally relevant.
 
 - [ ] **Step 1: Write the failing test**
 
-Create `backend/internal/votes/adapters/riksdagen/recent_test.go`:
+Add to `backend/internal/votes/adapters/riksdagen/client_test.go`, which is already
+`package riksdagen` and already has the `newTestClient(srv.URL)` helper and the pattern for
+asserting a query parameter is **absent** (see `TestFetchVotes_…`'s check on `p`):
 
 ```go
-package riksdagen_test
+// The organ parameter must not be sent at all.
+//
+// Riksdagen ignores `organ` on /dokumentlista — organ=SoU returns betänkanden
+// from AU, JuU and UbU — so no assertion about the organs that come *back* can
+// detect whether we filtered. The only thing that can fail is what we send.
+func TestFetchRecentBetankanden_SendsNoOrganFilter(t *testing.T) {
+	var q url.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"dokumentlista":{"dokument":[
+			{"titel":"T","organ":"SoU","datum":"2026-08-12","beteckning":"SoU1"}]}}`))
+	}))
+	defer srv.Close()
 
-import (
-	"context"
-	"os"
-	"testing"
-
-	"riksdagskollen/internal/votes/adapters/riksdagen"
-)
-
-// Hits the live API. Skipped unless explicitly enabled, like the other smoke
-// tests in this package.
-func TestFetchRecentBetankanden_SpansManyCommittees(t *testing.T) {
-	if os.Getenv("RIKSDAGEN_SMOKE") == "" {
-		t.Skip("RIKSDAGEN_SMOKE not set — skipping live API test")
-	}
-	c := riksdagen.NewClient()
-	docs, err := c.FetchRecentBetankanden(context.Background(), 40)
+	docs, err := newTestClient(srv.URL).FetchRecentBetankanden(context.Background(), 40)
 	if err != nil {
 		t.Fatalf("FetchRecentBetankanden: %v", err)
 	}
-	if len(docs) == 0 {
-		t.Fatal("no documents returned")
+	if _, ok := q["organ"]; ok {
+		t.Errorf("client sent organ=%q; a complete feed must send no organ filter", q.Get("organ"))
 	}
-	organs := map[string]bool{}
-	for _, d := range docs {
-		if d.Date == "" {
-			t.Errorf("%s has no date — the feed must state the dates it covers", d.Beteckning)
-		}
-		if d.Organ == "" {
-			t.Errorf("%s has no organ — every item must name its utskott", d.Beteckning)
-		}
-		organs[d.Organ] = true
+	if got := q.Get("typ"); got != "bet" {
+		t.Errorf("typ = %q, want \"bet\"", got)
 	}
-	// A complete feed is not a curated one. Five committees across 40 recent
-	// betänkanden is a low bar; failing it means an organ filter is still applied.
-	if len(organs) < 5 {
-		t.Errorf("only %d committees in 40 items — is an organ filter still applied?", len(organs))
+	if got := q.Get("sz"); got != "40" {
+		t.Errorf("sz = %q, want \"40\"", got)
+	}
+	if len(docs) != 1 || docs[0].Organ != "SoU" || docs[0].Date != "2026-08-12" {
+		t.Errorf("parsed %+v, want one SoU doc dated 2026-08-12", docs)
+	}
+}
+
+// FetchDocuments must keep sending its organ parameter unchanged, even though
+// Riksdagen ignores it: this test exists so the refactor that adds
+// FetchRecentBetankanden cannot silently change the older call's behaviour.
+func TestFetchDocuments_StillSendsOrgan(t *testing.T) {
+	var q url.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"dokumentlista":{"dokument":[]}}`))
+	}))
+	defer srv.Close()
+
+	if _, err := newTestClient(srv.URL).FetchDocuments(context.Background(),
+		[]string{"SoU", "TU"}, 5); err != nil {
+		t.Fatalf("FetchDocuments: %v", err)
+	}
+	if got := q.Get("organ"); got != "SoU,TU" {
+		t.Errorf("organ = %q, want \"SoU,TU\"", got)
 	}
 }
 ```
 
+**Mutation-test both** before moving on: make `FetchRecentBetankanden` pass a non-empty
+organ and confirm the first test fails; drop the organ from `FetchDocuments` and confirm the
+second fails. Restore both.
+
+Optionally keep a live smoke test in `smoke_test.go` behind `RIKSDAGEN_SMOKE` asserting only
+that every returned document carries a `Date` and an `Organ`. Do **not** assert a committee
+count: `organ` is inert upstream, so such an assertion passes with or without a filter and
+would be a guard that cannot fail. Note also that the upstream intermittently returns zero
+hits for an identical query, so a live test must not treat an empty result as a failure.
+
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd backend && RIKSDAGEN_SMOKE=1 go test ./internal/votes/adapters/riksdagen/ -run TestFetchRecentBetankanden -v`
-Expected: FAIL with `c.FetchRecentBetankanden undefined`.
+Run: `cd backend && go test ./internal/votes/adapters/riksdagen/ -run 'TestFetchRecentBetankanden|TestFetchDocuments_StillSendsOrgan' -v -count=1`
+Expected: FAIL with `c.FetchRecentBetankanden undefined`. No network access needed — both tests run against `httptest`.
 
 - [ ] **Step 3: Implement**
 
@@ -226,16 +269,28 @@ In `backend/internal/votes/adapters/riksdagen/client.go`, add beside `FetchDocum
 // FetchRecentBetankanden returns the most recently published betänkanden across
 // every committee, newest first.
 //
-// Same upstream call as FetchDocuments with the organ filter omitted. That
-// omission is the point: a feed filtered to committees we chose would publish a
-// worldview while claiming to show what happened. The period is the selection,
-// and the calendar defines the period.
+// Sends no organ parameter. A feed filtered to committees we chose would
+// publish a worldview while claiming to show what happened; the period is the
+// selection, and the calendar defines the period.
+//
+// This does not change what Riksdagen returns — see the note on FetchDocuments.
 func (c *Client) FetchRecentBetankanden(ctx context.Context, count int) ([]ports.RiksdagDocument, error) {
 	return c.fetchDocumentList(ctx, "", count)
 }
 ```
 
 Then refactor the body of `FetchDocuments` into `fetchDocumentList(ctx, organParam string, count int)`, which builds the URL with `&organ=` **only when `organParam != ""`**, and have `FetchDocuments` call it with `strings.Join(organs, ",")`. Keep the existing parsing untouched.
+
+**Record the inert parameter where the next developer will hit it.** Put this on
+`FetchDocuments`, whose callers still pass organs and may reasonably assume it filters:
+
+```go
+// NOTE: Riksdagen ignores `organ` on /dokumentlista. Verified 2026-08-14:
+// organ=SoU returns 74 783 hits whose organs include AU, JuU and UbU, and
+// omitting the parameter gives the identical result. Callers that need a
+// specific committee must filter the returned documents themselves — passing
+// organs here selects nothing.
+```
 
 Add to the client port in `backend/internal/votes/ports/riksdagen.go`:
 
@@ -248,8 +303,8 @@ Adding a method to that interface breaks every fake implementing it. Find them w
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd backend && RIKSDAGEN_SMOKE=1 go test ./internal/votes/adapters/riksdagen/ -run TestFetchRecentBetankanden -v`
-Expected: PASS, with at least 5 distinct committees.
+Run: `cd backend && go test ./internal/votes/adapters/riksdagen/ -run 'TestFetchRecentBetankanden|TestFetchDocuments_StillSendsOrgan' -v -count=1`
+Expected: PASS — no `organ` parameter sent by the new call, `organ=SoU,TU` still sent by the old one. Confirm from `-v` that both tests ran.
 
 - [ ] **Step 5: Service, endpoint, verify, commit**
 
@@ -261,11 +316,18 @@ go build -C backend ./... && cd frontend && npm run generate:api && npx tsc --no
 
 ```bash
 git add backend/internal/votes/ api/openapi.yaml frontend/src/shared/api-contract.ts
-git commit -m "feat: complete betänkande feed across all committees
+git commit -m "feat: complete betankande feed across all committees
 
-Same dokumentlista call as the curated feed with the organ filter omitted.
-That omission is the decision: a feed filtered to committees we picked
-would publish a worldview while claiming to show what happened."
+Same dokumentlista call with no organ parameter. The intent is that a feed
+filtered to committees we picked would publish a worldview while claiming
+to show what happened.
+
+It does not change what comes back. Riksdagen ignores organ on this
+endpoint — organ=SoU returns betankanden from AU, JuU and UbU — so the
+existing 'curated' feed was never curated. Sending a parameter that looks
+like a filter and is not is worse than sending none, which is what this
+removes. The test asserts on what we send, since nothing about what comes
+back can distinguish the two."
 ```
 
 ---
@@ -378,6 +440,28 @@ filter over one preloaded vote list, which structure replaces."
 
 - [ ] **Step 1: Build the feed**
 
+> **Corrected 2026-08-14, after the task review. The prescribed copy was itself the defect.**
+>
+> This step's wording — a block headed *senaste besluten* and a span sentence reading
+> *"Beslut publicerade {äldsta} – {nyaste}"* — treats every item in the feed as a decision.
+> Verified against the live upstream: **15 of 40 items are `status: "planerat"`,
+> `beslutad: 0`, `rm: "2026/27"`** — planned betänkanden for the coming riksmöte, not
+> written, debated or decided. They are the newest by `datum`, so five of them occupied the
+> **top eight rows** under that heading, two carrying a `justeringsdag` four months in the
+> future.
+>
+> Separately, **`datum` is never the decision date**: on all 24 decided items `beslutsdag`
+> falls 1–6 days later. So every date rendered under a "Beslut" heading was the wrong date
+> for the event named. And *"Inget nyare finns i vår inläsning."* was contradicted on the
+> same page render by `useRecordCoverage().lastDecisionDate`, which was newer.
+>
+> **Ruling: the unit is the betänkande**, which is what #88 actually decided. The block and
+> the span sentence say betänkanden, not beslut. `status`, `beslutad` and `beslutsdag` are
+> carried through the client (which discarded them), a decided row is dated by `beslutsdag`,
+> a planned row makes no date claim and is labelled as not yet decided, the span is computed
+> from decided rows only, and the "nothing newer" sentence is scoped to this feed rather
+> than to our reading as a whole.
+
 Create `DecisionFeed.tsx` consuming `GET /api/votes/recent?count=40`. Requirements:
 
 - **One item per betänkande**, each naming its utskott and linking `/committees/{organ}`, plus its own date via `swedishDate` from `@/shared/dates`.
@@ -419,6 +503,29 @@ recess would be an unsourced inference."
 ---
 
 ### Task 4: The agenda becomes a document index under /regering
+
+> **ALREADY DONE — DO NOT EXECUTE. Verified 2026-08-14.**
+>
+> PR [#110](https://github.com/Runemark7/swedish-democratic-tracker/pull/110) (`98ad934`)
+> completed this task in full: the migration shipped as `000037_agenda_document_index`
+> (`000036` was already taken by `utskott_uo_fk`), `riksdag_agenda` carries `url`, `issuer`
+> and `published` with `status` and `description` dropped, `AgendaList.tsx` and
+> `AgendaDetailPage.tsx` are deleted, and `docs/data-sources/national-agenda.md` is
+> rewritten.
+>
+> **Running the migration below would be destructive.** It does `DELETE FROM riksdag_agenda`
+> and re-inserts the two URLs written here — and both of those URLs now 404, while the two
+> actually shipped return 200:
+>
+> | | in this plan | shipped, working |
+> |---|---|---|
+> | Tidöavtalet | `via.tt.se/data/attachments/00805/…pdf` — **404** | `liberalerna.se/wp-content/uploads/tidoavtalet-…pdf` — **200** |
+> | Budgetprop. 2026 | `regeringen.se/…/prop.-2025261/` — **404** | `regeringen.se/…/2025261/` — **200** |
+>
+> Someone already followed this task's own instruction to verify the URLs before committing
+> and corrected them. Executing the task would undo that and leave a document index whose
+> links are dead — which this task's Step 1 calls "worse than no index". The text is kept
+> below as the record of what was decided and why.
 
 **Files:**
 - Create: `backend/migrations/000036_agenda_document_index.{up,down}.sql`
@@ -525,7 +632,19 @@ paraphrase, since an item is now a title and a link."
 
 **Files:**
 - Modify: `backend/internal/votes/service.go`, `backend/internal/votes/adapters/http/handler.go`, `api/openapi.yaml`
-- Modify: `frontend/src/hooks/useDemocracy.ts`, `frontend/src/features/regions/RegionLandingPage.tsx`, `frontend/src/features/municipalities/MunicipalityLandingPage.tsx`
+- Modify: `frontend/src/hooks/useDemocracy.ts`
+- Modify (the who-decides sentence): `frontend/src/features/regions/RegionLandingPage.tsx`, `frontend/src/features/municipalities/MunicipalityLandingPage.tsx`
+- Modify (**this is where the feed actually renders**): `frontend/src/features/regions/RegionDetailPage.tsx`, `frontend/src/features/municipalities/MunicipalityDetailPage.tsx`
+
+> **Corrected 2026-08-14.** The file list above originally named only the *landing* pages.
+> The who-decides sentence does belong there, but the feed is rendered on the **detail**
+> pages, as `liveVotes` — `RegionDetailPage.tsx:425` and `MunicipalityDetailPage.tsx:449`.
+> `useDemocracy.ts` sets `liveVotes: feed` at `:369` (region) and `:519` (kommun).
+>
+> **`HomePage.tsx:60` and `RiksdagPage.tsx:616` also read `liveVotes` and must not be
+> touched.** Theirs comes from `useRiksdag`, which sources it from the votes API, not from
+> `/votes/riksdag-feed`. Removing the endpoint does not affect them; editing them would
+> break two working pages.
 
 - [ ] **Step 1: Delete the curated feed**
 
@@ -553,12 +672,16 @@ Browser-check `/region`, `/region/{code}`, `/kommun`, `/kommun/{code}`: no riksd
 ```bash
 git add backend/internal/votes/ frontend/src/hooks/useDemocracy.ts frontend/src/features/regions/ \
         frontend/src/features/municipalities/ api/openapi.yaml frontend/src/shared/api-contract.ts
-git commit -m "fix: stop presenting picked committees as regionally relevant
+git commit -m "fix: stop presenting national betankanden as regionally relevant
 
-Every region page rendered betänkanden from SoU and TU, and every kommun
-page from UbU, CU and SoU, because a hardcoded map said those committees
-matter to those levels. That is a relevance judgement we invented and
-published.
+Every region and kommun page rendered a riksdag betankande feed because a
+hardcoded map said certain committees matter to certain levels. That is a
+relevance judgement we invented and published.
+
+It was worse than the map suggested. Riksdagen ignores the organ parameter
+on /dokumentlista, so the map selected nothing: the pages showed whichever
+betankanden were newest, from any committee, presented as relevant to that
+region or kommun.
 
 Replaced by a statement of who decides what, which is checkable: the
 Riksdag decides the state budget, a region decides its own, and they are

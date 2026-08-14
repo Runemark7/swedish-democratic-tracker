@@ -119,7 +119,10 @@ export interface LevelData {
   subtitle: string;
   population?: string;
   ruling: Ruling;
-  liveVotes: LiveVote[];
+  /** Riksdag-level live votes only. Region and municipality levels no longer
+   *  carry a Riksdag feed (the invented committee→level feed was removed), so
+   *  they omit this. */
+  liveVotes?: LiveVote[];
   budget: Budget;
   // National agenda only (curated from government policy documents). Region
   // and municipality levels omit this — Sweden publishes no structured

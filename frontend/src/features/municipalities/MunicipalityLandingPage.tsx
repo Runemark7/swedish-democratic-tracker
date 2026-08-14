@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { municipalitiesApi } from "./api";
 import { SwedenKommunMap } from "./components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { whoDecidesSentence } from "@/shared/design";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { MunicipalitySummary } from "@/shared/types";
 
@@ -262,6 +263,19 @@ export function MunicipalityLandingPage() {
           )}
         </div>
       </div>
+
+      <p
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 11,
+          color: "var(--color-fg-muted)",
+          letterSpacing: "0.05em",
+          margin: "0",
+          padding: isMobile ? "8px 14px 0" : "12px 32px 0",
+        }}
+      >
+        {whoDecidesSentence("kommun")}
+      </p>
 
       {/* Loading / error */}
       {isLoading && (

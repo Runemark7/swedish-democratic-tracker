@@ -62,6 +62,9 @@ func (c *enrichClient) ListVoteringar(context.Context, string, int, int) ([]port
 func (c *enrichClient) FetchDocuments(context.Context, []string, int) ([]ports.RiksdagDocument, error) {
 	return nil, nil
 }
+func (c *enrichClient) FetchRecentBetankanden(context.Context, int) ([]ports.RiksdagDocument, error) {
+	return nil, nil
+}
 func (c *enrichClient) FetchBetankandeByBeteckning(context.Context, string) (*ports.BetankandeInfo, error) {
 	return nil, nil
 }

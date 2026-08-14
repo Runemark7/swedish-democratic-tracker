@@ -74,6 +74,14 @@ export const DOC_TYPE_LABEL: Record<string, string> = {
   fr: "Skriftlig fråga",
 };
 
+// ── Who-decides sentence ─────────────────────────────────────────────
+// The constitutional division of responsibility, stated once and reused by
+// both level-landing pages. A fact about who decides what, not a data link.
+export function whoDecidesSentence(level: "region" | "kommun"): string {
+  const body = level === "region" ? "Din region" : "Din kommun";
+  return `Riksdagen beslutar om statens budget. ${body} beslutar om sin egen, med egna skatteintäkter och statsbidrag. De två är inte samma pengar.`;
+}
+
 // ── Budget Tier Labels ────────────────────────────────────────────────
 export const TIER_LABELS: Record<string, string> = {
   national:     "Nationellt",

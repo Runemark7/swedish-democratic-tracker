@@ -53,6 +53,10 @@ func (f *fakeVoteClient) FetchDocuments(context.Context, []string, int) ([]votep
 	return nil, nil
 }
 
+func (f *fakeVoteClient) FetchRecentBetankanden(context.Context, int) ([]voteports.RiksdagDocument, error) {
+	return nil, nil
+}
+
 func (f *fakeVoteClient) FetchBetankandeByBeteckning(context.Context, string) (*voteports.BetankandeInfo, error) {
 	return nil, nil
 }
