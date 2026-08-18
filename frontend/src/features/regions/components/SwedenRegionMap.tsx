@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import type { RegionSummary } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type RegionSummary = components["schemas"]["RegionSummary"];
 import {
   SWEDEN_REGION_PATHS,
   SWEDEN_REGION_VIEWBOX,

@@ -6,8 +6,22 @@ import { riksdagApi, budgetApi, type BudgetYearDetail, type RiksdagKpi, type Rik
 import { speechesApi, type Speech } from "@/features/speeches/api";
 import { votesApi } from "@/features/votes/api";
 import { TC_PARTY_COLORS, type LevelData, type Party, type LiveVote, type Budget, type BudgetArea, type Kpi, type AgendaItem, type Ruling } from "@/types/democracy";
-import type {
-  RecordCoverage, ElectionResult, KPIRank, RegionSummary, MunicipalitySummary, MunicipalityKPIItem, RiksdagDocument, RiksdagDocumentFull, RegionBudgetSnapshot, RegionAreaDataPoint, RegionKPIRankEntry, RegionPlan, MunicipalityBudgetSnapshot, MunicipalityAreaDataPoint, BudgetSnapshot } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+import type { BudgetSnapshot, MunicipalityAreaDataPoint } from "@/shared/ui-types";
+
+type RecordCoverage = components["schemas"]["RecordCoverage"];
+type ElectionResult = components["schemas"]["ElectionResult"];
+type KPIRank = components["schemas"]["KPIRank"];
+type RegionSummary = components["schemas"]["RegionSummary"];
+type MunicipalitySummary = components["schemas"]["MunicipalitySummary"];
+type MunicipalityKPIItem = components["schemas"]["MunicipalityKPIItem"];
+type RiksdagDocument = components["schemas"]["RiksdagDocument"];
+type RiksdagDocumentFull = components["schemas"]["RiksdagDocumentFull"];
+type RegionBudgetSnapshot = components["schemas"]["RegionBudgetSnapshot"];
+type RegionAreaDataPoint = components["schemas"]["RegionAreaDataPoint"];
+type RegionKPIRankEntry = components["schemas"]["RegionKPIRankEntry"];
+type RegionPlan = components["schemas"]["RegionPlan"];
+type MunicipalityBudgetSnapshot = components["schemas"]["MunicipalityBudgetSnapshot"];
 import { STRIP_KPI_META, STRIP_ORDER, type KpiMeta } from "@/features/municipalities/kpiMeta";
 import { REGION_KPI_META, REGION_STRIP_ORDER } from "@/features/regions/regionKpiMeta";
 
@@ -595,7 +609,7 @@ export function useKpiRanking(kpiCode: string) {
 }
 
 // ── KPI ranks for one municipality ────────────────────────────────────────────
-export type { KPIRank }; // re-export from @/shared/types for backward compat
+export type { KPIRank }; // re-export of the contract schema, for callers of this hook
 
 export function useKommunKpiRanks(munCode: string) {
   return useQuery<KPIRank[]>({
@@ -607,7 +621,7 @@ export function useKommunKpiRanks(munCode: string) {
 }
 
 // ── Region KPI ranking ────────────────────────────────────────────────────────
-export type { RegionKPIRankEntry }; // re-export from @/shared/types
+export type { RegionKPIRankEntry }; // re-export of the contract schema
 
 export function useRegionKpiRanking(kpiCode: string) {
   return useQuery<RegionKPIRankEntry[]>({

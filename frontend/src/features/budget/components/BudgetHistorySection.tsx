@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import type { BudgetSnapshot } from "@/shared/types";
+import type { BudgetSnapshot } from "@/shared/ui-types";
 
 const BUDGET_COLORS = [
   "#0b3d7a",

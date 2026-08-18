@@ -1,9 +1,9 @@
 import { api } from "@/shared/api-client";
-import type {
-  Committee,
-  CommitteeVoteringPage,
-  GoalWithAlignment,
-} from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type Committee = components["schemas"]["Committee"];
+type CommitteeVoteringPage = components["schemas"]["CommitteeVoteringPage"];
+type GoalWithAlignment = components["schemas"]["GoalWithAlignment"];
 
 /**
  * Committee fetchers.

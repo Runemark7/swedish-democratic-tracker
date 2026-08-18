@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { municipalitiesApi } from "./api";
-import type { MunicipalityKPIItem } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type MunicipalityKPIItem = components["schemas"]["MunicipalityKPIItem"];
 
 const ALL_KPI_LABELS: Record<string, string> = {
   N00900: "Kommunalskatt (total, inkl. landsting)",

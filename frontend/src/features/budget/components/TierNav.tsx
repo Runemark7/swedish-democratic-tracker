@@ -1,5 +1,5 @@
 import { TIER_LABELS } from "@/shared/design";
-import type { BudgetTier } from "@/shared/types";
+import type { BudgetTier } from "@/shared/ui-types";
 
 const TIERS: { key: BudgetTier; enabled: boolean }[] = [
   { key: "national", enabled: true },

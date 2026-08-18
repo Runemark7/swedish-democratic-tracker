@@ -7,7 +7,9 @@ import {
 } from "@/shared/components";
 import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import type { GoalVoteMatch } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type GoalVoteMatch = components["schemas"]["GoalVoteMatch"];
 
 function VoteMatchCard({ match }: { match: GoalVoteMatch }) {
   const relevance = Math.round(match.relevanceScore * 100);

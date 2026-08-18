@@ -2,7 +2,9 @@ import { useState } from "react";
 import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import type { PartyCode } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type PartyCode = components["schemas"]["PartyCode"];
 
 interface Manifesto {
   party: PartyCode;

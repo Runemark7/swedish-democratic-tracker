@@ -7,7 +7,9 @@ import { DeltaIndicator } from "./components/DeltaIndicator";
 import { DocumentLinks } from "./components/DocumentLinks";
 import { formatBudgetAmount } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import type { BudgetDocumentRef } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type BudgetDocumentRef = components["schemas"]["BudgetDocumentRef"];
 
 function budgetDocRefs(year: number): BudgetDocumentRef[] {
   const session = `${year - 1}/${String(year % 100).padStart(2, "0")}`;

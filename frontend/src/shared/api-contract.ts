@@ -276,6 +276,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/votes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Distinct vote points, newest first (matching projection) */
+        get: operations["listDistinctVotes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/votes/recent": {
         parameters: {
             query?: never;
@@ -1077,11 +1094,21 @@ export interface components {
             date: string;
             topicHeading: string;
         };
+        /** @description Who initiated the proposal being voted on. Filled by the enrich-vote-origins worker, so every field is absent until that worker has processed the vote — check `originEnriched` rather than treating a missing field as "no proposer". */
+        ProposalOrigin: {
+            /** @description Party abbreviation, or "Regeringen" when the proposal is a government bill. Not a PartyCode — the record holds proposer labels that are not party codes. */
+            proposedByParty?: string;
+            proposalType?: components["schemas"]["ProposalType"];
+            proposalDokId?: string;
+            documentTitle?: string;
+        };
+        /** @description One member's vote on one förslagspunkt, returned exactly as the record holds it. Carries no decision date: the votes table holds only system_datum — when Riksdagen last touched the row — which is not the date the chamber decided. */
         Vote: {
             id: number;
             voteringId: string;
             politicianId: string;
-            party: components["schemas"]["PartyCode"];
+            /** @description Party abbreviation, or "-" for a member sitting without party affiliation. Not a PartyCode — that enum has no "-" member. */
+            party: string;
             voteResult: components["schemas"]["VoteResult"];
             /** @description Committee report ID e.g. SoU12 */
             beteckning: string;
@@ -1089,11 +1116,14 @@ export interface components {
             /** @example 2024/25 */
             session: string;
             dokId?: string;
-            proposedByParty?: components["schemas"]["PartyCode"];
-            proposalType?: components["schemas"]["ProposalType"];
-            documentTitle?: string;
-            /** Format: date-time */
-            createdAt?: string;
+            proposalOrigin: components["schemas"]["ProposalOrigin"];
+            /** @description True once enrich-vote-origins has filled proposalOrigin. */
+            originEnriched: boolean;
+            /**
+             * Format: date-time
+             * @description Our insert time. Not a decision date — see the schema note.
+             */
+            createdAt: string;
         };
         VoteListResponse: {
             data: components["schemas"]["Vote"][];
@@ -1101,24 +1131,48 @@ export interface components {
             page: number;
             pageSize: number;
         };
+        /** @description One förslagspunkt with each party's tally. Served from the record when the votering is stored, otherwise assembled live from Riksdagen — the live path returns an empty partyBreakdown and omits proposedByParty/proposalType, so neither can be relied on. Everything under "Riksdagen dokumentstatus" below is present only when that document lookup succeeds. */
         VoteDetail: {
             beteckning: string;
             forslagspunkt: string;
-            dokId?: string;
+            dokId: string;
             documentTitle: string;
-            proposedByParty?: components["schemas"]["PartyCode"];
-            proposalType?: components["schemas"]["ProposalType"];
-            session?: string;
+            /** @description Party abbreviation, or "Regeringen" for a government bill. Not a PartyCode. Absent on the live-from-Riksdagen path. */
+            proposedByParty?: string;
+            /** @description prop | mot | bet, or "" when the vote has not been enriched yet. Absent on the live-from-Riksdagen path. */
+            proposalType?: string;
+            session: string;
             partyBreakdown: components["schemas"]["PartyVotePosition"][];
-            /** @description AI-generated explanation of political context */
-            contextNote?: string;
+            /** @description Authoritative outcome: Bifall | Avslag | Återremiss */
+            status: string;
             /** @description Decision date from Riksdagen, YYYY-MM-DD */
             date?: string;
-            /** @description Authoritative outcome: Bifall | Avslag | Återremiss */
-            status?: string;
             subtitle?: string;
             /** @description Plain-text summary of the betänkande */
             summary?: string;
+            /** @description Full Riksdagen document body (HTML), rendered inline on the beslut detail page. */
+            bodyHtml?: string;
+            /** @description Raw dokuppgift debattdatumtid, "YYYY-MM-DD HH:MM:SS". Shown verbatim. */
+            debattDate?: string;
+            /** @description Raw dokuppgift beslutdatumtid, "YYYY-MM-DD HH:MM:SS". Shown verbatim. */
+            beslutDate?: string;
+            /** @description Raw dokuppgift statustext. */
+            statusText?: string;
+            /** @description "Beslut i korthet" — Riksdagen's plain-Swedish summary, raw HTML. */
+            notis?: string;
+        };
+        VoteSummary: {
+            beteckning: string;
+            forslagspunkt: string;
+            documentTitle: string;
+            proposedByParty?: string;
+            proposalType?: string;
+        };
+        VoteSummaryListResponse: {
+            data: components["schemas"]["VoteSummary"][];
+            total: number;
+            page: number;
+            pageSize: number;
         };
         PartyVotePosition: {
             party: components["schemas"]["PartyCode"];
@@ -1346,9 +1400,9 @@ export interface components {
             /** Format: int64 */
             compareTotalKsek: number;
             /** Format: int64 */
-            totalDeltaKsek?: number;
+            totalDeltaKsek: number;
             /** Format: float */
-            totalDeltaPct?: number;
+            totalDeltaPct: number;
             rows: components["schemas"]["BudgetComparisonRow"][];
         };
         AreaTimeSeries: {
@@ -1398,9 +1452,9 @@ export interface components {
             topIncreases: components["schemas"]["FundingRow"][];
             topDecreases: components["schemas"]["FundingRow"][];
             /** Format: int64 */
-            totalBudgetDeltaKsek?: number;
+            totalBudgetDeltaKsek: number;
             /** Format: float */
-            totalBudgetDeltaPct?: number;
+            totalBudgetDeltaPct: number;
         };
         TopicContext: {
             topic: components["schemas"]["Topic"];
@@ -2366,6 +2420,29 @@ export interface operations {
                 };
             };
             404: components["responses"]["NotFound"];
+        };
+    };
+    listDistinctVotes: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of distinct beteckning/förslagspunkt pairs */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoteSummaryListResponse"];
+                };
+            };
         };
     };
     getRecentBetankanden: {
