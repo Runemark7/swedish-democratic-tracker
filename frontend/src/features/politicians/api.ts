@@ -1,5 +1,11 @@
 import { api } from "@/shared/api-client";
-import type { PoliticianListResponse, PoliticianSummary, PromiseWithMatches, Topic, VoteListResponse } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type PoliticianListResponse = components["schemas"]["PoliticianListResponse"];
+type PoliticianSummary = components["schemas"]["PoliticianSummary"];
+type PromiseWithMatches = components["schemas"]["PromiseWithMatches"];
+type Topic = components["schemas"]["Topic"];
+type VoteListResponse = components["schemas"]["VoteListResponse"];
 
 export const politiciansApi = {
   list: (params: { party?: string; active?: boolean; page?: number; pageSize?: number } = {}) => {

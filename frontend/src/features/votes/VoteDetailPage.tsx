@@ -5,7 +5,9 @@ import { votesApi } from "./api";
 import { PartyBadge, VoteBar, ProposalOriginTag } from "@/shared/components";
 import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import type { PartyVotePosition } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type PartyVotePosition = components["schemas"]["PartyVotePosition"];
 
 interface CommitteeProposal {
   punkt: string;

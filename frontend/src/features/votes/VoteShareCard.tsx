@@ -1,5 +1,8 @@
 import { PARTY_COLORS, PARTIES } from "@/shared/design";
-import type { VoteDetail, PartyVotePosition } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type VoteDetail = components["schemas"]["VoteDetail"];
+type PartyVotePosition = components["schemas"]["PartyVotePosition"];
 
 function VoteIcon({ vote }: { vote: string | undefined }) {
   const base: React.CSSProperties = {

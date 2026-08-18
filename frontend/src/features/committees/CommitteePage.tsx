@@ -9,7 +9,9 @@ import { SourceMarker } from "@/components/sources/SourceMarker";
 import { formatBudgetAmount } from "@/shared/design";
 import { useRecordCoverage } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import type { GoalWithAlignment } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type GoalWithAlignment = components["schemas"]["GoalWithAlignment"];
 
 const PAGE_SIZE = 50;
 

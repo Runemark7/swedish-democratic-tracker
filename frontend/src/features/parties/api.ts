@@ -1,8 +1,10 @@
 import { api } from "@/shared/api-client";
 import type { components } from "@/shared/api-contract";
-import type { GoalVoteBreakdown, GoalWithAlignment, PartySummary } from "@/shared/types";
 
 export type PartyMeta = components["schemas"]["Party"];
+type GoalVoteBreakdown = components["schemas"]["GoalVoteBreakdown"];
+type GoalWithAlignment = components["schemas"]["GoalWithAlignment"];
+type PartySummary = components["schemas"]["PartySummary"];
 
 export const partiesApi = {
   listParties: () => api.get<PartySummary[]>("/parties"),

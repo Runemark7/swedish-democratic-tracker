@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 import { politiciansApi } from "./api";
 import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
-import type { PoliticianSummary } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type PoliticianSummary = components["schemas"]["PoliticianSummary"];
 
 function PoliticianCard({ p }: { p: PoliticianSummary }) {
   const pc = PARTY_COLORS[p.party];

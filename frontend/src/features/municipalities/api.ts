@@ -1,5 +1,13 @@
 import { api } from "@/shared/api-client";
-import type { MunicipalityDetail, MunicipalitySummary, MunicipalityKPIItem, PopulationTrendEntry, ProcurementCategorySummary, MunicipalityBudgetSnapshot, MunicipalityAreaDataPoint } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+import type { MunicipalityAreaDataPoint } from "@/shared/ui-types";
+
+type MunicipalityDetail = components["schemas"]["MunicipalityDetail"];
+type MunicipalitySummary = components["schemas"]["MunicipalitySummary"];
+type MunicipalityKPIItem = components["schemas"]["MunicipalityKPIItem"];
+type PopulationTrendEntry = components["schemas"]["PopulationTrendEntry"];
+type ProcurementCategorySummary = components["schemas"]["ProcurementCategorySummary"];
+type MunicipalityBudgetSnapshot = components["schemas"]["MunicipalityBudgetSnapshot"];
 
 export const municipalitiesApi = {
   listMunicipalities: (regionCode?: string) =>

@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import type { MunicipalitySummary } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type MunicipalitySummary = components["schemas"]["MunicipalitySummary"];
 import {
   SWEDEN_KOMMUN_PATHS,
   SWEDEN_KOMMUN_VIEWBOX,
