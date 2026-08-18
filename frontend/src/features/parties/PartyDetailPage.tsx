@@ -11,7 +11,9 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { GoalCard } from "@/shared/GoalCard";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
-import type { Goal } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type Goal = components["schemas"]["Goal"];
 
 type Tab = "mal" | "anforanden" | "politiker";
 

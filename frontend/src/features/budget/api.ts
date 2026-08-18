@@ -1,11 +1,11 @@
 import { api } from "@/shared/api-client";
-import type {
-  AreaTimeSeries,
-  BudgetComparison,
-  BudgetYear,
-  BudgetYearDetail,
-  ExpenditureArea,
-} from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type AreaTimeSeries = components["schemas"]["AreaTimeSeries"];
+type BudgetComparison = components["schemas"]["BudgetComparison"];
+type BudgetYear = components["schemas"]["BudgetYear"];
+type BudgetYearDetail = components["schemas"]["BudgetYearDetail"];
+type ExpenditureArea = components["schemas"]["ExpenditureArea"];
 
 export const budgetApi = {
   listYears: () => api.get<BudgetYear[]>("/budget/years"),

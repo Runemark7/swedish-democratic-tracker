@@ -1,5 +1,15 @@
 import { api } from "@/shared/api-client";
-import type { KPIRank, MunicipalityKPIItem, RegionAreaDataPoint, RegionBudgetArea, RegionBudgetSnapshot, RegionDetail, RegionKPIRankEntry, RegionPlan, RegionSummary } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type KPIRank = components["schemas"]["KPIRank"];
+type MunicipalityKPIItem = components["schemas"]["MunicipalityKPIItem"];
+type RegionAreaDataPoint = components["schemas"]["RegionAreaDataPoint"];
+type RegionBudgetArea = components["schemas"]["RegionBudgetArea"];
+type RegionBudgetSnapshot = components["schemas"]["RegionBudgetSnapshot"];
+type RegionDetail = components["schemas"]["RegionDetail"];
+type RegionKPIRankEntry = components["schemas"]["RegionKPIRankEntry"];
+type RegionPlan = components["schemas"]["RegionPlan"];
+type RegionSummary = components["schemas"]["RegionSummary"];
 
 export const regionsApi = {
   listRegions: () => api.get<RegionSummary[]>("/regions"),

@@ -381,6 +381,34 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /votes:
+    get:
+      operationId: listDistinctVotes
+      tags: [votes]
+      summary: Distinct vote points, newest first (matching projection)
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 50
+      responses:
+        "200":
+          description: Paginated list of distinct beteckning/förslagspunkt pairs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteSummaryListResponse"
+
   /votes/recent:
     get:
       operationId: getRecentBetankanden
@@ -1430,9 +1458,48 @@ components:
         topicHeading:
           type: string
 
+    ProposalOrigin:
+      type: object
+      description: >-
+        Who initiated the proposal being voted on. Filled by the
+        enrich-vote-origins worker, so every field is absent until that
+        worker has processed the vote — check `originEnriched` rather than
+        treating a missing field as "no proposer".
+      properties:
+        proposedByParty:
+          type: string
+          description: >-
+            Party abbreviation, or "Regeringen" when the proposal is a
+            government bill. Not a PartyCode — the record holds proposer
+            labels that are not party codes.
+        proposalType:
+          $ref: "#/components/schemas/ProposalType"
+        proposalDokId:
+          type: string
+        documentTitle:
+          type: string
+
     Vote:
       type: object
-      required: [id, voteringId, politicianId, party, voteResult, beteckning, forslagspunkt, session]
+      description: >-
+        One member's vote on one förslagspunkt, returned exactly as the
+        record holds it. Carries no decision date: the votes table holds
+        only system_datum — when Riksdagen last touched the row — which is
+        not the date the chamber decided.
+      required:
+        [
+          id,
+          voteringId,
+          politicianId,
+          party,
+          voteResult,
+          beteckning,
+          forslagspunkt,
+          session,
+          proposalOrigin,
+          originEnriched,
+          createdAt,
+        ]
       properties:
         id:
           type: integer
@@ -1441,7 +1508,10 @@ components:
         politicianId:
           type: string
         party:
-          $ref: "#/components/schemas/PartyCode"
+          type: string
+          description: >-
+            Party abbreviation, or "-" for a member sitting without party
+            affiliation. Not a PartyCode — that enum has no "-" member.
         voteResult:
           $ref: "#/components/schemas/VoteResult"
         beteckning:
@@ -1454,15 +1524,15 @@ components:
           example: "2024/25"
         dokId:
           type: string
-        proposedByParty:
-          $ref: "#/components/schemas/PartyCode"
-        proposalType:
-          $ref: "#/components/schemas/ProposalType"
-        documentTitle:
-          type: string
+        proposalOrigin:
+          $ref: "#/components/schemas/ProposalOrigin"
+        originEnriched:
+          type: boolean
+          description: True once enrich-vote-origins has filled proposalOrigin.
         createdAt:
           type: string
           format: date-time
+          description: Our insert time. Not a decision date — see the schema note.
 
     VoteListResponse:
       type: object
@@ -1481,7 +1551,23 @@ components:
 
     VoteDetail:
       type: object
-      required: [beteckning, forslagspunkt, documentTitle, partyBreakdown]
+      description: >-
+        One förslagspunkt with each party's tally. Served from the record
+        when the votering is stored, otherwise assembled live from
+        Riksdagen — the live path returns an empty partyBreakdown and omits
+        proposedByParty/proposalType, so neither can be relied on.
+        Everything under "Riksdagen dokumentstatus" below is present only
+        when that document lookup succeeds.
+      required:
+        [
+          beteckning,
+          forslagspunkt,
+          dokId,
+          documentTitle,
+          session,
+          status,
+          partyBreakdown,
+        ]
       properties:
         beteckning:
           type: string
@@ -1492,29 +1578,84 @@ components:
         documentTitle:
           type: string
         proposedByParty:
-          $ref: "#/components/schemas/PartyCode"
+          type: string
+          description: >-
+            Party abbreviation, or "Regeringen" for a government bill. Not a
+            PartyCode. Absent on the live-from-Riksdagen path.
         proposalType:
-          $ref: "#/components/schemas/ProposalType"
+          type: string
+          description: >-
+            prop | mot | bet, or "" when the vote has not been enriched yet.
+            Absent on the live-from-Riksdagen path.
         session:
           type: string
         partyBreakdown:
           type: array
           items:
             $ref: "#/components/schemas/PartyVotePosition"
-        contextNote:
-          type: string
-          description: AI-generated explanation of political context
-        date:
-          type: string
-          description: "Decision date from Riksdagen, YYYY-MM-DD"
         status:
           type: string
           description: "Authoritative outcome: Bifall | Avslag | Återremiss"
+        # ── Riksdagen dokumentstatus — present only when that lookup succeeds ──
+        date:
+          type: string
+          description: "Decision date from Riksdagen, YYYY-MM-DD"
         subtitle:
           type: string
         summary:
           type: string
           description: "Plain-text summary of the betänkande"
+        bodyHtml:
+          type: string
+          description: >-
+            Full Riksdagen document body (HTML), rendered inline on the
+            beslut detail page.
+        debattDate:
+          type: string
+          description: >-
+            Raw dokuppgift debattdatumtid, "YYYY-MM-DD HH:MM:SS". Shown
+            verbatim.
+        beslutDate:
+          type: string
+          description: >-
+            Raw dokuppgift beslutdatumtid, "YYYY-MM-DD HH:MM:SS". Shown
+            verbatim.
+        statusText:
+          type: string
+          description: Raw dokuppgift statustext.
+        notis:
+          type: string
+          description: >-
+            "Beslut i korthet" — Riksdagen's plain-Swedish summary, raw HTML.
+
+    VoteSummary:
+      type: object
+      required: [beteckning, forslagspunkt, documentTitle]
+      properties:
+        beteckning:
+          type: string
+        forslagspunkt:
+          type: string
+        documentTitle:
+          type: string
+        proposedByParty:
+          type: string
+        proposalType:
+          type: string
+    VoteSummaryListResponse:
+      type: object
+      required: [data, total, page, pageSize]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/VoteSummary"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
 
     PartyVotePosition:
       type: object
@@ -1961,7 +2102,7 @@ components:
 
     BudgetComparison:
       type: object
-      required: [baseYear, compareYear, rows, baseTotalKsek, compareTotalKsek]
+      required: [baseYear, compareYear, rows, baseTotalKsek, compareTotalKsek, totalDeltaKsek, totalDeltaPct]
       properties:
         baseYear:
           type: integer
@@ -2062,7 +2203,7 @@ components:
 
     FundingContext:
       type: object
-      required: [year, topIncreases, topDecreases]
+      required: [year, topIncreases, topDecreases, totalBudgetDeltaKsek, totalBudgetDeltaPct]
       properties:
         year:
           type: integer

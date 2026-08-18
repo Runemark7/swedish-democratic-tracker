@@ -6,7 +6,9 @@ import { SwedenKommunMap } from "./components/SwedenKommunMap";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { whoDecidesSentence } from "@/shared/design";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import type { MunicipalitySummary } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type MunicipalitySummary = components["schemas"]["MunicipalitySummary"];
 
 function MunicipalityCard({ mun }: { mun: MunicipalitySummary }) {
   return (

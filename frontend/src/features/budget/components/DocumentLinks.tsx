@@ -1,4 +1,6 @@
-import type { BudgetDocumentRef } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type BudgetDocumentRef = components["schemas"]["BudgetDocumentRef"];
 
 interface Props {
   documents: BudgetDocumentRef[];

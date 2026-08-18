@@ -5,7 +5,9 @@ import { votesApi } from "./api";
 import { PARTY_COLORS } from "@/shared/design";
 import { useSpeechesByDocument } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
-import type { PartyVotePosition } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type PartyVotePosition = components["schemas"]["PartyVotePosition"];
 
 // Derive a human-readable committee name from the beteckning prefix.
 function committeeLabel(beteckning: string): string {

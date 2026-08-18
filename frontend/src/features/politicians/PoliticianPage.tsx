@@ -6,8 +6,11 @@ import { PARTY_COLORS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useSpeechesByPolitician, useDocument } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
-import type { Vote, PromiseWithMatches } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
 import type { Speech } from "@/features/speeches/api";
+
+type Vote = components["schemas"]["Vote"];
+type PromiseWithMatches = components["schemas"]["PromiseWithMatches"];
 
 const ALIGNMENT_STYLES: Record<string, { color: string; bg: string; label: string }> = {
   supports:    { color: "#16a34a", bg: "#f0fdf4", label: "Stödjer" },
@@ -63,7 +66,12 @@ type ActivityEvent =
 function buildActivity(votes: Vote[], speeches: Speech[]): ActivityEvent[] {
   const events: ActivityEvent[] = [];
   for (const v of votes) {
-    events.push({ kind: "vote", date: v.date ?? "", vote: v });
+    // Votes carry no decision date — the record holds only system_datum (when
+    // Riksdagen last touched the row) and createdAt (our insert time), and
+    // neither says when the chamber decided. Sorting on either would invent a
+    // chronology, so votes sort with an empty key and land after the dated
+    // speeches rather than being interleaved on a made-up date.
+    events.push({ kind: "vote", date: "", vote: v });
   }
   for (const s of speeches) {
     events.push({ kind: "speech", date: s.date, speech: s });
@@ -111,6 +119,7 @@ function ActivityFeed({
 }
 
 function ActivityVoteRow({ vote }: { vote: Vote }) {
+  const fallbackTitle = `${vote.beteckning} punkt ${vote.forslagspunkt}`;
   return (
     <Link
       to={`/votes/${vote.beteckning}/${vote.forslagspunkt}`}
@@ -149,13 +158,14 @@ function ActivityVoteRow({ vote }: { vote: Vote }) {
             whiteSpace: "nowrap",
             marginBottom: 4,
           }}
-          title={vote.documentTitle ?? `${vote.beteckning} punkt ${vote.forslagspunkt}`}
+          title={vote.proposalOrigin.documentTitle ?? fallbackTitle}
         >
-          {vote.documentTitle || `${vote.beteckning} punkt ${vote.forslagspunkt}`}
+          {vote.proposalOrigin.documentTitle || fallbackTitle}
         </div>
+        {/* No date: a vote row carries only system_datum, which is when
+            Riksdagen last touched the record, not when the chamber decided. */}
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
           {vote.beteckning} · {vote.voteResult}
-          {vote.date ? ` · ${vote.date}` : ""}
         </div>
       </div>
     </Link>

@@ -1,8 +1,11 @@
 import { api } from "@/shared/api-client";
 import type { components } from "@/shared/api-contract";
-import type { VoteDetail, VoteSummaryListResponse, RiksdagDocument, RiksdagDocumentFull } from "@/shared/types";
 
 type RecentBetankande = components["schemas"]["RecentBetankande"];
+type VoteDetail = components["schemas"]["VoteDetail"];
+type VoteSummaryListResponse = components["schemas"]["VoteSummaryListResponse"];
+type RiksdagDocument = components["schemas"]["RiksdagDocument"];
+type RiksdagDocumentFull = components["schemas"]["RiksdagDocumentFull"];
 
 export const votesApi = {
   list: (params: { page?: number; pageSize?: number } = {}) =>

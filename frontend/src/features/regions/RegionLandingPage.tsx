@@ -5,7 +5,9 @@ import { SwedenRegionMap } from "./components/SwedenRegionMap";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { whoDecidesSentence } from "@/shared/design";
-import type { RegionSummary } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type RegionSummary = components["schemas"]["RegionSummary"];
 
 function RegionCard({ region }: { region: RegionSummary }) {
   return (

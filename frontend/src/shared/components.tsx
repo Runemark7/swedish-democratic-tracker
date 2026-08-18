@@ -3,7 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { PARTY_COLORS, SPECIFICITY_CONFIG, TOPIC_LABELS, deltaColor, formatBudgetAmount } from "./design";
 import { DeltaIndicator } from "@/features/budget/components/DeltaIndicator";
 import { contextApi } from "@/features/context/api";
-import type { BudgetTrendEntry, FundingRow, RelatedBudgetArea } from "./types";
+import type { components } from "@/shared/api-contract";
+
+type BudgetTrendEntry = components["schemas"]["BudgetTrendEntry"];
+type FundingRow = components["schemas"]["FundingRow"];
+type RelatedBudgetArea = components["schemas"]["RelatedBudgetArea"];
 
 // ── PartyBadge ────────────────────────────────────────────────────────
 export function PartyBadge({ party, size = "sm" }: { party: string; size?: "sm" | "lg" }) {

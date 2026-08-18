@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SpecificityBadge, TopicTag, ConsequencePanel } from "@/shared/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import type { Goal } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type Goal = components["schemas"]["Goal"];
 
 /**
  * The one renderer for a party goal, used by the party record view and the

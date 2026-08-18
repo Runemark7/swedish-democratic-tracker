@@ -6,7 +6,9 @@ import {
   useKommunList,
 } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import type { MunicipalityBudgetSnapshot } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type MunicipalityBudgetSnapshot = components["schemas"]["MunicipalityBudgetSnapshot"];
 import { BarsWithMean } from "@/features/budget/components/BarsWithMean";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 

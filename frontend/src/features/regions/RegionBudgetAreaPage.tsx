@@ -5,7 +5,9 @@ import {
   useRegionList,
 } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import type { RegionBudgetSnapshot } from "@/shared/types";
+import type { components } from "@/shared/api-contract";
+
+type RegionBudgetSnapshot = components["schemas"]["RegionBudgetSnapshot"];
 import { BarsWithMean } from "@/features/budget/components/BarsWithMean";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 
