@@ -4,7 +4,7 @@ backend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-api
     pullPolicy: Always
-    tag: 9a35ff4f41bb89a3a208a1409a32be1d74038120
+    tag: 093eed55ce02a61b593db4c20f295c555c3907a6
   imagePullSecrets:
     - name: ghcr-pull-secret
   env:
@@ -15,7 +15,7 @@ frontend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-frontend
     pullPolicy: Always
-    tag: 9a35ff4f41bb89a3a208a1409a32be1d74038120
+    tag: 093eed55ce02a61b593db4c20f295c555c3907a6
   imagePullSecrets:
     - name: ghcr-pull-secret
 ## One-off voting-record backfill. Full contract in values.yaml.
@@ -35,7 +35,6 @@ backfill:
   enabled: true
   runId: "1"
   period: ""
-
 ingress:
   host: sdt.runevibe.se
   tlsSecretName: sdt-runevibe-tls
