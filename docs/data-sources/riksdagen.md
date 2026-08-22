@@ -57,6 +57,17 @@ per-ledamots röst (Ja/Nej/Avstår/Frånvarande) och anförandetext.
 - Stora datasetuppdateringar är inte realtid — workers kör @daily, så
   färska beslut syns nästa dag.
 - `dok_datum` är ofta endast datum-precision, inte tid.
+- **`beteckning` byter format 2014/15.** För riksmötena 2002/03 till
+  2013/14 returnerar `/dokumentlista/?doktyp=votering` beteckningen med
+  förslagspunkten inbakad — `FIU20p1` i stället för `FiU20`. Från 2014/15
+  och framåt är formatet det senare. Brottet är rent: kontrollerat mot
+  samtliga riksmöten 2002/03–2025/26 den 2026-08-22, tolv riksmöten på
+  var sida, inget blandat.
+
+  Det spelar roll eftersom `/voteringlista/?bet=FIU20p1` inte matchar
+  någonting alls — rösterna ligger under `bet=FIU20`. Vi normaliserar
+  därför bort suffixet vid inläsning. Förslagspunkten går inte förlorad:
+  varje röstrad bär sin egen `forslagspunkt` från `/voteringlista/`.
 
 ## Hur vi bearbetar
 Tre parallella jobb hämtar data från Riksdagen varje dygn — ett för

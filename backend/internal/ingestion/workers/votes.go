@@ -24,6 +24,12 @@ func (w *VotesWorker) Name() string { return "fetch-votes" }
 
 // MandateRiksmoten is the 2022-2026 mandate period: four riksmöten, 2 562
 // voteringar in total.
+//
+// This is the daily speeches worker's scope, not the site's. The record holds
+// six mandate periods (mandate_periods), and cmd/backfill reads that table
+// rather than this list. Widening this to all six would put 24 years of
+// speeches behind a cron job that runs every day, so it stays at the current
+// period until a historical speech backfill is deliberately built.
 var MandateRiksmoten = []string{"2022/23", "2023/24", "2024/25", "2025/26"}
 
 const voteringPageSize = 200

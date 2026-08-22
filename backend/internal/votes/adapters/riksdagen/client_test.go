@@ -256,3 +256,73 @@ func TestFetchDocuments_StillSendsOrgan(t *testing.T) {
 		t.Errorf("organ = %q, want \"SoU,TU\"", got)
 	}
 }
+
+// Riksmöten from 2002/03 through 2013/14 file the förslagspunkt *inside* the
+// beteckning: /dokumentlista returns "FIU20p1" where 2014/15 onward returns
+// "FiU20". Verified 2026-08-22 by sampling every riksmöte from 2002/03 to
+// 2025/26 — the break is clean, 12 riksmöten on each side.
+//
+// This is load-bearing rather than cosmetic. Callers partition the ballot fetch
+// by beteckning, and /voteringlista?bet=FIU20p1 matches nothing: the ballots are
+// filed under bet=FIU20. Passed through unchanged, every request for those three
+// mandate periods returns zero rows, and the run reports "complete" having
+// stored nothing.
+//
+// Nothing is lost by stripping it. The förslagspunkt is carried on each ballot
+// row by /voteringlista, so it is read from the record rather than parsed back
+// out of a document reference.
+func TestListVoteringar_StripsForslagspunktFromLegacyBeteckning(t *testing.T) {
+	const legacyPage = `{"dokumentlista":{"@traffar":"642","dokument":[
+		{"dok_id":"GQ19FIU20p1","beteckning":"FIU20p1","organ":"FIU","datum":"2003-06-12","systemdatum":"2026-01-02 03:04:05"},
+		{"dok_id":"GQ19FIU20p3","beteckning":"FIU20p3","organ":"FIU","datum":"2003-06-12","systemdatum":"2026-01-02 03:04:05"},
+		{"dok_id":"GQ19UFOU2p1","beteckning":"UFÖU2p1","organ":"UFÖU","datum":"2003-06-12","systemdatum":"2026-01-02 03:04:05"}
+	]}}`
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(legacyPage))
+	}))
+	defer srv.Close()
+
+	refs, _, err := newTestClient(srv.URL).ListVoteringar(context.Background(), "2002/03", 1, 200)
+	if err != nil {
+		t.Fatalf("ListVoteringar: %v", err)
+	}
+	want := []string{"FIU20", "FIU20", "UFÖU2"}
+	if len(refs) != len(want) {
+		t.Fatalf("got %d refs, want %d", len(refs), len(want))
+	}
+	for i, w := range want {
+		if refs[i].Beteckning != w {
+			t.Errorf("ref[%d].Beteckning = %q, want %q", i, refs[i].Beteckning, w)
+		}
+	}
+}
+
+// The modern form must survive untouched. A beteckning is committee letters
+// followed by a number, so a blanket "strip a trailing p<digits>" would be safe
+// only if no current beteckning ends that way -- this pins that it does not fire
+// on the shape the last twelve riksmöten actually use.
+func TestListVoteringar_LeavesModernBeteckningAlone(t *testing.T) {
+	const modernPage = `{"dokumentlista":{"@traffar":"562","dokument":[
+		{"dok_id":"HA01JuU31","beteckning":"JuU31","organ":"JuU","datum":"2023-06-12","systemdatum":"2026-01-02 03:04:05"},
+		{"dok_id":"HA01UFoU5","beteckning":"UFöU5","organ":"UFöU","datum":"2023-06-12","systemdatum":"2026-01-02 03:04:05"}
+	]}}`
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(modernPage))
+	}))
+	defer srv.Close()
+
+	refs, _, err := newTestClient(srv.URL).ListVoteringar(context.Background(), "2022/23", 1, 200)
+	if err != nil {
+		t.Fatalf("ListVoteringar: %v", err)
+	}
+	want := []string{"JuU31", "UFöU5"}
+	for i, w := range want {
+		if refs[i].Beteckning != w {
+			t.Errorf("ref[%d].Beteckning = %q, want %q", i, refs[i].Beteckning, w)
+		}
+	}
+}

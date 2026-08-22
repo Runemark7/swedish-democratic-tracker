@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -99,6 +100,33 @@ func (c *Client) FetchVotes(ctx context.Context, f ports.FetchVotesFilter) ([]*d
 	return vv, nil
 }
 
+// forslagspunktSuffix matches the förslagspunkt Riksdagen concatenates onto the
+// beteckning in /dokumentlista for riksmöten 2002/03 through 2013/14 --
+// "FIU20p1" rather than the "FiU20" the later riksmöten return. Sampling every
+// riksmöte from 2002/03 to 2025/26 on 2026-08-22 put the break at 2014/15, with
+// no mixed riksmöte on either side.
+//
+// The digit before the "p" is required so this cannot bite a beteckning that
+// merely ends in a letter and a number.
+var forslagspunktSuffix = regexp.MustCompile(`^(.*[0-9])p[0-9]+$`)
+
+// betankandeBeteckning returns the beteckning of the betänkande a votering
+// belongs to, which is the unit /voteringlista files ballots under.
+//
+// Callers partition the ballot fetch by this value, so leaving the older form
+// intact asks for bet=FIU20p1 -- a string that matches no ballots at all, while
+// bet=FIU20 returns them. That silently emptied every fetch for the three
+// mandate periods before 2014.
+//
+// Stripping loses nothing: each ballot row carries its own förslagspunkt, so
+// the punkt is read from the record rather than recovered from this string.
+func betankandeBeteckning(s string) string {
+	if m := forslagspunktSuffix.FindStringSubmatch(s); m != nil {
+		return m[1]
+	}
+	return s
+}
+
 // ListVoteringar enumerates voteringar for a riksmöte, newest first.
 //
 // This uses /dokumentlista rather than /voteringlista because only the former
@@ -156,7 +184,7 @@ func (c *Client) ListVoteringar(ctx context.Context, rm string, page, size int) 
 			sd = t
 		}
 		refs = append(refs, ports.VoteringRef{
-			Beteckning:  d.Beteckning,
+			Beteckning:  betankandeBeteckning(d.Beteckning),
 			Organ:       d.Organ,
 			DokID:       d.DokID,
 			Date:        d.Datum,
