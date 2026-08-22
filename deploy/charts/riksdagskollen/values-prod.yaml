@@ -20,19 +20,20 @@ frontend:
     - name: ghcr-pull-secret
 ## One-off voting-record backfill. Full contract in values.yaml.
 ##
-## Enabled for run 1. The five earlier mandate periods are declared in
-## production but empty: migration 000038 named them, and nothing has ever
-## fetched their votes.
+## DISABLED, and it must stay disabled until the database has room.
 ##
-## period is left empty, so the run covers all six periods oldest first. That
-## re-fetches 2022-2026, which is already held -- every write is an upsert, so
-## the cost is time rather than risk, and it repairs the four voteringar that
-## period is currently short.
+## Run 1 (2026-08-22) failed within two minutes: every write returned
+##   ERROR: could not extend file because project size limit (512 MB)
+##   has been exceeded (SQLSTATE 53100)
+## The managed database is capped at 512 MB and the current record already
+## fills it. The full six-period record measures ~5.5 GB of ballots locally --
+## roughly eleven times the cap -- so this is a storage decision, not a
+## parameter to retry. Even one earlier period does not fit.
 ##
-## Set enabled back to false once the Job reports complete, so a later sync
-## does not recreate it.
+## Re-enabling before that is resolved will not partially fill the record: it
+## reissues thousands of requests to Riksdagen that cannot be stored.
 backfill:
-  enabled: true
+  enabled: false
   runId: "1"
   period: ""
 ingress:
