@@ -84,6 +84,42 @@ dbSecretName: riksdagskollen-db-secret
 migrations:
   enabled: false
 
+## Voting-record backfill — a one-off Job, not part of a normal deploy.
+##
+## The daily worker only fetches forward from its cursor, so it cannot recover a
+## gap. This fills one. Left disabled: enabling it on every sync would walk 24
+## years of Riksdagen's API on each upgrade.
+##
+## To run: set enabled=true, bump runId, sync. Watch it with
+##   kubectl logs -f job/riksdagskollen-backfill-<runId> -n riksdagskollen
+## then set enabled=false again so the next sync does not recreate it.
+backfill:
+  enabled: false
+  ## Names the run. Bump for each new run — a Job's pod template is immutable,
+  ## so reusing a name fails instead of re-running.
+  runId: "1"
+  ## One mandate period, e.g. "2018-2022". Empty means every period declared in
+  ## mandate_periods, oldest first.
+  period: ""
+  ## Pause between Riksdagen API requests. Not a throttle we are forced into —
+  ## it is deliberate politeness toward a public service we depend on.
+  delay: 200ms
+  backoffLimit: 2
+  ## Two hours. A full six-period run measured ~45 minutes locally; this leaves
+  ## room for a slow upstream without letting a wedged run sit forever.
+  activeDeadlineSeconds: 7200
+  ## One day, so the coverage report stays readable after the run finishes.
+  ttlSecondsAfterFinished: 86400
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      ## Network-bound rather than compute-bound: it holds one betänkande's
+      ## ballots in memory at a time, not a riksmöte's.
+      cpu: 500m
+      memory: 512Mi
+
 ## Umami — self-hosted, cookieless web analytics (privacy-friendly, no consent
 ## banner needed). Disabled by default; enable per environment.
 ##

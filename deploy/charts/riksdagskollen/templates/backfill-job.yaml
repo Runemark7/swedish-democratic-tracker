@@ -1,0 +1,68 @@
+{{- if .Values.backfill.enabled }}
+{{/*
+Retrieves the complete voting record for one or more mandate periods.
+
+Deliberately not a Helm hook. Migrations must run on every upgrade; a backfill
+is a ~45 minute job that walks 24 years of Riksdagen's API, and running it on
+each sync would hammer an external service for no reason. It is created only
+while backfill.enabled is true, and the run is named by backfill.runId so a
+second run can be requested without colliding with the completed Job -- a Job's
+pod template is immutable, so reusing a name fails rather than re-running.
+
+Safe to re-run at any point: every write is an upsert, so an interrupted run
+resumes by starting again.
+*/}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "riksdagskollen.fullname" . }}-backfill-{{ .Values.backfill.runId }}
+  labels:
+    {{- include "riksdagskollen.labels" . | nindent 4 }}
+spec:
+  # Never restart in place: the container is long-lived and resumable, so a
+  # fresh pod that re-reads what is already stored is the cheaper recovery.
+  backoffLimit: {{ .Values.backfill.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.backfill.activeDeadlineSeconds }}
+  # Keep the finished pod around so its coverage report stays readable in
+  # `kubectl logs` -- the per-riksmöte numbers are the point of the run.
+  ttlSecondsAfterFinished: {{ .Values.backfill.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        {{- include "riksdagskollen.labels" . | nindent 8 }}
+        app.kubernetes.io/component: backfill
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: backfill
+          # Same backend image — it carries the /backfill entrypoint alongside
+          # the API binary, so the run is always the code that is deployed.
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          command:
+            - /backfill
+            {{- if .Values.backfill.period }}
+            - "-period={{ .Values.backfill.period }}"
+            {{- end }}
+            - "-delay={{ .Values.backfill.delay }}"
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbSecretName }}
+                  key: DATABASE_URL
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            {{- toYaml .Values.backfill.resources | nindent 12 }}
+{{- end }}

@@ -12,6 +12,15 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     -trimpath \
     -o /app ./cmd/api
 
+# The backfill runner ships in the same image so the Job that invokes it can
+# reuse the backend's image tag and DB secret rather than needing its own
+# build, registry entry and credential path. It is a separate entrypoint, never
+# started by the API container.
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -ldflags="-s -w -extldflags=-static" \
+    -trimpath \
+    -o /backfill ./cmd/backfill
+
 # ── Development stage ──────────────────────────────────────────────────────
 # Alpine-based: includes wget for docker-compose healthchecks.
 # Used by docker-compose.yml via `target: dev`.
@@ -21,6 +30,7 @@ RUN addgroup -g 1000 appgroup \
  && adduser -D -u 1000 -G appgroup appuser
 
 COPY --from=builder /app /app
+COPY --from=builder /backfill /backfill
 COPY --chown=appuser:appgroup migrations /migrations
 
 USER appuser:appgroup
@@ -38,6 +48,7 @@ ENTRYPOINT ["/app"]
 FROM gcr.io/distroless/static-debian12:nonroot AS production
 
 COPY --from=builder /app /app
+COPY --from=builder /backfill /backfill
 COPY --chown=nonroot:nonroot migrations /migrations
 
 USER nonroot:nonroot
