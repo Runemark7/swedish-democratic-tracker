@@ -10,20 +10,29 @@
 // reports a total, then fetch ballots one betänkande at a time. /voteringlista
 // ignores `p` and caps `sz` at 10 000, so it cannot be paged directly.
 //
+// Scope comes from the mandate_periods table rather than a list compiled here,
+// so this command and the period-scoped queries the site serves can never
+// disagree about which riksmöten a period contains. With no flags it walks
+// every period the table holds, oldest first — all six are meant to be held
+// complete, so that is the honest default rather than a subset we picked. Use
+// -period to work one at a time.
+//
 // Safe to re-run: every write is an upsert, so an interrupted run resumes by
 // simply starting again.
 package main
 
 import (
 	"context"
+	"errors"
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"riksdagskollen/internal/ingestion/workers"
 	"riksdagskollen/internal/votes"
 	votepg "riksdagskollen/internal/votes/adapters/postgres"
 	voterd "riksdagskollen/internal/votes/adapters/riksdagen"
@@ -34,6 +43,7 @@ const enumPageSize = 200
 
 func main() {
 	only := flag.String("rm", "", "backfill a single riksmöte, e.g. 2025/26")
+	period := flag.String("period", "", "backfill one mandate period, e.g. 2018-2022 (default: every period in mandate_periods)")
 	delay := flag.Duration("delay", 200*time.Millisecond, "pause between API requests")
 	flag.Parse()
 
@@ -53,18 +63,85 @@ func main() {
 
 	svc := votes.NewService(votepg.NewRepository(pool), voterd.NewClient())
 
-	riksmoten := workers.MandateRiksmoten
-	if *only != "" {
+	var riksmoten []string
+	switch {
+	case *only != "":
 		riksmoten = []string{*only}
-	}
-
-	started := time.Now()
-	for _, rm := range riksmoten {
-		if err := backfillRiksmote(ctx, pool, svc, rm, *delay); err != nil {
-			slog.Error("riksmöte failed", "rm", rm, "error", err)
+	default:
+		riksmoten, err = loadRiksmoten(ctx, pool, *period)
+		if err != nil {
+			slog.Error("resolve scope", "period", *period, "error", err)
+			os.Exit(1)
 		}
 	}
-	slog.Info("backfill complete", "riksmoten", len(riksmoten), "elapsed", time.Since(started))
+	slog.Info("backfill scope", "period", *period, "riksmoten", riksmoten)
+
+	started := time.Now()
+	failed := 0
+	for _, rm := range riksmoten {
+		if err := backfillRiksmote(ctx, pool, svc, rm, *delay); err != nil {
+			// Keep going: one riksmöte failing is not a reason to abandon the
+			// rest, and every write is an upsert so a later re-run repairs it.
+			slog.Error("riksmöte failed", "rm", rm, "error", err)
+			failed++
+		}
+	}
+	slog.Info("backfill complete", "riksmoten", len(riksmoten), "failed", failed,
+		"elapsed", time.Since(started))
+	if failed > 0 {
+		// Exit non-zero so a partial run cannot be mistaken for a complete one
+		// by whatever invoked it.
+		os.Exit(1)
+	}
+}
+
+// loadRiksmoten resolves the scope from mandate_periods. The table is the
+// single source for which riksmöten a period contains -- the same rows the
+// period-scoped queries in committees and votes join against -- so a backfill
+// cannot fetch a window the site would then not count.
+//
+// An empty period means every period the table holds, oldest first. Ordering by
+// start_date is not cosmetic: it puts the earliest, least-certain riksmöten
+// first, where a scope or coverage problem shows up while the run is still
+// short enough to abandon cheaply.
+func loadRiksmoten(ctx context.Context, pool *pgxpool.Pool, period string) ([]string, error) {
+	if period != "" {
+		var rms []string
+		err := pool.QueryRow(ctx,
+			`SELECT riksmoten FROM mandate_periods WHERE code = $1`, period).Scan(&rms)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("no mandate period %q in mandate_periods", period)
+		}
+		if err != nil {
+			return nil, err
+		}
+		return rms, nil
+	}
+
+	rows, err := pool.Query(ctx,
+		`SELECT unnest(riksmoten) FROM mandate_periods ORDER BY start_date`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var all []string
+	for rows.Next() {
+		var rm string
+		if err := rows.Scan(&rm); err != nil {
+			return nil, err
+		}
+		all = append(all, rm)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	if len(all) == 0 {
+		// Not an empty result to shrug at: with no periods declared the command
+		// would report "backfill complete" having fetched nothing.
+		return nil, errors.New("mandate_periods is empty; nothing to backfill")
+	}
+	return all, nil
 }
 
 func backfillRiksmote(ctx context.Context, pool *pgxpool.Pool, svc *votes.Service, rm string, delay time.Duration) error {
@@ -139,10 +216,10 @@ func backfillRiksmote(ctx context.Context, pool *pgxpool.Pool, svc *votes.Servic
 	}
 
 	// 3. Record what we actually hold, so the site can state its own coverage.
-	var ingested int
+	var ingested, ballotsHeld int
 	if err := pool.QueryRow(ctx, `
-		SELECT count(DISTINCT beteckning || ':' || forslagspunkt)
-		FROM votes WHERE session = $1`, rm).Scan(&ingested); err != nil {
+		SELECT count(DISTINCT beteckning || ':' || forslagspunkt), count(*)
+		FROM votes WHERE session = $1`, rm).Scan(&ingested, &ballotsHeld); err != nil {
 		return err
 	}
 	var lastDate *time.Time
@@ -171,12 +248,55 @@ func backfillRiksmote(ctx context.Context, pool *pgxpool.Pool, svc *votes.Servic
 			"rm", rm, "count", len(empty), "beteckningar", empty)
 	}
 
-	// Unexplained shortfall: missing beyond the voteringar we know we cannot
-	// reach. Anything left here is worth investigating.
+	// Ballots Riksdagen published for this riksmöte that we do not hold.
+	//
+	// UpsertMany drops any ballot whose member is absent from politicians, so
+	// "rows fetched" is not "rows stored" -- 2002/03 fetched 226 152 and stored
+	// 224 058, a 0.9% gap of substitute members we have no profile for.
+	// Reporting only the fetched figure would state a completeness we do not
+	// have. Recomputed from the fetch each run rather than from an insert
+	// delta, so it stays true on a re-run, where every write is an update.
+	//
+	// This does not move the votering counts: the missing ballots belong to
+	// voteringar other members still cover, so coverage stays complete at the
+	// votering level while being short at the ballot level. Both are stated.
+	droppedBallots := stored - ballotsHeld
+	if droppedBallots < 0 {
+		// The riksmöte holds more than this run fetched -- an earlier run
+		// reached ballots this one did not. Not a shortfall to report.
+		droppedBallots = 0
+	}
+
+	// Voteringar missing beyond the ones we know we cannot reach, and the ones
+	// we hold beyond what Riksdagen listed. Both directions occur, so they are
+	// reported as two named numbers rather than one signed one.
+	//
+	// The surplus is not a counting error. /dokumentlista?doktyp=votering does
+	// not list every votering: fetching a whole betänkande from /voteringlista
+	// returns förslagspunkter the listing omits -- 2005/06 yielded five (JuSoU1
+	// punkt 10/19/40/46 and UbU14 punkt 104), each a full 349-ballot chamber,
+	// and 2007/08 ten more. So `expected` is Riksdagen's published count, not a
+	// ceiling on what exists, and coverage stated against it can exceed 100%.
+	// Measured 2026-08-22; every riksmöte from 2014/15 on came out exact, so
+	// this is confined to the older record.
 	shortfall := expected - ingested - unreachable
+	surplus := 0
+	if shortfall < 0 {
+		surplus, shortfall = -shortfall, 0
+	}
 	slog.Info("riksmöte done", "rm", rm,
 		"ingested", ingested, "expected", expected,
 		"unreachable", unreachable, "emptyBetankanden", len(empty),
-		"unexplained", shortfall, "rows", stored)
+		"unexplained", shortfall, "beyondListing", surplus,
+		"ballotsFetched", stored, "ballotsHeld", ballotsHeld,
+		"ballotsDropped", droppedBallots)
+	if surplus > 0 {
+		slog.Warn("voteringar held beyond Riksdagen's own listing; coverage denominator is not a ceiling",
+			"rm", rm, "count", surplus)
+	}
+	if droppedBallots > 0 {
+		slog.Warn("ballots dropped: no politician profile for the member",
+			"rm", rm, "count", droppedBallots)
+	}
 	return nil
 }
