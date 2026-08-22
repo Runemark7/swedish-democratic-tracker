@@ -18,6 +18,24 @@ frontend:
     tag: 9a35ff4f41bb89a3a208a1409a32be1d74038120
   imagePullSecrets:
     - name: ghcr-pull-secret
+## One-off voting-record backfill. Full contract in values.yaml.
+##
+## Enabled for run 1. The five earlier mandate periods are declared in
+## production but empty: migration 000038 named them, and nothing has ever
+## fetched their votes.
+##
+## period is left empty, so the run covers all six periods oldest first. That
+## re-fetches 2022-2026, which is already held -- every write is an upsert, so
+## the cost is time rather than risk, and it repairs the four voteringar that
+## period is currently short.
+##
+## Set enabled back to false once the Job reports complete, so a later sync
+## does not recreate it.
+backfill:
+  enabled: true
+  runId: "1"
+  period: ""
+
 ingress:
   host: sdt.runevibe.se
   tlsSecretName: sdt-runevibe-tls
