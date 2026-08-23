@@ -28,7 +28,10 @@ type ProposalOrigin struct {
 }
 
 type Vote struct {
-	ID             int            `json:"id"`
+	// No ID: a ballot is identified by the votering it belongs to and the
+	// member who cast it, which is exactly the ballots primary key. The old
+	// per-ballot SERIAL was a storage surrogate that reached the API without
+	// ever being read -- no query filtered on it and no consumer used it.
 	VoteringID     string         `json:"voteringId"`
 	PoliticianID   string         `json:"politicianId"`
 	Party          string         `json:"party"`

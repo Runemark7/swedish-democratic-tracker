@@ -56,18 +56,35 @@ func tagFromBeteckning(b string) string {
 }
 
 func (r *LiveVotesRepository) ListLiveVotes(ctx context.Context, limit int) ([]domain.LiveVote, error) {
+	// The ranking is settled before any ballot is read. title and latest_at are
+	// votering-level, so the newest points are chosen from a 15 835-row table
+	// and only those points' ballots are counted -- rather than aggregating all
+	// 5.5 million to return $1 rows.
 	const q = `
+		WITH recent AS (
+			SELECT
+				beteckning,
+				forslagspunkt,
+				MAX(COALESCE(NULLIF(document_title, ''), beteckning)) AS title,
+				MAX(created_at) AS latest_at
+			FROM voteringar
+			GROUP BY beteckning, forslagspunkt
+			ORDER BY latest_at DESC
+			LIMIT $1
+		)
 		SELECT
-			beteckning,
-			forslagspunkt,
-			MAX(COALESCE(NULLIF(document_title, ''), beteckning)) AS title,
-			MAX(created_at) AS latest_at,
-			COUNT(CASE WHEN vote_result = 'Ja'  THEN 1 END) AS ja_count,
-			COUNT(CASE WHEN vote_result = 'Nej' THEN 1 END) AS nej_count
-		FROM votes
-		GROUP BY beteckning, forslagspunkt
-		ORDER BY latest_at DESC
-		LIMIT $1
+			r.beteckning,
+			r.forslagspunkt,
+			r.title,
+			r.latest_at,
+			COUNT(*) FILTER (WHERE b.vote_result = 'Ja')  AS ja_count,
+			COUNT(*) FILTER (WHERE b.vote_result = 'Nej') AS nej_count
+		FROM recent r
+		JOIN voteringar vg
+		  ON vg.beteckning = r.beteckning AND vg.forslagspunkt = r.forslagspunkt
+		JOIN ballots b ON b.votering_ref = vg.id
+		GROUP BY r.beteckning, r.forslagspunkt, r.title, r.latest_at
+		ORDER BY r.latest_at DESC
 	`
 	rows, err := r.db.Query(ctx, q, limit)
 	if err != nil {

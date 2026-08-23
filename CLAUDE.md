@@ -290,8 +290,15 @@ postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable
 
 ## Database
 
-- PostgreSQL 17 in dev, 16.x in Helm chart (bitnami subchart).
-- 11 migrations in `backend/migrations/` (numbered `000001`–`000011`).
+- PostgreSQL 17 in dev. Production runs on Neon (serverless Postgres) via the
+  `DATABASE_URL` secret named by the chart's `dbSecretName` — there is no
+  in-cluster Postgres for the app and no bitnami subchart.
+- 40 migrations in `backend/migrations/` (numbered `000001`–`000040`).
+- The voting record lives in two tables, not one: `voteringar` (one row per
+  decided förslagspunkt) and `ballots` (one row per member per votering).
+  `votering_id` is the identity — two voteringar can share a beteckning and
+  förslagspunkt. Writing a query against a `votes` table will fail; it was
+  denormalised, cost 3× the storage, and was removed in `000039`/`000040`.
 - Raw SQL only — no query builder or ORM. Use `pgx/v5` `pgxpool`.
 - Parameterized queries only — never string-interpolate SQL.
 

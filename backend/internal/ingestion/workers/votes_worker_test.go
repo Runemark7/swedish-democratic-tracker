@@ -82,14 +82,6 @@ func (r *fakeVoteRepo) ListDistinctVotes(context.Context, voteports.ListDistinct
 	return voteports.ListDistinctVotesResult{}, nil
 }
 
-func (r *fakeVoteRepo) UpdateProposalOrigin(context.Context, string, string, votedomain.ProposalOrigin) error {
-	return nil
-}
-
-func (r *fakeVoteRepo) ListWithoutOrigin(context.Context, int) ([]*votedomain.Vote, error) {
-	return nil, nil
-}
-
 func (r *fakeVoteRepo) ListDistinctByCommitteePrefix(context.Context, string) ([]voteports.VoteSummary, error) {
 	return nil, nil
 }

@@ -23,10 +23,6 @@ func (r *enrichRepo) UpdateProposalOriginForPoint(_ context.Context, bet, punkt 
 	return 349, nil // one statement covers every ballot on the point
 }
 
-func (r *enrichRepo) ListWithoutOrigin(context.Context, int) ([]*domain.Vote, error) { return nil, nil }
-func (r *enrichRepo) UpdateProposalOrigin(context.Context, string, string, domain.ProposalOrigin) error {
-	return nil
-}
 func (r *enrichRepo) UpsertMany(context.Context, []*domain.Vote) error { return nil }
 func (r *enrichRepo) ListByPolitician(context.Context, ports.ListVotesFilter) (ports.ListVotesResult, error) {
 	return ports.ListVotesResult{}, nil

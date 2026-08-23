@@ -99,9 +99,12 @@ func (r *Repository) DecidedBudgetYearExists(ctx context.Context, year int) (boo
 // domain.CommitteeCode, so a beteckning that merely starts with the same
 // letters can never be counted under the wrong committee.
 func (r *Repository) countVoteringar(ctx context.Context, periodCode, codeFilter string) (map[string]int, error) {
+	// One row per votering already, so the DISTINCT this needed against the old
+	// table — where each votering appeared ~350 times — is gone, and the scan
+	// is over 15 835 rows rather than 5.5 million.
 	query := `
-		SELECT DISTINCT v.beteckning, v.votering_id
-		FROM votes v
+		SELECT v.beteckning, v.votering_id
+		FROM voteringar v
 		JOIN mandate_periods p ON v.session = ANY(p.riksmoten)
 		WHERE p.code = $1
 		  AND v.beteckning <> ''`
