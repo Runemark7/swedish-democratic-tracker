@@ -20,21 +20,24 @@ frontend:
     - name: ghcr-pull-secret
 ## One-off voting-record backfill. Full contract in values.yaml.
 ##
-## DISABLED, and it must stay disabled until the database has room.
-##
-## Run 1 (2026-08-22) failed within two minutes: every write returned
+## Run 2. Run 1 (2026-08-22) failed within two minutes -- every write returned
 ##   ERROR: could not extend file because project size limit (512 MB)
 ##   has been exceeded (SQLSTATE 53100)
-## The managed database is capped at 512 MB and the current record already
-## fills it. The full six-period record measures ~5.5 GB of ballots locally --
-## roughly eleven times the cap -- so this is a storage decision, not a
-## parameter to retry. Even one earlier period does not fit.
+## Both causes are now gone: the database limit was lifted, and 000039/000040
+## split the record into voteringar and ballots, which cut it 2.9x by removing
+## the votering-level fields that were repeated on all ~350 ballots of every
+## votering. The full six-period record measures 663 MB rather than 1.9 GB.
 ##
-## Re-enabling before that is resolved will not partially fill the record: it
-## reissues thousands of requests to Riksdagen that cannot be stored.
+## period is empty, so the run covers all six periods oldest first. It also
+## repairs the 547 voteringar of 2002-2006 that run 1 wrote before it hit the
+## wall: every write is an upsert, so the partial period is corrected rather
+## than duplicated.
+##
+## Set enabled back to false once the Job reports complete, or the next sync
+## recreates it.
 backfill:
-  enabled: false
-  runId: "1"
+  enabled: true
+  runId: "2"
   period: ""
 ingress:
   host: sdt.runevibe.se
