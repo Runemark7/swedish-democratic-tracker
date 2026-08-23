@@ -53,46 +53,48 @@ import (
 // 2022-2026 were genuinely decided by two separate voteringar, and without a
 // deterministic last key their relative order would be unspecified across
 // paged requests.
+// pts comes first now and the ballot scan hangs off it. Against the old table
+// both halves independently scanned every ballot in the period and filtered on
+// beteckning; here the committee's voteringar are selected from a 15 835-row
+// table, and only those voteringar's ballots are touched.
+//
+// pts also loses its GROUP BY: beteckning, forslagspunkt, session and
+// document_title were identical across a votering's ~350 rows, so the
+// min()/max() existed only to collapse duplication that no longer exists.
 const committeeVoteringQuery = `
-WITH counts AS (
-	SELECT v.votering_id, v.party, v.vote_result, count(*) AS n
-	FROM votes v
-	JOIN mandate_periods mp ON v.session = ANY(mp.riksmoten)
+WITH pts AS (
+	SELECT vg.id, vg.votering_id, vg.beteckning, vg.forslagspunkt, vg.session,
+	       COALESCE(vg.document_title, '') AS document_title
+	FROM voteringar vg
+	JOIN mandate_periods mp ON vg.session = ANY(mp.riksmoten)
 	WHERE mp.code = $1
-	  AND starts_with(upper(v.beteckning), upper($2))
-	  AND v.party <> '-'
-	GROUP BY v.votering_id, v.party, v.vote_result
+	  AND starts_with(upper(vg.beteckning), upper($2))
+),
+counts AS (
+	SELECT b.votering_ref, b.party, b.vote_result, count(*) AS n
+	FROM ballots b
+	JOIN pts ON pts.id = b.votering_ref
+	WHERE b.party <> '-'
+	GROUP BY b.votering_ref, b.party, b.vote_result
 ),
 maxn AS (
-	SELECT votering_id, party, max(n) AS maxn
+	SELECT votering_ref, party, max(n) AS maxn
 	FROM counts
-	GROUP BY votering_id, party
+	GROUP BY votering_ref, party
 ),
 pos AS (
-	SELECT c.votering_id, c.party,
+	SELECT c.votering_ref, c.party,
 	       CASE WHEN count(*) > 1 THEN 'Delad'
 	            ELSE min(c.vote_result)
 	       END AS position
 	FROM counts c
-	JOIN maxn m ON m.votering_id = c.votering_id AND m.party = c.party AND c.n = m.maxn
-	GROUP BY c.votering_id, c.party
-),
-pts AS (
-	SELECT v.votering_id,
-	       min(v.beteckning)                   AS beteckning,
-	       min(v.forslagspunkt)                AS forslagspunkt,
-	       min(v.session)                      AS session,
-	       COALESCE(max(v.document_title), '') AS document_title
-	FROM votes v
-	JOIN mandate_periods mp ON v.session = ANY(mp.riksmoten)
-	WHERE mp.code = $1
-	  AND starts_with(upper(v.beteckning), upper($2))
-	GROUP BY v.votering_id
+	JOIN maxn m ON m.votering_ref = c.votering_ref AND m.party = c.party AND c.n = m.maxn
+	GROUP BY c.votering_ref, c.party
 )
 SELECT pt.votering_id, pt.beteckning, pt.forslagspunkt, pt.document_title, pt.session,
        pos.party, pos.position
 FROM pts pt
-JOIN pos ON pos.votering_id = pt.votering_id
+JOIN pos ON pos.votering_ref = pt.id
 ORDER BY pt.session,
          NULLIF(regexp_replace(pt.beteckning, '\D', '', 'g'), '')::int,
          NULLIF(regexp_replace(pt.forslagspunkt, '\D', '', 'g'), '')::int,

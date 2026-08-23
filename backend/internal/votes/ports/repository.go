@@ -95,13 +95,11 @@ type VoteRepository interface {
 	ListByBeteckning(ctx context.Context, beteckning, punkt string) ([]*domain.Vote, error)
 	ListDistinctVotes(ctx context.Context, f ListDistinctVotesFilter) (ListDistinctVotesResult, error)
 	UpsertMany(ctx context.Context, vv []*domain.Vote) error
-	UpdateProposalOrigin(ctx context.Context, voteringID, politicianID string, o domain.ProposalOrigin) error
-	ListWithoutOrigin(ctx context.Context, limit int) ([]*domain.Vote, error)
-	// ListVotePointsWithoutOrigin returns distinct vote points still needing
-	// origin resolution — one row per point, not per ballot.
+	// ListVotePointsWithoutOrigin returns vote points still needing origin
+	// resolution — one row per point, not per ballot.
 	ListVotePointsWithoutOrigin(ctx context.Context, limit int) ([]VotePoint, error)
-	// UpdateProposalOriginForPoint applies one resolved origin to every ballot
-	// on that vote point in a single statement.
+	// UpdateProposalOriginForPoint applies one resolved origin to the vote
+	// point in a single statement.
 	UpdateProposalOriginForPoint(ctx context.Context, beteckning, forslagspunkt string, o domain.ProposalOrigin) (int64, error)
 	ListDistinctByCommitteePrefix(ctx context.Context, prefix string) ([]VoteSummary, error)
 	// PeriodExists reports whether the mandate period is one the record knows,
