@@ -55,7 +55,7 @@ func (r *CoverageRepository) GetRecordCoverage(ctx context.Context, code string)
 		),
 		held AS (
 			SELECT session, COUNT(DISTINCT beteckning || ':' || forslagspunkt) AS n
-			FROM votes
+			FROM voteringar
 			WHERE session = ANY($1)
 			GROUP BY session
 		)

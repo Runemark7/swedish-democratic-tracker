@@ -216,10 +216,17 @@ func backfillRiksmote(ctx context.Context, pool *pgxpool.Pool, svc *votes.Servic
 	}
 
 	// 3. Record what we actually hold, so the site can state its own coverage.
+	// Counted from the two tables directly: the voteringar we hold for the
+	// riksmöte, and the ballots cast in them. DISTINCT stays on the vote point
+	// because two voteringar can share a beteckning and förslagspunkt.
 	var ingested, ballotsHeld int
 	if err := pool.QueryRow(ctx, `
-		SELECT count(DISTINCT beteckning || ':' || forslagspunkt), count(*)
-		FROM votes WHERE session = $1`, rm).Scan(&ingested, &ballotsHeld); err != nil {
+		SELECT
+			(SELECT count(DISTINCT beteckning || ':' || forslagspunkt)
+			   FROM voteringar WHERE session = $1),
+			(SELECT count(*)
+			   FROM ballots b JOIN voteringar vg ON vg.id = b.votering_ref
+			  WHERE vg.session = $1)`, rm).Scan(&ingested, &ballotsHeld); err != nil {
 		return err
 	}
 	var lastDate *time.Time

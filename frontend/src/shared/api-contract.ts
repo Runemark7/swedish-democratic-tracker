@@ -1102,9 +1102,11 @@ export interface components {
             proposalDokId?: string;
             documentTitle?: string;
         };
-        /** @description One member's vote on one förslagspunkt, returned exactly as the record holds it. Carries no decision date: the votes table holds only system_datum — when Riksdagen last touched the row — which is not the date the chamber decided. */
+        /**
+         * @description One member's vote on one förslagspunkt, returned exactly as the record holds it. Carries no decision date: the record holds only system_datum — when Riksdagen last touched the row — which is not the date the chamber decided.
+         *     Identified by voteringId plus politicianId, which is the grain the ballots table is keyed on. There is no surrogate id: the previous one was a per-ballot SERIAL that no query filtered on and no consumer read, so it was removed with the denormalised table it belonged to.
+         */
         Vote: {
-            id: number;
             voteringId: string;
             politicianId: string;
             /** @description Party abbreviation, or "-" for a member sitting without party affiliation. Not a PartyCode — that enum has no "-" member. */
