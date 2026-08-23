@@ -35,8 +35,21 @@ frontend:
 ##
 ## Set enabled back to false once the Job reports complete, or the next sync
 ## recreates it.
+## Run 2 (2026-08-23) also stopped on the 512 MB limit, 27 minutes in, part
+## way through 2016/17. The cap is still 512 MB despite being reported as
+## lifted -- the error text names the figure, so check what the Neon project
+## actually reports before enabling this again.
+##
+## It did get much further than run 1, because 000039/000040 cut the record
+## 2.9x. Three periods landed complete and verified against the local run:
+## 2002-2006 (2 819), 2006-2010 (1 972), 2010-2014 (2 656). 2014-2018 is
+## partial at 1 286 of 2 585 and 2018-2022 was never reached.
+##
+## Re-running is safe and resumes rather than restarts: every write is an
+## upsert, so the three complete periods are re-confirmed and the partial one
+## is filled in. Only the remaining ~4 500 voteringar need storage.
 backfill:
-  enabled: true
+  enabled: false
   runId: "2"
   period: ""
 ingress:
