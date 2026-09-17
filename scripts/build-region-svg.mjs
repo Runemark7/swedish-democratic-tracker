@@ -1,7 +1,16 @@
-// One-shot: convert arbetsProvEvry's swedenMap.js into a typed TS module
-// keyed by SCB 2-digit region code. Run with: node scripts/build-region-svg.mjs
+// One-shot: convert a swedenMap.js export (e.g. from arbetsProvEvry) into a
+// typed TS module keyed by SCB 2-digit region code. The generated output is
+// committed, so this only needs to run when regenerating.
+// Run with: node scripts/build-region-svg.mjs <path-to-swedenMap.js>
 import { writeFileSync } from "node:fs";
-import map from "/home/rune/Documents/arbetsProvEvry/src/assets/swedenMap.js";
+import { pathToFileURL } from "node:url";
+
+const source = process.argv[2];
+if (!source) {
+  console.error("Usage: node scripts/build-region-svg.mjs <path-to-swedenMap.js>");
+  process.exit(1);
+}
+const { default: map } = await import(pathToFileURL(source).href);
 
 // ISO 3166-2:SE → SCB 2-digit län code
 const ISO_TO_SCB = {
