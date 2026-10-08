@@ -65,7 +65,8 @@ ingress:
 ## annotation inherited from ingress.annotations above. Requires a DNS record:
 ## analytics.runevibe.se -> the ingress load balancer.
 umami:
-  enabled: true
+  # Disabled to free RAM on the 4GB Hetzner node (was ~260Mi + postgres).
+  enabled: false
   ingress:
     host: analytics.runevibe.se
     tlsSecretName: analytics-runevibe-tls
