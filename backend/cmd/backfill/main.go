@@ -27,7 +27,9 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -36,10 +38,16 @@ import (
 	"riksdagskollen/internal/votes"
 	votepg "riksdagskollen/internal/votes/adapters/postgres"
 	voterd "riksdagskollen/internal/votes/adapters/riksdagen"
+	votedomain "riksdagskollen/internal/votes/domain"
 	voteports "riksdagskollen/internal/votes/ports"
 )
 
 const enumPageSize = 200
+
+// upstreamBackoffs is the wait before each retry of a reset or timeout.
+// Run 3 died at the last sessions when data.riksdagen.se started resetting
+// connections; the Job then retried the whole walk and failed immediately.
+var upstreamBackoffs = []time.Duration{2 * time.Second, 8 * time.Second, 20 * time.Second}
 
 func main() {
 	only := flag.String("rm", "", "backfill a single riksmöte, e.g. 2025/26")
@@ -144,6 +152,87 @@ func loadRiksmoten(ctx context.Context, pool *pgxpool.Pool, period string) ([]st
 	return all, nil
 }
 
+// transientUpstream reports errors worth retrying. A reset or a timeout from
+// data.riksdagen.se is not a statement that the session is missing.
+func transientUpstream(err error) bool {
+	if err == nil {
+		return false
+	}
+	var nerr net.Error
+	if errors.As(err, &nerr) && nerr.Timeout() {
+		return true
+	}
+	s := strings.ToLower(err.Error())
+	return strings.Contains(s, "connection reset") ||
+		strings.Contains(s, "connection refused") ||
+		strings.Contains(s, "broken pipe") ||
+		strings.Contains(s, "timeout") ||
+		strings.Contains(s, "deadline exceeded") ||
+		strings.Contains(s, "eof") ||
+		strings.Contains(s, "returned 429") ||
+		strings.Contains(s, "returned 500") ||
+		strings.Contains(s, "returned 502") ||
+		strings.Contains(s, "returned 503") ||
+		strings.Contains(s, "returned 504")
+}
+
+// retryUpstream calls fn, and on a transient error waits and tries again.
+// A non-transient error is returned immediately. The last error is returned
+// when the attempts run out.
+func retryUpstream(ctx context.Context, what string, fn func() error) error {
+	var err error
+	for attempt := 0; ; attempt++ {
+		err = fn()
+		if err == nil || !transientUpstream(err) || attempt >= len(upstreamBackoffs) {
+			return err
+		}
+		wait := upstreamBackoffs[attempt]
+		slog.Warn("upstream retry", "what", what, "attempt", attempt+1, "error", err, "sleep", wait)
+		timer := time.NewTimer(wait)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return ctx.Err()
+		case <-timer.C:
+		}
+	}
+}
+
+// heldComplete is the same comparison the end-of-session log uses for an
+// unexplained shortfall. Unreachable voteringar are not a gap. A surplus
+// over Riksdagen's listing is still complete.
+func heldComplete(expected, unreachable, ingested int) bool {
+	return expected > 0 && ingested+unreachable >= expected
+}
+
+// sessionAlreadyComplete reports whether this riksmöte is already stored
+// against the denominator recorded for it. Enumeration can fail after the
+// data is in; that must not fail the Job, or a retry pod walks every session
+// and exits non-zero while the record is whole.
+func sessionAlreadyComplete(ctx context.Context, pool *pgxpool.Pool, rm string) (bool, error) {
+	var expected *int
+	var unreachable int
+	err := pool.QueryRow(ctx, `
+		SELECT expected_voteringar, unreachable_voteringar
+		FROM ingestion_coverage WHERE riksmote = $1`, rm).Scan(&expected, &unreachable)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	if expected == nil || *expected <= 0 {
+		return false, nil
+	}
+	var ingested int
+	if err := pool.QueryRow(ctx, `
+		SELECT count(DISTINCT beteckning || ':' || forslagspunkt)
+		FROM voteringar WHERE session = $1`, rm).Scan(&ingested); err != nil {
+		return false, err
+	}
+	return heldComplete(*expected, unreachable, ingested), nil
+}
+
 func backfillRiksmote(ctx context.Context, pool *pgxpool.Pool, svc *votes.Service, rm string, delay time.Duration) error {
 	// 1. Enumerate every votering in the riksmöte. @traffar is the coverage
 	//    denominator: Riksdagen's count, not ours.
@@ -158,9 +247,23 @@ func backfillRiksmote(ctx context.Context, pool *pgxpool.Pool, svc *votes.Servic
 	var lastDecision time.Time
 
 	for page := 1; ; page++ {
-		refs, total, err := svc.ListVoteringar(ctx, rm, page, enumPageSize)
+		var refs []voteports.VoteringRef
+		var total int
+		err := retryUpstream(ctx, rm+" page "+fmt.Sprint(page), func() error {
+			var lerr error
+			refs, total, lerr = svc.ListVoteringar(ctx, rm, page, enumPageSize)
+			return lerr
+		})
 		if err != nil {
-			return err
+			complete, cerr := sessionAlreadyComplete(ctx, pool, rm)
+			if cerr != nil {
+				return fmt.Errorf("enumerate %s: %w (coverage check: %v)", rm, err, cerr)
+			}
+			if complete {
+				slog.Warn("enumeration failed; session already complete", "rm", rm, "page", page, "error", err)
+				return nil
+			}
+			return fmt.Errorf("enumerate %s: %w", rm, err)
 		}
 		if total > 0 {
 			expected = total
@@ -195,8 +298,13 @@ func backfillRiksmote(ctx context.Context, pool *pgxpool.Pool, svc *votes.Servic
 	stored := 0
 	var empty []string
 	for i, bet := range order {
-		vv, err := svc.FetchAndStore(ctx, voteports.FetchVotesFilter{
-			Session: rm, Beteckning: bet,
+		var vv []*votedomain.Vote
+		err := retryUpstream(ctx, rm+"/"+bet, func() error {
+			var ferr error
+			vv, ferr = svc.FetchAndStore(ctx, voteports.FetchVotesFilter{
+				Session: rm, Beteckning: bet,
+			})
+			return ferr
 		})
 		if err != nil {
 			slog.Warn("fetch failed", "rm", rm, "bet", bet, "error", err)

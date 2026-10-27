@@ -33,31 +33,16 @@ frontend:
     - name: ghcr-pull-secret
 ## One-off voting-record backfill. Full contract in values.yaml.
 ##
-## Run 3. Runs 1 and 2 (August 2026) died on Neon's 512 MB project cap,
-## part way through 2016/17. The database is now self-hosted Postgres 18
-## (~415 MB used, ~45 GB free), so that cap is gone.
+## Run 3 (2026-10-27) filled 2016/17–2021/22. The record is 15 857
+## voteringar and 5.53M ballots (790 MB). The Job then exited Failed:
+## data.riksdagen.se reset connections from 2024/25 onward, and the two
+## retry pods failed immediately. Those later sessions were already stored.
 ##
-## period is empty: the Job walks every mandate_periods row, oldest first,
-## which is 2002-2006 through 2026-2030. Writes upsert on votering_id and
-## (votering, member), so sessions already held are re-confirmed and the
-## gap — partial 2016/17, nothing for 2017/18–2021/22 — is filled rather
-## than duplicated. The command does not touch the votes cursor. The
-## nightly chain only fetches the current riksmöte, and this walk reaches
-## that session last.
-##
-## The pod limit stays 512Mi. It holds one betänkande's ballots at a time,
-## which fits the 4 GB node next to the API. The two-hour deadline stays:
-## a full historical walk measured about 45 minutes, and run 2 reached
-## 2016/17 in 27.
-##
-## Set enabled back to false after the Job is Complete, before the next
-## sync. ttlSecondsAfterFinished deletes the Job after a day; a later
-## sync with enabled still true creates it again and walks Riksdagen
-## from 2002 once more. While the Job exists, its pod template is
-## immutable, so an image-tag bump in this file will fail the upgrade
-## until enabled is false.
+## Disabled so Argo prunes riksdagskollen-backfill-3. The Job pod template
+## is immutable; leaving this on keeps the app OutOfSync. The next run
+## must bump runId — do not reuse "3".
 backfill:
-  enabled: true
+  enabled: false
   runId: "3"
   period: ""
 ingress:
