@@ -4,7 +4,7 @@ backend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-api
     pullPolicy: Always
-    tag: eee00bc7a02e4a6374b33f7d869c9044bc27b4cc
+    tag: fbdf1806de27c6194c19a7192f20884332f17e1e
   imagePullSecrets:
     - name: ghcr-pull-secret
   env:
@@ -28,7 +28,7 @@ frontend:
   image:
     repository: ghcr.io/runemark7/riksdagskollen-frontend
     pullPolicy: Always
-    tag: eee00bc7a02e4a6374b33f7d869c9044bc27b4cc
+    tag: fbdf1806de27c6194c19a7192f20884332f17e1e
   imagePullSecrets:
     - name: ghcr-pull-secret
 ## One-off voting-record backfill. Full contract in values.yaml.
