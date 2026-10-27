@@ -22,8 +22,14 @@ func NewFreshnessRepository(db *pgxpool.Pool) *FreshnessRepository {
 func (r *FreshnessRepository) Snapshot(ctx context.Context) (ingestion.Snapshot, error) {
 	var snap ingestion.Snapshot
 	var err error
+	// speeches.date is a DATE. Casting it to timestamptz reads midnight in the
+	// session TimeZone. In Europe/Stockholm that is 22:00 or 23:00 the
+	// previous day in UTC, so the report serialised 2026-10-20 for a speech
+	// stored as 2026-10-21. pgx scans a date as midnight UTC, which is the
+	// stored calendar day. Votes stay a timestamptz: system_datum is already
+	// an instant, parsed from Riksdagen's clock as UTC.
 	if snap.SpeechesLatest, err = scanTime(ctx, r.db,
-		`SELECT MAX(date)::timestamptz FROM speeches`); err != nil {
+		`SELECT MAX(date) FROM speeches`); err != nil {
 		return ingestion.Snapshot{}, err
 	}
 	if snap.VotesLatest, err = scanTime(ctx, r.db,

@@ -12,6 +12,35 @@ test("current riksmöte rolls in September", () => {
 test("daysBetween counts calendar days", () => {
   assert.equal(daysBetween("2026-08-13", "2026-10-21"), 69);
   assert.equal(daysBetween("2026-10-21", "2026-10-21"), 0);
+  // The freshness bug reported 2026-10-20 for a speech stored as 2026-10-21.
+  // The lag is that one calendar day, not a timezone-adjusted instant.
+  assert.equal(daysBetween("2026-10-20", "2026-10-21"), 1);
+});
+
+test("speech dates are compared as calendar days", () => {
+  // One day under the limit stays quiet. The comparison is still the calendar
+  // gap: 2026-10-20 against 2026-10-21 is exactly one day, the shift a
+  // Stockholm midnight cast produced.
+  assert.equal(daysBetween("2026-10-20", "2026-10-21"), 1);
+  const shifted = evaluateFreshness({
+    now,
+    freshness: report({ speeches: { latestDate: "2026-10-20" } }),
+    upstreamSpeechDate: "2026-10-21",
+    upstreamVoteDate: "2026-10-15",
+  });
+  assert.equal(shifted.ok, true, shifted.reasons.join("; "));
+  assert.equal(
+    shifted.reasons.some((reason) => reason.startsWith("speeches:")),
+    false,
+  );
+
+  const matched = evaluateFreshness({
+    now,
+    freshness: report({ speeches: { latestDate: "2026-10-21" } }),
+    upstreamSpeechDate: "2026-10-21",
+    upstreamVoteDate: "2026-10-15",
+  });
+  assert.equal(matched.ok, true, matched.reasons.join("; "));
 });
 
 const now = new Date("2026-10-27T06:00:00Z");
