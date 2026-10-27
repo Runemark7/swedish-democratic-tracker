@@ -27,7 +27,7 @@ func (r *enrichRepo) UpsertMany(context.Context, []*domain.Vote) error { return 
 func (r *enrichRepo) ListByPolitician(context.Context, ports.ListVotesFilter) (ports.ListVotesResult, error) {
 	return ports.ListVotesResult{}, nil
 }
-func (r *enrichRepo) ListByBeteckning(context.Context, string, string) ([]*domain.Vote, error) {
+func (r *enrichRepo) ListByBeteckning(context.Context, string, string, string) ([]*domain.Vote, error) {
 	return nil, nil
 }
 func (r *enrichRepo) ListDistinctVotes(context.Context, ports.ListDistinctVotesFilter) (ports.ListDistinctVotesResult, error) {
@@ -61,7 +61,7 @@ func (c *enrichClient) FetchDocuments(context.Context, []string, int) ([]ports.R
 func (c *enrichClient) FetchRecentBetankanden(context.Context, int) ([]ports.RiksdagDocument, error) {
 	return nil, nil
 }
-func (c *enrichClient) FetchBetankandeByBeteckning(context.Context, string) (*ports.BetankandeInfo, error) {
+func (c *enrichClient) FetchBetankandeByBeteckning(context.Context, string, string) (*ports.BetankandeInfo, error) {
 	return nil, nil
 }
 

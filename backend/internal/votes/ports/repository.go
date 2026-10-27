@@ -92,7 +92,10 @@ type CommitteeVotering struct {
 
 type VoteRepository interface {
 	ListByPolitician(ctx context.Context, f ListVotesFilter) (ListVotesResult, error)
-	ListByBeteckning(ctx context.Context, beteckning, punkt string) ([]*domain.Vote, error)
+	// ListByBeteckning returns ballots for one förslagspunkt. session, when
+	// non-empty, limits them to that riksmöte — beteckning numbering restarts
+	// each year, so an unscoped read mixes two betänkanden into one tally.
+	ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error)
 	ListDistinctVotes(ctx context.Context, f ListDistinctVotesFilter) (ListDistinctVotesResult, error)
 	UpsertMany(ctx context.Context, vv []*domain.Vote) error
 	// ListVotePointsWithoutOrigin returns vote points still needing origin

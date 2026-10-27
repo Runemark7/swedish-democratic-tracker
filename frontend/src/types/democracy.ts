@@ -134,7 +134,7 @@ export interface LevelData {
   authorities?: Authority[];
 }
 
-// Authoritative party colors for Tre Kammare pages (from design handoff)
+// Authoritative party colors (from the design handoff)
 export const TC_PARTY_COLORS: Record<string, string> = {
   S:  "#E8112D",
   M:  "#1E88E5",

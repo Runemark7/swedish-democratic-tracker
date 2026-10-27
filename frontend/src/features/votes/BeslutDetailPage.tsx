@@ -2,34 +2,22 @@ import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { votesApi } from "./api";
-import { PARTY_COLORS } from "@/shared/design";
+import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
 import { useSpeechesByDocument } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import type { components } from "@/shared/api-contract";
 
 type PartyVotePosition = components["schemas"]["PartyVotePosition"];
 
-// Derive a human-readable committee name from the beteckning prefix.
 function committeeLabel(beteckning: string): string {
-  const labels: Record<string, string> = {
-    SoU: "Socialutskottet",
-    TU:  "Trafikutskottet",
-    UbU: "Utbildningsutskottet",
-    CU:  "Civilutskottet",
-    FiU: "Finansutskottet",
-    JuU: "Justitieutskottet",
-    SkU: "Skatteutskottet",
-    FöU: "Försvarsutskottet",
-    AU:  "Arbetsmarknadsutskottet",
-    MJU: "Miljö- och jordbruksutskottet",
-    KU:  "Konstitutionsutskottet",
-    NU:  "Näringsutskottet",
-    SfU: "Socialförsäkringsutskottet",
-    KrU: "Kulturutskottet",
-    UU:  "Utrikesutskottet",
-  };
-  const prefix = beteckning.replace(/\d.*$/, "").replace(/[^A-Za-zÅÄÖåäö]/g, "");
-  return labels[prefix] ?? prefix;
+  return committeeFromBeteckning(beteckning) ?? beteckning;
+}
+
+/** Riksdagen's outcome words. Anything else (including a missing value) is not an outcome. */
+function knownOutcome(value: string | null | undefined): string {
+  const text = value?.trim() ?? "";
+  if (text === "Bifall" || text === "Avslag" || text === "Återremiss") return text;
+  return "";
 }
 
 // Parse a Riksdagen "YYYY-MM-DD HH:MM:SS" datetime to a Date (date part only).
@@ -153,10 +141,16 @@ export function BeslutDetailPage() {
   const fallbackStatus = searchParams.get("status") ?? "";
   const fallbackTag    = searchParams.get("tag") ?? "";
   const fallbackTime   = searchParams.get("time") ?? "";
+  // Beteckning numbering restarts each riksmöte. Home links pass `rm`.
+  const riksmote = searchParams.get("rm") ?? "";
+
+  // The vote API is one förslagspunkt at a time. Punkt 1 is what this page
+  // can show without a new "list every punkt" read; the heading says so.
+  const punkt = "1";
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["beslut", beteckning],
-    queryFn: () => votesApi.getDetail(beteckning!, "1"),
+    queryKey: ["beslut", beteckning, riksmote, punkt],
+    queryFn: () => votesApi.getDetail(beteckning!, punkt, riksmote || undefined),
     enabled: !!beteckning,
     retry: false,
   });
@@ -166,11 +160,21 @@ export function BeslutDetailPage() {
   const [expandSpeakers, setExpandSpeakers] = useState(false);
 
   const title    = data?.documentTitle ?? fallbackTitle;
-  const session  = data?.session ?? "";
+  const tallySession = data?.session ?? "";
+  // The link's riksmöte wins in the header. A tally from another year is
+  // named, not silently presented as the betänkande the reader opened.
+  const session = riksmote || tallySession;
+  const sessionMismatch = Boolean(riksmote && tallySession && riksmote !== tallySession);
   const committee = committeeLabel(beteckning ?? "");
   const dokId    = data?.dokId;
 
-  const statusText = data?.status ?? fallbackStatus ?? "Bifall";
+  // Never invent Bifall. Prefer Riksdagen's own outcome word, then the
+  // ballot tally for this punkt, then a status the linker already knew.
+  // While the request is in flight, data is absent, so the query-string
+  // hint can show; once data has arrived, an empty tally stays empty.
+  const statusText = data
+    ? knownOutcome(data.statusText) || knownOutcome(data.status)
+    : knownOutcome(fallbackStatus);
   const beslutDate = data?.date ?? fallbackTime;
   const statusColor =
     statusText === "Bifall"    ? "#16a34a" :
@@ -270,6 +274,22 @@ export function BeslutDetailPage() {
           )}
         </div>
 
+        {sessionMismatch && (
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 13,
+              color: "var(--color-fg)",
+              margin: "0 0 16px",
+              lineHeight: 1.5,
+            }}
+          >
+            Länken gäller riksmötet {riksmote}. Svaret som hämtades är från {tallySession}.
+            Beteckningen {beteckning} finns i båda, och den här läsningen avgränsades inte
+            till riksmötet i länken.
+          </p>
+        )}
+
         {/* ── Title ────────────────────────────────────────────────── */}
         <h1
           style={{
@@ -330,10 +350,10 @@ export function BeslutDetailPage() {
               fontFamily: "var(--font-serif)",
               fontStyle: "italic",
               fontSize: 20,
-              color: statusColor,
+              color: statusText ? statusColor : "var(--color-fg-muted)",
             }}
           >
-            {statusText}
+            {statusText || (isLoading ? "Hämtar utfall…" : "Utfall ej publicerat")}
           </span>
         </div>
 
@@ -418,11 +438,23 @@ export function BeslutDetailPage() {
               letterSpacing: "0.15em",
               textTransform: "uppercase",
               color: "var(--color-fg-muted)",
-              marginBottom: 16,
+              marginBottom: 6,
             }}
           >
-            Partiernas röster
+            Partiernas röster · förslagspunkt {punkt}
           </div>
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 12,
+              color: "var(--color-fg-muted)",
+              margin: "0 0 16px",
+              lineHeight: 1.5,
+            }}
+          >
+            Siffrorna gäller förslagspunkt {punkt}
+            {(tallySession || session) ? ` i riksmötet ${tallySession || session}` : ""}. Ett betänkande kan ha fler punkter.
+          </p>
 
           {isLoading && (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

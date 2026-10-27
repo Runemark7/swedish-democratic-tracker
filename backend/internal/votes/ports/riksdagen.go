@@ -70,6 +70,11 @@ type RiksdagDocument struct {
 	// is a future scheduled day. Nil means the field was absent or unreadable
 	// and Decided falls back to status and the date.
 	ChamberDecided *bool
+
+	// Riksmote is Riksdagen's `rm`, e.g. "2026/27". Beteckning numbering
+	// restarts each riksmöte, so a link built from the beteckning alone can
+	// open another year's betänkande.
+	Riksmote string
 }
 
 // Decided reports whether the chamber has decided this betänkande as of now.
@@ -119,5 +124,8 @@ type RiksdagenVoteClient interface {
 	FetchDocuments(ctx context.Context, organs []string, count int) ([]RiksdagDocument, error)
 	// FetchRecentBetankanden returns recent betänkanden across all committees.
 	FetchRecentBetankanden(ctx context.Context, count int) ([]RiksdagDocument, error)
-	FetchBetankandeByBeteckning(ctx context.Context, beteckning string) (*BetankandeInfo, error)
+	// FetchBetankandeByBeteckning looks up one betänkande. session, when set,
+	// is the riksmöte ("2026/27"): without it the same beteckning matches
+	// every year and the first hit is whichever year the API returns.
+	FetchBetankandeByBeteckning(ctx context.Context, beteckning, session string) (*BetankandeInfo, error)
 }

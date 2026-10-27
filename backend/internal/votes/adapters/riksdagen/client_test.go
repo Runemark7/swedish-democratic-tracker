@@ -223,7 +223,7 @@ func TestFetchRecentBetankanden_BeslutadNotBeslutsdag(t *testing.T) {
 			{"titel":"Scheduled","organ":"KU","datum":"2026-10-23","beteckning":"KU4",
 			 "beslutsdag":"2026-11-04","status":"Webbpublicering","beslutad":"0"},
 			{"titel":"Decided","organ":"JuU","datum":"2026-10-20","beteckning":"JuU2",
-			 "beslutsdag":"2026-10-21","status":"Webbpublicering","beslutad":"1"},
+			 "beslutsdag":"2026-10-21","status":"Webbpublicering","beslutad":"1","rm":"2026/27"},
 			{"titel":"Numeric","organ":"FiU","datum":"2026-10-20","beteckning":"FiU12",
 			 "beslutsdag":"2026-10-21","status":"Webbpublicering","beslutad":1}
 		]}}`))
@@ -240,6 +240,9 @@ func TestFetchRecentBetankanden_BeslutadNotBeslutsdag(t *testing.T) {
 	}
 	if !docs[2].Decided(now) || !docs[3].Decided(now) {
 		t.Errorf("decided rows report not decided: %+v %+v", docs[2], docs[3])
+	}
+	if docs[2].Riksmote != "2026/27" {
+		t.Errorf("riksmote = %q, want 2026/27 — a beteckning is not unique across years", docs[2].Riksmote)
 	}
 }
 
@@ -359,5 +362,40 @@ func TestListVoteringar_LeavesModernBeteckningAlone(t *testing.T) {
 		if refs[i].Beteckning != w {
 			t.Errorf("ref[%d].Beteckning = %q, want %q", i, refs[i].Beteckning, w)
 		}
+	}
+}
+
+// A beteckning such as SfU4 is reused every riksmöte. The lookup has to send
+// `rm` when the caller knows the session, and must not send it when the caller
+// does not — an empty session is the legacy unscoped read.
+func TestFetchBetankandeByBeteckning_SessionQuery(t *testing.T) {
+	var got url.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"dokumentlista":{"dokument":[{"id":"HE01SfU4","titel":"T","datum":"2026-10-26","status":"planerat","rm":"2026/27","organ":"SfU"}]}}`))
+	}))
+	defer srv.Close()
+
+	info, err := newTestClient(srv.URL).FetchBetankandeByBeteckning(context.Background(), "SfU4", "2026/27")
+	if err != nil {
+		t.Fatalf("FetchBetankandeByBeteckning: %v", err)
+	}
+	if got.Get("rm") != "2026/27" {
+		t.Errorf("rm = %q, want 2026/27", got.Get("rm"))
+	}
+	if got.Get("bet") != "SfU4" {
+		t.Errorf("bet = %q, want SfU4", got.Get("bet"))
+	}
+	if info == nil || info.Session != "2026/27" {
+		t.Fatalf("session = %+v, want 2026/27", info)
+	}
+
+	got = nil
+	if _, err := newTestClient(srv.URL).FetchBetankandeByBeteckning(context.Background(), "SfU4", ""); err != nil {
+		t.Fatalf("unscoped lookup: %v", err)
+	}
+	if _, ok := got["rm"]; ok {
+		t.Errorf("unscoped lookup sent rm=%q", got.Get("rm"))
 	}
 }

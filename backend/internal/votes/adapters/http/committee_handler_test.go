@@ -49,7 +49,7 @@ func (r *fakeCommitteeRepo) ListByCommitteeWithPositions(_ context.Context, peri
 func (r *fakeCommitteeRepo) ListByPolitician(context.Context, ports.ListVotesFilter) (ports.ListVotesResult, error) {
 	return ports.ListVotesResult{}, nil
 }
-func (r *fakeCommitteeRepo) ListByBeteckning(context.Context, string, string) ([]*domain.Vote, error) {
+func (r *fakeCommitteeRepo) ListByBeteckning(context.Context, string, string, string) ([]*domain.Vote, error) {
 	return nil, nil
 }
 func (r *fakeCommitteeRepo) ListDistinctVotes(context.Context, ports.ListDistinctVotesFilter) (ports.ListDistinctVotesResult, error) {

@@ -106,6 +106,7 @@ export const COMMITTEES: Record<string, string> = {
   KU:  "Konstitutionsutskottet",
   KrU: "Kulturutskottet",
   UU:  "Utrikesutskottet",
+  UFöU: "Sammansatta utrikes- och försvarsutskottet",
 };
 
 /** Extract committee name from beteckning, e.g. "SoU12" → "Socialutskottet".

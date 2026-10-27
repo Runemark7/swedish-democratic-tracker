@@ -506,6 +506,17 @@ paths:
           schema:
             type: string
             example: "1"
+        - name: session
+          in: query
+          required: false
+          description: >-
+            Riksmöte, e.g. "2026/27". When set, ballots and the live document
+            lookup are limited to that session. Beteckning numbering restarts
+            each riksmöte, so an unscoped lookup can mix two years that share
+            a beteckning.
+          schema:
+            type: string
+            example: "2026/27"
       responses:
         "200":
           description: Full vote detail with party breakdown
@@ -1718,7 +1729,13 @@ components:
             $ref: "#/components/schemas/PartyVotePosition"
         status:
           type: string
-          description: "Authoritative outcome: Bifall | Avslag | Återremiss"
+          description: >-
+            Outcome of this förslagspunkt from the ballot tally: "Bifall" when
+            Ja outnumbers Nej, "Avslag" when Nej outnumbers Ja. Empty when the
+            tally is a tie or contains neither Ja nor Nej — that is not
+            reported as Bifall. Not Återremiss; the page reads that from
+            statusText when Riksdagen published it. Scoped to the requested
+            punkt, not to the whole betänkande.
         # ── Riksdagen dokumentstatus — present only when that lookup succeeds ──
         date:
           type: string
@@ -2466,7 +2483,7 @@ components:
 
     RecentBetankande:
       type: object
-      required: [title, organ, date, beteckning, decided, decisionDate, status]
+      required: [title, organ, date, beteckning, decided, decisionDate, status, riksmote]
       properties:
         title:
           type: string
@@ -2516,6 +2533,14 @@ components:
             scheduled but not yet written. Never translated into a claim of
             ours.
           example: "Webbpublicering"
+        riksmote:
+          type: string
+          description: >-
+            Riksdagen's `rm`, e.g. "2026/27". Beteckning numbering restarts
+            each riksmöte, so a decision link has to carry this or `/beslut/SfU4`
+            can open another year's betänkande. Empty when the upstream row
+            omitted `rm`.
+          example: "2026/27"
 
     RiksdagDocument:
       type: object

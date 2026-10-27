@@ -22,6 +22,7 @@ import { MunicipalityLandingPage } from "./features/municipalities/MunicipalityL
 import { MunicipalityDetailPage } from "./features/municipalities/MunicipalityDetailPage";
 import { MunicipalityComparePage } from "./features/municipalities/MunicipalityComparePage";
 import { HomePage } from "./features/home/HomePage";
+import { LokaltPage } from "./features/lokalt/LokaltPage";
 import { RiksdagPage } from "./features/riksdag/RiksdagPage";
 import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { MyndigheterListPage } from "./features/riksdag/MyndigheterListPage";
@@ -37,54 +38,9 @@ import { useMediaQuery } from "./hooks/useMediaQuery";
 import { useRecordCoverage } from "./hooks/useDemocracy";
 import { swedishDate } from "./shared/dates";
 import { MobileNav } from "./components/MobileNav";
-import { PRIMARY_NAV, FORDJUPNING_NAV, RIKSDAG_SUB_NAV, isActive, isRiksdagSection } from "./shared/nav";
-
-// ── Three-bar logo icon ────────────────────────────────────────────────────
-function TreKammareLogo() {
-  return (
-    <NavLink
-      to="/"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        textDecoration: "none",
-        flexShrink: 0,
-      }}
-    >
-      <svg
-        width="20"
-        height="16"
-        viewBox="0 0 20 16"
-        fill="none"
-        aria-hidden="true"
-      >
-        <rect x="0" y="0"  width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="0.45" />
-        <rect x="0" y="6.5" width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="0.70" />
-        <rect x="0" y="13" width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="1"    />
-      </svg>
-      <span
-        style={{
-          fontFamily: "var(--font-serif)",
-          fontSize: 17,
-          fontWeight: 700,
-          color: "var(--color-fg)",
-          letterSpacing: "0.01em",
-        }}
-      >
-        Tre{" "}
-        <em
-          style={{
-            fontStyle: "italic",
-            color: "var(--color-accent-2)",
-          }}
-        >
-          Kammare
-        </em>
-      </span>
-    </NavLink>
-  );
-}
+import { Wordmark } from "./components/Wordmark";
+import { LokaltMenu } from "./components/LokaltMenu";
+import { PRIMARY_NAV, SECONDARY_NAV, isActive } from "./shared/nav";
 
 // ── Nav pill ───────────────────────────────────────────────────────────────
 interface PillNavProps {
@@ -156,7 +112,6 @@ export default function App() {
   }
 
   const pathname = location.pathname;
-  const showRiksdagTabs = isRiksdagSection(pathname);
 
   return (
     <div className="sdt-page">
@@ -186,12 +141,14 @@ export default function App() {
             alignItems: "center",
             justifyContent: "space-between",
             gap: 16,
-            height: 60,
+            minHeight: 60,
+            padding: "8px 0",
+            flexWrap: "wrap",
           }}
         >
-          <TreKammareLogo />
+          <Wordmark />
 
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", flex: 1 }}>
             {PRIMARY_NAV.map((item) => (
               <PillNav
                 key={item.to}
@@ -200,6 +157,7 @@ export default function App() {
                 active={isActive(item, pathname)}
               />
             ))}
+            <LokaltMenu pathname={pathname} />
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
@@ -232,6 +190,24 @@ export default function App() {
                 : "Ingen omröstningsdata"}
             </div>
 
+            {SECONDARY_NAV.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  color: isActive(item, pathname) ? "var(--color-fg)" : "var(--color-fg-muted)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {item.label}
+              </Link>
+            ))}
+
             {/* Theme toggle */}
             <button
               onClick={toggleTheme}
@@ -255,68 +231,6 @@ export default function App() {
             </button>
           </div>
         </div>
-
-        {/* ── Fördjupning: the four levels of government, as reference ── */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: "8px 0",
-            borderTop: "1px solid var(--color-border)",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "var(--color-fg-muted)",
-            }}
-          >
-            Fördjupning
-          </span>
-          {FORDJUPNING_NAV.map((item) => (
-            <PillNav
-              key={item.to}
-              to={item.to}
-              label={item.label}
-              active={isActive(item, pathname)}
-            />
-          ))}
-        </div>
-
-        {/* ── Riksdag feature sub-tabs ────────────────────────────────── */}
-        {showRiksdagTabs && (
-          <div style={{ display: "flex", borderTop: "1px solid var(--color-border)" }}>
-            {RIKSDAG_SUB_NAV.map((tab) => {
-              const active = isActive(tab, pathname);
-
-              return (
-                <NavLink
-                  key={tab.to}
-                  to={tab.to}
-                  style={{
-                    display: "block",
-                    padding: "10px 20px",
-                    fontSize: 13,
-                    fontWeight: active ? 700 : 500,
-                    textDecoration: "none",
-                    borderBottom: active
-                      ? "2px solid var(--color-fg)"
-                      : "2px solid transparent",
-                    color: active ? "var(--color-fg)" : "var(--color-fg-muted)",
-                    transition: "color 0.15s",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {tab.label}
-                </NavLink>
-              );
-            })}
-          </div>
-        )}
       </nav>
 
       {/* ── Page content ──────────────────────────────────────────────── */}
@@ -341,6 +255,7 @@ export default function App() {
           <Route path="/budget"                                element={<BudgetPage />} />
           <Route path="/budget/areas/:code"                    element={<AreaHistoryPage />} />
           <Route path="/manifestos"                            element={<ManifestosPage />} />
+          <Route path="/lokalt"                               element={<LokaltPage />} />
           <Route path="/region"                                element={<RegionLandingPage />} />
           <Route path="/region/:code/budget/:areaName"         element={<RegionBudgetAreaPage />} />
           <Route path="/region/:code/kpi/:kpiId"               element={<RegionKpiRankingPage />} />
