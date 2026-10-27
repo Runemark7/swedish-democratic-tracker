@@ -89,7 +89,7 @@ export function SwedenKommunMap({
                 d={p.d}
                 fill={fill}
                 fillOpacity={opacity}
-                stroke="#ffffff"
+                stroke="var(--color-map-stroke)"
                 strokeWidth={0.4}
                 vectorEffect="non-scaling-stroke"
                 style={{

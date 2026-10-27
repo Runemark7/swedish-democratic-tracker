@@ -13,9 +13,9 @@ type Vote = components["schemas"]["Vote"];
 type PromiseWithMatches = components["schemas"]["PromiseWithMatches"];
 
 const ALIGNMENT_STYLES: Record<string, { color: string; bg: string; label: string }> = {
-  supports:    { color: "#16a34a", bg: "#f0fdf4", label: "Stödjer" },
-  contradicts: { color: "#dc2626", bg: "#fef2f2", label: "Motsäger" },
-  unclear:     { color: "#9ca3af", bg: "#f9fafb", label: "Oklart" },
+  supports:    { color: "var(--color-chip-ja-fg)", bg: "var(--color-chip-ja-bg)", label: "Stödjer" },
+  contradicts: { color: "var(--color-chip-nej-fg)", bg: "var(--color-chip-nej-bg)", label: "Motsäger" },
+  unclear:     { color: "var(--color-chip-neutral-fg)", bg: "var(--color-chip-neutral-bg)", label: "Oklart" },
 };
 
 function PromiseCard({ promise }: { promise: PromiseWithMatches }) {
@@ -40,7 +40,7 @@ function PromiseCard({ promise }: { promise: PromiseWithMatches }) {
               <div key={m.voteId} className="flex items-start justify-between gap-3">
                 <Link
                   to={`/votes/${m.beteckning}/${m.forslagspunkt}`}
-                  className="text-xs text-on-surface-variant hover:text-primary transition-colors truncate flex-1"
+                  className="text-xs text-on-surface-variant hover:text-link transition-colors truncate flex-1"
                 >
                   {m.documentTitle || `${m.beteckning} punkt ${m.forslagspunkt}`}
                 </Link>
@@ -412,7 +412,7 @@ export function PoliticianPage() {
       {/* ── Profile header ─────────────────────────────────────────── */}
       <div
         className="rounded-xl p-6 mt-3 mb-5"
-        style={{ background: pc?.light ?? "#f5f5f5" }}
+        style={{ background: pc?.light ?? "var(--color-surface-low)" }}
       >
         <div className="flex items-center gap-5">
           {politician.imageUrl ? (

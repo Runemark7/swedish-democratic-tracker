@@ -258,7 +258,7 @@ export function VoteBar({ ja, nej, avstar, franvarande, total, partyColor }: {
         )}
         {avstar > 0 && (
           <div className="flex items-center justify-center bg-amber-400" style={{ width: pct(avstar) }}>
-            {avstar / total > 0.1 && <span className="text-[10px] font-bold text-on-surface">{avstar}</span>}
+            {avstar / total > 0.1 && <span className="text-[10px] font-bold" style={{ color: "#191c1e" }}>{avstar}</span>}
           </div>
         )}
         {franvarande > 0 && (
@@ -272,7 +272,7 @@ export function VoteBar({ ja, nej, avstar, franvarande, total, partyColor }: {
           { label: "Ja", count: ja, color: partyColor ?? "#16a34a" },
           { label: "Nej", count: nej, color: "#ef4444" },
           { label: "Avstår", count: avstar, color: "#fbbf24" },
-          { label: "Frånv.", count: franvarande, color: "#d1d5db" },
+          { label: "Frånv.", count: franvarande, color: "var(--color-absent)" },
         ].map(item => (
           <div key={item.label} className="flex items-center gap-1">
             <div className="w-2 h-2 rounded-sm" style={{ background: item.color }} />

@@ -18,7 +18,7 @@ export function DocumentLinks({ documents, compact }: Props) {
           href={doc.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-primary hover:underline no-underline transition-colors"
+          className="inline-flex items-center gap-1 text-link hover:underline no-underline transition-colors"
           style={{ fontSize: compact ? "10px" : "11px" }}
           title={doc.description}
         >

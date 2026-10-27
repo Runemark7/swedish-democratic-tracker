@@ -30,7 +30,7 @@ function PoliticianCard({ p }: { p: PoliticianSummary }) {
 
       {/* Name + constituency */}
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm text-on-surface truncate group-hover:text-primary transition-colors">
+        <p className="font-semibold text-sm text-on-surface truncate group-hover:text-link transition-colors">
           {p.firstName} {p.lastName}
         </p>
         <p className="text-xs text-on-surface-variant truncate">{p.constituency}</p>

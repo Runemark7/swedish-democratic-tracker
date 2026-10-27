@@ -43,7 +43,7 @@ export function SwedenRegionMap({ regions, className, highlightedCode }: Props) 
                 d={p.d}
                 fill="var(--color-primary)"
                 fillOpacity={active ? 0.95 : known ? 0.55 : 0.25}
-                stroke="var(--color-surface-lowest)"
+                stroke="var(--color-map-stroke)"
                 strokeWidth={1.2}
                 vectorEffect="non-scaling-stroke"
                 style={{

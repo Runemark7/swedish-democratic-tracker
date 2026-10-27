@@ -47,7 +47,7 @@ export function VotesPage() {
               style={{ background: "var(--color-surface-lowest)" }}
             >
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
+                <p className="text-sm font-semibold text-on-surface truncate group-hover:text-link transition-colors">
                   {v.documentTitle || `${v.beteckning} punkt ${v.forslagspunkt}`}
                   <SourceMarker sourceId="riksdagen" />
                 </p>
@@ -84,7 +84,7 @@ export function VotesPage() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="text-xs font-semibold text-primary disabled:text-on-surface-variant disabled:cursor-not-allowed cursor-pointer"
+            className="text-xs font-semibold text-link disabled:text-on-surface-variant disabled:cursor-not-allowed cursor-pointer"
           >
             ← Föregående
           </button>
@@ -94,7 +94,7 @@ export function VotesPage() {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="text-xs font-semibold text-primary disabled:text-on-surface-variant disabled:cursor-not-allowed cursor-pointer"
+            className="text-xs font-semibold text-link disabled:text-on-surface-variant disabled:cursor-not-allowed cursor-pointer"
           >
             Nästa →
           </button>

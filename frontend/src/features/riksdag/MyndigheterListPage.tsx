@@ -134,7 +134,7 @@ export function MyndigheterListPage() {
               style={{
                 padding: "6px 10px",
                 background: underGov === v ? "var(--color-accent)" : "var(--color-sdt-surface)",
-                color: underGov === v ? "var(--color-on-primary, #fff)" : "var(--color-fg)",
+                color: underGov === v ? "var(--color-on-accent)" : "var(--color-fg)",
                 border: "1px solid var(--color-border)",
                 cursor: "pointer",
                 letterSpacing: "0.05em",
