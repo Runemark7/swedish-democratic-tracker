@@ -27,6 +27,10 @@ export function daysBetween(earlier, later) {
   return Math.floor((b - a) / 86_400_000);
 }
 
+// Calendar day, compared below as midnight UTC. The API's latestDate is the
+// stored DATE (speeches) or the UTC day of system_datum (votes), not a
+// session-local midnight. Taking the first ten characters keeps a date-only
+// value on that day; parsing it in local time would move it.
 function dateOnly(value) {
   if (!value || typeof value !== "string") return null;
   const day = value.slice(0, 10);

@@ -1,6 +1,7 @@
 package ingestion
 
 import (
+	"strings"
 	"testing"
 	"time"
 )
@@ -67,5 +68,46 @@ func TestAlerts_QuietWhenDataAndJobsAreRecent(t *testing.T) {
 	}, now)
 	if len(alerts) != 0 {
 		t.Fatalf("alerts = %v, want none", alerts)
+	}
+}
+
+// The freshness report and this alert must name the stored calendar day.
+// A speech dated 2026-10-21 is midnight UTC once the DATE is scanned without
+// a session-timezone cast. Age is measured from that same midnight, which is
+// how the GitHub check compares the date strings.
+func TestAlerts_NamesTheStoredSpeechDay(t *testing.T) {
+	now := time.Date(2026, 12, 27, 6, 0, 0, 0, time.UTC)
+	speech := time.Date(2026, 10, 21, 0, 0, 0, 0, time.UTC)
+	alerts := Alerts(Snapshot{SpeechesLatest: &speech}, now)
+	var speechAlert string
+	for _, alert := range alerts {
+		if strings.HasPrefix(alert, "speeches:") {
+			speechAlert = alert
+		}
+	}
+	if !strings.Contains(speechAlert, "2026-10-21") || strings.Contains(speechAlert, "2026-10-20") {
+		t.Fatalf("speech alert = %q, want the stored day 2026-10-21", speechAlert)
+	}
+}
+
+// Midnight of a DATE in Europe/Stockholm is the previous evening in UTC
+// (CEST on 2026-10-21, so 22:00Z). Formatting that instant prints 2026-10-20.
+// The repository must not hand this instant to the alert or the JSON report.
+func TestAlerts_LocalMidnightPrintsThePreviousUTCDay(t *testing.T) {
+	stockholm, err := time.LoadLocation("Europe/Stockholm")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cast := time.Date(2026, 10, 21, 0, 0, 0, 0, stockholm)
+	now := time.Date(2026, 12, 27, 6, 0, 0, 0, time.UTC)
+	alerts := Alerts(Snapshot{SpeechesLatest: &cast}, now)
+	var speechAlert string
+	for _, alert := range alerts {
+		if strings.HasPrefix(alert, "speeches:") {
+			speechAlert = alert
+		}
+	}
+	if !strings.Contains(speechAlert, "2026-10-20") {
+		t.Fatalf("speech alert = %q, want 2026-10-20 from the timestamptz cast", speechAlert)
 	}
 }
