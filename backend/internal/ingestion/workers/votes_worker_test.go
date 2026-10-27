@@ -241,6 +241,7 @@ func TestCurrentRiksmote(t *testing.T) {
 		"2026-09-20": "2026/27",
 		"2026-01-15": "2025/26",
 		"2022-09-15": "2022/23",
+		"2030-10-15": "2030/31",
 	}
 	for in, want := range cases {
 		d, _ := time.Parse("2006-01-02", in)

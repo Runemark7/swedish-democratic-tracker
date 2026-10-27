@@ -18,6 +18,22 @@ func NewCoverageRepository(db *pgxpool.Pool) *CoverageRepository {
 	return &CoverageRepository{db: db}
 }
 
+// CurrentMandateCode is the parliament that has opened, preferring the latest
+// start date. The next election is a new mandate_periods row; this query is
+// what makes the site follow it.
+func (r *CoverageRepository) CurrentMandateCode(ctx context.Context) (string, error) {
+	var code string
+	err := r.db.QueryRow(ctx, `
+		SELECT code FROM mandate_periods
+		WHERE start_date <= CURRENT_DATE
+		ORDER BY start_date DESC
+		LIMIT 1`).Scan(&code)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", nil
+	}
+	return code, err
+}
+
 // GetRecordCoverage reports how much of the given mandate period we hold.
 //
 // Only the riksmöten belonging to the period are counted, so the figure cannot

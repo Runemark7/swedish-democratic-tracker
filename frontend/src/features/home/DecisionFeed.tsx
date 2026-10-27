@@ -9,6 +9,22 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const FEED_COUNT = 40;
 
+/** A row is decided only when the API says so and Riksdagen's own fields agree.
+ *  `beslutsdag` is filled for planned items (the scheduled day), so a future
+ *  date or status "planerat" is not a decision even if `decided` is stale. */
+function rowDecided(item: { decided: boolean; status: string; decisionDate: string }): boolean {
+  if (item.status.trim().toLowerCase() === "planerat") return false;
+  if (item.decisionDate && item.decisionDate > localISODate()) return false;
+  return item.decided;
+}
+
+function localISODate(d = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 /**
  * A complete, dated feed of recent betänkanden across every committee — the
  * front page's "what just happened" surface (#88). The betänkande is the unit
@@ -66,7 +82,7 @@ export function DecisionFeed() {
   let newest: string | null = null;
   let plannedCount = 0;
   for (const item of items) {
-    if (!item.decided) {
+    if (!rowDecided(item)) {
       plannedCount += 1;
       continue;
     }
@@ -118,9 +134,9 @@ export function DecisionFeed() {
       {plannedCount > 0 && (
         <p style={{ ...textStyle, fontSize: 12, marginBottom: 14 }}>
           {plannedCount === 1
-            ? "Ett av betänkandena nedan är planerat och ännu inte beslutat."
-            : `${plannedCount} av betänkandena nedan är planerade och ännu inte beslutade.`}{" "}
-          De saknar beslutsdatum tills riksdagen har beslutat.
+            ? "Ett av betänkandena nedan är ännu inte beslutat."
+            : `${plannedCount} av betänkandena nedan är ännu inte beslutade.`}{" "}
+          Ett ifyllt beslutsdatum kan vara dagen kammaren planerar att besluta.
         </p>
       )}
 
@@ -178,11 +194,13 @@ export function DecisionFeed() {
             // A decided row is dated by its decision. A planned one states its
             // status instead — showing `datum` there would date an event that
             // has not happened.
-            const when = item.decided ? (
+            const when = rowDecided(item) ? (
               <span style={metaStyle}>{swedishDate(item.decisionDate)}</span>
             ) : (
               <span style={{ ...metaStyle, fontStyle: "italic" }}>
-                ännu inte beslutat
+                {item.decisionDate
+                  ? `planerad beslutsdag ${swedishDate(item.decisionDate)}`
+                  : "ännu inte beslutat"}
               </span>
             );
 

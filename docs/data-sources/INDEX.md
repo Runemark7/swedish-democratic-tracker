@@ -27,6 +27,7 @@ skapar `SourceRegistry.generated.ts`.
 | [scb-aku-arbetsloshet](./scb-aku-arbetsloshet.md) | SCB AKU AM0401 — arbetslöshetstal | api | nationell KPI-strip (/riksdag) |
 | [scb-kpi-inflation](./scb-kpi-inflation.md) | SCB KPI PR0101 — inflationstakt | api | nationell KPI-strip (/riksdag) |
 | [utskott-utgiftsomrade](./utskott-utgiftsomrade.md) | Utskottens utgiftsområden (riksdagsordningen) | seed | utgiftsområden per utskott (/committees) |
+| [valmyndigheten-riksdagsval](./valmyndigheten-riksdagsval.md) | Valmyndigheten — riksdagsmandat 2026 | seed | kammarens mandat (/riksdag) |
 
 För att lägga till en ny källa: kopiera `_TEMPLATE.md`, fyll i, och kör
 `npm run sync:data-sources` i `frontend/`. Se även CLAUDE.md → "Data

@@ -1,5 +1,6 @@
 import type { Party } from "@/types/democracy";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { swedishDate } from "@/shared/dates";
 
 interface MandateCompositionProps {
   ruling: {
@@ -7,6 +8,7 @@ interface MandateCompositionProps {
     support?: Party[];
     opposition: Party[];
     type: string;
+    validFrom?: string;
   };
   totalSeats: number;
   sourceId?: string;
@@ -170,6 +172,38 @@ export function MandateComposition({
         }}
       >
         Mandatdata saknas.
+      </div>
+    );
+  }
+
+  // A caretaker government has no appointed coalition. Drawing the outgoing
+  // cabinet's partners as "styre" and everyone else as "opposition" would be
+  // a claim about a government that has not been formed. Seats are listed
+  // on their own; the type label says what the row is.
+  if (ruling.type === "Övergångsregering") {
+    const all = [...ruling.parties, ...(ruling.support ?? []), ...ruling.opposition]
+      .slice()
+      .sort((a, b) => b.seats - a.seats || a.short.localeCompare(b.short, "sv"));
+    const since = ruling.validFrom ? swedishDate(ruling.validFrom.slice(0, 10)) : null;
+    return (
+      <div>
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: 12,
+            color: "var(--color-fg-muted)",
+            margin: "0 0 12px",
+            lineHeight: 1.45,
+          }}
+        >
+          {since ? `Övergångsregering sedan ${since}. ` : "Övergångsregering. "}
+          Siffrorna är mandat i kammaren efter valet 2026, inte ett utsett styre.
+        </p>
+        <BlocLabel label="MANDAT" total={totalSeats} accent totalColor="var(--color-fg)" />
+        <PartyList parties={all} />
+        <div style={{ marginTop: 10, textAlign: "right" }}>
+          <SourceMarker sourceId={sourceId} />
+        </div>
       </div>
     );
   }

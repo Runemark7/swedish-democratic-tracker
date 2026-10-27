@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useRiksdag, useRiksdagBudgetHistory } from "@/hooks/useDemocracy";
+import { useRecordCoverage, useRiksdag, useRiksdagBudgetHistory } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { MandateComposition, Pill, Trend } from "@/components/charts";
 import { SourceMarker } from "@/components/sources/SourceMarker";
@@ -336,6 +336,7 @@ export function RiksdagPage() {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { data, isLoading } = useRiksdag();
   const { data: budgetHistory = [] } = useRiksdagBudgetHistory();
+  const { data: coverage } = useRecordCoverage();
 
   if (isLoading || !data) return <Skeleton />;
 
@@ -409,7 +410,8 @@ export function RiksdagPage() {
               display: isMobile ? "none" : undefined,
             }}
           >
-            Sveriges nationella parlament — 349 ledamöter · Mandatperiod 2022–2026
+            Sveriges nationella parlament — 349 ledamöter
+            {coverage?.mandate.label ? ` · ${coverage.mandate.label}` : ""}
           </div>
         </div>
       </div>
@@ -535,7 +537,7 @@ export function RiksdagPage() {
             MANDAT · KAMMARENS SAMMANSÄTTNING
           </div>
 
-          <MandateComposition ruling={ruling} totalSeats={totalSeats} sourceId="riksdagen" />
+          <MandateComposition ruling={ruling} totalSeats={totalSeats} sourceId="valmyndigheten-riksdagsval" />
         </div>
 
         {/* Right card — MYNDIGHETER */}

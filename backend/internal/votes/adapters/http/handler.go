@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 
@@ -313,7 +314,7 @@ func (h *Handler) recent(w http.ResponseWriter, r *http.Request) {
 			Organ:        d.Organ,
 			Date:         d.Date,
 			Beteckning:   d.Beteckning,
-			Decided:      d.Decided(),
+			Decided:      d.Decided(time.Now()),
 			DecisionDate: d.DecisionDate,
 			Status:       d.Status,
 		})

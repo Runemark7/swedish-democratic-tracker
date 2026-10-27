@@ -249,10 +249,11 @@ function mapGovernment(gov: RiksdagGovernment): LevelData["ruling"] {
     name: p.name, short: p.short, seats: p.seats, color: p.color,
   });
   return {
-    type: gov.typeLabel,
-    parties: gov.parties.map(toParty),
-    support: gov.support.map(toParty),
-    opposition: gov.opposition.map(toParty),
+    type: gov.type,
+    validFrom: gov.validFrom,
+    parties: (gov.parties ?? []).map(toParty),
+    support: (gov.support ?? []).map(toParty),
+    opposition: (gov.opposition ?? []).map(toParty),
   };
 }
 

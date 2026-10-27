@@ -242,21 +242,21 @@ func (c *Client) fetchDocumentList(ctx context.Context, organParam string, count
 		return nil, fmt.Errorf("riksdagen dokumentlista API returned %d", resp.StatusCode)
 	}
 
-	// beslutsdag and status are decoded because datum alone cannot tell a
-	// decided betänkande from a planned one, and the list carries both. Dropping
-	// them is what let planned betänkanden for a coming riksmöte render as the
-	// most recent decisions. `beslutad` is deliberately not decoded: it arrives
-	// with an inconsistent JSON type, and an empty beslutsdag answers the same
-	// question without the guesswork.
+	// beslutsdag, status and beslutad are decoded because datum alone cannot
+	// tell a decided betänkande from a planned one. beslutad arrives as a
+	// JSON string, number or bool; parseBeslutad accepts all three. A non-empty
+	// beslutsdag is not enough: planned rows carry the day the chamber is
+	// scheduled to vote, with beslutad 0.
 	var payload struct {
 		Dokumentlista struct {
 			Dokument []struct {
-				Titel      string `json:"titel"`
-				Organ      string `json:"organ"`
-				Datum      string `json:"datum"`
-				Beteckning string `json:"beteckning"`
-				Beslutsdag string `json:"beslutsdag"`
-				Status     string `json:"status"`
+				Titel      string          `json:"titel"`
+				Organ      string          `json:"organ"`
+				Datum      string          `json:"datum"`
+				Beteckning string          `json:"beteckning"`
+				Beslutsdag string          `json:"beslutsdag"`
+				Status     string          `json:"status"`
+				Beslutad   json.RawMessage `json:"beslutad"`
 			} `json:"dokument"`
 		} `json:"dokumentlista"`
 	}
@@ -267,15 +267,47 @@ func (c *Client) fetchDocumentList(ctx context.Context, organParam string, count
 	docs := make([]ports.RiksdagDocument, 0, len(payload.Dokumentlista.Dokument))
 	for _, d := range payload.Dokumentlista.Dokument {
 		docs = append(docs, ports.RiksdagDocument{
-			Title:        d.Titel,
-			Organ:        d.Organ,
-			Date:         d.Datum,
-			Beteckning:   d.Beteckning,
-			DecisionDate: d.Beslutsdag,
-			Status:       d.Status,
+			Title:          d.Titel,
+			Organ:          d.Organ,
+			Date:           d.Datum,
+			Beteckning:     d.Beteckning,
+			DecisionDate:   d.Beslutsdag,
+			Status:         d.Status,
+			ChamberDecided: parseBeslutad(d.Beslutad),
 		})
 	}
 	return docs, nil
+}
+
+// parseBeslutad reads Riksdagen's beslutad flag. The field is not one JSON
+// type: the live feed uses the strings "0" and "1", and older payloads have
+// used numbers and bools. nil means the field was absent or not one of those.
+func parseBeslutad(raw json.RawMessage) *bool {
+	trimmed := strings.TrimSpace(string(raw))
+	if trimmed == "" || trimmed == "null" {
+		return nil
+	}
+	var b bool
+	if err := json.Unmarshal(raw, &b); err == nil {
+		return &b
+	}
+	var n float64
+	if err := json.Unmarshal(raw, &n); err == nil {
+		v := n != 0
+		return &v
+	}
+	var s string
+	if err := json.Unmarshal(raw, &s); err == nil {
+		switch strings.TrimSpace(strings.ToLower(s)) {
+		case "1", "true":
+			v := true
+			return &v
+		case "0", "false":
+			v := false
+			return &v
+		}
+	}
+	return nil
 }
 
 // FetchDocumentStatus fetches /dokumentstatus/{dok_id}.json and parses proposal origin.

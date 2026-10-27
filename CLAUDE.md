@@ -170,6 +170,7 @@ graph TD
         AKU["SCB AKU AM0401\napi.scb.se — arbetslöshetstal"]
         KPIINF["SCB KPI PR0101\napi.scb.se — inflationstakt årsförändring"]
         RO["Riksdagsordningen 2014:801\nBilaga tb 7.5.1 — utskott→utgiftsområde"]
+        VM["Valmyndigheten\nval.se — riksdagsmandat (seed)"]
     end
 
     DB[(PostgreSQL 17)]
@@ -185,6 +186,7 @@ graph TD
     RS -->|"Region strip: N60008 N63016 N63007 N79173 N79179 N60404 N85012\nMunicipality strip: N00900 N03102 N03106 N15428 N00708\nMunicipality spending: N11004 N15028 N17014 N20014 N30005 N07037 N09022 N05011 N45014"| KO
     RS -->|population trend| SC
     RS -->|procurement| TED
+    RKS -->|riksdagsmandat seed| VM
     RKS -->|agency expenditure ZIP/CSV| SK
     RKS -->|KLS headcount PxWeb POST| KLS
     CS -->|statutory allocation| RO

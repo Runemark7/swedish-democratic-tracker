@@ -93,6 +93,7 @@ import (
 
 	// Ingestion
 	"riksdagskollen/internal/ingestion"
+	ingestionHTTP "riksdagskollen/internal/ingestion/adapters/http"
 	ingestionPG "riksdagskollen/internal/ingestion/adapters/postgres"
 	"riksdagskollen/internal/ingestion/workers"
 
@@ -222,28 +223,46 @@ func main() {
 	r.Use(httprate.LimitByIP(100, time.Minute))
 	r.Use(corsMiddleware(allowedOrigin))
 
+	// Liveness only. A database blip must not restart the pod: readiness is
+	// /readyz, which pings the database and drops the pod out of service
+	// until the ping succeeds again.
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, `{"status":"ok"}`)
 	})
+	r.Get("/readyz", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		w.Header().Set("Content-Type", "application/json")
+		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+		defer cancel()
+		if err := db.Ping(ctx); err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			fmt.Fprint(w, `{"status":"unavailable"}`)
+			return
+		}
+		fmt.Fprint(w, `{"status":"ok"}`)
+	})
 
-	r.Route("/api", func(r chi.Router) {
-		polHandler.Routes(r)
-		voteHandler.Routes(r)
-		speechHandler.Routes(r)
-		goalsHandler.Routes(r)
-		promisesHandler.Routes(r)
-		budgetHandler.Routes(r)
-		contextHandler.Routes(r)
-		regionsHandler.Routes(r)
-		riksdagHandler.Routes(r)
-		partiesHandler.Routes(r)
-		ministersHandler.Routes(r)
-		committeesHandler.Routes(r)
+	var apiRouter chi.Router
+	r.Route("/api", func(api chi.Router) {
+		apiRouter = api
+		polHandler.Routes(api)
+		voteHandler.Routes(api)
+		speechHandler.Routes(api)
+		goalsHandler.Routes(api)
+		promisesHandler.Routes(api)
+		budgetHandler.Routes(api)
+		contextHandler.Routes(api)
+		regionsHandler.Routes(api)
+		riksdagHandler.Routes(api)
+		partiesHandler.Routes(api)
+		ministersHandler.Routes(api)
+		committeesHandler.Routes(api)
 
 		// TODO: return aggregate 24h decision counts per level for the homepage pulse strip.
 		// Shape: { riksdag: number, region: number, kommun: number, total: number, buckets: number[] }
-		r.Get("/summary", func(w http.ResponseWriter, _ *http.Request) {
+		api.Get("/summary", func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprint(w, `{"ok":true}`)
 		})
@@ -252,8 +271,9 @@ func main() {
 	// -- Ingestion scheduler --
 	cursorRepo := ingestionPG.NewCursorRepository(db)
 	ingestionRunsRepo := ingestionPG.NewIngestionRunRepository(db)
+	freshnessRepo := ingestionPG.NewFreshnessRepository(db)
 	pollWorker := workers.NewPoliticiansWorker(polSvc)
-	speechWorker := workers.NewSpeechesWorker(speechSvc, cursorRepo)
+	speechWorker := workers.NewSpeechesWorker(speechSvc, cursorRepo).WithMandates(ingestionPG.NewMandateRepository(db))
 	enrichSpeechesWorker := workers.NewEnrichSpeechesWorker(speechSvc, 200)
 	voteWorker := workers.NewVotesWorker(voteSvc, cursorRepo)
 	enrichWorker := workers.NewEnrichOriginsWorker(voteSvc)
@@ -268,6 +288,8 @@ func main() {
 	nationalKpisWorker := workers.NewNationalKpisWorker(riksdagSCBMacro.NewClient(), kpiRepo)
 
 	sched := ingestion.NewScheduler()
+	sched.SetRunRecorder(ingestionRunsRepo)
+	sched.SetFreshness(freshnessRepo)
 	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker, coverageWorker); err != nil {
 		slog.Error("failed to register ingestion workers", "error", err)
 		os.Exit(1)
@@ -307,13 +329,17 @@ func main() {
 		slog.Error("failed to register proposals worker", "error", err)
 		os.Exit(1)
 	}
+	apiRouter.Get("/ingestion/freshness", ingestionHTTP.NewHandler(freshnessRepo, sched.Catalog()).ServeFreshness)
 	sched.Start()
 	defer sched.Stop()
 
 	// -- Initial data sync (background) --
 	if envOr("INITIAL_SYNC", "true") == "true" {
 		go func() {
-			syncCtx, syncCancel := context.WithTimeout(context.Background(), 20*time.Minute)
+			// Sequential chain, one timeout per worker. 20 minutes for the
+			// whole chain cancelled every worker after the first slow one,
+			// including the speech catch-up a deploy relies on.
+			syncCtx, syncCancel := context.WithTimeout(context.Background(), 3*time.Hour)
 			defer syncCancel()
 			if err := sched.RunInitialSync(syncCtx); err != nil {
 				slog.Error("initial sync failed", "error", err)
