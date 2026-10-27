@@ -372,15 +372,21 @@ func toSlug(name string) string {
 	return b.String()
 }
 
-// MandateCode is the period the site currently presents. When the 2026-2030
-// period opens this becomes a lookup rather than a constant.
-const MandateCode = "2022-2026"
-
-// GetRecordCoverage reports how much of the mandate record the site holds, so
-// the figure can be stated where the record is used rather than implied.
+// GetRecordCoverage reports how much of the open mandate the site holds.
+//
+// The period is the latest one whose start date has passed, read from
+// mandate_periods. A constant here is what kept the site presenting
+// 2022–2026 after that parliament had ended.
 func (s *Service) GetRecordCoverage(ctx context.Context) (*domain.RecordCoverage, error) {
 	if s.coverageRepo == nil {
 		return nil, nil
 	}
-	return s.coverageRepo.GetRecordCoverage(ctx, MandateCode)
+	code, err := s.coverageRepo.CurrentMandateCode(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if code == "" {
+		return nil, nil
+	}
+	return s.coverageRepo.GetRecordCoverage(ctx, code)
 }

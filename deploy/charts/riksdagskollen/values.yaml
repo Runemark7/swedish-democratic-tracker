@@ -26,15 +26,18 @@ backend:
     allowPrivilegeEscalation: false
     capabilities:
       drop: [ALL]
+  # Liveness must not touch the database. A blip would restart the pod,
+  # and a restart that cannot reach the database restarts again.
   livenessProbe:
     httpGet:
       path: /healthz
       port: 8080
     initialDelaySeconds: 10
     periodSeconds: 15
+  # Readiness pings the database and only removes the pod from service.
   readinessProbe:
     httpGet:
-      path: /healthz
+      path: /readyz
       port: 8080
     initialDelaySeconds: 5
     periodSeconds: 10

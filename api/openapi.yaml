@@ -197,14 +197,64 @@ paths:
     get:
       operationId: getHealth
       tags: [health]
-      summary: Health check
+      summary: Liveness check
+      description: >-
+        Process is up. Does not touch the database. Served at the process
+        root (`/healthz`), like the other health routes, and used as the
+        Kubernetes liveness probe so a database blip does not restart the pod.
       responses:
         "200":
-          description: Service is healthy
+          description: Process is up
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
+
+  /readyz:
+    get:
+      operationId: getReady
+      tags: [health]
+      summary: Readiness check
+      description: >-
+        Database ping. Served at the process root (`/readyz`). Used as the
+        Kubernetes readiness probe: a failed ping removes the pod from
+        service and does not restart it.
+      responses:
+        "200":
+          description: Database accepted a ping
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          description: Database did not accept a ping
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadyResponse"
+
+  /ingestion/freshness:
+    get:
+      operationId: getIngestionFreshness
+      tags: [health]
+      summary: Newest speech and vote dates, and the last run of each ingestion job
+      description: >-
+        Public operational report. Dates are the newest record held, not an
+        ingest timestamp. `alerts` is what the daily chain also logs at error
+        when a threshold is crossed. Worker error text is not included.
+      responses:
+        "200":
+          description: Freshness report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IngestionFreshness"
+        "500":
+          description: The report could not be read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /parties:
     get:
@@ -1342,6 +1392,77 @@ components:
         version:
           type: string
 
+    ReadyResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok, unavailable]
+
+    IngestionFreshness:
+      type: object
+      required: [generatedAt, speeches, votes, jobs, alerts]
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        speeches:
+          $ref: "#/components/schemas/FreshnessSeries"
+        votes:
+          $ref: "#/components/schemas/FreshnessSeries"
+        jobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/IngestionJobFreshness"
+        alerts:
+          type: array
+          description: >-
+            Staleness conditions the daily chain logs at error. Empty when
+            nothing has crossed a threshold. A summer recess can make the
+            content alerts fire while Riksdagen is equally quiet; the external
+            check compares these dates with Riksdagen before opening an issue.
+          items:
+            type: string
+
+    FreshnessSeries:
+      type: object
+      required: [latestDate]
+      properties:
+        latestDate:
+          type: string
+          format: date
+          nullable: true
+          description: Newest record held, as a calendar date. Null when the table is empty.
+        latestAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Present for votes, whose timestamp is system_datum. Absent for speeches, which are stored as a date.
+
+    IngestionJobFreshness:
+      type: object
+      required: [name, schedule, lastSuccessAt, lastFinishedAt, lastStatus]
+      properties:
+        name:
+          type: string
+          example: fetch-speeches
+        schedule:
+          type: string
+          enum: [daily, weekly]
+        lastSuccessAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastFinishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastStatus:
+          type: string
+          nullable: true
+          enum: [success, error, running]
+
     ErrorResponse:
       type: object
       required: [error]
@@ -2372,17 +2493,20 @@ components:
         decided:
           type: boolean
           description: >-
-            Whether the chamber has decided this betänkande. The list carries
-            betänkanden that are only planned, and because it sorts on `date`
-            they appear among the newest — 15 of 40 on 2026-08-14, five of them
-            in the first eight. A caller that ignores this field will present a
-            future event as a past one.
+            Whether the chamber has decided this betänkande. Riksdagen's
+            `beslutad` flag when the payload has one (0 or 1; the JSON type
+            varies). A non-empty `decisionDate` is not enough: on 2026-10-27
+            rows with status "planerat" carried a December `decisionDate` and
+            `beslutad` 0, and published reports the chamber has not voted on
+            yet did the same. When the flag is absent, this is false for
+            status "planerat" and for a `decisionDate` after today.
           example: true
         decisionDate:
           type: string
           description: >-
-            Riksdagen's `beslutsdag`. Empty when the betänkande has not been
-            decided, which is the authoritative signal for `decided`.
+            Riksdagen's `beslutsdag`. Filled for planned items with the day
+            the chamber is scheduled to vote, so it is not the signal for
+            `decided`. Empty when Riksdagen has no date at all.
           example: "2026-08-13"
         status:
           type: string

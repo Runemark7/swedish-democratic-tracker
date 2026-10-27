@@ -147,8 +147,51 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Health check */
+        /**
+         * Liveness check
+         * @description Process is up. Does not touch the database. Served at the process root (`/healthz`), like the other health routes, and used as the Kubernetes liveness probe so a database blip does not restart the pod.
+         */
         get: operations["getHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/readyz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Readiness check
+         * @description Database ping. Served at the process root (`/readyz`). Used as the Kubernetes readiness probe: a failed ping removes the pod from service and does not restart it.
+         */
+        get: operations["getReady"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ingestion/freshness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Newest speech and vote dates, and the last run of each ingestion job
+         * @description Public operational report. Dates are the newest record held, not an ingest timestamp. `alerts` is what the daily chain also logs at error when a threshold is crossed. Worker error text is not included.
+         */
+        get: operations["getIngestionFreshness"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1039,6 +1082,43 @@ export interface components {
             status: "ok";
             version?: string;
         };
+        ReadyResponse: {
+            /** @enum {string} */
+            status: "ok" | "unavailable";
+        };
+        IngestionFreshness: {
+            /** Format: date-time */
+            generatedAt: string;
+            speeches: components["schemas"]["FreshnessSeries"];
+            votes: components["schemas"]["FreshnessSeries"];
+            jobs: components["schemas"]["IngestionJobFreshness"][];
+            /** @description Staleness conditions the daily chain logs at error. Empty when nothing has crossed a threshold. A summer recess can make the content alerts fire while Riksdagen is equally quiet; the external check compares these dates with Riksdagen before opening an issue. */
+            alerts: string[];
+        };
+        FreshnessSeries: {
+            /**
+             * Format: date
+             * @description Newest record held, as a calendar date. Null when the table is empty.
+             */
+            latestDate: string | null;
+            /**
+             * Format: date-time
+             * @description Present for votes, whose timestamp is system_datum. Absent for speeches, which are stored as a date.
+             */
+            latestAt?: string | null;
+        };
+        IngestionJobFreshness: {
+            /** @example fetch-speeches */
+            name: string;
+            /** @enum {string} */
+            schedule: "daily" | "weekly";
+            /** Format: date-time */
+            lastSuccessAt: string | null;
+            /** Format: date-time */
+            lastFinishedAt: string | null;
+            /** @enum {string|null} */
+            lastStatus: "success" | "error" | "running" | null;
+        };
         ErrorResponse: {
             error: string;
             detail?: string;
@@ -1554,12 +1634,12 @@ export interface components {
             /** @example SoU1 */
             beteckning: string;
             /**
-             * @description Whether the chamber has decided this betänkande. The list carries betänkanden that are only planned, and because it sorts on `date` they appear among the newest — 15 of 40 on 2026-08-14, five of them in the first eight. A caller that ignores this field will present a future event as a past one.
+             * @description Whether the chamber has decided this betänkande. Riksdagen's `beslutad` flag when the payload has one (0 or 1; the JSON type varies). A non-empty `decisionDate` is not enough: on 2026-10-27 rows with status "planerat" carried a December `decisionDate` and `beslutad` 0, and published reports the chamber has not voted on yet did the same. When the flag is absent, this is false for status "planerat" and for a `decisionDate` after today.
              * @example true
              */
             decided: boolean;
             /**
-             * @description Riksdagen's `beslutsdag`. Empty when the betänkande has not been decided, which is the authoritative signal for `decided`.
+             * @description Riksdagen's `beslutsdag`. Filled for planned items with the day the chamber is scheduled to vote, so it is not the signal for `decided`. Empty when Riksdagen has no date at all.
              * @example 2026-08-13
              */
             decisionDate: string;
@@ -2243,13 +2323,71 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Service is healthy */
+            /** @description Process is up */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    getReady: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Database accepted a ping */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+            /** @description Database did not accept a ping */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadyResponse"];
+                };
+            };
+        };
+    };
+    getIngestionFreshness: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Freshness report */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngestionFreshness"];
+                };
+            };
+            /** @description The report could not be read */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

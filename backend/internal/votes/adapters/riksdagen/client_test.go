@@ -183,7 +183,8 @@ func TestFetchRecentBetankanden_DistinguishesPlannedFromDecided(t *testing.T) {
 	}
 
 	decided, planned := docs[0], docs[1]
-	if !decided.Decided() {
+	asOf := time.Date(2026, 8, 14, 0, 0, 0, 0, time.UTC)
+	if !decided.Decided(asOf) {
 		t.Error("UbU30 has a beslutsdag but reports not decided")
 	}
 	if decided.DecisionDate != "2026-08-13" {
@@ -196,7 +197,7 @@ func TestFetchRecentBetankanden_DistinguishesPlannedFromDecided(t *testing.T) {
 		t.Errorf("status = %q, want \"Webbpublicering\"", decided.Status)
 	}
 
-	if planned.Decided() {
+	if planned.Decided(asOf) {
 		t.Error("AU9 has no beslutsdag but reports decided — a planned betänkande " +
 			"would render as a decision that has already happened")
 	}
@@ -205,6 +206,40 @@ func TestFetchRecentBetankanden_DistinguishesPlannedFromDecided(t *testing.T) {
 	}
 	if planned.Status != "planerat" {
 		t.Errorf("planned status = %q, want \"planerat\"", planned.Status)
+	}
+}
+
+// Observed on data.riksdagen.se on 2026-10-27. Planned rows carry beslutsdag
+// (the scheduled decision day) and beslutad "0". Published reports the chamber
+// has not voted on yet do the same, with status "Webbpublicering". A decided
+// row is beslutad "1". The flag is a string here; numbers and bools are accepted
+// because the type has not been stable.
+func TestFetchRecentBetankanden_BeslutadNotBeslutsdag(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"dokumentlista":{"dokument":[
+			{"titel":"Planned","organ":"SfU","datum":"2026-10-26","beteckning":"SfU4",
+			 "beslutsdag":"2026-12-09","status":"planerat","beslutad":"0"},
+			{"titel":"Scheduled","organ":"KU","datum":"2026-10-23","beteckning":"KU4",
+			 "beslutsdag":"2026-11-04","status":"Webbpublicering","beslutad":"0"},
+			{"titel":"Decided","organ":"JuU","datum":"2026-10-20","beteckning":"JuU2",
+			 "beslutsdag":"2026-10-21","status":"Webbpublicering","beslutad":"1"},
+			{"titel":"Numeric","organ":"FiU","datum":"2026-10-20","beteckning":"FiU12",
+			 "beslutsdag":"2026-10-21","status":"Webbpublicering","beslutad":1}
+		]}}`))
+	}))
+	defer srv.Close()
+
+	docs, err := newTestClient(srv.URL).FetchRecentBetankanden(context.Background(), 40)
+	if err != nil {
+		t.Fatalf("FetchRecentBetankanden: %v", err)
+	}
+	now := time.Date(2026, 10, 27, 0, 0, 0, 0, time.UTC)
+	if docs[0].Decided(now) || docs[1].Decided(now) {
+		t.Errorf("planned/scheduled rows report decided: %+v %+v", docs[0], docs[1])
+	}
+	if !docs[2].Decided(now) || !docs[3].Decided(now) {
+		t.Errorf("decided rows report not decided: %+v %+v", docs[2], docs[3])
 	}
 }
 

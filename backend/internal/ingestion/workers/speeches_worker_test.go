@@ -76,20 +76,54 @@ func (c *fakeSpeechCursors) Upsert(_ context.Context, x ingPorts.Cursor) error {
 	return nil
 }
 
-// The worker must cover the whole mandate, not the hardcoded 2024/25 session.
-func TestSpeechesWorker_UsesMandateRiksmoten(t *testing.T) {
+type fakeMandates struct {
+	periods []ingPorts.MandatePeriod
+	err     error
+}
+
+func (f fakeMandates) ListMandatePeriods(context.Context) ([]ingPorts.MandatePeriod, error) {
+	return f.periods, f.err
+}
+
+// The worker asks for the sessions derived from the period table and the
+// cursor, not a list compiled into the binary.
+func TestSpeechesWorker_UsesDerivedSessions(t *testing.T) {
+	now := time.Now().UTC()
+	periods := []ingPorts.MandatePeriod{{
+		Code:      "2026-2030",
+		Start:     time.Date(2026, 9, 13, 0, 0, 0, 0, time.UTC),
+		End:       time.Date(2030, 9, 8, 0, 0, 0, 0, time.UTC),
+		Riksmoten: []string{"2026/27", "2027/28", "2028/29", "2029/30"},
+	}}
+	since := time.Date(2026, 8, 13, 0, 0, 0, 0, time.UTC)
 	client := &fakeSpeechClient{}
 	w := workers.NewSpeechesWorker(
-		speeches.NewService(&fakeSpeechRepo{}, client), &fakeSpeechCursors{})
+		speeches.NewService(&fakeSpeechRepo{}, client),
+		&fakeSpeechCursors{cur: &ingPorts.Cursor{DataType: "speeches", LastDate: &since}},
+	).WithMandates(fakeMandates{periods: periods})
 	_ = w.Run(context.Background())
 
-	for _, rm := range workers.MandateRiksmoten {
+	want := workers.SpeechSessions(periods, now, since)
+	for _, rm := range want {
 		if !client.sessions[rm] {
-			t.Errorf("riksmöte %s was never requested", rm)
+			t.Errorf("riksmöte %s was never requested (wanted %v)", rm, want)
 		}
 	}
-	if len(client.sessions) == 1 && client.sessions["2024/25"] {
-		t.Error("only the hardcoded 2024/25 session was requested")
+	if client.sessions["2027/28"] || client.sessions["2024/25"] {
+		t.Errorf("requested %v, want only %v", client.sessions, want)
+	}
+}
+
+func TestSpeechesWorker_MandateReadErrorStillAsksForTheCurrentSession(t *testing.T) {
+	client := &fakeSpeechClient{}
+	w := workers.NewSpeechesWorker(
+		speeches.NewService(&fakeSpeechRepo{}, client), &fakeSpeechCursors{},
+	).WithMandates(fakeMandates{err: errors.New("db down")})
+	_ = w.Run(context.Background())
+
+	current := workers.CurrentRiksmote(time.Now().UTC())
+	if !client.sessions[current] {
+		t.Errorf("sessions requested = %v, want the current riksmöte %s", client.sessions, current)
 	}
 }
 

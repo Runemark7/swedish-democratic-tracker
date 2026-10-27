@@ -127,5 +127,8 @@ type ExpenditureUpdate struct {
 
 // CoverageRepository reports how much of a mandate period's record we hold.
 type CoverageRepository interface {
+	// CurrentMandateCode is the period with the latest start date on or
+	// before today. Empty means the table has no period that has opened.
+	CurrentMandateCode(ctx context.Context) (string, error)
 	GetRecordCoverage(ctx context.Context, code string) (*domain.RecordCoverage, error)
 }

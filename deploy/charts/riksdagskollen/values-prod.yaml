@@ -10,6 +10,19 @@ backend:
   env:
     CORS_ALLOWED_ORIGIN: "https://sdt.runevibe.se"
     SEED_ELECTIONS: "true"
+  # Same split as values.yaml. Liveness stays off the database.
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 15
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 10
 frontend:
   replicas: 1
   image:

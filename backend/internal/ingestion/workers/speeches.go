@@ -12,12 +12,21 @@ import (
 )
 
 type SpeechesWorker struct {
-	svc     *speeches.Service
-	cursors ports.CursorRepository
+	svc      *speeches.Service
+	cursors  ports.CursorRepository
+	mandates ports.MandatePeriodReader
 }
 
 func NewSpeechesWorker(svc *speeches.Service, cursors ports.CursorRepository) SpeechesWorker {
 	return SpeechesWorker{svc: svc, cursors: cursors}
+}
+
+// WithMandates sets the period table the session list is derived from.
+// Without it the worker follows the calendar only (current riksmöte and the
+// cursor's), which still moves forward when the table is missing a row.
+func (w SpeechesWorker) WithMandates(r ports.MandatePeriodReader) SpeechesWorker {
+	w.mandates = r
+	return w
 }
 
 func (w *SpeechesWorker) Name() string { return "fetch-speeches" }
@@ -31,15 +40,20 @@ func (w *SpeechesWorker) Run(ctx context.Context) error {
 	var since time.Time
 	if cur, err := w.cursors.Get(ctx, "speeches"); err == nil && cur != nil && cur.LastDate != nil {
 		since = *cur.LastDate
-		slog.Info("speeches: incremental sync", "since", since.Format("2006-01-02"))
 	}
+	sessions := w.sessions(ctx, since, time.Now().UTC())
+	sinceLabel := "none"
+	if !since.IsZero() {
+		sinceLabel = since.Format("2006-01-02")
+	}
+	slog.Info("speeches: incremental sync", "since", sinceLabel, "riksmoten", sessions)
 
 	// Newest record actually retrieved. The cursor only ever advances to this,
 	// never to now(): advancing past a window we failed to read is what left
 	// speeches eleven months stale while the worker reported success.
 	var newest time.Time
 
-	for _, rm := range MandateRiksmoten {
+	for _, rm := range sessions {
 		for _, party := range ActiveParties {
 			ss, err := w.svc.FetchAndStore(ctx, speechPorts.FetchSpeechesFilter{
 				Session: rm,
@@ -72,4 +86,19 @@ func (w *SpeechesWorker) Run(ctx context.Context) error {
 		return nil
 	}
 	return w.cursors.Upsert(ctx, ports.Cursor{DataType: "speeches", LastDate: &newest})
+}
+
+func (w *SpeechesWorker) sessions(ctx context.Context, since, now time.Time) []string {
+	var periods []ports.MandatePeriod
+	if w.mandates != nil {
+		listed, err := w.mandates.ListMandatePeriods(ctx)
+		if err != nil {
+			slog.Error("speeches: mandate periods unavailable, using the calendar", "error", err)
+		} else if len(listed) == 0 {
+			slog.Error("speeches: mandate_periods is empty, using the calendar")
+		} else {
+			periods = listed
+		}
+	}
+	return SpeechSessions(periods, now, since)
 }

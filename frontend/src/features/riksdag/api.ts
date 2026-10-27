@@ -62,10 +62,11 @@ export interface RiksdagGovernmentParty {
 }
 
 export interface RiksdagGovernment {
-  typeLabel: string;
+  /** Backend field is `type` (json name), e.g. "Övergångsregering". */
+  type: string;
   validFrom: string;
   parties: RiksdagGovernmentParty[];
-  support: RiksdagGovernmentParty[];
+  support?: RiksdagGovernmentParty[];
   opposition: RiksdagGovernmentParty[];
 }
 

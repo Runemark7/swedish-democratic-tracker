@@ -35,6 +35,13 @@ spec:
                 name: {{ include "riksdagskollen.fullname" . }}-backend
                 port:
                   number: 80
+          - path: /readyz
+            pathType: Exact
+            backend:
+              service:
+                name: {{ include "riksdagskollen.fullname" . }}-backend
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:

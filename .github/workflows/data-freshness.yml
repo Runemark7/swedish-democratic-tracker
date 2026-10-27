@@ -1,0 +1,77 @@
+name: data-freshness
+
+on:
+  schedule:
+    # After the 00:00 UTC ingestion chain.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "25"
+
+      - name: Check live data freshness
+        id: check
+        continue-on-error: true
+        env:
+          SITE: https://sdt.runevibe.se
+        run: node scripts/check-data-freshness.mjs | tee freshness-report.txt
+
+      - name: Upload report on failure
+        if: steps.check.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: freshness-report
+          path: freshness-report.txt
+
+      - name: Open issue on scheduled failure
+        if: steps.check.outcome == 'failure' && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          gh label create data-freshness \
+            --repo "$REPO" \
+            --color b60205 \
+            --description "Live site is behind Riksdagen or an ingestion job has not succeeded" \
+            --force
+
+          REPORT=$(cat freshness-report.txt)
+          BODY=$(printf '%s\n' \
+            "The daily data-freshness check failed." \
+            "" \
+            "Run: $RUN_URL" \
+            "" \
+            '```' \
+            "$REPORT" \
+            '```' \
+            "" \
+            "This compares https://sdt.runevibe.se/api/ingestion/freshness with Riksdagen's current riksmöte. A recess where both sides are old does not fail the check. Upstream endpoints are occasionally flaky, so re-run the workflow before treating a single failure as a broken deploy.")
+
+          EXISTING=$(gh issue list --repo "$REPO" --label data-freshness --state open --limit 1 --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ] && [ "$EXISTING" != "null" ]; then
+            gh issue comment "$EXISTING" --repo "$REPO" --body "$BODY"
+          else
+            gh issue create \
+              --repo "$REPO" \
+              --title "ingestion freshness check failed $(date -u +%Y-%m-%d)" \
+              --label data-freshness \
+              --body "$BODY"
+          fi
+
+      - name: Fail the job
+        if: steps.check.outcome == 'failure'
+        run: exit 1

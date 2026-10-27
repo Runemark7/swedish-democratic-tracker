@@ -7,6 +7,8 @@ export interface Party {
 
 export interface Ruling {
   type: string;
+  /** ISO date the current government row opened, when the API sent one. */
+  validFrom?: string;
   parties: Party[];
   support?: Party[];
   opposition: Party[];

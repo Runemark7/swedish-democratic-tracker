@@ -33,6 +33,10 @@ func (w *CoverageWorker) Run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	// A mandate row lists every riksmöte of the period, including ones that
+	// have not opened. Enumerating those reports zero and would be written
+	// off as a bad response every night.
+	riksmoten = OpenedRiksmoten(riksmoten, time.Now().UTC())
 	if len(riksmoten) == 0 {
 		slog.Info("coverage: no riksmöte needs a denominator")
 		return nil
