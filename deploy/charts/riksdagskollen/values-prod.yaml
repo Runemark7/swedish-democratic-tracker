@@ -33,37 +33,32 @@ frontend:
     - name: ghcr-pull-secret
 ## One-off voting-record backfill. Full contract in values.yaml.
 ##
-## Run 2. Run 1 (2026-08-22) failed within two minutes -- every write returned
-##   ERROR: could not extend file because project size limit (512 MB)
-##   has been exceeded (SQLSTATE 53100)
-## Both causes are now gone: the database limit was lifted, and 000039/000040
-## split the record into voteringar and ballots, which cut it 2.9x by removing
-## the votering-level fields that were repeated on all ~350 ballots of every
-## votering. The full six-period record measures 663 MB rather than 1.9 GB.
+## Run 3. Runs 1 and 2 (August 2026) died on Neon's 512 MB project cap,
+## part way through 2016/17. The database is now self-hosted Postgres 18
+## (~415 MB used, ~45 GB free), so that cap is gone.
 ##
-## period is empty, so the run covers all six periods oldest first. It also
-## repairs the 547 voteringar of 2002-2006 that run 1 wrote before it hit the
-## wall: every write is an upsert, so the partial period is corrected rather
-## than duplicated.
+## period is empty: the Job walks every mandate_periods row, oldest first,
+## which is 2002-2006 through 2026-2030. Writes upsert on votering_id and
+## (votering, member), so sessions already held are re-confirmed and the
+## gap — partial 2016/17, nothing for 2017/18–2021/22 — is filled rather
+## than duplicated. The command does not touch the votes cursor. The
+## nightly chain only fetches the current riksmöte, and this walk reaches
+## that session last.
 ##
-## Set enabled back to false once the Job reports complete, or the next sync
-## recreates it.
-## Run 2 (2026-08-23) also stopped on the 512 MB limit, 27 minutes in, part
-## way through 2016/17. The cap is still 512 MB despite being reported as
-## lifted -- the error text names the figure, so check what the Neon project
-## actually reports before enabling this again.
+## The pod limit stays 512Mi. It holds one betänkande's ballots at a time,
+## which fits the 4 GB node next to the API. The two-hour deadline stays:
+## a full historical walk measured about 45 minutes, and run 2 reached
+## 2016/17 in 27.
 ##
-## It did get much further than run 1, because 000039/000040 cut the record
-## 2.9x. Three periods landed complete and verified against the local run:
-## 2002-2006 (2 819), 2006-2010 (1 972), 2010-2014 (2 656). 2014-2018 is
-## partial at 1 286 of 2 585 and 2018-2022 was never reached.
-##
-## Re-running is safe and resumes rather than restarts: every write is an
-## upsert, so the three complete periods are re-confirmed and the partial one
-## is filled in. Only the remaining ~4 500 voteringar need storage.
+## Set enabled back to false after the Job is Complete, before the next
+## sync. ttlSecondsAfterFinished deletes the Job after a day; a later
+## sync with enabled still true creates it again and walks Riksdagen
+## from 2002 once more. While the Job exists, its pod template is
+## immutable, so an image-tag bump in this file will fail the upgrade
+## until enabled is false.
 backfill:
-  enabled: false
-  runId: "2"
+  enabled: true
+  runId: "3"
   period: ""
 ingress:
   host: sdt.runevibe.se
