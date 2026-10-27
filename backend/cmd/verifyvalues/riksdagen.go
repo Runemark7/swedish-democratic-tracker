@@ -85,7 +85,7 @@ func riksdagenChecks(
 
 	// Sample vote outcomes.
 	for _, sv := range sampleVotes {
-		oursVotes, oerr := voteSvc.ListByBeteckning(ctx, sv.Beteckning, sv.Punkt)
+		oursVotes, oerr := voteSvc.ListByBeteckning(ctx, sv.Beteckning, sv.Punkt, "")
 		upVotes, uerr := voteCl.FetchVotes(ctx, voteports.FetchVotesFilter{Beteckning: sv.Beteckning})
 		entity := fmt.Sprintf("Vote %s p%s", sv.Beteckning, sv.Punkt)
 		if oerr != nil || uerr != nil {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -257,6 +258,7 @@ func (c *Client) fetchDocumentList(ctx context.Context, organParam string, count
 				Beslutsdag string          `json:"beslutsdag"`
 				Status     string          `json:"status"`
 				Beslutad   json.RawMessage `json:"beslutad"`
+				Rm         string          `json:"rm"`
 			} `json:"dokument"`
 		} `json:"dokumentlista"`
 	}
@@ -274,6 +276,7 @@ func (c *Client) fetchDocumentList(ctx context.Context, organParam string, count
 			DecisionDate:   d.Beslutsdag,
 			Status:         d.Status,
 			ChamberDecided: parseBeslutad(d.Beslutad),
+			Riksmote:       d.Rm,
 		})
 	}
 	return docs, nil
@@ -419,10 +422,13 @@ func (c *Client) FetchDocumentStatus(ctx context.Context, dokID string) (*domain
 	return status, nil
 }
 
-func (c *Client) FetchBetankandeByBeteckning(ctx context.Context, beteckning string) (*ports.BetankandeInfo, error) {
-	url := fmt.Sprintf("%s/dokumentlista/?bet=%s&typ=bet&utformat=json&sz=1", c.baseURL, beteckning)
+func (c *Client) FetchBetankandeByBeteckning(ctx context.Context, beteckning, session string) (*ports.BetankandeInfo, error) {
+	endpoint := fmt.Sprintf("%s/dokumentlista/?bet=%s&typ=bet&utformat=json&sz=1", c.baseURL, beteckning)
+	if session != "" {
+		endpoint += "&rm=" + url.QueryEscape(session)
+	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}

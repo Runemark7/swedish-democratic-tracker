@@ -12,8 +12,10 @@ export const votesApi = {
     api.get<VoteSummaryListResponse>(
       `/votes?page=${params.page ?? 1}&pageSize=${params.pageSize ?? 50}`,
     ),
-  getDetail: (beteckning: string, punkt: string) =>
-    api.get<VoteDetail>(`/votes/${beteckning}/${punkt}`),
+  getDetail: (beteckning: string, punkt: string, session?: string) => {
+    const q = session ? `?session=${encodeURIComponent(session)}` : "";
+    return api.get<VoteDetail>(`/votes/${encodeURIComponent(beteckning)}/${encodeURIComponent(punkt)}${q}`);
+  },
   getDocument: (dokId: string) =>
     api.get<RiksdagDocument>(`/documents/${encodeURIComponent(dokId)}`),
   getDocumentFull: (dokId: string) =>

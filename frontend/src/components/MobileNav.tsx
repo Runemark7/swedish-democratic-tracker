@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { PRIMARY_NAV, FORDJUPNING_NAV, RIKSDAG_SUB_NAV, isActive, isRiksdagSection } from "@/shared/nav";
+import { Wordmark } from "@/components/Wordmark";
+import { PRIMARY_NAV, SECONDARY_NAV, isActive, isLokaltSection } from "@/shared/nav";
 
 interface MobileNavProps {
   pathname: string;
@@ -8,8 +9,6 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
-  const showRiksdagTabs = isRiksdagSection(pathname);
-
   const topRowStyle: React.CSSProperties = {
     position: "sticky",
     top: 0,
@@ -35,75 +34,26 @@ export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
     borderBottom: "1px solid var(--color-border)",
   };
 
+  const lokaltActive = isLokaltSection(pathname);
+
   return (
     <div className="mobile-only" style={{ minWidth: 0, overflow: "hidden" }}>
-      {/* Row 1 — logo + theme toggle */}
       <div style={topRowStyle}>
-        {/* Hamburger stub */}
-        <button
-          aria-label="Meny"
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 8,
-            border: "1px solid var(--color-border)",
-            background: "transparent",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 5,
-            cursor: "pointer",
-            flexShrink: 0,
-          }}
-        >
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              style={{
-                display: "block",
-                width: 16,
-                height: 2,
-                borderRadius: 1,
-                background: "var(--color-fg-muted)",
-              }}
-            />
-          ))}
-        </button>
+        {/* Balances the theme button so the wordmark stays centered.
+            The old left control was a hamburger that did not open a menu. */}
+        <span style={{ width: 36, flexShrink: 0 }} aria-hidden="true" />
 
-        {/* Centered wordmark */}
-        <NavLink
-          to="/"
+        <div
           style={{
             position: "absolute",
             left: "50%",
             transform: "translateX(-50%)",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            textDecoration: "none",
+            maxWidth: "calc(100% - 100px)",
           }}
         >
-          <svg width="18" height="14" viewBox="0 0 20 16" fill="none" aria-hidden="true">
-            <rect x="0" y="0"   width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="0.45" />
-            <rect x="0" y="6.5" width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="0.70" />
-            <rect x="0" y="13"  width="20" height="3" rx="1.5" fill="var(--color-fg)" fillOpacity="1"    />
-          </svg>
-          <span
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: 18,
-              fontWeight: 700,
-              color: "var(--color-fg)",
-              letterSpacing: "0.01em",
-            }}
-          >
-            Tre{" "}
-            <em style={{ fontStyle: "italic", color: "var(--color-accent-2)" }}>Kammare</em>
-          </span>
-        </NavLink>
+          <Wordmark size={16} />
+        </div>
 
-        {/* Theme toggle */}
         <button
           onClick={toggleTheme}
           aria-label={theme === "dark" ? "Byt till ljust läge" : "Byt till mörkt läge"}
@@ -126,7 +76,6 @@ export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
         </button>
       </div>
 
-      {/* Row 2 — primary pills */}
       <div style={pillRowStyle}>
         <div
           className="mobile-scroll-pills"
@@ -160,105 +109,51 @@ export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
               </NavLink>
             );
           })}
-        </div>
-
-        {/* Row 2b — Fördjupning: the four levels of government, as reference */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "0 14px 6px",
-            borderTop: "1px solid var(--color-border)",
-          }}
-        >
-          <span
+          <NavLink
+            to="/lokalt"
             style={{
-              flexShrink: 0,
-              fontFamily: "var(--font-mono)",
-              fontSize: 10,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "var(--color-fg-muted)",
-              paddingTop: 6,
-            }}
-          >
-            Fördjupning
-          </span>
-          <div
-            className="mobile-scroll-pills"
-            style={{ gap: 6, paddingTop: 6, height: 32, alignItems: "center" }}
-          >
-            {FORDJUPNING_NAV.map((item) => {
-              const active = isActive(item, pathname);
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    height: 32,
-                    padding: "0 14px",
-                    borderRadius: 999,
-                    border: active ? "none" : "1px solid var(--color-border)",
-                    background: active ? "var(--color-fg)" : "transparent",
-                    color: active ? "var(--color-bg)" : "var(--color-fg-muted)",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 11,
-                    letterSpacing: "1.1px",
-                    textTransform: "uppercase",
-                    textDecoration: "none",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                  }}
-                >
-                  {item.label}
-                </NavLink>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Row 2c — Riksdag sub-tabs */}
-        {showRiksdagTabs && (
-          <div
-            className="mobile-scroll-pills"
-            style={{
-              borderTop: "1px solid var(--color-border)",
-              gap: 0,
+              display: "inline-flex",
+              alignItems: "center",
+              height: 32,
               padding: "0 14px",
+              borderRadius: 999,
+              border: lokaltActive ? "none" : "1px solid var(--color-accent)",
+              background: lokaltActive ? "var(--color-fg)" : "transparent",
+              color: lokaltActive ? "var(--color-bg)" : "var(--color-accent)",
+              fontFamily: "var(--font-mono)",
+              fontSize: 11,
+              letterSpacing: "1.1px",
+              textTransform: "uppercase",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
             }}
           >
-            {RIKSDAG_SUB_NAV.map((tab) => {
-              const active = isActive(tab, pathname);
-              return (
-                <NavLink
-                  key={tab.to}
-                  to={tab.to}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    height: 40,
-                    padding: "0 14px",
-                    fontFamily: "var(--font-body)",
-                    fontSize: 13,
-                    fontWeight: active ? 700 : 500,
-                    color: active ? "var(--color-fg)" : "var(--color-fg-muted)",
-                    borderBottom: active
-                      ? "2px solid var(--color-fg)"
-                      : "2px solid transparent",
-                    textDecoration: "none",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                  }}
-                >
-                  {tab.label}
-                </NavLink>
-              );
-            })}
-          </div>
-        )}
+            Lokalt
+          </NavLink>
+          {SECONDARY_NAV.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                height: 32,
+                padding: "0 8px",
+                fontFamily: "var(--font-mono)",
+                fontSize: 11,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+                color: isActive(item, pathname) ? "var(--color-fg)" : "var(--color-fg-muted)",
+              }}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
       </div>
     </div>
   );

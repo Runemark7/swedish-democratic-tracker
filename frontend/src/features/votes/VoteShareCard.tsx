@@ -377,7 +377,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
             letterSpacing: "0.06em",
           }}
         >
-          Tre Kammare
+          Riksdagskollen
         </span>
         <span style={{ fontFamily: "monospace", fontSize: 10, color: "var(--color-share-faint)" }}>
           Källa: riksdagen.se{beteckning ? ` · ${beteckning}` : ""}

@@ -1225,7 +1225,7 @@ export interface components {
             proposalType?: string;
             session: string;
             partyBreakdown: components["schemas"]["PartyVotePosition"][];
-            /** @description Authoritative outcome: Bifall | Avslag | Återremiss */
+            /** @description Outcome of this förslagspunkt from the ballot tally: "Bifall" when Ja outnumbers Nej, "Avslag" when Nej outnumbers Ja. Empty when the tally is a tie or contains neither Ja nor Nej — that is not reported as Bifall. Not Återremiss; the page reads that from statusText when Riksdagen published it. Scoped to the requested punkt, not to the whole betänkande. */
             status: string;
             /** @description Decision date from Riksdagen, YYYY-MM-DD */
             date?: string;
@@ -1648,6 +1648,11 @@ export interface components {
              * @example Webbpublicering
              */
             status: string;
+            /**
+             * @description Riksdagen's `rm`, e.g. "2026/27". Beteckning numbering restarts each riksmöte, so a decision link has to carry this or `/beslut/SfU4` can open another year's betänkande. Empty when the upstream row omitted `rm`.
+             * @example 2026/27
+             */
+            riksmote: string;
         };
         RiksdagDocument: {
             dokId: string;
@@ -2609,7 +2614,10 @@ export interface operations {
     };
     getVoteDetail: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Riksmöte, e.g. "2026/27". When set, ballots and the live document lookup are limited to that session. Beteckning numbering restarts each riksmöte, so an unscoped lookup can mix two years that share a beteckning. */
+                session?: string;
+            };
             header?: never;
             path: {
                 beteckning: string;

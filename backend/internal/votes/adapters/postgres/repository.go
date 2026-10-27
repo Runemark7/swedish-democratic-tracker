@@ -64,16 +64,17 @@ func (r *Repository) ListByPolitician(ctx context.Context, f ports.ListVotesFilt
 	return ports.ListVotesResult{Votes: vv, Total: total}, rows.Err()
 }
 
-func (r *Repository) ListByBeteckning(ctx context.Context, beteckning, punkt string) ([]*domain.Vote, error) {
+func (r *Repository) ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error) {
 	const q = `SELECT vg.votering_id, b.politician_id, b.party, b.vote_result, vg.beteckning, vg.forslagspunkt,
 		vg.session, vg.dok_id, vg.proposed_by_party, vg.proposal_type, vg.proposal_dok_id, vg.document_title,
 		vg.origin_enriched, vg.created_at
 		FROM ballots b
 		JOIN voteringar vg ON vg.id = b.votering_ref
 		WHERE vg.beteckning = $1 AND vg.forslagspunkt = $2
+		  AND ($3 = '' OR vg.session = $3)
 		ORDER BY b.party, b.politician_id`
 
-	rows, err := r.db.Query(ctx, q, beteckning, punkt)
+	rows, err := r.db.Query(ctx, q, beteckning, punkt, session)
 	if err != nil {
 		return nil, err
 	}

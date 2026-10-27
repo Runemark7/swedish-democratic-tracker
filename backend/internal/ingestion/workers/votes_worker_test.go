@@ -57,7 +57,7 @@ func (f *fakeVoteClient) FetchRecentBetankanden(context.Context, int) ([]votepor
 	return nil, nil
 }
 
-func (f *fakeVoteClient) FetchBetankandeByBeteckning(context.Context, string) (*voteports.BetankandeInfo, error) {
+func (f *fakeVoteClient) FetchBetankandeByBeteckning(context.Context, string, string) (*voteports.BetankandeInfo, error) {
 	return nil, nil
 }
 
@@ -74,7 +74,7 @@ func (r *fakeVoteRepo) ListByPolitician(context.Context, voteports.ListVotesFilt
 	return voteports.ListVotesResult{}, nil
 }
 
-func (r *fakeVoteRepo) ListByBeteckning(context.Context, string, string) ([]*votedomain.Vote, error) {
+func (r *fakeVoteRepo) ListByBeteckning(context.Context, string, string, string) ([]*votedomain.Vote, error) {
 	return nil, nil
 }
 

@@ -129,8 +129,11 @@ func (h *Handler) listByCommittee(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 	bet := chi.URLParam(r, "beteckning")
 	punkt := chi.URLParam(r, "punkt")
+	// Optional riksmöte. Beteckning numbering restarts each year, so an
+	// unscoped read mixes two betänkanden that share a code.
+	session := r.URL.Query().Get("session")
 
-	vv, err := h.svc.ListByBeteckning(r.Context(), bet, punkt)
+	vv, err := h.svc.ListByBeteckning(r.Context(), bet, punkt, session)
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -205,15 +208,21 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 			totalJa += p.Ja
 			totalNej += p.Nej
 		}
-		if totalJa >= totalNej {
+		// A tie, or a punkt with no Ja and no Nej, is not a Bifall. The previous
+		// `>=` published "Bifall" whenever Nej did not strictly win, including
+		// an empty tally.
+		if totalJa > totalNej {
 			return "Bifall"
 		}
-		return "Avslag"
+		if totalNej > totalJa {
+			return "Avslag"
+		}
+		return ""
 	}
 
 	if len(vv) == 0 {
 		// No votes in DB — fetch metadata directly from Riksdagen
-		info, err := h.svc.GetBetankandeInfo(r.Context(), bet)
+		info, err := h.svc.GetBetankandeInfo(r.Context(), bet, session)
 		if err != nil {
 			jsonError(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -306,6 +315,7 @@ func (h *Handler) recent(w http.ResponseWriter, r *http.Request) {
 		Decided      bool   `json:"decided"`
 		DecisionDate string `json:"decisionDate"`
 		Status       string `json:"status"`
+		Riksmote     string `json:"riksmote"`
 	}
 	items := make([]recentItem, 0, len(docs))
 	for _, d := range docs {
@@ -317,6 +327,7 @@ func (h *Handler) recent(w http.ResponseWriter, r *http.Request) {
 			Decided:      d.Decided(time.Now()),
 			DecisionDate: d.DecisionDate,
 			Status:       d.Status,
+			Riksmote:     d.Riksmote,
 		})
 	}
 	jsonOK(w, items)

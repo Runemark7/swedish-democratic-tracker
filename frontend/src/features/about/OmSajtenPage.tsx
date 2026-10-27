@@ -89,6 +89,28 @@ export function OmSajtenPage() {
       </header>
 
       <main style={{ padding: pad }}>
+        <Section eyebrow="Varför" title="Varför sajten finns">
+          <p style={{ margin: "0 0 10px" }}>
+            Demokrati kräver att du vet vad dina folkvalda gör. Den informationen
+            finns — men ingen serverar den åt dig, och de som borde går inte att
+            lita på. Partierna är partiska i sin natur; deras jobb är att vinna
+            din röst, inte att upplysa dig. Public service jagar ofta det som ger
+            rubriker, inte det som är viktigt men tråkigt. Kvar finns ett tomrum:
+            den oglamorösa, avgörande informationen om vad som faktiskt händer —
+            den som ingen tjänar på att ge dig.
+          </p>
+          <p style={{ margin: "0 0 10px" }}>
+            Det tomrummet finns Riksdagskollen för att fylla. Vi samlar vad dina
+            representanter faktiskt gör — röster, löften, beslut — och visar det
+            med källa, utan att vinkla. Ingen agenda. Ingen knuff åt något håll.
+            Bara fakta, framlagda så att du själv kan döma.
+          </p>
+          <p style={{ margin: 0, color: "var(--color-fg-muted)", fontStyle: "italic" }}>
+            Ansvaret att förstå landar på dig. Vi gör det möjligt att bära. Läs
+            på, dra dina egna slutsatser. Det är så det ska gå till.
+          </p>
+        </Section>
+
         <Section eyebrow="Syfte" title="Vad det här är">
           <p style={{ margin: "0 0 10px" }}>
             Sverige publicerar nästan allt staten gör — varje omröstning, varje

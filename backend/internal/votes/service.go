@@ -183,12 +183,12 @@ func (s *Service) ListDistinctVotes(ctx context.Context, f ports.ListDistinctVot
 	return s.repo.ListDistinctVotes(ctx, f)
 }
 
-func (s *Service) ListByBeteckning(ctx context.Context, beteckning, punkt string) ([]*domain.Vote, error) {
-	return s.repo.ListByBeteckning(ctx, beteckning, punkt)
+func (s *Service) ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error) {
+	return s.repo.ListByBeteckning(ctx, beteckning, punkt, session)
 }
 
-func (s *Service) GetBetankandeInfo(ctx context.Context, beteckning string) (*ports.BetankandeInfo, error) {
-	return s.riksdagen.FetchBetankandeByBeteckning(ctx, beteckning)
+func (s *Service) GetBetankandeInfo(ctx context.Context, beteckning, session string) (*ports.BetankandeInfo, error) {
+	return s.riksdagen.FetchBetankandeByBeteckning(ctx, beteckning, session)
 }
 
 func (s *Service) GetDocumentStatus(ctx context.Context, dokID string) (*domain.DocumentStatus, error) {
