@@ -67,7 +67,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
   const totalNej = partyBreakdown.reduce((s, p) => s + p.nejCount, 0);
   const status = data.status ?? (totalJa >= totalNej ? "Bifall" : "Avslag");
   const passed = status === "Bifall";
-  const statusColor = passed ? "#16a34a" : "#dc2626";
+  const statusColor = passed ? "var(--color-share-pass)" : "var(--color-share-fail)";
 
   const activeSides = [jaParties, avstarParties, nejParties].filter((g) => g.length > 0);
   const gridCols = activeSides.length === 1 ? "1fr" : activeSides.length === 2 ? "1fr 1fr" : "1fr 1fr 1fr";
@@ -76,8 +76,8 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
     <div
       id="vote-share-card"
       style={{
-        background: "#ffffff",
-        color: "#111827",
+        background: "var(--color-share-card)",
+        color: "var(--color-share-ink)",
         borderRadius: 16,
         padding: "32px 36px",
         width: "100%",
@@ -94,7 +94,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
           fontWeight: 700,
           letterSpacing: "0.18em",
           textTransform: "uppercase",
-          color: "#9ca3af",
+          color: "var(--color-share-faint)",
           margin: "0 0 10px",
         }}
       >
@@ -106,7 +106,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
           fontWeight: 800,
           lineHeight: 1.25,
           margin: "0 0 8px",
-          color: "#111827",
+          color: "var(--color-share-ink)",
         }}
       >
         {documentTitle || `${beteckning} punkt ${forslagspunkt}`}
@@ -115,7 +115,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
         style={{
           fontFamily: "monospace",
           fontSize: 11,
-          color: "#6b7280",
+          color: "var(--color-share-muted)",
           margin: "0 0 28px",
           letterSpacing: "0.04em",
         }}
@@ -129,7 +129,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
       {/* Party vote grid */}
       <div
         style={{
-          background: "#f9fafb",
+          background: "var(--color-share-well)",
           borderRadius: 12,
           padding: "20px 24px",
           marginBottom: 20,
@@ -193,7 +193,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
               alignItems: "center",
               gap: 6,
               fontSize: 11,
-              color: "#6b7280",
+              color: "var(--color-share-muted)",
             }}
           >
             <span
@@ -226,9 +226,9 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
             <div
               style={{
                 padding: "14px 16px",
-                background: "#f0fdf4",
+                background: "var(--color-share-ja-bg)",
                 borderRadius: 10,
-                border: "1px solid #bbf7d0",
+                border: "1px solid var(--color-share-ja-border)",
               }}
             >
               <p
@@ -236,7 +236,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
                   fontFamily: "monospace",
                   fontSize: 10,
                   fontWeight: 700,
-                  color: "#15803d",
+                  color: "var(--color-share-ja-fg)",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
                   margin: "0 0 10px",
@@ -253,9 +253,9 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
             <div
               style={{
                 padding: "14px 16px",
-                background: "#fffbeb",
+                background: "var(--color-share-abs-bg)",
                 borderRadius: 10,
-                border: "1px solid #fde68a",
+                border: "1px solid var(--color-share-abs-border)",
               }}
             >
               <p
@@ -263,7 +263,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
                   fontFamily: "monospace",
                   fontSize: 10,
                   fontWeight: 700,
-                  color: "#b45309",
+                  color: "var(--color-share-abs-fg)",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
                   margin: "0 0 10px",
@@ -280,9 +280,9 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
             <div
               style={{
                 padding: "14px 16px",
-                background: "#fef2f2",
+                background: "var(--color-share-nej-bg)",
                 borderRadius: 10,
-                border: "1px solid #fecaca",
+                border: "1px solid var(--color-share-nej-border)",
               }}
             >
               <p
@@ -290,7 +290,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
                   fontFamily: "monospace",
                   fontSize: 10,
                   fontWeight: 700,
-                  color: "#dc2626",
+                  color: "var(--color-share-nej-fg)",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
                   margin: "0 0 10px",
@@ -311,9 +311,9 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
         <div
           style={{
             padding: "14px 20px",
-            background: passed ? "#f0fdf4" : "#fef2f2",
+            background: passed ? "var(--color-share-ja-bg)" : "var(--color-share-nej-bg)",
             borderRadius: 10,
-            border: `1px solid ${passed ? "#bbf7d0" : "#fecaca"}`,
+            border: `1px solid ${passed ? "var(--color-share-ja-border)" : "var(--color-share-nej-border)"}`,
             display: "flex",
             alignItems: "center",
             gap: 14,
@@ -342,7 +342,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
               style={{
                 fontFamily: "monospace",
                 fontSize: 10,
-                color: "#6b7280",
+                color: "var(--color-share-muted)",
                 margin: "0 0 3px",
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
@@ -362,7 +362,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
       <div
         style={{
           paddingTop: 16,
-          borderTop: "1px solid #e5e7eb",
+          borderTop: "1px solid var(--color-share-line)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -373,13 +373,13 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
             fontFamily: "monospace",
             fontSize: 12,
             fontWeight: 700,
-            color: "#374151",
+            color: "var(--color-share-brand)",
             letterSpacing: "0.06em",
           }}
         >
           Tre Kammare
         </span>
-        <span style={{ fontFamily: "monospace", fontSize: 10, color: "#9ca3af" }}>
+        <span style={{ fontFamily: "monospace", fontSize: 10, color: "var(--color-share-faint)" }}>
           Källa: riksdagen.se{beteckning ? ` · ${beteckning}` : ""}
         </span>
       </div>

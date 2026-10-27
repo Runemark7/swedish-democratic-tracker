@@ -31,7 +31,7 @@ function FailureNotice({ children }: { children: React.ReactNode }) {
   return (
     <div className="sdt-page px-8 py-16">
       <p className="text-sm text-on-surface-variant">{children}</p>
-      <Link to="/parties" className="text-xs text-primary hover:underline">
+      <Link to="/parties" className="text-xs text-link hover:underline">
         ← Partier
       </Link>
     </div>
@@ -112,7 +112,7 @@ export function CommitteePage() {
           Vi har inget utskott med koden {code} i den här mandatperiodens register.{" "}
           <SourceMarker sourceId="riksdagen" />
         </p>
-        <Link to="/parties" className="text-xs text-primary hover:underline">
+        <Link to="/parties" className="text-xs text-link hover:underline">
           ← Partier
         </Link>
       </div>
@@ -143,7 +143,7 @@ export function CommitteePage() {
   return (
     <div className="sdt-page" style={{ paddingBottom: 64 }}>
       <div style={{ padding: isMobile ? "16px 14px 0" : "32px 32px 0" }}>
-        <Link to="/parties" className="text-xs text-primary hover:underline">
+        <Link to="/parties" className="text-xs text-link hover:underline">
           ← Partier
         </Link>
       </div>
@@ -308,7 +308,7 @@ export function CommitteePage() {
               <button
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="text-xs text-primary disabled:text-on-surface-variant disabled:cursor-default hover:underline cursor-pointer"
+                className="text-xs text-link disabled:text-on-surface-variant disabled:cursor-default hover:underline cursor-pointer"
               >
                 ← Föregående
               </button>
@@ -318,7 +318,7 @@ export function CommitteePage() {
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={(page + 1) * PAGE_SIZE >= total}
-                className="text-xs text-primary disabled:text-on-surface-variant disabled:cursor-default hover:underline cursor-pointer"
+                className="text-xs text-link disabled:text-on-surface-variant disabled:cursor-default hover:underline cursor-pointer"
               >
                 Nästa →
               </button>

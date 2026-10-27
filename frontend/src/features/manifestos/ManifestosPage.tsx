@@ -107,7 +107,10 @@ function ManifestoCard({ m }: { m: Manifesto }) {
           className="text-[10px] font-extrabold px-2 py-0.5 rounded shrink-0"
           style={isDraft
             ? { background: "var(--color-surface-high)", color: "var(--color-on-surface-variant)" }
-            : { background: pc?.light ?? "#f0fdf4", color: pc?.bg ?? "#16a34a" }
+            : {
+                background: pc?.light ?? "var(--color-chip-ja-bg)",
+                color: `var(--color-party-${m.party.toLowerCase()}-ink, ${pc?.bg ?? "var(--color-chip-ja-fg)"})`,
+              }
           }
         >
           {isDraft ? "Utkast" : "Publicerat"}
@@ -132,7 +135,7 @@ function ManifestoCard({ m }: { m: Manifesto }) {
           href={m.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[11px] font-semibold text-primary hover:underline"
+          className="text-[11px] font-semibold text-link hover:underline"
         >
           Läs {isDraft ? "utkastet" : "manifestet"} →
         </a>

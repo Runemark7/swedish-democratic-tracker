@@ -80,7 +80,7 @@ export function GoalCard({ goal, party }: { goal: Goal; party: string }) {
             <div className="mb-4">
               <Link
                 to={`/parties/${party}/goals/${goal.id}/votes`}
-                className="inline-block text-xs text-primary font-semibold hover:underline"
+                className="inline-block text-xs text-link font-semibold hover:underline"
               >
                 Omröstningar vars titel nämner {keywords.join(", ")} →
               </Link>

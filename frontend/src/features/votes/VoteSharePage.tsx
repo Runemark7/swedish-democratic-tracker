@@ -17,7 +17,7 @@ export function VoteSharePage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#f3f4f6",
+        background: "var(--color-share-page)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -29,7 +29,7 @@ export function VoteSharePage() {
           style={{
             fontFamily: "monospace",
             fontSize: 12,
-            color: "#9ca3af",
+            color: "var(--color-share-faint)",
             letterSpacing: "0.1em",
           }}
         >
@@ -58,7 +58,7 @@ export function VoteSharePage() {
           marginTop: 28,
           fontFamily: "monospace",
           fontSize: 11,
-          color: "#9ca3af",
+          color: "var(--color-share-faint)",
           textDecoration: "none",
           letterSpacing: "0.12em",
           textTransform: "uppercase",

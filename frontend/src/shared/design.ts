@@ -11,14 +11,14 @@ export interface PartyStyle {
 }
 
 export const PARTY_COLORS: Record<string, PartyStyle> = {
-  S:  { bg: "#E8192C", text: "#fff", light: "#fde8ea", tw: "bg-party-s"  },
-  M:  { bg: "#52BDEC", text: "#fff", light: "#e6f5fc", tw: "bg-party-m"  },
-  SD: { bg: "#DDDD00", text: "#1a1a1a", light: "#fafae6", tw: "bg-party-sd" },
-  C:  { bg: "#009933", text: "#fff", light: "#e6f5ed", tw: "bg-party-c"  },
-  V:  { bg: "#DA291C", text: "#fff", light: "#fce8e6", tw: "bg-party-v"  },
-  KD: { bg: "#005EA1", text: "#fff", light: "#e6f0f8", tw: "bg-party-kd" },
-  L:  { bg: "#006AB3", text: "#fff", light: "#e6f0f8", tw: "bg-party-l"  },
-  MP: { bg: "#83CF39", text: "#1a1a1a", light: "#f0fae6", tw: "bg-party-mp" },
+  S:  { bg: "#E8192C", text: "#fff", light: "var(--color-party-s-soft)", tw: "bg-party-s"  },
+  M:  { bg: "#52BDEC", text: "#fff", light: "var(--color-party-m-soft)", tw: "bg-party-m"  },
+  SD: { bg: "#DDDD00", text: "#1a1a1a", light: "var(--color-party-sd-soft)", tw: "bg-party-sd" },
+  C:  { bg: "#009933", text: "#fff", light: "var(--color-party-c-soft)", tw: "bg-party-c"  },
+  V:  { bg: "#DA291C", text: "#fff", light: "var(--color-party-v-soft)", tw: "bg-party-v"  },
+  KD: { bg: "#005EA1", text: "#fff", light: "var(--color-party-kd-soft)", tw: "bg-party-kd" },
+  L:  { bg: "#006AB3", text: "#fff", light: "var(--color-party-l-soft)", tw: "bg-party-l"  },
+  MP: { bg: "#83CF39", text: "#1a1a1a", light: "var(--color-party-mp-soft)", tw: "bg-party-mp" },
 };
 
 const PARTY_NAMES: Record<string, string> = {

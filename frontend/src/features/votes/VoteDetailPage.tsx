@@ -71,13 +71,13 @@ function PartyBreakdownCard({ pos }: { pos: PartyVotePosition }) {
             className="text-[10px] font-extrabold px-2 py-0.5 rounded"
             style={{
               background:
-                pos.dominantVote === "Ja" ? "#f0fdf4" :
-                pos.dominantVote === "Nej" ? "#fef2f2" :
-                pos.dominantVote === "Avstår" ? "#fffbeb" : "#f9fafb",
+                pos.dominantVote === "Ja" ? "var(--color-chip-ja-bg)" :
+                pos.dominantVote === "Nej" ? "var(--color-chip-nej-bg)" :
+                pos.dominantVote === "Avstår" ? "var(--color-chip-abs-bg)" : "var(--color-chip-neutral-bg)",
               color:
-                pos.dominantVote === "Ja" ? "#16a34a" :
-                pos.dominantVote === "Nej" ? "#dc2626" :
-                pos.dominantVote === "Avstår" ? "#d97706" : "#9ca3af",
+                pos.dominantVote === "Ja" ? "var(--color-chip-ja-fg)" :
+                pos.dominantVote === "Nej" ? "var(--color-chip-nej-fg)" :
+                pos.dominantVote === "Avstår" ? "var(--color-chip-abs-fg)" : "var(--color-chip-neutral-fg)",
             }}
           >
             Majoritet: {pos.dominantVote}

@@ -2,21 +2,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
 
 @theme {
-  /* ── Surface Hierarchy (DESIGN.md §2) ─────────────────────────────── */
-  --color-surface: #f8f9fb;
-  --color-surface-low: #f2f4f6;
-  --color-surface-lowest: #ffffff;
-  --color-surface-high: #e6e8ea;
-  --color-surface-highest: #dddfe1;
-  --color-surface-variant: #dee3eb;
+  /* ── Surface Hierarchy ────────────────────────────────────────────── */
+  /* Defaults are the dark theme. Light values live on [data-theme="light"]
+     so the first paint (no attribute) matches the default dark theme.
+     Card surfaces sit one step above --color-bg (#0a0e14). */
+  --color-surface: #121820;
+  --color-surface-low: #1a2230;
+  --color-surface-lowest: #161d29;
+  --color-surface-high: #2a3546;
+  --color-surface-highest: #364256;
+  --color-surface-variant: #1e2836;
   --color-surface-tint: #003461;
 
   /* ── Primary (Midnight Navy) ──────────────────────────────────────── */
+  /* Kept navy in both themes: it is a fill behind white --color-on-primary.
+     Inline links use --color-link, which lightens only in dark mode. */
   --color-primary: #003461;
   --color-primary-container: #004b87;
-  --color-primary-fixed: #d1e4ff;
+  --color-primary-fixed: #16324d;
   --color-on-primary: #ffffff;
-  --color-on-primary-fixed: #001d36;
+  --color-on-primary-fixed: #d6e6f8;
 
   /* ── Secondary (Metallic Gold) ────────────────────────────────────── */
   --color-secondary: #735c00;
@@ -27,20 +32,27 @@
   --color-on-tertiary-fixed-variant: #324e2f;
 
   /* ── On Surface ───────────────────────────────────────────────────── */
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #424750;
+  --color-on-surface: #eef1f5;
+  --color-on-surface-variant: #8b97a6;
 
   /* ── Outline ──────────────────────────────────────────────────────── */
-  --color-outline-variant: #c2c7cf;
+  --color-outline-variant: #3d4b5e;
 
   /* ── Status Colors ────────────────────────────────────────────────── */
-  --color-aligned: #16a34a;
-  --color-aligned-bg: #f0fdf4;
-  --color-contradiction: #dc2626;
-  --color-contradiction-bg: #fef2f2;
-  --color-partial: #d97706;
-  --color-partial-bg: #fffbeb;
+  /* Text hues lighten in dark mode so they stay readable on dark cards.
+     Light mode restores the original hexes below. */
+  --color-aligned: #5fbb7f;
+  --color-aligned-bg: rgb(95 187 127 / 0.16);
+  --color-contradiction: #f07167;
+  --color-contradiction-bg: rgb(240 113 103 / 0.16);
+  --color-partial: #e0a84a;
+  --color-partial-bg: rgb(224 168 74 / 0.16);
   --color-neutral: #9ca3af;
+  /* Absent-vote swatch. Light mode keeps the original #d1d5db. */
+  --color-absent: #364256;
+
+  /* Links. Light mode pins this to the same navy as --color-primary. */
+  --color-link: #8eb8ef;
 
   /* ── Party Colors ─────────────────────────────────────────────────── */
   --color-party-s: #E8192C;
@@ -78,13 +90,94 @@ html {
   font-family: var(--font-body);
   color: var(--color-on-surface);
   background: var(--color-bg);
+  color-scheme: dark;
+  scrollbar-color: #364256 transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Text on a filled accent (light blue in dark mode, navy in light). */
+  --color-on-accent: #0a0e14;
+  /* Info banners that were hardcoded #f0f9ff / #0369a1. */
+  --color-info-bg: rgb(111 176 242 / 0.12);
+  --color-info-fg: #9ec9f6;
+  /* Vote / alignment chips. */
+  --color-chip-ja-bg: rgb(95 187 127 / 0.16);
+  --color-chip-ja-fg: #7dcea0;
+  --color-chip-nej-bg: rgb(224 122 98 / 0.16);
+  --color-chip-nej-fg: #f0a090;
+  --color-chip-abs-bg: rgb(224 188 94 / 0.16);
+  --color-chip-abs-fg: #e0bc5e;
+  --color-chip-neutral-bg: rgb(238 241 245 / 0.08);
+  --color-chip-neutral-fg: #9aa6b4;
+  /* Party header washes. Light mode restores the original pastels. */
+  --color-party-s-soft: rgb(232 25 44 / 0.16);
+  --color-party-m-soft: rgb(82 189 236 / 0.16);
+  --color-party-sd-soft: rgb(221 221 0 / 0.14);
+  --color-party-c-soft: rgb(0 153 51 / 0.16);
+  --color-party-v-soft: rgb(218 41 28 / 0.16);
+  --color-party-kd-soft: rgb(0 94 161 / 0.32);
+  --color-party-l-soft: rgb(0 106 179 / 0.32);
+  --color-party-mp-soft: rgb(131 207 57 / 0.16);
+  /* Text sitting on a party wash. Light mode uses the party hex itself. */
+  --color-party-s-ink: #ff8b96;
+  --color-party-m-ink: #8fd4f4;
+  --color-party-sd-ink: #e6e66a;
+  --color-party-c-ink: #4dcc78;
+  --color-party-v-ink: #ff7a6c;
+  --color-party-kd-ink: #7eb6e4;
+  --color-party-l-ink: #7ec0ee;
+  --color-party-mp-ink: #a8de72;
+  /* Map region separators. */
+  --color-map-stroke: rgb(238 241 245 / 0.28);
+  /* Share card (/votes/.../dela). Light mode keeps the white poster. */
+  --color-share-page: #0a0e14;
+  --color-share-card: #141b26;
+  --color-share-ink: #eef1f5;
+  --color-share-muted: #a3b0be;
+  --color-share-faint: #8b97a6;
+  --color-share-well: #10161f;
+  --color-share-line: rgb(238 241 245 / 0.14);
+  --color-share-brand: #eef1f5;
+  --color-share-ja-bg: rgb(95 187 127 / 0.14);
+  --color-share-ja-border: rgb(95 187 127 / 0.38);
+  --color-share-ja-fg: #8dcea8;
+  --color-share-nej-bg: rgb(224 90 90 / 0.14);
+  --color-share-nej-border: rgb(224 90 90 / 0.38);
+  --color-share-nej-fg: #f0a0a0;
+  --color-share-abs-bg: rgb(224 176 70 / 0.14);
+  --color-share-abs-border: rgb(224 176 70 / 0.4);
+  --color-share-abs-fg: #e0bc5e;
+  --color-share-pass: #7dcea0;
+  --color-share-fail: #f0a090;
+}
+
+/* Native search/select widgets follow the page, including the autofill wash. */
+button,
+input,
+select,
+textarea {
+  color-scheme: inherit;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-on-surface);
+  caret-color: var(--color-on-surface);
+  transition: background-color 9999s ease-out;
+  box-shadow: 0 0 0 1000px var(--color-surface-lowest) inset;
+}
+
+/* Navy --color-primary is a fill. As text it disappears on a dark page. */
+html:not([data-theme="light"]) .text-primary,
+html:not([data-theme="light"]) .hover\:text-primary:hover,
+html:not([data-theme="light"]) .group:hover .group-hover\:text-primary {
+  color: var(--color-link);
 }
 
 /* ── Glassmorphism (DESIGN.md §2) ───────────────────────────────────── */
 .glass {
-  background: rgba(248, 249, 251, 0.7);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
@@ -106,6 +199,9 @@ html {
 
 /* ── Tre Kammare: light theme overrides ─────────────────────────────── */
 [data-theme="light"] {
+  color-scheme: light;
+  scrollbar-color: auto;
+
   --color-bg:        #f5f3ee;
   --color-sdt-surface: #ffffff;
   --color-fg:        #0e1620;
@@ -118,6 +214,75 @@ html {
   --color-up:        #2d7a4a;
   --color-down:      #b8391c;
   --color-plane:     rgb(14 22 32 / 0.04);
+
+  /* Original surface scale — do not retune; light mode must stay put. */
+  --color-surface: #f8f9fb;
+  --color-surface-low: #f2f4f6;
+  --color-surface-lowest: #ffffff;
+  --color-surface-high: #e6e8ea;
+  --color-surface-highest: #dddfe1;
+  --color-surface-variant: #dee3eb;
+  --color-primary-fixed: #d1e4ff;
+  --color-on-primary-fixed: #001d36;
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #424750;
+  --color-outline-variant: #c2c7cf;
+  --color-aligned: #16a34a;
+  --color-aligned-bg: #f0fdf4;
+  --color-contradiction: #dc2626;
+  --color-contradiction-bg: #fef2f2;
+  --color-partial: #d97706;
+  --color-partial-bg: #fffbeb;
+  --color-absent: #d1d5db;
+  --color-link: #003461;
+
+  --color-on-accent: #ffffff;
+  --color-info-bg: #f0f9ff;
+  --color-info-fg: #0369a1;
+  --color-chip-ja-bg: #f0fdf4;
+  --color-chip-ja-fg: #16a34a;
+  --color-chip-nej-bg: #fef2f2;
+  --color-chip-nej-fg: #dc2626;
+  --color-chip-abs-bg: #fffbeb;
+  --color-chip-abs-fg: #d97706;
+  --color-chip-neutral-bg: #f9fafb;
+  --color-chip-neutral-fg: #9ca3af;
+  --color-party-s-soft: #fde8ea;
+  --color-party-m-soft: #e6f5fc;
+  --color-party-sd-soft: #fafae6;
+  --color-party-c-soft: #e6f5ed;
+  --color-party-v-soft: #fce8e6;
+  --color-party-kd-soft: #e6f0f8;
+  --color-party-l-soft: #e6f0f8;
+  --color-party-mp-soft: #f0fae6;
+  --color-party-s-ink: #E8192C;
+  --color-party-m-ink: #52BDEC;
+  --color-party-sd-ink: #DDDD00;
+  --color-party-c-ink: #009933;
+  --color-party-v-ink: #DA291C;
+  --color-party-kd-ink: #005EA1;
+  --color-party-l-ink: #006AB3;
+  --color-party-mp-ink: #83CF39;
+  --color-map-stroke: #ffffff;
+  --color-share-page: #f3f4f6;
+  --color-share-card: #ffffff;
+  --color-share-ink: #111827;
+  --color-share-muted: #6b7280;
+  --color-share-faint: #9ca3af;
+  --color-share-well: #f9fafb;
+  --color-share-line: #e5e7eb;
+  --color-share-brand: #374151;
+  --color-share-ja-bg: #f0fdf4;
+  --color-share-ja-border: #bbf7d0;
+  --color-share-ja-fg: #15803d;
+  --color-share-nej-bg: #fef2f2;
+  --color-share-nej-border: #fecaca;
+  --color-share-nej-fg: #dc2626;
+  --color-share-abs-bg: #fffbeb;
+  --color-share-abs-border: #fde68a;
+  --color-share-abs-fg: #b45309;
+  --color-share-pass: #16a34a;
+  --color-share-fail: #dc2626;
 }
 
 /* ── Pulse animation for live indicators ───────────────────────────── */
@@ -159,10 +324,13 @@ html {
 }
 
 /* ── Riksdagen document body (rendered inline on /beslut/:beteckning) ─ */
+.riksdagen-doc,
 .riksdagen-doc * {
   max-width: 100% !important;
   font-family: var(--font-body) !important;
   color: var(--color-fg) !important;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 .riksdagen-doc h1,
 .riksdagen-doc h2,

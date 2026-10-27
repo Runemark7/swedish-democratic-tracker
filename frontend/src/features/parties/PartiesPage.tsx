@@ -42,8 +42,8 @@ export function PartiesPage() {
       </div>
 
       {/* Explanation banner */}
-      <div className="bg-[#f0f9ff] rounded-lg p-4 mb-6">
-        <p className="text-xs text-[#0369a1] leading-relaxed m-0">
+      <div className="rounded-lg p-4 mb-6" style={{ background: "var(--color-info-bg)" }}>
+        <p className="text-xs leading-relaxed m-0" style={{ color: "var(--color-info-fg)" }}>
           Varje omröstning visar <strong>vilket parti som initierade förslaget</strong> — ett
           NEJ-röst kan bero på att förslaget kom från ett annat parti med annorlunda villkor,
           inte att partiet är emot sakfrågan.

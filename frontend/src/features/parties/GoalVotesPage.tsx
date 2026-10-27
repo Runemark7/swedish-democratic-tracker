@@ -22,7 +22,7 @@ function VoteMatchCard({ match }: { match: GoalVoteMatch }) {
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-on-surface leading-snug group-hover:text-primary transition-colors">
+          <p className="text-sm font-semibold text-on-surface leading-snug group-hover:text-link transition-colors">
             {match.documentTitle || `${match.beteckning} punkt ${match.forslagspunkt}`}
           </p>
 
@@ -89,7 +89,7 @@ export function GoalVotesPage() {
       {goal && (
         <div
           className="rounded-xl p-6 mt-3 mb-5"
-          style={{ background: pc?.light ?? "#f5f5f5" }}
+          style={{ background: pc?.light ?? "var(--color-surface-low)" }}
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
@@ -112,8 +112,8 @@ export function GoalVotesPage() {
           not the record having tested the goal. "Omröstningar som matchats till
           detta mål" said the opposite — that something matched them — and on a
           goal with no hits it promised rows that are not below it. */}
-      <div className="bg-[#f0f9ff] rounded-lg p-4 mb-5">
-        <p className="text-xs text-[#0369a1] leading-relaxed m-0">
+      <div className="rounded-lg p-4 mb-5" style={{ background: "var(--color-info-bg)" }}>
+        <p className="text-xs leading-relaxed m-0" style={{ color: "var(--color-info-fg)" }}>
           Nedan visas omröstningar vars titel nämner våra nyckelord. Nyckelorden
           är våra, inte partiets, och en träff betyder inte att omröstningen
           prövade målet.
