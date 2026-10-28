@@ -173,7 +173,7 @@ graph TD
         VM["Valmyndigheten\nval.se — riksdagsmandat (seed)"]
     end
 
-    DB[(PostgreSQL 17)]
+    DB[(PostgreSQL 18, self-hosted on the VPS)]
 
     FE -->|REST /api/*| API
     API --> features
@@ -292,9 +292,10 @@ postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable
 
 ## Database
 
-- PostgreSQL 17 in dev. Production runs on Neon (serverless Postgres) via the
+- Production runs on self-hosted PostgreSQL 18 on the VPS, reached via the
   `DATABASE_URL` secret named by the chart's `dbSecretName` — there is no
-  in-cluster Postgres for the app and no bitnami subchart.
+  bitnami subchart and the database is not Neon. Local dev compose still uses
+  `postgres:17-alpine`.
 - 40 migrations in `backend/migrations/` (numbered `000001`–`000040`).
 - The voting record lives in two tables, not one: `voteringar` (one row per
   decided förslagspunkt) and `ballots` (one row per member per votering).
@@ -332,7 +333,7 @@ Default mattpocock/skills label vocabulary (no overrides). See `docs/agents/tria
 
 ### Domain docs
 
-Single-context repo — one `CONTEXT.md` + `docs/adr/` at root. See `docs/agents/domain.md`.
+Single-context repo — one `CONTEXT.md` (the glossary) + `adr/` at root. See `docs/agents/domain.md`.
 
 
 ## Riksdagskollen — Project Context
@@ -396,8 +397,10 @@ number; it enters through the *selection* of which actions get highlighted and
 how they are framed.
 
 The discipline: do not avoid actions — show *more* types of verifiable action
-(attendance in votes, what someone pushed in committee, promises kept or
-broken). But show them as raw, sourced data placed side by side, and let the
+(attendance in votes, what someone pushed in committee, how a party voted on
+the votes the editor confirmed test its election promises). The site never
+labels a promise kept or broken: Löftesstatus is only Röstat för, Röstat emot,
+Blandat or Inte prövat än (see `adr/002-loftesstatus-is-vote-based.md`). But show them as raw, sourced data placed side by side, and let the
 reader judge. The difference between "this member broke their election promise"
 and placing the promise next to the actual vote and letting the reader draw
 the conclusion is the difference between an activist site and an impartial
@@ -411,3 +414,12 @@ just present in the code. The user should be able to see a clear fact layer
 "source" link next to every claim does more for credibility — especially with
 a distrustful audience — than any amount of stated commitment to neutrality.
 Make neutrality verifiable, not merely asserted.
+
+### Site navigation
+
+Top menu: **Beslut · Motioner · Ledamöter · Partier · Regeringen**.
+Regeringen holds who governs, the ministers, the state budget, the Riksdag
+overview and the agencies. Lokalt (kommuner and regioner) is a side menu;
+Om sajten and Data are secondary. Löften (Phase 2) live as a section under
+Partier, not as a top-menu item. Utskott are a filter on Beslut and Motioner,
+not a navigation spine. See `docs/spec/riksdagskollen-motioner-loften.md`.

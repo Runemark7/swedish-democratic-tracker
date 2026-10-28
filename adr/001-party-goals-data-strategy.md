@@ -1,6 +1,6 @@
 # ADR-001: Party Goals Data Strategy
 
-**Status:** Accepted
+**Status:** Accepted. Concern A superseded by [ADR-003](003-curation-in-chat-via-write-api.md) (2026-10-27); Concern B stands.
 **Date:** 2026-04-05
 **Decided:** 2026-04-05
 
@@ -132,6 +132,8 @@ Create a `pg_dump` snapshot of a fully-synced database. On first startup, restor
 
 ## Decision
 
+> **Superseded by [ADR-003](003-curation-in-chat-via-write-api.md).** Editorial data (Löften, kopplingar) is written to Postgres through a token-protected write API with an audit log. Migrations only create the schema and move the 2022 goals into an archive once.
+
 **Concern A: A1 — Bake party goals into a database migration.**
 
 Move the INSERT statements from `backend/seeds/dev_seed.sql` into `backend/migrations/000003_seed_party_goals.up.sql`. Remove the `seed` service from `docker-compose.yml` and delete `backend/seeds/`. Goals now run automatically as part of the migration pipeline — no separate seeding step needed. Future goal updates are new migrations (e.g., `000004_update_party_goals_2026.up.sql`), providing a clear audit trail.
@@ -142,7 +144,7 @@ Implement cursor-based tracking using the existing `ingestion_cursors` table (al
 
 ## Consequences
 
-### Concern A consequences
+### Concern A consequences (superseded by ADR-003)
 - `docker-compose.yml` loses the `seed` service (simpler orchestration, no race condition)
 - `backend/seeds/` directory is deleted
 - Party goals are guaranteed to exist before any worker runs (migrations execute before application start)

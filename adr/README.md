@@ -19,4 +19,14 @@ Each ADR follows this structure:
 
 Files are named `NNN-short-title.md` (e.g., `001-party-goals-data-strategy.md`).
 
+## Index
+
+| ADR | Title | Status |
+|---|---|---|
+| [001](001-party-goals-data-strategy.md) | Party goals data strategy | Accepted. Concern A superseded by [003](003-curation-in-chat-via-write-api.md); Concern B stands |
+| [002](002-loftesstatus-is-vote-based.md) | Löftesstatus is vote-based, never kept or broken | Accepted |
+| [003](003-curation-in-chat-via-write-api.md) | Curation happens in the bot chat, through a token-protected write API | Accepted |
+
+Domain vocabulary lives in [`CONTEXT.md`](../CONTEXT.md) at the repo root. The current product spec is [`docs/spec/riksdagskollen-motioner-loften.md`](../docs/spec/riksdagskollen-motioner-loften.md).
+
 Reference: https://adr.github.io/
