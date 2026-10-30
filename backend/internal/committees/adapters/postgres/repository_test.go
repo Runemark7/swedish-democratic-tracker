@@ -2,13 +2,33 @@ package postgres_test
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"riksdagskollen/internal/committees/adapters/postgres"
+	"riksdagskollen/internal/testdb"
 )
+
+func TestMain(m *testing.M) {
+	if url := os.Getenv("TEST_DATABASE_URL"); url != "" {
+		ctx := context.Background()
+		pool, err := pgxpool.New(ctx, url)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "test db: %v\n", err)
+			os.Exit(1)
+		}
+		err = testdb.EnsureVoteRecord(ctx, pool)
+		pool.Close()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "seed vote record: %v\n", err)
+			os.Exit(1)
+		}
+	}
+	os.Exit(m.Run())
+}
 
 func connectTestDB(t *testing.T) *pgxpool.Pool {
 	t.Helper()
@@ -89,7 +109,7 @@ func TestListForPeriod_CountsEveryVoteringInTheRecord(t *testing.T) {
 	var inRecord int
 	err = pool.QueryRow(ctx, `
 		SELECT count(DISTINCT v.votering_id)
-		FROM votes v
+		FROM voteringar v
 		JOIN mandate_periods p ON v.session = ANY(p.riksmoten)
 		WHERE p.code = '2022-2026'
 		  AND v.beteckning <> ''`).Scan(&inRecord)
@@ -118,7 +138,7 @@ func TestListForPeriod_KeepsMultipleVoteringarOnOneForslagspunkt(t *testing.T) {
 	err := pool.QueryRow(ctx, `
 		SELECT count(*) FROM (
 			SELECT v.session, v.beteckning, v.forslagspunkt
-			FROM votes v
+			FROM voteringar v
 			JOIN mandate_periods p ON v.session = ANY(p.riksmoten)
 			WHERE p.code = '2022-2026'
 			  AND v.beteckning <> ''
@@ -145,7 +165,7 @@ func TestListForPeriod_KeepsMultipleVoteringarOnOneForslagspunkt(t *testing.T) {
 	var byForslagspunkt int
 	err = pool.QueryRow(ctx, `
 		SELECT count(DISTINCT v.session || ':' || v.beteckning || ':' || v.forslagspunkt)
-		FROM votes v
+		FROM voteringar v
 		JOIN mandate_periods p ON v.session = ANY(p.riksmoten)
 		WHERE p.code = '2022-2026'
 		  AND v.beteckning <> ''`).Scan(&byForslagspunkt)
@@ -206,12 +226,12 @@ func TestPeriodExists(t *testing.T) {
 		t.Error("PeriodExists(2022-2026) = false, but the period is seeded")
 	}
 
-	ok, err = repo.PeriodExists(ctx, "2018-2022")
+	ok, err = repo.PeriodExists(ctx, "1994-1998")
 	if err != nil {
 		t.Fatalf("PeriodExists: %v", err)
 	}
 	if ok {
-		t.Error("PeriodExists(2018-2022) = true, but we hold no such period")
+		t.Error("PeriodExists(1994-1998) = true, but that period is not seeded")
 	}
 }
 

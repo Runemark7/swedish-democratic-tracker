@@ -104,8 +104,8 @@ ORDER BY pt.session,
 // PeriodExists reports whether the mandate period is one the record knows.
 //
 // Identical query to committees/adapters/postgres/repository.go's
-// PeriodExists: an unrecognised period (e.g. "2018-2022", before this record
-// begins) must be refused rather than answered with an empty page, which
+// PeriodExists: an unrecognised period (e.g. "1994-1998", before the earliest
+// seeded period) must be refused rather than answered with an empty page, which
 // reads as "this committee decided nothing" — a claim about the record this
 // endpoint is in no position to make.
 func (r *Repository) PeriodExists(ctx context.Context, periodCode string) (bool, error) {

@@ -11,9 +11,54 @@ env:
   FRONTEND_IMAGE: ghcr.io/runemark7/riksdagskollen-frontend
 
 jobs:
+  test-backend:
+    name: Test backend
+    runs-on: ubuntu-latest
+    # Postgres 18 matches production. Local compose is still 17; this job
+    # follows the production major version the issue asks CI to run against.
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: riksdagskollen
+          POSTGRES_PASSWORD: localdev
+          POSTGRES_DB: riksdagskollen
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U riksdagskollen -d riksdagskollen"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgres://riksdagskollen:localdev@127.0.0.1:5432/riksdagskollen?sslmode=disable
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Apply migrations
+        working-directory: backend
+        run: |
+          go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.18.3
+          migrate -path migrations -database "$TEST_DATABASE_URL" up
+
+      - name: Test
+        working-directory: backend
+        # -count=1 disables the Go test cache. setup-go restores GOCACHE, and
+        # a cache hit would skip the database tests on a later run of the
+        # same sources.
+        run: go test -count=1 ./...
+
   build-backend:
     name: Build & push backend
     runs-on: ubuntu-latest
+    needs: [test-backend]
     permissions:
       contents: read
       packages: write
@@ -51,6 +96,7 @@ jobs:
   build-frontend:
     name: Build & push frontend
     runs-on: ubuntu-latest
+    needs: [test-backend]
     permissions:
       contents: read
       packages: write
