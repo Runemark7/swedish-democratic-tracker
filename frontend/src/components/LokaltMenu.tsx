@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { LOKALT_NAV, isActive, isLokaltSection } from "@/shared/nav";
 
 /**
@@ -47,9 +47,9 @@ export function LokaltMenu({ pathname }: { pathname: string }) {
   return (
     <div ref={rootRef} style={{ position: "relative" }}>
       <div style={{ display: "inline-flex", alignItems: "stretch" }}>
-        <NavLink to="/lokalt" style={pill} aria-current={active ? "page" : undefined}>
+        <Link to="/lokalt" style={pill} aria-current={active ? "page" : undefined}>
           Lokalt
-        </NavLink>
+        </Link>
         <button
           type="button"
           aria-expanded={open}

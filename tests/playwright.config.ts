@@ -10,9 +10,16 @@ export default defineConfig({
     ? "github"
     : [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: process.env.BASE_URL ?? "http://localhost:5173",
+    baseURL: process.env.BASE_URL ?? "http://127.0.0.1:5173",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+  },
+  webServer: {
+    // cwd is the tests/ directory (where this config lives).
+    command: "npm run dev --prefix ../frontend -- --host 127.0.0.1 --port 5173",
+    url: "http://127.0.0.1:5173",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
   },
   projects: [
     {

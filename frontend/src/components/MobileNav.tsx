@@ -1,6 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Wordmark } from "@/components/Wordmark";
-import { PRIMARY_NAV, SECONDARY_NAV, isActive, isLokaltSection } from "@/shared/nav";
+import { LokaltMenu } from "@/components/LokaltMenu";
+import { PRIMARY_NAV, SECONDARY_NAV, isActive } from "@/shared/nav";
 
 interface MobileNavProps {
   pathname: string;
@@ -9,36 +10,33 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
-  const topRowStyle: React.CSSProperties = {
-    position: "sticky",
-    top: 0,
-    zIndex: 40,
-    height: 56,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 14px",
+  const barStyle: React.CSSProperties = {
     background: "color-mix(in oklab, var(--color-bg) 92%, transparent)",
     backdropFilter: "blur(20px) saturate(160%)",
     WebkitBackdropFilter: "blur(20px) saturate(160%)",
-    borderBottom: "1px solid var(--color-border)",
   };
-
-  const pillRowStyle: React.CSSProperties = {
-    position: "sticky",
-    top: 56,
-    zIndex: 39,
-    background: "color-mix(in oklab, var(--color-bg) 92%, transparent)",
-    backdropFilter: "blur(20px) saturate(160%)",
-    WebkitBackdropFilter: "blur(20px) saturate(160%)",
-    borderBottom: "1px solid var(--color-border)",
-  };
-
-  const lokaltActive = isLokaltSection(pathname);
 
   return (
-    <div className="mobile-only" style={{ minWidth: 0, overflow: "hidden" }}>
-      <div style={topRowStyle}>
+    <header
+      className="mobile-only"
+      style={{
+        ...barStyle,
+        position: "sticky",
+        top: 0,
+        zIndex: 40,
+        minWidth: 0,
+        borderBottom: "1px solid var(--color-border)",
+      }}
+    >
+      <div
+        style={{
+          height: 56,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 14px",
+        }}
+      >
         {/* Balances the theme button so the wordmark stays centered.
             The old left control was a hamburger that did not open a menu. */}
         <span style={{ width: 36, flexShrink: 0 }} aria-hidden="true" />
@@ -76,7 +74,7 @@ export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
         </button>
       </div>
 
-      <div style={pillRowStyle}>
+      <nav aria-label="Huvudmeny" style={{ borderTop: "1px solid var(--color-border)" }}>
         <div
           className="mobile-scroll-pills"
           style={{ gap: 6, padding: "6px 14px", height: 44, alignItems: "center" }}
@@ -84,9 +82,10 @@ export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
           {PRIMARY_NAV.map((item) => {
             const active = isActive(item, pathname);
             return (
-              <NavLink
+              <Link
                 key={item.to}
                 to={item.to}
+                aria-current={active ? "page" : undefined}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -106,55 +105,48 @@ export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
                 }}
               >
                 {item.label}
-              </NavLink>
+              </Link>
             );
           })}
-          <NavLink
-            to="/lokalt"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              height: 32,
-              padding: "0 14px",
-              borderRadius: 999,
-              border: lokaltActive ? "none" : "1px solid var(--color-accent)",
-              background: lokaltActive ? "var(--color-fg)" : "transparent",
-              color: lokaltActive ? "var(--color-bg)" : "var(--color-accent)",
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              letterSpacing: "1.1px",
-              textTransform: "uppercase",
-              textDecoration: "none",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-            }}
-          >
-            Lokalt
-          </NavLink>
+        </div>
+      </nav>
+
+      {/* Side menu and secondary links, off the core row. */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          padding: "6px 14px 8px",
+          borderTop: "1px solid var(--color-border)",
+          background: "var(--color-track)",
+        }}
+      >
+        <nav aria-label="Lokalt">
+          <LokaltMenu pathname={pathname} />
+        </nav>
+        <nav aria-label="Mer" style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {SECONDARY_NAV.map((item) => (
-            <NavLink
+            <Link
               key={item.to}
               to={item.to}
+              aria-current={isActive(item, pathname) ? "page" : undefined}
               style={{
-                display: "inline-flex",
-                alignItems: "center",
-                height: 32,
-                padding: "0 8px",
                 fontFamily: "var(--font-mono)",
                 fontSize: 11,
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 textDecoration: "none",
                 whiteSpace: "nowrap",
-                flexShrink: 0,
                 color: isActive(item, pathname) ? "var(--color-fg)" : "var(--color-fg-muted)",
               }}
             >
               {item.label}
-            </NavLink>
+            </Link>
           ))}
-        </div>
+        </nav>
       </div>
-    </div>
+    </header>
   );
 }

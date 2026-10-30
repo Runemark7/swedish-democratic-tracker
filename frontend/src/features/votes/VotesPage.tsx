@@ -29,7 +29,7 @@ export function VotesPage() {
     <div>
       <div className="mb-8">
         <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">
-          Omröstningar
+          Beslut
         </h2>
         <p className="text-sm text-on-surface-variant leading-relaxed max-w-lg">
           Alla berikade riksdagsomröstningar med förslagens ursprung.
