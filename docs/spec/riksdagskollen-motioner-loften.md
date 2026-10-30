@@ -743,10 +743,10 @@ The Valmanifest catalogue becomes a registered data source with a data-source pa
     - 2024/25 SkU14 p3 carries an unrelated SD "Punktskatt och tull" origin;
     - 2022/23 SkU15 p4 has no origin at all.
 - **Speech coverage today:** 2025-05 to 2025-09 and 2026-08 to 2026-10 only. The worked example's debates (2018-03-28 and later) are therefore missing until the backfill, which now runs back to 2002/03.
-- **Open questions for Alexander** (resolved on 2026-10-28: Phase 1 curation, Regeringen's place, Löften's place, backfill depth, and Avstår/Delad):
+- **Open questions for Alexander** (resolved on 2026-10-28: Phase 1 curation, Regeringen's place, Löften's place, backfill depth, and Avstår/Delad; resolved on 2026-10-30: the betänkande URL format):
   1. **Outcome words.** For acklamation: "Avslagen (utan omröstning)" or "Avslagen" plus a separate "Avgjord utan omröstning" tag? For Besvarad, which means the utskott held the demand already met or under way, is "Besvarad" plain enough, or should it be explained?
   2. **Phase 2 carry-over:** the Veckobatch size of 20 and the confidence threshold of 0.6.
-  3. **The canonical betänkande URL format:** "2026/27" or "2026-27"? This may already be settled by the quick-wins PR.
+  3. **The canonical betänkande URL format** (resolved 2026-10-30): the riksmöte is written "2026/27", as Riksdagen writes it, never "2026-27". Where it must sit in a single path segment or a query parameter it is URL-encoded ("2026%2F27").
 - **Repo documentation that contradicts the decisions.** The docs PR for this spec fixes CLAUDE.md's "promises kept or broken", its database description (Neon / Postgres 17, while production is self-hosted Postgres 18 on the VPS) and its navigation. Still to update in the build:
   - CLAUDE.md lists "keyword-matcher" and "refresh-scorecards" as scheduled workers.
   - CLAUDE.md describes the stub AI service as the future home of AI calls.
