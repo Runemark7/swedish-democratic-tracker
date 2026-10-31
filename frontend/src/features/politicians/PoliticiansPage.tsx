@@ -71,7 +71,7 @@ export function PoliticiansPage() {
     <div>
       <div className="mb-6">
         <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">
-          Enskilda politiker
+          Ledamöter
         </h2>
         <p className="text-sm text-on-surface-variant leading-relaxed">
           Sök bland riksdagens ledamöter och se deras röstningshistorik.
@@ -103,7 +103,7 @@ export function PoliticiansPage() {
 
           {filtered.length === 0 && (
             <p className="text-on-surface-variant text-center py-16 text-sm">
-              Inga politiker hittades.
+              Inga ledamöter hittades.
             </p>
           )}
 

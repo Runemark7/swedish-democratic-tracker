@@ -6,7 +6,7 @@ test.describe("Politicians page", () => {
   });
 
   test("shows heading", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Politiker" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Ledamöter" })).toBeVisible();
   });
 
   test("shows politician rows from seed data", async ({ page }) => {

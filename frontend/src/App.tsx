@@ -1,4 +1,5 @@
-import { Routes, Route, NavLink, useLocation, Link, Navigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useLocation, Link, Navigate, useParams } from "react-router-dom";
 import { PartiesPage } from "./features/parties/PartiesPage";
 import { PartyDetailPage } from "./features/parties/PartyDetailPage";
 import { GoalVotesPage } from "./features/parties/GoalVotesPage";
@@ -40,7 +41,7 @@ import { swedishDate } from "./shared/dates";
 import { MobileNav } from "./components/MobileNav";
 import { Wordmark } from "./components/Wordmark";
 import { LokaltMenu } from "./components/LokaltMenu";
-import { PRIMARY_NAV, SECONDARY_NAV, isActive } from "./shared/nav";
+import { PRIMARY_NAV, SECONDARY_NAV, documentTitle, isActive } from "./shared/nav";
 
 // ── Nav pill ───────────────────────────────────────────────────────────────
 interface PillNavProps {
@@ -51,8 +52,9 @@ interface PillNavProps {
 
 function PillNav({ to, label, active }: PillNavProps) {
   return (
-    <NavLink
+    <Link
       to={to}
+      aria-current={active ? "page" : undefined}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -72,7 +74,7 @@ function PillNav({ to, label, active }: PillNavProps) {
       }}
     >
       {label}
-    </NavLink>
+    </Link>
   );
 }
 
@@ -101,6 +103,11 @@ export default function App() {
   // absolute URL), which is the only reason this has not bitten yet.
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { data: coverage } = useRecordCoverage();
+  const pathname = location.pathname;
+
+  useEffect(() => {
+    document.title = documentTitle(pathname);
+  }, [pathname]);
 
   // Share-only pages render without app chrome
   if (location.pathname.endsWith("/dela")) {
@@ -110,8 +117,6 @@ export default function App() {
       </Routes>
     );
   }
-
-  const pathname = location.pathname;
 
   return (
     <div className="sdt-page">
@@ -123,7 +128,7 @@ export default function App() {
       />
 
       {/* ── Desktop top nav (>640 px) ─────────────────────────────────── */}
-      <nav
+      <header
         className="desktop-only"
         style={{
           background: "var(--color-bg)",
@@ -149,15 +154,28 @@ export default function App() {
           <Wordmark />
 
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", flex: 1 }}>
-            {PRIMARY_NAV.map((item) => (
-              <PillNav
-                key={item.to}
-                to={item.to}
-                label={item.label}
-                active={isActive(item, pathname)}
-              />
-            ))}
-            <LokaltMenu pathname={pathname} />
+            <nav aria-label="Huvudmeny" style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+              {PRIMARY_NAV.map((item) => (
+                <PillNav
+                  key={item.to}
+                  to={item.to}
+                  label={item.label}
+                  active={isActive(item, pathname)}
+                />
+              ))}
+            </nav>
+            <span
+              aria-hidden="true"
+              style={{
+                width: 1,
+                alignSelf: "stretch",
+                margin: "6px 8px",
+                background: "var(--color-border)",
+              }}
+            />
+            <nav aria-label="Lokalt">
+              <LokaltMenu pathname={pathname} />
+            </nav>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
@@ -190,23 +208,26 @@ export default function App() {
                 : "Ingen omröstningsdata"}
             </div>
 
-            {SECONDARY_NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 11,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  textDecoration: "none",
-                  color: isActive(item, pathname) ? "var(--color-fg)" : "var(--color-fg-muted)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {item.label}
-              </Link>
-            ))}
+            <nav aria-label="Mer" style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              {SECONDARY_NAV.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  aria-current={isActive(item, pathname) ? "page" : undefined}
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 11,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    textDecoration: "none",
+                    color: isActive(item, pathname) ? "var(--color-fg)" : "var(--color-fg-muted)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
 
             {/* Theme toggle */}
             <button
@@ -231,7 +252,7 @@ export default function App() {
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* ── Page content ──────────────────────────────────────────────── */}
       <main style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0" : "32px" }}>
@@ -249,8 +270,10 @@ export default function App() {
           <Route path="/parties/:party/goals/:goalId/votes"    element={<GoalVotesPage />} />
           <Route path="/politicians"                           element={<PoliticiansPage />} />
           <Route path="/politicians/:id"                       element={<PoliticianPage />} />
-          <Route path="/votes"                                 element={<VotesPage />} />
+          {/* The list moved to /beslut. Detail and share URLs stay. */}
+          <Route path="/votes"                                 element={<Navigate to="/beslut" replace />} />
           <Route path="/votes/:beteckning/:punkt"              element={<VoteDetailPage />} />
+          <Route path="/beslut"                                element={<VotesPage />} />
           <Route path="/beslut/:beteckning"                    element={<BeslutDetailPage />} />
           <Route path="/budget"                                element={<BudgetPage />} />
           <Route path="/budget/areas/:code"                    element={<AreaHistoryPage />} />
@@ -281,13 +304,10 @@ export default function App() {
         }}
       >
         <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
-          {[
-            { to: "/om-sajten", label: "Om sajten" },
-            { to: "/data", label: "Datakällor" },
-          ].map((l) => (
+          {SECONDARY_NAV.map((item) => (
             <Link
-              key={l.to}
-              to={l.to}
+              key={item.to}
+              to={item.to}
               style={{
                 fontFamily: "var(--font-mono)",
                 fontSize: 11,
@@ -297,7 +317,7 @@ export default function App() {
                 textTransform: "uppercase",
               }}
             >
-              {l.label}
+              {item.label}
             </Link>
           ))}
         </div>

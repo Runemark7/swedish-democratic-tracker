@@ -4,33 +4,27 @@
  * Desktop (`App.tsx`) and mobile (`MobileNav.tsx`) both read this. A second
  * copy is how the same route ended up with two labels.
  *
- * The core product — what the Riksdag decides — sits in PRIMARY_NAV. Kommun
- * and region are a side product under Lokalt. Om sajten and Data are
- * secondary: they stay linked, they are not the front door.
+ * Core menu: Beslut · Ledamöter · Partier · Regeringen. Motioner is inserted
+ * between Beslut and Ledamöter by #143, once that list exists. Regeringen
+ * still opens today's /regering page; #136 turns that page into the combined
+ * government view (budget, Riksdag overview, agencies).
+ *
+ * Lokalt (kommuner and regioner) is a side menu, not a core item. Om sajten
+ * and Data are secondary. Manifest stays at /manifestos and is not a menu
+ * item. Budget and Riksdag stay reachable by their current URLs until #136.
  */
 export interface NavItem {
   to: string;
   label: string;
-  /** Path prefixes that mark this item active. */
+  /** Path prefixes that mark this item active, including retired URLs. */
   match: string[];
 }
 
-/**
- * Top-level nav. The old Riksdag sub-tabs (partier, omröstningar, politiker,
- * manifest, plus statsbudget so that page stays one click away) live here.
- * Riksdag and Regering stay too: dropping the Fördjupning row must not hide
- * those routes.
- *
- * Home is the wordmark, not a pill. There is no "Frågor" item.
- */
 export const PRIMARY_NAV: NavItem[] = [
+  { to: "/beslut", label: "Beslut", match: ["/beslut", "/votes"] },
+  { to: "/politicians", label: "Ledamöter", match: ["/politicians"] },
   { to: "/parties", label: "Partier", match: ["/parties"] },
-  { to: "/votes", label: "Omröstningar", match: ["/votes", "/beslut"] },
-  { to: "/politicians", label: "Politiker", match: ["/politicians"] },
-  { to: "/manifestos", label: "Manifest", match: ["/manifestos"] },
-  { to: "/budget", label: "Budget", match: ["/budget"] },
-  { to: "/riksdag", label: "Riksdag", match: ["/riksdag"] },
-  { to: "/regering", label: "Regering", match: ["/regering"] },
+  { to: "/regering", label: "Regeringen", match: ["/regering"] },
 ];
 
 /** Kommun and region, collapsed. The routes themselves are unchanged. */
@@ -59,4 +53,17 @@ export function isLokaltSection(pathname: string): boolean {
     pathname.startsWith("/lokalt/") ||
     LOKALT_NAV.some((item) => isActive(item, pathname))
   );
+}
+
+/** Browser tab title. Every route keeps the product name. */
+export function documentTitle(pathname: string): string {
+  const primary = PRIMARY_NAV.find((item) => isActive(item, pathname));
+  if (primary) return `Riksdagskollen – ${primary.label}`;
+  if (isLokaltSection(pathname)) return "Riksdagskollen – Lokalt";
+  const secondary = SECONDARY_NAV.find((item) => isActive(item, pathname));
+  if (secondary) return `Riksdagskollen – ${secondary.label}`;
+  if (pathname === "/manifestos" || pathname.startsWith("/manifestos/")) {
+    return "Riksdagskollen – Valmanifest";
+  }
+  return "Riksdagskollen";
 }
