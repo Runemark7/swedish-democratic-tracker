@@ -158,7 +158,7 @@ func (s *Service) ListDistinctByCommitteePrefix(ctx context.Context, prefix stri
 // dominant position, plus the total count for pagination.
 //
 // Refuses an unrecognised period with ErrPeriodNotFound rather than answering
-// it with an empty page: 200 {"items":[],"total":0} for ?period=2018-2022 is
+// it with an empty page: 200 {"items":[],"total":0} for ?period=1994-1998 is
 // indistinguishable from a committee that decided nothing, which is a claim
 // about the record this endpoint is in no position to make — the same
 // reasoning committees.Service.Get already applies to GET /committees/{code}.
