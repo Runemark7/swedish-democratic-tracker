@@ -2,18 +2,38 @@ package postgres_test
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strconv"
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"riksdagskollen/internal/testdb"
 	"riksdagskollen/internal/votes/adapters/postgres"
 )
 
 // The only mandate period seeded in the dev database. Every test below is
 // scoped to it, the same way GET /committees/{code} requires ?period=.
 const testPeriod = "2022-2026"
+
+func TestMain(m *testing.M) {
+	if url := os.Getenv("TEST_DATABASE_URL"); url != "" {
+		ctx := context.Background()
+		pool, err := pgxpool.New(ctx, url)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "test db: %v\n", err)
+			os.Exit(1)
+		}
+		err = testdb.EnsureVoteRecord(ctx, pool)
+		pool.Close()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "seed vote record: %v\n", err)
+			os.Exit(1)
+		}
+	}
+	os.Exit(m.Run())
+}
 
 func connectVotesCommitteeDB(t *testing.T) *pgxpool.Pool {
 	t.Helper()
@@ -30,9 +50,9 @@ func connectVotesCommitteeDB(t *testing.T) *pgxpool.Pool {
 }
 
 // TestPeriodExists covers a known-good period and a period the record does
-// not hold. "2018-2022" is the specific example committees.Service's own
-// doc comment names for why an unrecognised period must be refused rather
-// than answered with an empty result.
+// not hold. 1994-1998 is before the earliest seeded mandate period
+// (2002-2006). 2018-2022 used to be the unknown example, but migration
+// 000038 inserts it.
 func TestPeriodExists(t *testing.T) {
 	pool := connectVotesCommitteeDB(t)
 	repo := postgres.NewRepository(pool)
@@ -45,12 +65,12 @@ func TestPeriodExists(t *testing.T) {
 		t.Errorf("PeriodExists(%q) = false, want true — this period is seeded", testPeriod)
 	}
 
-	ok, err = repo.PeriodExists(context.Background(), "2018-2022")
+	ok, err = repo.PeriodExists(context.Background(), "1994-1998")
 	if err != nil {
-		t.Fatalf("PeriodExists(2018-2022): %v", err)
+		t.Fatalf("PeriodExists(1994-1998): %v", err)
 	}
 	if ok {
-		t.Errorf("PeriodExists(2018-2022) = true, want false — this period predates the record")
+		t.Errorf("PeriodExists(1994-1998) = true, want false — this period is not seeded")
 	}
 }
 

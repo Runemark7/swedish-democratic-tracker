@@ -29,7 +29,8 @@ func cleanScorecardFixtures(t *testing.T, pool *pgxpool.Pool) {
 	t.Helper()
 	ctx := context.Background()
 	for _, q := range []string{
-		`DELETE FROM votes WHERE party = 'ZZ'`,
+		// 000040 dropped the votes view. Ballots cascade from voteringar.
+		`DELETE FROM voteringar WHERE votering_id LIKE 'ZZ-%'`,
 		`DELETE FROM party_goals WHERE party = 'ZZ'`,
 		`DELETE FROM politicians WHERE intressent_id LIKE 'ZZ-%'`,
 		`DELETE FROM parties WHERE code = 'ZZ'`,
@@ -78,8 +79,11 @@ func seedMatch(t *testing.T, pool *pgxpool.Pool, goalID int, bet, punkt, directi
 	}
 }
 
-// seedBallots inserts one votes row per result, each with its own synthetic
-// politician, for the ZZ party on the given vote point.
+// seedBallots inserts one ballot per result on a votering outside every
+// mandate period. party_scorecards counts goal_vote_matches, not ballots;
+// the rows are here so a view that started reading ballots again would still
+// be exercised. The session is not in mandate_periods, so these rows cannot
+// change the committee-list counts running in another package.
 func seedBallots(t *testing.T, pool *pgxpool.Pool, bet, punkt string, results []string) {
 	t.Helper()
 	ctx := context.Background()
@@ -91,12 +95,17 @@ func seedBallots(t *testing.T, pool *pgxpool.Pool, bet, punkt string, results []
 			ON CONFLICT (intressent_id) DO NOTHING`, pid); err != nil {
 			t.Fatalf("seed politician: %v", err)
 		}
+		var ref int
+		if err := pool.QueryRow(ctx, `
+			INSERT INTO voteringar (votering_id, beteckning, forslagspunkt, session)
+			VALUES ($1, $2, $3, '2099/00')
+			RETURNING id`, pid+"-v", bet, punkt).Scan(&ref); err != nil {
+			t.Fatalf("seed votering: %v", err)
+		}
 		if _, err := pool.Exec(ctx, `
-			INSERT INTO votes
-				(votering_id, politician_id, party, vote_result, beteckning, forslagspunkt, session)
-			VALUES ($1, $2, 'ZZ', $3, $4, $5, '2025/26')`,
-			pid+"-v", pid, res, bet, punkt); err != nil {
-			t.Fatalf("seed vote: %v", err)
+			INSERT INTO ballots (votering_ref, politician_id, party, vote_result)
+			VALUES ($1, $2, 'ZZ', $3)`, ref, pid, res); err != nil {
+			t.Fatalf("seed ballot: %v", err)
 		}
 	}
 }
