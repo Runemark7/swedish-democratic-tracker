@@ -11,22 +11,31 @@ import (
 	"riksdagskollen/internal/politicians/domain"
 )
 
-const baseURL = "https://data.riksdagen.se"
+const defaultBaseURL = "https://data.riksdagen.se"
 
 type Client struct {
-	http *http.Client
+	http    *http.Client
+	baseURL string
 }
 
-func NewClient() *Client {
+func NewClient() *Client { return NewClientWithBaseURL("") }
+
+// NewClientWithBaseURL points the client at baseURL. An empty base URL uses
+// the production data.riksdagen.se origin.
+func NewClientWithBaseURL(baseURL string) *Client {
+	if baseURL == "" {
+		baseURL = defaultBaseURL
+	}
 	return &Client{
-		http: &http.Client{Timeout: 30 * time.Second},
+		http:    &http.Client{Timeout: 30 * time.Second},
+		baseURL: strings.TrimRight(baseURL, "/"),
 	}
 }
 
 // FetchMembers fetches current members for a party.
 // status: "tjanstgorande" for active members.
 func (c *Client) FetchMembers(ctx context.Context, party, status string) ([]*domain.Politician, error) {
-	url := fmt.Sprintf("%s/personlista/?rdlstatus=%s&parti=%s&utformat=json", baseURL, status, party)
+	url := fmt.Sprintf("%s/personlista/?rdlstatus=%s&parti=%s&utformat=json", c.baseURL, status, party)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

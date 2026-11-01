@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -140,6 +141,21 @@ func (s *Scheduler) Start() {
 }
 
 func (s *Scheduler) Stop() { s.cron.Stop() }
+
+// RunNamed runs one registered worker and returns its error. The daily chain
+// logs a worker error and continues; the API test seam needs the error.
+func (s *Scheduler) RunNamed(ctx context.Context, name string) error {
+	for _, e := range s.entries {
+		if e.w.Name() == name {
+			return s.invoke(ctx, e.w, false)
+		}
+	}
+	names := make([]string, len(s.entries))
+	for i, e := range s.entries {
+		names[i] = e.w.Name()
+	}
+	return fmt.Errorf("no ingestion worker %q (have %s)", name, strings.Join(names, ", "))
+}
 
 // RunDue runs every worker whose schedule is due, in registration order.
 // A chain that is already running is skipped. One worker's panic or error
