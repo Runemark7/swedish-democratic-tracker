@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	baseURL    = "https://data.riksdagen.se/dokumentlista/"
-	docBaseURL = "https://data.riksdagen.se/dokument/"
-	minYear    = 2018
+	defaultBaseURL = "https://data.riksdagen.se"
+	docBaseURL     = "https://data.riksdagen.se/dokument/"
+	minYear        = 2018
 )
 
 var htmlTagRe = regexp.MustCompile(`<[^>]+>`)
@@ -45,17 +45,27 @@ type apiResponse struct {
 }
 
 type AgencyClient struct {
-	http *http.Client
+	http    *http.Client
+	listURL string
 }
 
-func NewAgencyClient() *AgencyClient {
+func NewAgencyClient() *AgencyClient { return NewAgencyClientWithBaseURL("") }
+
+// NewAgencyClientWithBaseURL points document-list fetches at baseURL. An empty
+// base URL uses the production data.riksdagen.se origin. Stored document links
+// stay on that public origin either way.
+func NewAgencyClientWithBaseURL(baseURL string) *AgencyClient {
+	if baseURL == "" {
+		baseURL = defaultBaseURL
+	}
 	return &AgencyClient{
-		http: &http.Client{Timeout: 15 * time.Second},
+		http:    &http.Client{Timeout: 15 * time.Second},
+		listURL: strings.TrimRight(baseURL, "/") + "/dokumentlista/",
 	}
 }
 
 func (c *AgencyClient) fetch(ctx context.Context, params url.Values) ([]dokument, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, baseURL+"?"+params.Encode(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.listURL+"?"+params.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}

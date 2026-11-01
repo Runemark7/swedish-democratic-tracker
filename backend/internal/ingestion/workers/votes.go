@@ -14,10 +14,24 @@ import (
 type VotesWorker struct {
 	svc     *votes.Service
 	cursors ingPorts.CursorRepository
+	// now, when set, chooses the riksmöte to fetch. Nil means time.Now, which
+	// is what production uses. Set it before the scheduler copies the worker.
+	now func() time.Time
 }
 
 func NewVotesWorker(svc *votes.Service, cursors ingPorts.CursorRepository) VotesWorker {
 	return VotesWorker{svc: svc, cursors: cursors}
+}
+
+// SetNow pins the clock used to choose the riksmöte. The scheduler stores a
+// copy of the worker, so set this before registration.
+func (w *VotesWorker) SetNow(now func() time.Time) { w.now = now }
+
+func (w VotesWorker) at() time.Time {
+	if w.now != nil {
+		return w.now()
+	}
+	return time.Now()
 }
 
 func (w *VotesWorker) Name() string { return "fetch-votes" }
@@ -44,7 +58,7 @@ func (w *VotesWorker) Run(ctx context.Context) error {
 	if cur, err := w.cursors.Get(ctx, "votes"); err == nil && cur != nil && cur.LastDate != nil {
 		since = *cur.LastDate
 	}
-	rm := CurrentRiksmote(time.Now().UTC())
+	rm := CurrentRiksmote(w.at().UTC())
 	slog.Info("votes: incremental sync", "riksmote", rm, "since", since.Format("2006-01-02"))
 
 	// Enumerate newest-first and stop at the cursor. /dokumentlista paginates

@@ -21,10 +21,17 @@ type Client struct {
 	baseURL string
 }
 
-func NewClient() *Client {
+func NewClient() *Client { return NewClientWithBaseURL("") }
+
+// NewClientWithBaseURL points the client at baseURL. An empty base URL uses
+// the production data.riksdagen.se origin.
+func NewClientWithBaseURL(baseURL string) *Client {
+	if baseURL == "" {
+		baseURL = defaultBaseURL
+	}
 	return &Client{
 		http:    &http.Client{Timeout: 30 * time.Second},
-		baseURL: defaultBaseURL,
+		baseURL: strings.TrimRight(baseURL, "/"),
 	}
 }
 

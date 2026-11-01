@@ -11,14 +11,25 @@ import (
 	"riksdagskollen/internal/ministers/domain"
 )
 
-const baseURL = "https://data.riksdagen.se"
+const defaultBaseURL = "https://data.riksdagen.se"
 
 type Client struct {
-	http *http.Client
+	http    *http.Client
+	baseURL string
 }
 
-func NewClient() *Client {
-	return &Client{http: &http.Client{Timeout: 30 * time.Second}}
+func NewClient() *Client { return NewClientWithBaseURL("") }
+
+// NewClientWithBaseURL points the client at baseURL. An empty base URL uses
+// the production data.riksdagen.se origin.
+func NewClientWithBaseURL(baseURL string) *Client {
+	if baseURL == "" {
+		baseURL = defaultBaseURL
+	}
+	return &Client{
+		http:    &http.Client{Timeout: 30 * time.Second},
+		baseURL: strings.TrimRight(baseURL, "/"),
+	}
 }
 
 type rdDoc struct {
@@ -38,7 +49,7 @@ type rdResponse struct {
 
 func (c *Client) FetchProposals(ctx context.Context, deptCode string, year string) ([]*domain.Proposal, error) {
 	url := fmt.Sprintf("%s/dokumentlista/?doktyp=Prop&organ=%s&rm=%s&sz=50&utformat=json",
-		baseURL, deptCode, year)
+		c.baseURL, deptCode, year)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
