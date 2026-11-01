@@ -10,7 +10,6 @@ import { VotesPage } from "./features/votes/VotesPage";
 import { VoteDetailPage } from "./features/votes/VoteDetailPage";
 import { VoteSharePage } from "./features/votes/VoteSharePage";
 import { BeslutDetailPage } from "./features/votes/BeslutDetailPage";
-import { BudgetPage } from "./features/budget/BudgetPage";
 import { AreaHistoryPage } from "./features/budget/AreaHistoryPage";
 import { ManifestosPage } from "./features/manifestos/ManifestosPage";
 import { RegionLandingPage } from "./features/regions/RegionLandingPage";
@@ -24,10 +23,9 @@ import { MunicipalityDetailPage } from "./features/municipalities/MunicipalityDe
 import { MunicipalityComparePage } from "./features/municipalities/MunicipalityComparePage";
 import { HomePage } from "./features/home/HomePage";
 import { LokaltPage } from "./features/lokalt/LokaltPage";
-import { RiksdagPage } from "./features/riksdag/RiksdagPage";
 import { AuthorityDetailPage } from "./features/riksdag/AuthorityDetailPage";
 import { MyndigheterListPage } from "./features/riksdag/MyndigheterListPage";
-import { RegeringPage } from "./features/regering/RegeringPage";
+import { RegeringenPage } from "./features/regering/RegeringPage";
 import { MinisterDetailPage } from "./features/regering/MinisterDetailPage";
 import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
 import { DebateDetailPage } from "./features/speeches/DebateDetailPage";
@@ -42,6 +40,7 @@ import { MobileNav } from "./components/MobileNav";
 import { Wordmark } from "./components/Wordmark";
 import { LokaltMenu } from "./components/LokaltMenu";
 import { PRIMARY_NAV, SECONDARY_NAV, documentTitle, isActive } from "./shared/nav";
+import { regeringenRedirect } from "./shared/regeringen";
 
 // ── Nav pill ───────────────────────────────────────────────────────────────
 interface PillNavProps {
@@ -91,6 +90,16 @@ function PillNav({ to, label, active }: PillNavProps) {
 function GoalsRedirect() {
   const { party = "" } = useParams<{ party: string }>();
   return <Navigate to={`/parties/${party}`} replace />;
+}
+
+/**
+ * Budget, the Riksdag overview and the old Regering page now live on
+ * Regeringen. Same shape as GoalsRedirect: the old URL replaces itself,
+ * so the back button does not return to the address that redirected.
+ */
+function LegacyRegeringenRedirect() {
+  const { pathname } = useLocation();
+  return <Navigate to={regeringenRedirect(pathname) ?? "/regeringen"} replace />;
 }
 
 export default function App() {
@@ -258,11 +267,13 @@ export default function App() {
       <main style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "0" : "32px" }}>
         <Routes>
           <Route path="/"                                      element={<HomePage />} />
-          <Route path="/regering"     element={<RegeringPage />} />
-          <Route path="/regering/:id" element={<MinisterDetailPage />} />
-          <Route path="/riksdag"                               element={<RiksdagPage />} />
+          <Route path="/regeringen"                            element={<RegeringenPage />} />
+          <Route path="/regeringen/budget/:code"               element={<AreaHistoryPage />} />
+          <Route path="/regering/:id"                          element={<MinisterDetailPage />} />
+          <Route path="/regering"                              element={<LegacyRegeringenRedirect />} />
           <Route path="/riksdag/myndigheter"                   element={<MyndigheterListPage />} />
           <Route path="/riksdag/myndigheter/:slug"             element={<AuthorityDetailPage />} />
+          <Route path="/riksdag"                               element={<LegacyRegeringenRedirect />} />
           <Route path="/parties"                               element={<PartiesPage />} />
           <Route path="/parties/:party"                        element={<PartyDetailPage />} />
           <Route path="/committees/:code"                      element={<CommitteePage />} />
@@ -275,8 +286,8 @@ export default function App() {
           <Route path="/votes/:beteckning/:punkt"              element={<VoteDetailPage />} />
           <Route path="/beslut"                                element={<VotesPage />} />
           <Route path="/beslut/:beteckning"                    element={<BeslutDetailPage />} />
-          <Route path="/budget"                                element={<BudgetPage />} />
-          <Route path="/budget/areas/:code"                    element={<AreaHistoryPage />} />
+          <Route path="/budget/areas/:code"                    element={<LegacyRegeringenRedirect />} />
+          <Route path="/budget"                                element={<LegacyRegeringenRedirect />} />
           <Route path="/manifestos"                            element={<ManifestosPage />} />
           <Route path="/lokalt"                               element={<LokaltPage />} />
           <Route path="/region"                                element={<RegionLandingPage />} />

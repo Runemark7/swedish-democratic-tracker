@@ -9,7 +9,7 @@ last_verified: 2026-06-10
 verification_status: verified
 verification_notes: ~
 used_by:
-  - /riksdag (nationell KPI-strip — Arbetslöshet)
+  - /regeringen#riksdag (nationell KPI-strip — Arbetslöshet)
 ---
 
 ## Vad det är

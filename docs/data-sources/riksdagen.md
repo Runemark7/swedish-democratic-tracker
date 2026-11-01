@@ -10,7 +10,8 @@ verification_status: verified
 verification_notes: ""
 used_by:
   - / (Beslut idag, Aktuella debatter, Veckans omröstningar, Vad partierna säger)
-  - /riksdag (live votes, mandat, government composition)
+  - /regeringen#riksdag (live votes, mandat, government composition)
+  - /regeringen (regeringstyp)
   - /votes (alla)
   - /votes/:beteckning/:punkt (vote details)
   - /politicians (alla)

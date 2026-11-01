@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { riksdagApi } from "./api";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { regeringenSection } from "@/shared/regeringen";
 
 function Skeleton() {
   return (
@@ -36,8 +37,8 @@ export function AuthorityDetailPage() {
   if (isError || !authority) {
     return (
       <div className="sdt-page" style={{ padding: "40px 32px" }}>
-        <Link to="/riksdag" style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-accent)", textDecoration: "none" }}>
-          ← Tillbaka till riksdag
+        <Link to={regeringenSection("myndigheter")} style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-accent)", textDecoration: "none" }}>
+          ← Myndigheter
         </Link>
         <div style={{ marginTop: 40, fontFamily: "var(--font-body)", fontSize: 16, color: "var(--color-fg-muted)" }}>
           Myndigheten hittades inte.
@@ -68,10 +69,10 @@ export function AuthorityDetailPage() {
       {/* ── Back link ─────────────────────────────────────────────────── */}
       <div style={{ padding: "24px 32px 0" }}>
         <Link
-          to="/riksdag"
+          to={regeringenSection("myndigheter")}
           style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-accent)", textDecoration: "none", letterSpacing: "0.05em" }}
         >
-          ← RIKSDAG
+          ← Myndigheter
         </Link>
       </div>
 

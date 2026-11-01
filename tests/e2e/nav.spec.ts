@@ -48,7 +48,7 @@ test.describe("desktop nav", () => {
     await expect(primary.getByRole("link", { name: "Beslut", exact: true })).toHaveAttribute("href", "/beslut");
     await expect(primary.getByRole("link", { name: "Ledamöter", exact: true })).toHaveAttribute("href", "/politicians");
     await expect(primary.getByRole("link", { name: "Partier", exact: true })).toHaveAttribute("href", "/parties");
-    await expect(primary.getByRole("link", { name: "Regeringen", exact: true })).toHaveAttribute("href", "/regering");
+    await expect(primary.getByRole("link", { name: "Regeringen", exact: true })).toHaveAttribute("href", "/regeringen");
 
     await page.getByRole("button", { name: "Visa kommuner och regioner" }).click();
     const menu = page.getByRole("menu");
@@ -121,17 +121,21 @@ test.describe("routes the menu replaced", () => {
     ).toHaveCount(0);
 
     await page.goto("/budget");
-    await expect(page).toHaveURL(/\/budget$/);
+    await expect(page).toHaveURL(/\/regeringen#budget$/);
     await expect(page.getByRole("heading", { name: "Statsbudgeten" })).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Huvudmeny" }).getByRole("link", { name: "Regeringen", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
 
     await page.goto("/budget/areas/1");
-    await expect(page).toHaveURL(/\/budget\/areas\/1$/);
+    await expect(page).toHaveURL(/\/regeringen\/budget\/1$/);
 
     await page.goto("/riksdag");
-    await expect(page).toHaveURL(/\/riksdag$/);
-    await expect(page).toHaveTitle("Riksdagskollen");
+    await expect(page).toHaveURL(/\/regeringen#riksdag$/);
+    await expect(page).toHaveTitle("Riksdagskollen – Regeringen");
 
     await page.goto("/regering");
+    await expect(page).toHaveURL(/\/regeringen$/);
     await expect(page.getByRole("heading", { level: 2, name: /^Regeringen/ })).toBeVisible();
     await expect(
       page.getByRole("navigation", { name: "Huvudmeny" }).getByRole("link", { name: "Regeringen", exact: true }),

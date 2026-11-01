@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useMyndigheterList, useMyndigheterStats } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { regeringenSection } from "@/shared/regeringen";
 import type { SourceId } from "@/components/sources/SourceRegistry";
 
 type UnderGovChoice = "all" | "true" | "false";
@@ -56,7 +57,13 @@ export function MyndigheterListPage() {
   return (
     <div className="sdt-page" style={{ background: "var(--color-sdt-surface)", minHeight: "100vh" }}>
       <div style={{ padding: isMobile ? "18px 14px 0" : "40px 32px 0" }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "2px", color: "var(--color-fg-muted)", marginBottom: 6 }}>
+        <Link
+          to={regeringenSection("myndigheter")}
+          style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-accent)", textDecoration: "none", letterSpacing: "0.05em" }}
+        >
+          ← Regeringen
+        </Link>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "2px", color: "var(--color-fg-muted)", marginTop: 14, marginBottom: 6 }}>
           MYNDIGHETSREGISTER
         </div>
         <div style={{ fontFamily: "var(--font-serif)", fontSize: isMobile ? 28 : 44, fontWeight: 400, letterSpacing: "-1px", color: "var(--color-fg)", lineHeight: 1, marginBottom: 6 }}>
