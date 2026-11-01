@@ -202,7 +202,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "license": "Statskontoret open data — fri användning",
     "freshness": "årlig",
     "lastVerified": "Mon Jun 08 2026 00:00:00 GMT+0000 (Coordinated Universal Time)",
-    "blurb": "Statskontoret publicerar årligen statliga myndigheters faktiska driftkostnader (löner, lokaler, IT — exkl. transfereringar) som en ZIP med CSV-filer. Detta är \"kvittot\" för Myndigheter-kortet på Riksdag-sidan.",
+    "blurb": "Statskontoret publicerar årligen statliga myndigheters faktiska driftkostnader (löner, lokaler, IT — exkl. transfereringar) som en ZIP med CSV-filer. Detta är \"kvittot\" för Myndigheter-avsnittet på Regeringen.",
     "verificationStatus": "verified",
     "verificationNotes": null
   },

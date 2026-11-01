@@ -18,16 +18,16 @@ skapar `SourceRegistry.generated.ts`.
 | [seed-party-goals](./seed-party-goals.md) | Partimål (seed) | seed | partimål och scorecards |
 | [party-manifestos](./party-manifestos.md) | Partiernas valmanifest (katalog) | seed | valmanifestkatalogen (/manifestos) |
 | [seed-budget-data](./seed-budget-data.md) | Statsbudget (seed) | seed | budget per UO |
-| [national-agenda](./national-agenda.md) | Regeringens dokument (katalog) | seed | regeringens dokument (/regering) |
+| [national-agenda](./national-agenda.md) | Regeringens dokument (katalog) | seed | regeringens dokument (/regeringen) |
 | [region-budget-plan](./region-budget-plan.md) | Regioners mål och budget (seed) | seed | region: länk till officiell budget (/region/:code) |
 | [wikimedia-svg](./wikimedia-svg.md) | Sverige-karta SVG | seed | region/kommun-kartor |
 | [scb-myndighetsregistret](./scb-myndighetsregistret.md) | SCB Myndighetsregistret | api | myndighetsnamn, org-nummer, typ |
 | [statskontoret-myndighetsforteckning](./statskontoret-myndighetsforteckning.md) | Statskontoret Myndighetsförteckning | csv | årsarbetskrafter per myndighet |
 | [scb-kls-headcount](./scb-kls-headcount.md) | SCB KLS AM0102 — månadsanställda | api | anställda per myndighet (KLS-urval) |
-| [scb-aku-arbetsloshet](./scb-aku-arbetsloshet.md) | SCB AKU AM0401 — arbetslöshetstal | api | nationell KPI-strip (/riksdag) |
-| [scb-kpi-inflation](./scb-kpi-inflation.md) | SCB KPI PR0101 — inflationstakt | api | nationell KPI-strip (/riksdag) |
+| [scb-aku-arbetsloshet](./scb-aku-arbetsloshet.md) | SCB AKU AM0401 — arbetslöshetstal | api | nationell KPI-strip (/regeringen#riksdag) |
+| [scb-kpi-inflation](./scb-kpi-inflation.md) | SCB KPI PR0101 — inflationstakt | api | nationell KPI-strip (/regeringen#riksdag) |
 | [utskott-utgiftsomrade](./utskott-utgiftsomrade.md) | Utskottens utgiftsområden (riksdagsordningen) | seed | utgiftsområden per utskott (/committees) |
-| [valmyndigheten-riksdagsval](./valmyndigheten-riksdagsval.md) | Valmyndigheten — riksdagsmandat 2026 | seed | kammarens mandat (/riksdag) |
+| [valmyndigheten-riksdagsval](./valmyndigheten-riksdagsval.md) | Valmyndigheten — riksdagsmandat 2026 | seed | kammarens mandat (/regeringen#riksdag) |
 
 För att lägga till en ny källa: kopiera `_TEMPLATE.md`, fyll i, och kör
 `npm run sync:data-sources` i `frontend/`. Se även CLAUDE.md → "Data

@@ -6,12 +6,12 @@
  *
  * Core menu: Beslut · Ledamöter · Partier · Regeringen. Motioner is inserted
  * between Beslut and Ledamöter by #143, once that list exists. Regeringen
- * still opens today's /regering page; #136 turns that page into the combined
- * government view (budget, Riksdag overview, agencies).
+ * opens /regeringen, which holds the government, the budget, the Riksdag
+ * overview and the agencies. /regering, /budget and /riksdag redirect there.
  *
  * Lokalt (kommuner and regioner) is a side menu, not a core item. Om sajten
  * and Data are secondary. Manifest stays at /manifestos and is not a menu
- * item. Budget and Riksdag stay reachable by their current URLs until #136.
+ * item. Budget and Riksdag are not menu items; they are sections of Regeringen.
  */
 export interface NavItem {
   to: string;
@@ -24,7 +24,7 @@ export const PRIMARY_NAV: NavItem[] = [
   { to: "/beslut", label: "Beslut", match: ["/beslut", "/votes"] },
   { to: "/politicians", label: "Ledamöter", match: ["/politicians"] },
   { to: "/parties", label: "Partier", match: ["/parties"] },
-  { to: "/regering", label: "Regeringen", match: ["/regering"] },
+  { to: "/regeringen", label: "Regeringen", match: ["/regeringen", "/regering", "/budget", "/riksdag"] },
 ];
 
 /** Kommun and region, collapsed. The routes themselves are unchanged. */

@@ -9,9 +9,9 @@ last_verified: 2026-06-06
 verification_status: frozen
 verification_notes: ~
 used_by:
-  - /budget (budgetöversikt)
-  - /budget/areas/:code (UO-historik)
-  - /riksdag (Budget-kortet)
+  - /regeringen#budget (budgetöversikt)
+  - /regeringen/budget/:code (UO-historik)
+  - /regeringen#riksdag (Budget-kortet)
   - /committees/:code (beloppen i KOSTAR-raden)
 ---
 

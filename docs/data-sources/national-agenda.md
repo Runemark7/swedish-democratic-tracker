@@ -9,7 +9,7 @@ last_verified: 2026-08-11
 verification_status: verified
 verification_notes: ~
 used_by:
-  - /regering (katalogen över regeringens program- och budgetdokument)
+  - /regeringen#statsrad (katalogen över regeringens program- och budgetdokument)
 ---
 
 ## Vad det är

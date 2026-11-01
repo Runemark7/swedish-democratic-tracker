@@ -9,7 +9,8 @@ last_verified: 2026-10-27
 verification_status: verified
 verification_notes: ""
 used_by:
-  - /riksdag (kammarens mandat)
+  - /regeringen#riksdag (kammarens mandat)
+  - /regeringen (regeringstyp)
 ---
 
 ## Vad det är

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { regeringApi } from "./api";
 import { PartyBadge } from "@/shared/components";
+import { REGERINGEN_PATH } from "@/shared/regeringen";
 
 export function MinisterDetailPage() {
   const { id = "" } = useParams<{ id: string }>();
@@ -20,7 +21,7 @@ export function MinisterDetailPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <Link to="/regering" style={{ fontSize: 12, color: "var(--color-fg-muted)", textDecoration: "none" }}>
+        <Link to={REGERINGEN_PATH} style={{ fontSize: 12, color: "var(--color-fg-muted)", textDecoration: "none" }}>
           ← Regeringen
         </Link>
         <div className="mt-4 flex items-center gap-3">

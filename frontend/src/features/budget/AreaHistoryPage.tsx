@@ -5,6 +5,7 @@ import { TierNav } from "./components/TierNav";
 import { DeltaIndicator } from "./components/DeltaIndicator";
 import { DocumentLinks } from "./components/DocumentLinks";
 import { formatBudgetAmount } from "@/shared/design";
+import { regeringenSection } from "@/shared/regeringen";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 
 export function AreaHistoryPage() {
@@ -31,7 +32,7 @@ export function AreaHistoryPage() {
       <TierNav active="national" />
 
       <Link
-        to="/budget"
+        to={regeringenSection("budget")}
         className="text-xs text-on-surface-variant hover:text-on-surface transition-colors no-underline mb-4 inline-block"
       >
         &larr; Tillbaka till statsbudgeten

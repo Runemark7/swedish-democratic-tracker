@@ -9,15 +9,15 @@ last_verified: 2026-06-08
 verification_status: verified
 verification_notes: ""
 used_by:
-  - /riksdag (Myndigheter-kortet — donut, lista, dual-line)
+  - /regeringen#myndigheter (Myndigheter-kortet — donut, lista, dual-line)
   - /riksdag/myndigheter/:slug (myndighetsdetalj)
 ---
 
 ## Vad det är
 Statskontoret publicerar årligen statliga myndigheters faktiska
 driftkostnader (löner, lokaler, IT — exkl. transfereringar) som en
-ZIP med CSV-filer. Detta är "kvittot" för Myndigheter-kortet på
-Riksdag-sidan.
+ZIP med CSV-filer. Detta är "kvittot" för Myndigheter-avsnittet på
+Regeringen.
 
 ## Hur du själv kommer åt datan
 Datan publiceras som öppen data på Statskontorets webbplats. Landningssidan

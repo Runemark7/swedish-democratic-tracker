@@ -6,6 +6,7 @@ import { TierNav } from "./components/TierNav";
 import { DeltaIndicator } from "./components/DeltaIndicator";
 import { DocumentLinks } from "./components/DocumentLinks";
 import { formatBudgetAmount } from "@/shared/design";
+import { budgetAreaPath } from "@/shared/regeringen";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import type { components } from "@/shared/api-contract";
 
@@ -37,7 +38,7 @@ function budgetDocRefs(year: number): BudgetDocumentRef[] {
 
 type SortMode = "default" | "increase" | "decrease";
 
-export function BudgetPage() {
+export function BudgetPage({ embedded = false }: { embedded?: boolean }) {
   const { data: years } = useQuery({
     queryKey: ["budget-years"],
     queryFn: budgetApi.listYears,
@@ -69,10 +70,10 @@ export function BudgetPage() {
 
   return (
     <div>
-      <TierNav active="national" />
+      {!embedded && <TierNav active="national" />}
 
       <div className="mb-8">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">
+        <h2 id="budget-rubrik" className="font-display text-2xl font-extrabold tracking-tight mb-1">
           Statsbudgeten
         </h2>
         <p className="text-sm text-on-surface-variant leading-relaxed max-w-lg">
@@ -210,7 +211,7 @@ export function BudgetPage() {
             {sortedRows.map((row, i) => (
               <Link
                 key={row.area.code}
-                to={`/budget/areas/${row.area.code}`}
+                to={budgetAreaPath(row.area.code)}
                 className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-surface-low no-underline text-inherit"
                 style={{
                   borderTop: i > 0 ? "1px solid var(--color-surface-high)" : undefined,

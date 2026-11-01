@@ -109,10 +109,10 @@ function MyndighetRow({
   onToggle: () => void;
 }) {
   const yoy = authorityYoY(authority);
+  const detailHref = authority.slug ? `/riksdag/myndigheter/${authority.slug}` : null;
   return (
     <div style={{ borderTop: "1px solid var(--color-surface-high)" }}>
-      <button
-        onClick={onToggle}
+      <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr auto auto auto 14px",
@@ -121,17 +121,32 @@ function MyndighetRow({
           padding: "8px 12px",
           width: "100%",
           background: isOpen ? "var(--color-surface-low)" : "var(--color-sdt-surface)",
-          border: "none",
-          cursor: "pointer",
           textAlign: "left",
           color: "inherit",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
           <div style={{ width: 10, height: 10, borderRadius: 2, flexShrink: 0, background: color }} />
-          <span style={{ fontSize: 12, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {authority.name}
-          </span>
+          {detailHref ? (
+            <Link
+              to={detailHref}
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: "inherit",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {authority.name}
+            </Link>
+          ) : (
+            <span style={{ fontSize: 12, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {authority.name}
+            </span>
+          )}
         </div>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-on-surface-variant)", textAlign: "right", minWidth: 72 }}>
           {authority.expenditureMdkr.toFixed(1)} mdkr
@@ -150,7 +165,11 @@ function MyndighetRow({
         >
           {yoy == null ? "—" : `${yoy >= 0 ? "+" : ""}${yoy.toFixed(1)}%`}
         </span>
-        <span
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-label={isOpen ? `Dölj ${authority.name}` : `Visa ${authority.name}`}
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: 13,
@@ -159,11 +178,15 @@ function MyndighetRow({
             transform: isOpen ? "rotate(90deg)" : "none",
             display: "inline-block",
             transition: "transform 0.15s",
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
           }}
         >
           ›
-        </span>
-      </button>
+        </button>
+      </div>
 
       {isOpen && (
         <div style={{ padding: "10px 14px 14px", background: "var(--color-surface-low)", borderTop: "1px solid var(--color-border)" }}>
@@ -330,19 +353,16 @@ function MyndigheterCard({
   );
 }
 
-// ── RiksdagPage ───────────────────────────────────────────────────────────────
+// ── Myndigheter section ───────────────────────────────────────────────────────
 
-export function RiksdagPage() {
-  const isMobile = useMediaQuery("(max-width: 640px)");
+/** Top ten by operating cost, each name linking to the agency's own URL. */
+export function MyndigheterSection() {
   const { data, isLoading } = useRiksdag();
   const { data: budgetHistory = [] } = useRiksdagBudgetHistory();
-  const { data: coverage } = useRecordCoverage();
 
-  if (isLoading || !data) return <Skeleton />;
-
-  const { ruling, liveVotes = [], kpis, authorities } = data;
-
-  const totalSeats = [...ruling.parties, ...(ruling.support ?? []), ...ruling.opposition].reduce((s, p) => s + p.seats, 0);
+  if (isLoading || !data) {
+    return <p className="text-on-surface-variant text-sm py-4">Laddar myndigheter...</p>;
+  }
 
   // Statens budget total (mdkr) for the latest year present in budgetHistory.
   // BudgetSnapshot.total_mnkr is the full state-budget total for that year, so
@@ -353,15 +373,35 @@ export function RiksdagPage() {
       ? (budgetHistory.find((s) => s.year === latestBudgetYear)?.total_mnkr ?? 0) / 1000
       : null;
 
+  return <MyndigheterCard authorities={data.authorities ?? []} stateBudgetMdkr={stateBudgetMdkr} />;
+}
+
+// ── RiksdagPage ───────────────────────────────────────────────────────────────
+
+export function RiksdagPage({ embedded = false }: { embedded?: boolean }) {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  // Inside Regeringen the page shell already insets the content. A second
+  // 32px gutter would push the overview in from the section heading.
+  const gutter = embedded && !isMobile ? 0 : isMobile ? 14 : 32;
+  const { data, isLoading } = useRiksdag();
+  const { data: budgetHistory = [] } = useRiksdagBudgetHistory();
+  const { data: coverage } = useRecordCoverage();
+
+  if (isLoading || !data) return <Skeleton />;
+
+  const { ruling, liveVotes = [], kpis } = data;
+
+  const totalSeats = [...ruling.parties, ...(ruling.support ?? []), ...ruling.opposition].reduce((s, p) => s + p.seats, 0);
+
   return (
-    <div className="sdt-page">
+    <div className="sdt-page" style={embedded ? { minHeight: 0 } : undefined}>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <div
         style={{
           display: "flex",
           alignItems: "flex-end",
           gap: 28,
-          padding: isMobile ? "18px 14px 0" : "40px 32px 0",
+          padding: `${embedded ? (isMobile ? 8 : 0) : isMobile ? 18 : 40}px ${gutter}px 0`,
         }}
       >
         <span
@@ -425,7 +465,7 @@ export function RiksdagPage() {
             gap: 1,
             border: "1px solid var(--color-border)",
             background: "var(--color-border)",
-            margin: isMobile ? "14px 14px 0" : "22px 32px 0",
+            margin: `${isMobile ? 14 : 22}px ${gutter}px 0`,
           }}
         >
           {kpis.map((k) => (
@@ -511,10 +551,10 @@ export function RiksdagPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gridTemplateColumns: "1fr",
           gap: 1,
           border: "1px solid var(--color-border)",
-          margin: isMobile ? "14px 14px 0" : "22px 32px 0",
+          margin: `${isMobile ? 14 : 22}px ${gutter}px 0`,
           background: "var(--color-border)",
         }}
       >
@@ -539,16 +579,6 @@ export function RiksdagPage() {
 
           <MandateComposition ruling={ruling} totalSeats={totalSeats} sourceId="valmyndigheten-riksdagsval" />
         </div>
-
-        {/* Right card — MYNDIGHETER */}
-        <div
-          style={{
-            background: "var(--color-sdt-surface)",
-            padding: isMobile ? 16 : 24,
-          }}
-        >
-          <MyndigheterCard authorities={authorities ?? []} stateBudgetMdkr={stateBudgetMdkr} />
-        </div>
       </div>
 
       {/* ── Budget (full-width) ──────────────────────────────────────── */}
@@ -557,7 +587,7 @@ export function RiksdagPage() {
           style={{
             border: "1px solid var(--color-border)",
             borderTop: "none",
-            margin: isMobile ? "0 14px 0" : "0 32px 0",
+            margin: `0 ${gutter}px`,
           }}
         >
           <BudgetHistorySection snapshots={budgetHistory} sourceId="seed-budget-data" />
@@ -568,11 +598,11 @@ export function RiksdagPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1.3fr 1fr",
+          gridTemplateColumns: "1fr",
           gap: 1,
           border: "1px solid var(--color-border)",
           borderTop: "none",
-          margin: isMobile ? "1px 14px 28px" : "1px 32px 28px",
+          margin: `1px ${gutter}px 28px`,
           background: "var(--color-border)",
         }}
       >
