@@ -1,8 +1,8 @@
 import { test, expect, type Page } from "@playwright/test";
 
-const CORE = ["Beslut", "Ledamöter", "Partier", "Regeringen"] as const;
+const CORE = ["Beslut", "Motioner", "Ledamöter", "Partier", "Regeringen"] as const;
 
-/** Labels that used to sit in the core menu, plus Motioner which arrives in #143. */
+/** Labels that used to sit in the core menu. */
 const NOT_IN_CORE = [
   "Omröstningar",
   "Politiker",
@@ -10,7 +10,6 @@ const NOT_IN_CORE = [
   "Budget",
   "Riksdag",
   "Regering",
-  "Motioner",
   "Lokalt",
 ] as const;
 
@@ -40,12 +39,13 @@ async function expectShell(page: Page) {
 test.describe("desktop nav", () => {
   test.use({ viewport: { width: 1280, height: 800 } });
 
-  test("shows Beslut, Ledamöter, Partier and Regeringen, with Lokalt beside them", async ({ page }) => {
+  test("shows Beslut, Motioner, Ledamöter, Partier and Regeringen, with Lokalt beside them", async ({ page }) => {
     await page.goto("/");
     await expectShell(page);
 
     const primary = page.getByRole("navigation", { name: "Huvudmeny" });
     await expect(primary.getByRole("link", { name: "Beslut", exact: true })).toHaveAttribute("href", "/beslut");
+    await expect(primary.getByRole("link", { name: "Motioner", exact: true })).toHaveAttribute("href", "/motioner");
     await expect(primary.getByRole("link", { name: "Ledamöter", exact: true })).toHaveAttribute("href", "/politicians");
     await expect(primary.getByRole("link", { name: "Partier", exact: true })).toHaveAttribute("href", "/parties");
     await expect(primary.getByRole("link", { name: "Regeringen", exact: true })).toHaveAttribute("href", "/regeringen");

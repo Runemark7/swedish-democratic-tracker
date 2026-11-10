@@ -150,3 +150,120 @@ test.describe("motion page 2017/18:3293", () => {
     await expect(page.getByText("finns inte i vårt register")).toBeVisible();
   });
 });
+
+// Shape of GET /api/motions, as the seam test reads it from the recorded fixtures.
+const ROW_3293 = {
+  dokId: "H5023293",
+  riksmote: "2017/18",
+  beteckning: "3293",
+  title: "Skattemässig hantering av virtuella varor",
+  subtyp: "Kommittémotion",
+  kind: "Kommittémotion",
+  parties: ["M"],
+  date: "2017-10-05",
+  utskott: "SkU",
+  utskottName: "Skatteutskottet",
+  handledIn: ["2017/18:SkU11"],
+  sourceUrl: "https://data.riksdagen.se/dokument/H5023293.html",
+  outcome: { word: "Avslagen", counts: { Avslagen: 1 }, total: 1 },
+};
+const ROW_4202 = {
+  ...ROW_3293,
+  dokId: "H5024202",
+  beteckning: "4202",
+  title: "En motion av tre partier",
+  subtyp: "Enskild motion",
+  kind: "Flerpartimotion",
+  parties: ["C", "KD", "M"],
+  outcome: { word: "Delvis bifallen", counts: { Bifallen: 2, Avslagen: 1 }, total: 3 },
+};
+
+test.describe("Motioner list", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  test("menu has five items and Motioner leads to the list", async ({ page }) => {
+    await page.route("**/api/motions?**", (route) => route.fulfill({ json: { data: [ROW_3293], nextCursor: null } }));
+    await page.goto("/");
+    const primary = page.getByRole("navigation", { name: "Huvudmeny" });
+    await expect(primary.getByRole("link")).toHaveText(["Beslut", "Motioner", "Ledamöter", "Partier", "Regeringen"]);
+    await primary.getByRole("link", { name: "Motioner", exact: true }).click();
+    await expect(page).toHaveURL(/\/motioner$/);
+    await expect(page).toHaveTitle("Riksdagskollen – Motioner");
+    await expect(primary.getByRole("link", { name: "Motioner", exact: true })).toHaveAttribute("aria-current", "page");
+  });
+
+  test("a row shows title, parties, kind, date and outcome and links to its motion page", async ({ page }) => {
+    await page.route("**/api/motions?**", (route) =>
+      route.fulfill({ json: { data: [ROW_3293, ROW_4202], nextCursor: null } }),
+    );
+    await page.route("**/api/motions/2017%2F18/3293", (route) => route.fulfill({ json: MOTION_3293 }));
+    await page.goto("/motioner");
+
+    const rows = page.getByTestId("motion-row");
+    await expect(rows).toHaveCount(2);
+    await expect(rows.first()).toContainText("Skattemässig hantering av virtuella varor");
+    await expect(rows.first()).toContainText("2017/18:3293");
+    await expect(rows.first().getByTestId("row-kind")).toHaveText("Kommittémotion");
+    await expect(rows.first()).toContainText("5 oktober 2017");
+    await expect(rows.first().getByTestId("row-outcome")).toHaveText("Avslagen");
+    await expect(rows.nth(1).getByTestId("row-kind")).toHaveText("Flerpartimotion");
+    await expect(rows.nth(1).getByTestId("row-outcome")).toHaveText(
+      "Delvis bifallen (2 bifallen, 1 avslagen av 3 yrkanden)",
+    );
+
+    await rows.first().click();
+    await expect(page).toHaveURL(/\/motioner\/2017%2F18\/3293$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Skattemässig hantering av virtuella varor");
+  });
+
+  test("filters and search are sent to the API and kept in the URL", async ({ page }) => {
+    const seen: URLSearchParams[] = [];
+    await page.route("**/api/motions?**", async (route) => {
+      seen.push(new URL(route.request().url()).searchParams);
+      await route.fulfill({ json: { data: [ROW_3293], nextCursor: null } });
+    });
+    await page.goto("/motioner");
+    const filters = page.getByTestId("motion-filters");
+    await filters.getByLabel("Parti", { exact: true }).selectOption("M");
+    await filters.getByLabel("Utskott", { exact: true }).selectOption("SkU");
+    await filters.getByLabel("Utfall", { exact: true }).selectOption("Avslagen");
+    await filters.getByLabel("Riksmöte", { exact: true }).selectOption("2017/18");
+    await filters.getByLabel("Typ", { exact: true }).selectOption("Kommittémotion");
+    await page.getByRole("searchbox", { name: "Sök i titlar och yrkanden" }).fill("virtuella varor");
+    await page.getByRole("button", { name: "Sök" }).click();
+
+    await expect.poll(() => seen.at(-1)?.get("q")).toBe("virtuella varor");
+    const last = seen.at(-1)!;
+    expect(Object.fromEntries(last.entries())).toMatchObject({
+      party: "M", utskott: "SkU", outcome: "Avslagen", riksmote: "2017/18", kind: "Kommittémotion", q: "virtuella varor",
+    });
+    await expect(page).toHaveURL(/party=M/);
+    await expect(page).toHaveURL(/kind=Kommitt%C3%A9motion/);
+
+    // The URL alone restores the view.
+    await page.reload();
+    await expect(filters.getByLabel("Utskott", { exact: true })).toHaveValue("SkU");
+    await expect(page.getByRole("searchbox", { name: "Sök i titlar och yrkanden" })).toHaveValue("virtuella varor");
+  });
+
+  test("pages with the cursor and says so when nothing matches", async ({ page }) => {
+    const cursors: (string | null)[] = [];
+    await page.route("**/api/motions?**", async (route) => {
+      const c = new URL(route.request().url()).searchParams.get("cursor");
+      cursors.push(c);
+      await route.fulfill({
+        json: c ? { data: [ROW_4202], nextCursor: null } : { data: [ROW_3293], nextCursor: "abc" },
+      });
+    });
+    await page.goto("/motioner");
+    await page.getByRole("button", { name: /Nästa/ }).click();
+    await expect(page.getByTestId("motion-row")).toContainText("En motion av tre partier");
+    await expect(page.getByRole("button", { name: /Nästa/ })).toBeDisabled();
+    expect(cursors).toContain("abc");
+
+    await page.unroute("**/api/motions?**");
+    await page.route("**/api/motions?**", (route) => route.fulfill({ json: { data: [], nextCursor: null } }));
+    await page.goto("/motioner?q=zzz");
+    await expect(page.getByText("Inga motioner matchar filtren.")).toBeVisible();
+  });
+});
