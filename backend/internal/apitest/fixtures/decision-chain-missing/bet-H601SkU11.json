@@ -1,0 +1,944 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H601SkU11.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H601SkU11.json",
+ "note": "Recorded 2026-11-10 from data.riksdagen.se. dokutskottsforslag cut to punkt 4 only; punkt 1, which cites 2018/19:2900, is dropped on purpose so the yrkande is missing from every stored förslagspunkt.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5017519",
+    "dok_id": "H601SkU11",
+    "rm": "2018/19",
+    "beteckning": "SkU11",
+    "typ": "bet",
+    "subtyp": "bet",
+    "doktyp": "bet",
+    "typrubrik": "Betänkande 2018/19:SkU11",
+    "dokumentnamn": "Betänkande",
+    "debattnamn": "Debatt om förslag",
+    "tempbeteckning": "",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "11",
+    "slutnummer": "0",
+    "datum": "2019-03-07 00:00:00",
+    "systemdatum": "2026-04-22 14:01:09",
+    "publicerad": "2019-01-17 08:51:27",
+    "titel": "Företag, kapital och fastighet",
+    "subtitel": "",
+    "status": "Webbpublicering",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "RIM",
+    "sourceid": "e5943573-1b93-4e6f-bb28-e7a1a7650f2c",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H601SkU11/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H601SkU11",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H601SkU11",
+    "utskottsforslag_url_xml": "https://data.riksdagen.se/utskottsforslag/H601SkU11"
+   },
+   "dokutskottsforslag": {
+    "utskottsforslag": [
+     {
+      "punkt": "4",
+      "rubrik": "Skogskonton m.m.",
+      "forslag": "<BR/>Riksdagen avslår motionerna \n\n2018/19:1281 av Mats Nordberg m.fl. (SD) yrkande 17, \n\n2018/19:1469 av Ola Johansson (C) yrkande 6, \n\n2018/19:2425 av Kristina Yngwe m.fl. (C) yrkande 73, \n\n2018/19:2490 av Per Åsling (C), \n\n2018/19:2526 av Per Åsling (C) yrkande 6, \n\n2018/19:2736 av Magnus Oscarsson m.fl. (KD) yrkandena 33 och 56-59 samt \n\n2018/19:2761 av Hampus Hagman m.fl. (KD) yrkande 8.<BR/><BR/>",
+      "beslutstyp": "röstning",
+      "motforslag_nummer": "8",
+      "motforslag_partier": "\"SD\"",
+      "votering_id": "2ecdab68-00d7-45d0-b592-00ae96e67e91",
+      "votering_sammanfattning_html": {
+       "table": {
+        "tr": [
+         {
+          "td": {
+           "h4": "Omröstning i sakfrågan",
+           "p": "Utskottets förslag mot reservation 8 (SD)"
+          }
+         },
+         {
+          "th": [
+           "Parti",
+           "Ja",
+           "Nej",
+           "Avstående",
+           "Frånvarande"
+          ]
+         },
+         {
+          "td": [
+           "S",
+           "89",
+           "0",
+           "0",
+           "11"
+          ]
+         },
+         {
+          "td": [
+           "M",
+           "62",
+           "0",
+           "0",
+           "8"
+          ]
+         },
+         {
+          "td": [
+           "SD",
+           "0",
+           "57",
+           "0",
+           "5"
+          ]
+         },
+         {
+          "td": [
+           "C",
+           "0",
+           "0",
+           "29",
+           "2"
+          ]
+         },
+         {
+          "td": [
+           "V",
+           "23",
+           "0",
+           "0",
+           "5"
+          ]
+         },
+         {
+          "td": [
+           "KD",
+           "0",
+           "0",
+           "20",
+           "2"
+          ]
+         },
+         {
+          "td": [
+           "L",
+           "14",
+           "0",
+           "0",
+           "6"
+          ]
+         },
+         {
+          "td": [
+           "MP",
+           "14",
+           "0",
+           "0",
+           "2"
+          ]
+         },
+         {
+          "td": [
+           "Totalt",
+           "202",
+           "57",
+           "49",
+           "41"
+          ]
+         },
+         {
+          "td": {
+           "h4": ""
+          }
+         }
+        ]
+       },
+       "br": null
+      },
+      "votering_url_xml": "http://data.riksdagen.se/votering/2ECDAB68-00D7-45D0-B592-00AE96E67E91",
+      "rm": "2018/19",
+      "bet": "SkU11",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1108 Stämpelskatten vid fastighetsköp",
+      "ref_dok_id": "H6021108",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1108",
+      "ref_dok_titel": "Stämpelskatten vid fastighetsköp",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1113 Gör det möjligt att hyra ut bostäder skattefritt till studenter",
+      "ref_dok_id": "H6021113",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1113",
+      "ref_dok_titel": "Gör det möjligt att hyra ut bostäder skattefritt till studenter",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1120 Sverigedemokraternas bostadspolitik",
+      "ref_dok_id": "H6021120",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1120",
+      "ref_dok_titel": "Sverigedemokraternas bostadspolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1122 En konkurrenskraftig svensk sjöfart",
+      "ref_dok_id": "H6021122",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1122",
+      "ref_dok_titel": "En konkurrenskraftig svensk sjöfart",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1178 Styrelsearvoden",
+      "ref_dok_id": "H6021178",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1178",
+      "ref_dok_titel": "Styrelsearvoden",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1281 En svensk skogspolitik",
+      "ref_dok_id": "H6021281",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1281",
+      "ref_dok_titel": "En svensk skogspolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1286 Idrottsfrågor",
+      "ref_dok_id": "H6021286",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1286",
+      "ref_dok_titel": "Idrottsfrågor",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1437 Vuxenutbildningen är nyckeln till en fungerande integration",
+      "ref_dok_id": "H6021437",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1437",
+      "ref_dok_titel": "Vuxenutbildningen är nyckeln till en fungerande integration",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1469 Byggnation med trä - ett bioekonomiskt hållbart alternativ",
+      "ref_dok_id": "H6021469",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1469",
+      "ref_dok_titel": "Byggnation med trä - ett bioekonomiskt hållbart alternativ",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:160 Kapitalförsörjning och riskkapital",
+      "ref_dok_id": "H602160",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "160",
+      "ref_dok_titel": "Kapitalförsörjning och riskkapital",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1603 Införande av avdragsrätt för friskvård i enskild firma",
+      "ref_dok_id": "H6021603",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1603",
+      "ref_dok_titel": "Införande av avdragsrätt för friskvård i enskild firma",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:169 En hållbar energipolitik",
+      "ref_dok_id": "H602169",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "169",
+      "ref_dok_titel": "En hållbar energipolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1750 Skattereformer för ett företagsklimat i världsklass",
+      "ref_dok_id": "H6021750",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1750",
+      "ref_dok_titel": "Skattereformer för ett företagsklimat i världsklass",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1841 Översyn av stämpelskatter vid fastighetsköp",
+      "ref_dok_id": "H6021841",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1841",
+      "ref_dok_titel": "Översyn av stämpelskatter vid fastighetsköp",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1895 Möjliggör för fler att starta företag",
+      "ref_dok_id": "H6021895",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1895",
+      "ref_dok_titel": "Möjliggör för fler att starta företag",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:1963 Rättvisa villkor mellan upplåtelseformer",
+      "ref_dok_id": "H6021963",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "1963",
+      "ref_dok_titel": "Rättvisa villkor mellan upplåtelseformer",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2004 Gör det möjligt att skriva av utbildning",
+      "ref_dok_id": "H6022004",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2004",
+      "ref_dok_titel": "Gör det möjligt att skriva av utbildning",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:222 Sänkt reavinstskatt vid försäljning av privatbostad",
+      "ref_dok_id": "H602222",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "222",
+      "ref_dok_titel": "Sänkt reavinstskatt vid försäljning av privatbostad",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:227 Utveckla 3:12-reglerna till förmån för småföretagaren",
+      "ref_dok_id": "H602227",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "227",
+      "ref_dok_titel": "Utveckla 3:12-reglerna till förmån för småföretagaren",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2278 Kapitalvinstbeskattning av bostäder",
+      "ref_dok_id": "H6022278",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2278",
+      "ref_dok_titel": "Kapitalvinstbeskattning av bostäder",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2280 Mer lönsamt att investera i kompetensutveckling",
+      "ref_dok_id": "H6022280",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2280",
+      "ref_dok_titel": "Mer lönsamt att investera i kompetensutveckling",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2306 Stärk konstnärernas sociala och ekonomiska trygghet",
+      "ref_dok_id": "H6022306",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2306",
+      "ref_dok_titel": "Stärk konstnärernas sociala och ekonomiska trygghet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2390 Fakturering av styrelseuppdrag i bolag",
+      "ref_dok_id": "H6022390",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2390",
+      "ref_dok_titel": "Fakturering av styrelseuppdrag i bolag",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2419 Förbättra trygghetssystemet",
+      "ref_dok_id": "H6022419",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2419",
+      "ref_dok_titel": "Förbättra trygghetssystemet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2425 Landsbygd och regional utveckling",
+      "ref_dok_id": "H6022425",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2425",
+      "ref_dok_titel": "Landsbygd och regional utveckling",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2428 Bostäder",
+      "ref_dok_id": "H6022428",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2428",
+      "ref_dok_titel": "Bostäder",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2430 Friskvårdsbidraget måste gälla för alla företagsformer",
+      "ref_dok_id": "H6022430",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2430",
+      "ref_dok_titel": "Friskvårdsbidraget måste gälla för alla företagsformer",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2446 Kultur, civilsamhälle och media i hela landet",
+      "ref_dok_id": "H6022446",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2446",
+      "ref_dok_titel": "Kultur, civilsamhälle och media i hela landet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2475 Ökad rörlighet på bostadsmarknaden",
+      "ref_dok_id": "H6022475",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2475",
+      "ref_dok_titel": "Ökad rörlighet på bostadsmarknaden",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2490 Beskattning av naturvårdsavtal",
+      "ref_dok_id": "H6022490",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2490",
+      "ref_dok_titel": "Beskattning av naturvårdsavtal",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2526 Etablera en sanningskommission om relationen mellan svenska staten och det samiska folket",
+      "ref_dok_id": "H6022526",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2526",
+      "ref_dok_titel": "Etablera en sanningskommission om relationen mellan svenska staten och det samiska folket",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2673 Konkurrensneutralitet mellan medieföretag verksamma i Sverige",
+      "ref_dok_id": "H6022673",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2673",
+      "ref_dok_titel": "Konkurrensneutralitet mellan medieföretag verksamma i Sverige",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2698 Skatter för företagande och tillväxt i hela landet",
+      "ref_dok_id": "H6022698",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2698",
+      "ref_dok_titel": "Skatter för företagande och tillväxt i hela landet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2700 Ett nytt stickår",
+      "ref_dok_id": "H6022700",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2700",
+      "ref_dok_titel": "Ett nytt stickår",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:273 Förenklade möjligheter att bedriva kustnära sjöfartsverksamhet",
+      "ref_dok_id": "H602273",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "273",
+      "ref_dok_titel": "Förenklade möjligheter att bedriva kustnära sjöfartsverksamhet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2736 Utgiftsområde 23 Areella näringar, landsbygd och livsmedel",
+      "ref_dok_id": "H6022736",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2736",
+      "ref_dok_titel": "Utgiftsområde 23 Areella näringar, landsbygd och livsmedel",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2761 Utgiftsområde 3 Skatt, tull och exekution",
+      "ref_dok_id": "H6022761",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2761",
+      "ref_dok_titel": "Utgiftsområde 3 Skatt, tull och exekution",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2779 En hållbar bostadspolitik",
+      "ref_dok_id": "H6022779",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2779",
+      "ref_dok_titel": "En hållbar bostadspolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2783 Fler företag och stärkt konkurrenskraft ",
+      "ref_dok_id": "H6022783",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2783",
+      "ref_dok_titel": "Fler företag och stärkt konkurrenskraft ",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2807 Hela Sverige ska jobba ",
+      "ref_dok_id": "H6022807",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2807",
+      "ref_dok_titel": "Hela Sverige ska jobba ",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2819 Reformagenda för Sverige ",
+      "ref_dok_id": "H6022819",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2819",
+      "ref_dok_titel": "Reformagenda för Sverige ",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2825 Utbildning som leder till jobb ",
+      "ref_dok_id": "H6022825",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2825",
+      "ref_dok_titel": "Utbildning som leder till jobb ",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2831 Fler bostäder och ökat byggande",
+      "ref_dok_id": "H6022831",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2831",
+      "ref_dok_titel": "Fler bostäder och ökat byggande",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2847 Digitala plattformstjänster",
+      "ref_dok_id": "H6022847",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2847",
+      "ref_dok_titel": "Digitala plattformstjänster",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2895 Klimatpolitik för hoppfulla",
+      "ref_dok_id": "H6022895",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2895",
+      "ref_dok_titel": "Klimatpolitik för hoppfulla",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2900 Sverige ska vara ett digitalt föregångsland",
+      "ref_dok_id": "H6022900",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2900",
+      "ref_dok_titel": "Sverige ska vara ett digitalt föregångsland",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2901 Transporter för jobb och tillväxt ",
+      "ref_dok_id": "H6022901",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2901",
+      "ref_dok_titel": "Transporter för jobb och tillväxt ",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2902 Sverige ska bli världens bästa land för delningsekonomi ",
+      "ref_dok_id": "H6022902",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2902",
+      "ref_dok_titel": "Sverige ska bli världens bästa land för delningsekonomi ",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:2914 Utgiftsområde 18 Samhällsplanering, bostadsförsörjning och byggande samt konsumentpolitik",
+      "ref_dok_id": "H6022914",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "2914",
+      "ref_dok_titel": "Utgiftsområde 18 Samhällsplanering, bostadsförsörjning och byggande samt konsumentpolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:308 Fastighetsskatt",
+      "ref_dok_id": "H602308",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "308",
+      "ref_dok_titel": "Fastighetsskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:383 Ett tryggt och hållbart arbetsliv",
+      "ref_dok_id": "H602383",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "383",
+      "ref_dok_titel": "Ett tryggt och hållbart arbetsliv",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:410 Bra bostäder åt alla",
+      "ref_dok_id": "H602410",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "410",
+      "ref_dok_titel": "Bra bostäder åt alla",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:447 Ungas möjlighet till en egen bostad",
+      "ref_dok_id": "H602447",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "447",
+      "ref_dok_titel": "Ungas möjlighet till en egen bostad",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:449 Uthyrning av bostäder",
+      "ref_dok_id": "H602449",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "449",
+      "ref_dok_titel": "Uthyrning av bostäder",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:594 Investeraravdraget",
+      "ref_dok_id": "H602594",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "594",
+      "ref_dok_titel": "Investeraravdraget",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:609 Reavinstbeskattningen vid bostadsflytt och en översyn av bostadspolitiken",
+      "ref_dok_id": "H602609",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "609",
+      "ref_dok_titel": "Reavinstbeskattningen vid bostadsflytt och en översyn av bostadspolitiken",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:648 Inköpspris för permanentbostad justerat efter inflationsindex vid beräkning av realisationsvinst",
+      "ref_dok_id": "H602648",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "648",
+      "ref_dok_titel": "Inköpspris för permanentbostad justerat efter inflationsindex vid beräkning av realisationsvinst",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:665 Karenstid för ändring av fastighetsavgift till fastighetsskatt efter brand",
+      "ref_dok_id": "H602665",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "665",
+      "ref_dok_titel": "Karenstid för ändring av fastighetsavgift till fastighetsskatt efter brand",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:720 Avskaffa stämpelskatten",
+      "ref_dok_id": "H602720",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "720",
+      "ref_dok_titel": "Avskaffa stämpelskatten",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:815 Ränteavdraget på bostäder",
+      "ref_dok_id": "H602815",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "815",
+      "ref_dok_titel": "Ränteavdraget på bostäder",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:819 Friskvårdsavdrag för egenföretagare",
+      "ref_dok_id": "H602819",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "819",
+      "ref_dok_titel": "Friskvårdsavdrag för egenföretagare",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "protokollbeslut",
+      "uppgift": "2019-03-13",
+      "ref_dok_id": "H60964",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "64",
+      "ref_dok_titel": "Protokoll 2018/19:64 Onsdagen den 13 mars",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "protokolldebatt",
+      "uppgift": "2019-03-13",
+      "ref_dok_id": "H60964",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "64",
+      "ref_dok_titel": "Protokoll 2018/19:64 Onsdagen den 13 mars",
+      "ref_dok_subtitel": "Företag, kapital och fastighet",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "talarlista",
+      "uppgift": "talarlista 2018/19:20190313 Onsdag den 13 mars 2019",
+      "ref_dok_id": "H60J20190313",
+      "ref_dok_typ": "t-lista",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "20190313",
+      "ref_dok_titel": "Onsdag den 13 mars 2019",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Talarlista"
+     }
+    ]
+   }
+  }
+ }
+}

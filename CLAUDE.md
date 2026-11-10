@@ -153,6 +153,7 @@ graph TD
             W5["⑤ keyword-matcher @daily"]
             W6["⑥ refresh-scorecards @weekly"]
             W7["⑦ fetch-motions @daily\nper riksmöte from mandate_periods"]
+            W8["⑧ fetch-betankanden @daily\n≤25 per run, resumable"]
         end
 
         subgraph seeder["Election seeder"]
@@ -171,6 +172,7 @@ graph TD
         KLS["SCB KLS AM0102\napi.scb.se — månadsanställda statlig sektor"]
         AKU["SCB AKU AM0401\napi.scb.se — arbetslöshetstal"]
         KPIINF["SCB KPI PR0101\napi.scb.se — inflationstakt årsförändring"]
+        BK["Riksdagen betänkanden\ndata.riksdagen.se dokumentlista + dokumentstatus (doktyp=bet) — förslagspunkter"]
         MO["Riksdagen motioner\ndata.riksdagen.se dokumentlista + dokumentstatus (doktyp=mot)"]
         RO["Riksdagsordningen 2014:801\nBilaga tb 7.5.1 — utskott→utgiftsområde"]
         VM["Valmyndigheten\nval.se — riksdagsmandat (seed)"]
@@ -186,7 +188,9 @@ graph TD
     W5 & W6 --> DB
 
     W7 -->|HTTP| MO
+    W8 -->|HTTP| BK
     MS -->|motion per riksmöte + beteckning| MO
+    MS -->|yrkande → förslagspunkt, beslut| BK
     VS -->|GET /dokumentlista betänkanden\nriksdags-feed endpoint| RD
     RS -->|"Region strip: N60008 N63016 N63007 N79173 N79179 N60404 N85012\nMunicipality strip: N00900 N03102 N03106 N15428 N00708\nMunicipality spending: N11004 N15028 N17014 N20014 N30005 N07037 N09022 N05011 N45014"| KO
     RS -->|population trend| SC

@@ -1,0 +1,171 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "mot",
+  "rm": "2018/19",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=mot&rm=2018/19&bet=<beteckning>&utformat=json",
+ "note": "Recorded 2026-11-10 from data.riksdagen.se. Rows are the live rows for the motions kept; @traffar is the live total for the riksmöte.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "293.0",
+   "@version": "3.9.0",
+   "@q": "sz=1&p=1&utformat=json&doktyp=mot&sort=datum&rm=2018%2f19&sortorder=desc",
+   "@varning": "traffar=3129",
+   "@datum": "2026-11-11 00:06:43",
+   "@nasta_sida": "http://data.riksdagen.se/dokumentlista/?sz=1&p=2&utformat=json&doktyp=mot&sort=datum&rm=2018%2f19&sortorder=desc",
+   "@sida": "1",
+   "@sidor": "3129",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "@traffar": "3129",
+   "@dPre": "0",
+   "@dSol": "15",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null,
+   "dokument": [
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2018-11-30",
+     "id": "h6022900",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2018-11-30",
+     "systemdatum": "2023-03-21 15:37:44",
+     "undertitel": "av Jessica Rosencrantz m.fl. (M)",
+     "kalla": "Filur",
+     "kall_id": "a4573dc2-e861-4021-8a74-3192fc420d3d",
+     "dok_id": "H6022900",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/H6022900.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/H6022900.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Sverige ska vara ett digitalt föregångsland",
+     "rm": "2018/19",
+     "organ": "FiU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Kommittémotion",
+     "beteckning": "2900",
+     "tempbeteckning": "",
+     "nummer": "2900",
+     "status": "Klar",
+     "score": "195",
+     "sokdata": {
+      "titel": "Sverige ska vara ett digitalt föregångsland",
+      "undertitel": "Motion 2018/19:2900 av Jessica Rosencrantz m.fl. (M)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2018-11-30</dd> <dt>Förslag</dt> <dd>35</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2018-11-30</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Arbetsmarknad och arbetslöshetsförsäkringen\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601AU6\">2018/19:AU6</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Statlig förvaltning och statistikfrågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601FiU25\">2018/19:FiU25</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Civilt försvar och krisberedskap\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601FöU7\">2018/19:FöU7</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Offentlighet, sekretess och integritet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601KU26\">2018/19:KU26</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Kommunala och regionala frågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601KU31\">2018/19:KU31</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Näringspolitik\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601NU7\">2018/19:NU7</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Företag, kapital och fastighet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601SkU11\">2018/19:SkU11</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Hälso- och sjukvårdsfrågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601SoU8\">2018/19:SoU8</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"It- och postfrågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601TU4\">2018/19:TU4</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Högskolan\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H601UbU13\">2018/19:UbU13</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2018/19:2900\n av Jessica Rosencrantz m.fl. (M)\n Sverige ska vara ett digitalt föregångsland\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att återuppta trepartssamtalen mellan staten och arbetsmarknadens parter i syfte att hitta en modell för kompetensutveckling",
+     "notisrubrik": "Sverige ska vara ett digitalt föregångsland",
+     "notis": "Motion till riksdagen\n 2018/19:2900\n av Jessica Rosencrantz m.fl. (M)\n Sverige ska vara ett digitalt föregångsland\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att återuppta trepartssamtalen mellan staten och arbetsmarknadens parter i syfte att hitta en modell för kompetensutveckling",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Jessica Rosencrantz",
+        "partibet": "M",
+        "intressent_id": "0992420223820"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Jessica Polfjärd",
+        "partibet": "M",
+        "intressent_id": "0630824497414"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Lars Hjälmered",
+        "partibet": "M",
+        "intressent_id": "0980316377627"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Erik Bengtzboe",
+        "partibet": "M",
+        "intressent_id": "0513020576128"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Camilla Waltersson Grönvall",
+        "partibet": "M",
+        "intressent_id": "0781623040415"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_201819__2900.docx",
+        "storlek": "101998",
+        "url": "https://data.riksdagen.se/fil/31A7E7FE-8E0C-468A-96E3-8E2460905054"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_201819__2900.pdf",
+        "storlek": "192338",
+        "url": "https://data.riksdagen.se/fil/7C0D5719-4F3F-4CF5-81C8-54E41D06B8F5"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    }
+   ]
+  }
+ }
+}

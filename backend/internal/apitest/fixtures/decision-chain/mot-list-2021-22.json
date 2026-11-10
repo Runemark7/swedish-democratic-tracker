@@ -1,0 +1,171 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "mot",
+  "rm": "2021/22",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=mot&rm=2021/22&bet=<beteckning>&utformat=json",
+ "note": "Recorded 2026-11-10 from data.riksdagen.se. Rows are the live rows for the motions kept; @traffar is the live total for the riksmöte.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "322.0",
+   "@version": "3.9.0",
+   "@q": "sz=1&p=1&utformat=json&doktyp=mot&sort=datum&rm=2021%2f22&sortorder=desc",
+   "@varning": "traffar=4777",
+   "@datum": "2026-11-11 00:06:43",
+   "@nasta_sida": "http://data.riksdagen.se/dokumentlista/?sz=1&p=2&utformat=json&doktyp=mot&sort=datum&rm=2021%2f22&sortorder=desc",
+   "@sida": "1",
+   "@sidor": "4777",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "@traffar": "4777",
+   "@dPre": "31",
+   "@dSol": "15",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null,
+   "dokument": [
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2021-10-05",
+     "id": "h9023638",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2021-10-05",
+     "systemdatum": "2023-02-15 09:10:28",
+     "undertitel": "av Niklas Wykman m.fl. (M)",
+     "kalla": "Filur",
+     "kall_id": "8b7db077-7ca2-44ee-9fdd-21eae5ca7ad0",
+     "dok_id": "H9023638",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/H9023638.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/H9023638.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Fler jobb, bättre integration och en växande ekonomi",
+     "rm": "2021/22",
+     "organ": "SkU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Kommittémotion",
+     "beteckning": "3638",
+     "tempbeteckning": "",
+     "nummer": "3638",
+     "status": "Klar",
+     "score": "214",
+     "sokdata": {
+      "titel": "Fler jobb, bättre integration och en växande ekonomi",
+      "undertitel": "Motion 2021/22:3638 av Niklas Wykman m.fl. (M)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2021-10-05</dd> <dt>Förslag</dt> <dd>9</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2021-10-05</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Inkomstskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU13\">2021/22:SkU13</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Företag, kapital och fastighet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU14\">2021/22:SkU14</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Mervärdesskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU16\">2021/22:SkU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Skatteförfarande och folkbokföring\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU17\">2021/22:SkU17</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(9 yrkanden): \n\t\t\t\t\t \n\t\t\t\t\t\t9 avslag\n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2021/22:3638\n av Niklas Wykman m.fl. (M)\n Fler jobb, bättre integration och en växande ekonomi\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att utreda införandet av en skattelättnad för företag som köper utbildning till sina anställda så att det blir mindre",
+     "notisrubrik": "Fler jobb, bättre integration och en växande ekonomi",
+     "notis": "Motion till riksdagen\n 2021/22:3638\n av Niklas Wykman m.fl. (M)\n Fler jobb, bättre integration och en växande ekonomi\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att utreda införandet av en skattelättnad för företag som köper utbildning till sina anställda så att det blir mindre",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Niklas Wykman",
+        "partibet": "M",
+        "intressent_id": "0493288854424"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Helena Bouveng",
+        "partibet": "M",
+        "intressent_id": "0729710260118"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Boriana Åberg",
+        "partibet": "M",
+        "intressent_id": "0105632258713"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Kjell Jansson",
+        "partibet": "M",
+        "intressent_id": "0779329190517"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Fredrik Schulte",
+        "partibet": "M",
+        "intressent_id": "0210198640127"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_202122__3638.docx",
+        "storlek": "76325",
+        "url": "https://data.riksdagen.se/fil/B3C1414F-8706-4892-B737-211D24E496D4"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_202122__3638.pdf",
+        "storlek": "91686",
+        "url": "https://data.riksdagen.se/fil/E4BA8489-0610-4A8F-8315-B8AC00F4931A"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    }
+   ]
+  }
+ }
+}

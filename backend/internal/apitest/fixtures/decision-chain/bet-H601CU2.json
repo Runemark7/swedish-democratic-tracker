@@ -1,0 +1,177 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H601CU2.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H601CU2.json",
+ "note": "Recorded 2026-11-10 from data.riksdagen.se. dokutskottsforslag cut to punkt 2 (the one citing 2017/18:4202).",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "4994401",
+    "dok_id": "H601CU2",
+    "rm": "2018/19",
+    "beteckning": "CU2",
+    "typ": "bet",
+    "subtyp": "bet",
+    "doktyp": "bet",
+    "typrubrik": "Betänkande 2018/19:CU2",
+    "dokumentnamn": "Betänkande",
+    "debattnamn": "Debatt om förslag",
+    "tempbeteckning": "",
+    "organ": "CU",
+    "mottagare": "",
+    "nummer": "2",
+    "slutnummer": "0",
+    "datum": "2018-11-07 00:00:00",
+    "systemdatum": "2018-12-05 10:34:04",
+    "publicerad": "2018-10-05 10:38:01",
+    "titel": "En ny regional planering",
+    "subtitel": "",
+    "status": "Webbpublicering",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "RIM",
+    "sourceid": "4ae983d0-ffa2-44d7-9ed1-1793f256f84f",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H601CU2/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H601CU2",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H601CU2",
+    "utskottsforslag_url_xml": "https://data.riksdagen.se/utskottsforslag/H601CU2"
+   },
+   "dokutskottsforslag": {
+    "utskottsforslag": [
+     {
+      "punkt": "2",
+      "rubrik": "Vilka län som bör omfattas av regional fysisk planering",
+      "forslag": "Riksdagen ställer sig bakom det som&nbsp;utskottet anför om att regeringen bör ta nödvändiga initiativ för att fler län ska omfattas&nbsp;av regional fysisk planering och tillkännager detta&nbsp;för regeringen.<BR/>Därmed bifaller riksdagen motionerna \n\n2017/18:4202 av Ola Johansson m.fl. (C, KD, M), \n\n2017/18:4203 av Robert Hannah m.fl. (L) yrkande 1 och \n\n2017/18:4204 av Roger Hedlund och Mikael Eskilandersson (båda SD) samt \n\nbifaller delvis motion \n\n2018/19:21 av Momodou Malcolm Jallow m.fl. (V) yrkande 1.<BR/><BR/>",
+      "beslutstyp": "acklamation",
+      "motforslag_nummer": "0",
+      "motforslag_partier": "",
+      "votering_id": "",
+      "votering_sammanfattning_html": "",
+      "votering_url_xml": "",
+      "rm": "2018/19",
+      "bet": "CU2",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:4202 med anledning av prop. 2017/18:266 En ny regional planering",
+      "ref_dok_id": "H5024202",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "4202",
+      "ref_dok_titel": "med anledning av prop. 2017/18:266 En ny regional planering",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:4203 med anledning av prop. 2017/18:266 En ny regional planering",
+      "ref_dok_id": "H5024203",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "4203",
+      "ref_dok_titel": "med anledning av prop. 2017/18:266 En ny regional planering",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:4204 med anledning av prop. 2017/18:266 En ny regional planering",
+      "ref_dok_id": "H5024204",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "4204",
+      "ref_dok_titel": "med anledning av prop. 2017/18:266 En ny regional planering",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2018/19:21 med anledning av prop. 2017/18:266 En ny regional planering",
+      "ref_dok_id": "H60221",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "21",
+      "ref_dok_titel": "med anledning av prop. 2017/18:266 En ny regional planering",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "Proposition 2017/18:266 En ny regional planering",
+      "ref_dok_id": "H503266",
+      "ref_dok_typ": "prop",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "266",
+      "ref_dok_titel": "En ny regional planering",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "prop",
+      "ref_dok_dokumentnamn": "Proposition"
+     },
+     {
+      "referenstyp": "föredragningslista",
+      "uppgift": "föredragningslista 2018/19:16 Onsdag den 14 november 2018",
+      "ref_dok_id": "H60I16",
+      "ref_dok_typ": "f-lista",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "16",
+      "ref_dok_titel": "Onsdag den 14 november 2018",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Kammarens föredragningslista"
+     },
+     {
+      "referenstyp": "protokollbeslut",
+      "uppgift": "2018-11-14",
+      "ref_dok_id": "H60916",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "16",
+      "ref_dok_titel": "Protokoll 2018/19:16 Onsdagen den 14 november",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "protokolldebatt",
+      "uppgift": "2018-11-14",
+      "ref_dok_id": "H60916",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "16",
+      "ref_dok_titel": "Protokoll 2018/19:16 Onsdagen den 14 november",
+      "ref_dok_subtitel": "En ny regional planering",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "rskr",
+      "uppgift": "",
+      "ref_dok_id": "H60K31",
+      "ref_dok_typ": "rskr",
+      "ref_dok_rm": "2018/19",
+      "ref_dok_bet": "31",
+      "ref_dok_titel": "Riksdagsskrivelse 2018/19:31",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "rskr",
+      "ref_dok_dokumentnamn": "Riksdagsskrivelse"
+     }
+    ]
+   }
+  }
+ }
+}

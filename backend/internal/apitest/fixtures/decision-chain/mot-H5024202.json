@@ -1,0 +1,188 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H5024202.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H5024202.json",
+ "note": "Recorded 2026-11-10. The html body of dokument is dropped; every other field is as served.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "4991114",
+    "dok_id": "H5024202",
+    "rm": "2017/18",
+    "beteckning": "4202",
+    "typ": "mot",
+    "subtyp": "Enskild motion",
+    "doktyp": "mot",
+    "typrubrik": "Motion 2017/18:4202 av Ola Johansson m.fl. (C, KD, M)",
+    "dokumentnamn": "Motion",
+    "debattnamn": "Motion",
+    "tempbeteckning": "-",
+    "organ": "CU",
+    "mottagare": "",
+    "nummer": "4202",
+    "slutnummer": "0",
+    "datum": "2018-06-18 00:00:00",
+    "systemdatum": "2018-11-15 14:57:49",
+    "publicerad": "2018-06-18 00:00:00",
+    "titel": "med anledning av prop. 2017/18:266 En ny regional planering",
+    "subtitel": "av Ola Johansson m.fl. (C, KD, M)",
+    "status": "Klar",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Filur",
+    "sourceid": "4cc43966-44dc-4dc3-9ce8-80859fdb56fa",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H5024202/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H5024202",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H5024202"
+   },
+   "dokforslag": {
+    "forslag": {
+     "nummer": "1",
+     "beteckning": "",
+     "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att regeringen bör vidareutveckla reformen och tillkännager detta för regeringen.",
+     "lydelse2": "",
+     "utskottet": "Bifall",
+     "kammaren": "Bifall",
+     "behandlas_i": "2018/19:CU2",
+     "behandlas_i_punkt": "",
+     "kammarbeslutstyp": "",
+     "intressent": "CU",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    }
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2018-06-18 17:31:02",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Granskad",
+      "namn": "Granskad",
+      "datum": "2018-06-21 09:58:44",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "B",
+      "namn": "Bordlagd",
+      "datum": "2018-06-25 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "HÄN",
+      "namn": "Hänvisad",
+      "datum": "2018-06-26 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0934639939611",
+      "namn": "Ola Johansson",
+      "partibet": "C",
+      "ordning": "1",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0666958447826",
+      "namn": "Caroline Szyber",
+      "partibet": "KD",
+      "ordning": "2",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0538387395826",
+      "namn": "Mats Green",
+      "partibet": "M",
+      "ordning": "3",
+      "roll": "undertecknare"
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "motgrund",
+      "namn": "Motionsgrund",
+      "text": "Proposition 2017/18:266",
+      "dok_id": "H5024202",
+      "systemdatum": "2018-11-14 16:34:34"
+     },
+     {
+      "kod": "motkat",
+      "namn": "Motionskategori",
+      "text": "Följdmotion",
+      "dok_id": "H5024202",
+      "systemdatum": "2018-11-14 16:34:34"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är avslutat",
+      "dok_id": "H5024202",
+      "systemdatum": "2019-05-23 14:19:32"
+     },
+     {
+      "kod": "tilldelat",
+      "namn": "Tilldelat",
+      "text": "Civilutskottet",
+      "dok_id": "H5024202",
+      "systemdatum": "2018-11-14 16:34:34"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "H5024202",
+      "subtitel": "av Ola Johansson m.fl. (C, KD, M)",
+      "filnamn": "mot_201718__4202.pdf",
+      "filstorlek": "71089",
+      "filtyp": "pdf",
+      "titel": "med anledning av prop. 2017/18:266 En ny regional planering",
+      "fil_url": "https://data.riksdagen.se/fil/FF67D920-4F82-4264-9C18-E95EAC8A36C3"
+     },
+     {
+      "dok_id": "H5024202",
+      "subtitel": "av Ola Johansson m.fl. (C, KD, M)",
+      "filnamn": "mot_201718__4202.docx",
+      "filstorlek": "61444",
+      "filtyp": "docx",
+      "titel": "med anledning av prop. 2017/18:266 En ny regional planering",
+      "fil_url": "https://data.riksdagen.se/fil/8B791F75-57B8-4796-AA37-D46B007F479D"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": {
+     "referenstyp": "behandlas_i",
+     "uppgift": "2018/19:CU2",
+     "ref_dok_id": "H601CU2",
+     "ref_dok_typ": "bet",
+     "ref_dok_rm": "2018/19",
+     "ref_dok_bet": "CU2",
+     "ref_dok_titel": "En ny regional planering",
+     "ref_dok_subtitel": "",
+     "ref_dok_subtyp": "bet",
+     "ref_dok_dokumentnamn": "Betänkande"
+    }
+   }
+  }
+ }
+}

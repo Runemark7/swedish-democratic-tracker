@@ -1475,7 +1475,7 @@ components:
 
     MotionYrkande:
       type: object
-      required: [number, wording, utskottProposal, chamberDecision, behandlasI, behandlasIPunkt]
+      required: [number, wording, utskottProposal, chamberDecision, behandlasI, behandlasIPunkt, outcome, decisions]
       properties:
         number: { type: integer }
         wording: { type: string, description: "Full wording of the demand, as Riksdagen gives it" }
@@ -1483,11 +1483,65 @@ components:
         chamberDecision: { type: string, description: "The chamber's decision as given; empty before it decides" }
         behandlasI: { type: string, example: "2017/18:SkU11" }
         behandlasIPunkt: { type: string }
+        outcome:
+          type: string
+          description: >-
+            Avslagen, Bifallen, Delvis bifallen, Besvarad or Ej avgjord än; an
+            unknown word is Riksdagen's own. A yrkande no förslagspunkt is
+            linked to is Ej avgjord än.
+        decisions:
+          type: array
+          description: The förslagspunkt(er) that decided the yrkande
+          items: { $ref: "#/components/schemas/YrkandeDecision" }
+
+    PartyPartilinje:
+      type: object
+      required: [party, partilinje, ja, nej, avstar, franvarande]
+      properties:
+        party: { type: string }
+        partilinje: { type: string, description: "Ja, Nej, Avstår or Delad; empty when the party has no Partilinje" }
+        ja: { type: integer }
+        nej: { type: integer }
+        avstar: { type: integer }
+        franvarande: { type: integer }
+
+    YrkandeDecision:
+      type: object
+      required: [betankandeRiksmote, betankandeBeteckning, betankandeTitle, betankandeSourceUrl, punkt, rubrik, linkedBy, beslutstyp, mode, modeLabel, alternativ, outcome, voteringStored, parties]
+      properties:
+        betankandeRiksmote: { type: string, example: "2017/18" }
+        betankandeBeteckning: { type: string, example: "SkU11" }
+        betankandeTitle: { type: string }
+        betankandeSourceUrl: { type: string }
+        punkt: { type: string, example: "6" }
+        rubrik: { type: string, example: "Övriga frågor" }
+        linkedBy: { type: string, enum: [behandlas_i_punkt, forslag_text], description: "How the yrkande was tied to the punkt" }
+        beslutstyp: { type: string, description: "As Riksdagen gives it" }
+        mode: { type: string, enum: [acklamation, votering, ej_beslutad, annat] }
+        modeLabel: { type: string, description: "Avgjord utan omröstning for acklamation; Riksdagen's own word for an unknown beslutstyp" }
+        alternativ: { type: string, description: "The alternative put to the vote, as Riksdagen words it; empty without a votering" }
+        outcome: { type: string }
+        voteringStored: { type: boolean, description: "True when the ballots of the votering are held" }
+        parties:
+          type: array
+          description: Partilinje of every party in the votering (shared definition); empty for acklamation
+          items: { $ref: "#/components/schemas/PartyPartilinje" }
+
+    MotionOutcome:
+      type: object
+      required: [word, counts, total]
+      properties:
+        word: { type: string, description: "Avslagen, Bifallen, Delvis bifallen, Besvarad, Blandat utfall or Ej avgjord än" }
+        counts:
+          type: object
+          additionalProperties: { type: integer }
+        total: { type: integer }
 
     Motion:
       type: object
-      required: [dokId, riksmote, beteckning, title, subtyp, kind, kindExplanation, date, utskott, utskottName, status, behandlasI, sourceUrl, authors, yrkanden]
+      required: [dokId, riksmote, beteckning, title, subtyp, kind, kindExplanation, date, utskott, utskottName, status, behandlasI, sourceUrl, authors, yrkanden, outcome]
       properties:
+        outcome: { $ref: "#/components/schemas/MotionOutcome" }
         dokId: { type: string, example: "H5023293" }
         riksmote: { type: string, example: "2017/18" }
         beteckning: { type: string, example: "3293" }
