@@ -59,9 +59,9 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
   const extra = partyBreakdown.map((p) => p.party).filter((p) => !allKnown.includes(p));
   const orderedParties = [...allKnown, ...extra].filter((p) => !!posMap[p]);
 
-  const jaParties = orderedParties.filter((p) => posMap[p]?.dominantVote === "Ja");
-  const nejParties = orderedParties.filter((p) => posMap[p]?.dominantVote === "Nej");
-  const avstarParties = orderedParties.filter((p) => posMap[p]?.dominantVote === "Avstår");
+  const jaParties = orderedParties.filter((p) => posMap[p]?.partilinje === "Ja");
+  const nejParties = orderedParties.filter((p) => posMap[p]?.partilinje === "Nej");
+  const avstarParties = orderedParties.filter((p) => posMap[p]?.partilinje === "Avstår");
 
   const totalJa = partyBreakdown.reduce((s, p) => s + p.jaCount, 0);
   const totalNej = partyBreakdown.reduce((s, p) => s + p.nejCount, 0);
@@ -166,7 +166,7 @@ export function VoteShareCard({ data }: VoteShareCardProps) {
               >
                 {party}
               </span>
-              <VoteIcon vote={pos?.dominantVote} />
+              <VoteIcon vote={pos?.partilinje} />
             </div>
           );
         })}

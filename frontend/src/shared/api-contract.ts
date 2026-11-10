@@ -1315,6 +1315,8 @@ export interface components {
             documentTitle: string;
             /** @description Party abbreviation, or "Regeringen" for a government bill. Not a PartyCode. Absent on the live-from-Riksdagen path. */
             proposedByParty?: string;
+            /** @description Members who voted against their party's Ja or Nej Partilinje, worked out per votering (a förslagspunkt decided by two voteringar never blends their ballots). Empty on the live-from-Riksdagen path. */
+            avvikare: components["schemas"]["Avvikare"][];
             /** @description prop | mot | bet, or "" when the vote has not been enriched yet. Absent on the live-from-Riksdagen path. */
             proposalType?: string;
             session: string;
@@ -1356,7 +1358,20 @@ export interface components {
             nejCount: number;
             avstarCount: number;
             franvarandeCount: number;
-            dominantVote?: components["schemas"]["VoteResult"];
+            partilinje?: components["schemas"]["Partilinje"];
+        };
+        /**
+         * @description A party's position in a votering: the strict plurality of its cast ballots (Ja, Nej, Avstår). Frånvarande is not a cast ballot and is excluded. "Delad" when two or more positions share the top count. The field is absent when no member of the party cast a ballot, and for the record's "-" no-party placeholder. One definition shared by every endpoint that reports a party position.
+         * @enum {string}
+         */
+        Partilinje: "Ja" | "Nej" | "Avstår" | "Delad";
+        /** @description A member whose cast ballot (Ja, Nej or Avstår) differs from their party's Ja or Nej Partilinje in one votering. Frånvarande is never an Avvikare, and a party whose Partilinje is Avstår or Delad has none. */
+        Avvikare: {
+            voteringId: string;
+            politicianId: string;
+            party: string;
+            voteResult: components["schemas"]["VoteResult"];
+            partilinje: components["schemas"]["Partilinje"];
         };
         Goal: {
             id: number;
@@ -1380,14 +1395,10 @@ export interface components {
             /** @description Vote points matched to this goal — a fact about our matching. The alignment percentage was retired: it systematically disadvantaged opposition parties, scoring a party that voted Nej to the rejection of its own motion as breaking its own promise. */
             relevantVotes?: number;
         };
-        /** @description How one party voted on a förslagspunkt — the position most of its members took. Stated as fact, never scored against a promise. Never carries the record's "-" placeholder for ballots with no party affiliation: this is a per-party list, and "-" is not a party. */
+        /** @description A party's Partilinje in one votering — the same definition as PartyVotePosition.partilinje. Stated as fact, never scored against a promise. Never carries the record's "-" placeholder for ballots with no party affiliation: this is a per-party list, and "-" is not a party. */
         PartyPosition: {
             party: components["schemas"]["PartyCode"];
-            /**
-             * @description The position this party's members took. "Delad" means the party's members split evenly between two or more positions — partiets ledamöter delade sig jämnt mellan två eller flera positioner — and is emitted instead of resolving the tie to whichever position happens to sort first.
-             * @enum {string}
-             */
-            position: "Ja" | "Nej" | "Avstår" | "Frånvarande" | "Delad";
+            position?: components["schemas"]["Partilinje"];
         };
         /** @description One decided förslagspunkt with every party's position. Carries no date: votes hold only system_datum, which is when Riksdagen last touched the record, so presenting it as a decision date would repeat a bug the site already removed. */
         CommitteeVotering: {

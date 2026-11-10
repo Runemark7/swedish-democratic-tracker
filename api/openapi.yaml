@@ -1821,6 +1821,7 @@ components:
           session,
           status,
           partyBreakdown,
+          avvikare,
         ]
       properties:
         beteckning:
@@ -1836,6 +1837,14 @@ components:
           description: >-
             Party abbreviation, or "Regeringen" for a government bill. Not a
             PartyCode. Absent on the live-from-Riksdagen path.
+        avvikare:
+          type: array
+          description: >-
+            Members who voted against their party's Ja or Nej Partilinje, worked
+            out per votering (a förslagspunkt decided by two voteringar never
+            blends their ballots). Empty on the live-from-Riksdagen path.
+          items:
+            $ref: "#/components/schemas/Avvikare"
         proposalType:
           type: string
           description: >-
@@ -1931,8 +1940,37 @@ components:
           type: integer
         franvarandeCount:
           type: integer
-        dominantVote:
+        partilinje:
+          $ref: "#/components/schemas/Partilinje"
+    Partilinje:
+      type: string
+      enum: [Ja, Nej, Avstår, Delad]
+      description: >-
+        A party's position in a votering: the strict plurality of its cast
+        ballots (Ja, Nej, Avstår). Frånvarande is not a cast ballot and is
+        excluded. "Delad" when two or more positions share the top count.
+        The field is absent when no member of the party cast a ballot, and
+        for the record's "-" no-party placeholder. One definition shared by
+        every endpoint that reports a party position.
+
+    Avvikare:
+      type: object
+      required: [voteringId, politicianId, party, voteResult, partilinje]
+      description: >-
+        A member whose cast ballot (Ja, Nej or Avstår) differs from their
+        party's Ja or Nej Partilinje in one votering. Frånvarande is never an
+        Avvikare, and a party whose Partilinje is Avstår or Delad has none.
+      properties:
+        voteringId:
+          type: string
+        politicianId:
+          type: string
+        party:
+          type: string
+        voteResult:
           $ref: "#/components/schemas/VoteResult"
+        partilinje:
+          $ref: "#/components/schemas/Partilinje"
 
     Goal:
       type: object
@@ -1982,24 +2020,17 @@ components:
 
     PartyPosition:
       type: object
-      required: [party, position]
+      required: [party]
       description: >-
-        How one party voted on a förslagspunkt — the position most of its
-        members took. Stated as fact, never scored against a promise. Never
-        carries the record's "-" placeholder for ballots with no party
-        affiliation: this is a per-party list, and "-" is not a party.
+        A party's Partilinje in one votering — the same definition as
+        PartyVotePosition.partilinje. Stated as fact, never scored against a
+        promise. Never carries the record's "-" placeholder for ballots with no
+        party affiliation: this is a per-party list, and "-" is not a party.
       properties:
         party:
           $ref: "#/components/schemas/PartyCode"
         position:
-          type: string
-          enum: [Ja, Nej, Avstår, Frånvarande, Delad]
-          description: >-
-            The position this party's members took. "Delad" means the
-            party's members split evenly between two or more positions —
-            partiets ledamöter delade sig jämnt mellan två eller flera
-            positioner — and is emitted instead of resolving the tie to
-            whichever position happens to sort first.
+          $ref: "#/components/schemas/Partilinje"
 
     CommitteeVotering:
       type: object

@@ -118,10 +118,17 @@ export function OmSajtenPage() {
             språk och i en mängd som gör det praktiskt oläsbart för den som inte
             har det som yrke.
           </p>
-          <p style={{ margin: 0 }}>
+          <p style={{ margin: "0 0 10px" }}>
             Riksdagskollen försöker inte tolka det åt dig. Den lägger partiets
             egna uttalade mål bredvid hur partiet faktiskt röstade, med källa på
             båda, och låter dig dra slutsatsen själv.
+          </p>
+          <p style={{ margin: 0 }}>
+            Ett partis ställning i en omröstning (Partilinje) är det som flest av
+            partiets avgivna röster var — ja, nej eller avstår. Frånvarande
+            räknas inte. Är två ställningar lika stora visas partiet som delat.
+            En ledamot som röstat mot en Partilinje av ja eller nej är en
+            avvikare; sajten säger inget om varför.
           </p>
         </Section>
 
