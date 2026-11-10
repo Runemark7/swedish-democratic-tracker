@@ -40,6 +40,8 @@ var routesBeforeExtraction = []string{
 	"GET /api/ingestion/freshness",
 	"GET /api/ministers",
 	"GET /api/ministers/{id}",
+	"GET /api/motions/coverage",
+	"GET /api/motions/{riksmote}/{beteckning}",
 	"GET /api/municipalities",
 	"GET /api/municipalities/budget/area/{areaName}",
 	"GET /api/municipalities/kpi/{kpiCode}/ranking",

@@ -59,6 +59,7 @@ export function isLokaltSection(pathname: string): boolean {
 export function documentTitle(pathname: string): string {
   const primary = PRIMARY_NAV.find((item) => isActive(item, pathname));
   if (primary) return `Riksdagskollen – ${primary.label}`;
+  if (pathname === "/motioner" || pathname.startsWith("/motioner/")) return "Riksdagskollen – Motioner";
   if (isLokaltSection(pathname)) return "Riksdagskollen – Lokalt";
   const secondary = SECONDARY_NAV.find((item) => isActive(item, pathname));
   if (secondary) return `Riksdagskollen – ${secondary.label}`;
