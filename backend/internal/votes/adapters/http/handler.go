@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 
@@ -139,66 +140,29 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Build party breakdown helper
 	type partyPos struct {
-		Party        string `json:"party"`
-		Ja           int    `json:"jaCount"`
-		Nej          int    `json:"nejCount"`
-		Avstar       int    `json:"avstarCount"`
-		Franvarande  int    `json:"franvarandeCount"`
-		DominantVote string `json:"dominantVote,omitempty"`
+		Party       string            `json:"party"`
+		Ja          int               `json:"jaCount"`
+		Nej         int               `json:"nejCount"`
+		Avstar      int               `json:"avstarCount"`
+		Franvarande int               `json:"franvarandeCount"`
+		Partilinje  domain.Partilinje `json:"partilinje,omitempty"`
 	}
 
+	// Counts per party are tallied once by the shared domain code; the
+	// Partilinje is domain.PartilinjeOf, the same function the committee page
+	// uses. The record's "-" no-party placeholder keeps its counts (the
+	// status tally sums them) but has no Partilinje.
 	buildBreakdown := func(votes []*domain.Vote) []*partyPos {
-		tally := map[string]*partyPos{}
-		for _, v := range votes {
-			pos, ok := tally[v.Party]
-			if !ok {
-				pos = &partyPos{Party: v.Party}
-				tally[v.Party] = pos
-			}
-			switch v.VoteResult {
-			case "Ja":
-				pos.Ja++
-			case "Nej":
-				pos.Nej++
-			case "Avstår":
-				pos.Avstar++
-			case "Frånvarande":
-				pos.Franvarande++
-			}
+		tallies := domain.TallyByParty(votes)
+		breakdown := make([]*partyPos, 0, len(tallies))
+		for party, t := range tallies {
+			breakdown = append(breakdown, &partyPos{
+				Party: party, Ja: t.Ja, Nej: t.Nej, Avstar: t.Avstar,
+				Franvarande: t.Franvarande, Partilinje: domain.PartilinjeFor(party, t),
+			})
 		}
-		breakdown := make([]*partyPos, 0, len(tally))
-		for _, p := range tally {
-			max := p.Ja
-			if p.Nej > max {
-				max = p.Nej
-			}
-			if p.Avstar > max {
-				max = p.Avstar
-			}
-			ties := 0
-			if p.Ja == max {
-				ties++
-			}
-			if p.Nej == max {
-				ties++
-			}
-			if p.Avstar == max {
-				ties++
-			}
-			if ties == 1 && max > 0 {
-				switch {
-				case p.Ja == max:
-					p.DominantVote = "Ja"
-				case p.Nej == max:
-					p.DominantVote = "Nej"
-				case p.Avstar == max:
-					p.DominantVote = "Avstår"
-				}
-			}
-			breakdown = append(breakdown, p)
-		}
+		sort.Slice(breakdown, func(i, j int) bool { return breakdown[i].Party < breakdown[j].Party })
 		return breakdown
 	}
 
@@ -240,6 +204,7 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 			"date":           info.Date,
 			"status":         info.Status,
 			"partyBreakdown": []any{},
+			"avvikare":       []any{},
 		}
 		if ds, err := h.svc.GetDocumentStatus(r.Context(), info.DokID); err == nil && ds != nil {
 			resp["subtitle"] = ds.Subtitle
@@ -256,6 +221,10 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 
 	// Has votes in DB
 	breakdown := buildBreakdown(vv)
+	avvikare := domain.AvvikarePerVotering(vv)
+	if avvikare == nil {
+		avvikare = []domain.AvvikareBallot{}
+	}
 	meta := vv[0]
 	for _, v := range vv {
 		if v.ProposalOrigin.DocumentTitle != "" {
@@ -273,6 +242,7 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		"proposalType":    string(meta.ProposalOrigin.ProposalType),
 		"session":         meta.Session,
 		"partyBreakdown":  breakdown,
+		"avvikare":        avvikare,
 		"status":          computeStatus(breakdown),
 	}
 	if ds, err := h.svc.GetDocumentStatus(r.Context(), meta.DokID); err == nil && ds != nil {

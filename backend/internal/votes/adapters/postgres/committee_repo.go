@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"context"
+	"sort"
 
 	committeedomain "riksdagskollen/internal/committees/domain"
+	"riksdagskollen/internal/votes/domain"
 	"riksdagskollen/internal/votes/ports"
 )
 
@@ -35,13 +37,11 @@ import (
 // record and on the decision page; they just don't occupy a party's slot
 // here.
 //
-// Ties are surfaced, not resolved. counts/maxn/pos together compute, per
-// (votering, party), which vote_result(s) hold the highest count: exactly one
-// survives the join to maxn and it is that party's position; two or more
-// survive and the party is reported "Delad" rather than resolved by whichever
-// vote_result sorts first alphabetically. That silent tie-break used to
-// publish "Frånvarande" for a party that was tied 8 Frånvarande / 8 Ja with
-// Ja — a flatly wrong statement about how half the party voted.
+// The query returns raw ballot counts per (votering, party, vote_result) and
+// nothing more. Each party's position is decided by votes/domain.PartilinjeOf,
+// the one shared Partilinje definition (strict plurality of cast ballots,
+// Frånvarande excluded, a tie is Delad), so this page and the vote detail page
+// can never disagree.
 //
 // Ordering: votes carry no decision date (only system_datum, which is when
 // Riksdagen last touched the row), so chronological order is unavailable and
@@ -76,30 +76,16 @@ counts AS (
 	JOIN pts ON pts.id = b.votering_ref
 	WHERE b.party <> '-'
 	GROUP BY b.votering_ref, b.party, b.vote_result
-),
-maxn AS (
-	SELECT votering_ref, party, max(n) AS maxn
-	FROM counts
-	GROUP BY votering_ref, party
-),
-pos AS (
-	SELECT c.votering_ref, c.party,
-	       CASE WHEN count(*) > 1 THEN 'Delad'
-	            ELSE min(c.vote_result)
-	       END AS position
-	FROM counts c
-	JOIN maxn m ON m.votering_ref = c.votering_ref AND m.party = c.party AND c.n = m.maxn
-	GROUP BY c.votering_ref, c.party
 )
 SELECT pt.votering_id, pt.beteckning, pt.forslagspunkt, pt.document_title, pt.session,
-       pos.party, pos.position
+       c.party, c.vote_result, c.n
 FROM pts pt
-JOIN pos ON pos.votering_ref = pt.id
+JOIN counts c ON c.votering_ref = pt.id
 ORDER BY pt.session,
          NULLIF(regexp_replace(pt.beteckning, '\D', '', 'g'), '')::int,
          NULLIF(regexp_replace(pt.forslagspunkt, '\D', '', 'g'), '')::int,
-         pos.party,
-         pt.votering_id`
+         pt.votering_id,
+         c.party`
 
 // PeriodExists reports whether the mandate period is one the record knows.
 //
@@ -135,9 +121,11 @@ func (r *Repository) ListByCommitteeWithPositions(ctx context.Context, periodCod
 	// the query kept them apart.
 	var out []ports.CommitteeVotering
 	idx := map[string]int{}
+	tallies := map[string]map[string]domain.Tally{}
 	for rows.Next() {
 		var vid, bet, punkt, title, rm, party, result string
-		if err := rows.Scan(&vid, &bet, &punkt, &title, &rm, &party, &result); err != nil {
+		var n int
+		if err := rows.Scan(&vid, &bet, &punkt, &title, &rm, &party, &result, &n); err != nil {
 			return nil, 0, err
 		}
 
@@ -162,11 +150,32 @@ func (r *Repository) ListByCommitteeWithPositions(ctx context.Context, periodCod
 			i = len(out) - 1
 			idx[vid] = i
 		}
-		out[i].PartyPositions = append(out[i].PartyPositions,
-			ports.PartyPosition{Party: party, Position: result})
+		t := tallies[vid][party]
+		for k := 0; k < n; k++ {
+			t.Add(domain.VoteResult(result))
+		}
+		if tallies[vid] == nil {
+			tallies[vid] = map[string]domain.Tally{}
+		}
+		tallies[vid][party] = t
 	}
 	if err := rows.Err(); err != nil {
 		return nil, 0, err
+	}
+
+	// Partilinje is decided by the one shared definition in votes/domain, not
+	// in SQL: the vote detail page uses the same function.
+	for i := range out {
+		byParty := tallies[out[i].VoteringID]
+		parties := make([]string, 0, len(byParty))
+		for p := range byParty {
+			parties = append(parties, p)
+		}
+		sort.Strings(parties)
+		for _, p := range parties {
+			out[i].PartyPositions = append(out[i].PartyPositions,
+				ports.PartyPosition{Party: p, Position: domain.PartilinjeOf(byParty[p])})
+		}
 	}
 
 	// The total is the folded length, not a second COUNT query. Two queries with

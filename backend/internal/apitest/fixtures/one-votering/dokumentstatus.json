@@ -1,0 +1,8 @@
+{
+  "method": "GET",
+  "path": "/dokumentstatus/HD01UbU30.json",
+  "query": {},
+  "status": 404,
+  "note": "Not a recording: a stand-in written when the sandbox could not reach data.riksdagen.se. The vote detail endpoint treats a failed document lookup as absent metadata, so the seam test exercises the ballot-derived fields only. Replace with a live capture of /dokumentstatus/HD01UbU30.json when convenient.",
+  "body": {}
+}

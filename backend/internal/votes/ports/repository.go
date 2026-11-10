@@ -48,18 +48,14 @@ type ListDistinctVotesResult struct {
 	Total int
 }
 
-// PartyPosition is how a party voted on one förslagspunkt: the position most of
-// its members took. Stated as a fact, never scored against a promise.
-//
-// Position is one of "Ja", "Nej", "Avstår", "Frånvarande", or "Delad" — the
-// last emitted when no single position holds a strict plurality among the
-// party's members (e.g. 7 Avstår and 7 Ja), so a tie is never silently
-// resolved to whichever result happens to sort first. Party never carries the
-// record's "-" placeholder for members with no party affiliation: RÖSTAT is a
-// per-party list, and "-" is not a party.
+// PartyPosition is a party's Partilinje in one votering, as defined once in
+// domain.PartilinjeOf. Stated as a fact, never scored against a promise. An
+// empty Position means no member of the party cast a ballot. Party never
+// carries the record's "-" placeholder: RÖSTAT is a per-party list, and "-" is
+// not a party.
 type PartyPosition struct {
-	Party    string `json:"party"`
-	Position string `json:"position"`
+	Party    string            `json:"party"`
+	Position domain.Partilinje `json:"position,omitempty"`
 }
 
 // CommitteeVotering is one decided förslagspunkt with each party's position.

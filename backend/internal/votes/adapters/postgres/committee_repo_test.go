@@ -11,6 +11,7 @@ import (
 
 	"riksdagskollen/internal/testdb"
 	"riksdagskollen/internal/votes/adapters/postgres"
+	"riksdagskollen/internal/votes/domain"
 )
 
 // The only mandate period seeded in the dev database. Every test below is
@@ -118,7 +119,7 @@ func TestListByCommitteeWithPositions(t *testing.T) {
 					v.Beteckning, v.Forslagspunkt, p.Party)
 			}
 			switch p.Position {
-			case "Ja", "Nej", "Avstår", "Frånvarande", "Delad":
+			case "Ja", "Nej", "Avstår", "Delad", domain.PartilinjeSaknas:
 			default:
 				t.Errorf("unexpected position %q for %s", p.Position, p.Party)
 			}
@@ -320,11 +321,13 @@ func TestListByCommittee_TieIsSurfaced(t *testing.T) {
 		committee  string
 		voteringID string
 		party      string
+		want       domain.Partilinje
 	}{
 		// KrU7 punkt 5, 2022/23: MP split 7 Avstår / 7 Ja.
-		{"KrU", "922CFC33-E4D2-4F3C-A819-E2927BE94B51", "MP"},
-		// MJU19 punkt 4, 2025/26: L split 8 Frånvarande / 8 Ja.
-		{"MJU", "9D3AD261-F412-4DCB-80E8-6D36D3465864", "L"},
+		{"KrU", "922CFC33-E4D2-4F3C-A819-E2927BE94B51", "MP", domain.PartilinjeDelad},
+		// MJU19 punkt 4, 2025/26: L had 8 Frånvarande / 8 Ja. Frånvarande is not
+		// a cast ballot, so under the shared Partilinje definition L's line is Ja.
+		{"MJU", "9D3AD261-F412-4DCB-80E8-6D36D3465864", "L", domain.PartilinjeJa},
 	}
 
 	for _, c := range cases {
@@ -332,7 +335,7 @@ func TestListByCommittee_TieIsSurfaced(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ListByCommitteeWithPositions(%s): %v", c.committee, err)
 		}
-		var found *string
+		var found *domain.Partilinje
 		for _, v := range got {
 			if v.VoteringID != c.voteringID {
 				continue
@@ -348,10 +351,9 @@ func TestListByCommittee_TieIsSurfaced(t *testing.T) {
 			t.Fatalf("votering %s (%s) party %s not found in %s results",
 				c.voteringID, c.committee, c.party, c.committee)
 		}
-		if *found != "Delad" {
-			t.Errorf("votering %s party %s = %q, want \"Delad\" — a tied vote must not be "+
-				"resolved to whichever position sorts first alphabetically",
-				c.voteringID, c.party, *found)
+		if *found != c.want {
+			t.Errorf("votering %s party %s = %q, want %q (shared Partilinje definition)",
+				c.voteringID, c.party, *found, c.want)
 		}
 	}
 }

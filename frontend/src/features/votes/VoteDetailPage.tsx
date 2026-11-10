@@ -66,21 +66,21 @@ function PartyBreakdownCard({ pos }: { pos: PartyVotePosition }) {
     <div className="bg-surface-lowest rounded-xl p-5">
       <div className="flex items-center gap-3 mb-3">
         <PartyBadge party={pos.party} size="lg" />
-        {pos.dominantVote && (
+        {pos.partilinje && (
           <span
             className="text-[10px] font-extrabold px-2 py-0.5 rounded"
             style={{
               background:
-                pos.dominantVote === "Ja" ? "var(--color-chip-ja-bg)" :
-                pos.dominantVote === "Nej" ? "var(--color-chip-nej-bg)" :
-                pos.dominantVote === "Avstår" ? "var(--color-chip-abs-bg)" : "var(--color-chip-neutral-bg)",
+                pos.partilinje === "Ja" ? "var(--color-chip-ja-bg)" :
+                pos.partilinje === "Nej" ? "var(--color-chip-nej-bg)" :
+                pos.partilinje === "Avstår" ? "var(--color-chip-abs-bg)" : "var(--color-chip-neutral-bg)",
               color:
-                pos.dominantVote === "Ja" ? "var(--color-chip-ja-fg)" :
-                pos.dominantVote === "Nej" ? "var(--color-chip-nej-fg)" :
-                pos.dominantVote === "Avstår" ? "var(--color-chip-abs-fg)" : "var(--color-chip-neutral-fg)",
+                pos.partilinje === "Ja" ? "var(--color-chip-ja-fg)" :
+                pos.partilinje === "Nej" ? "var(--color-chip-nej-fg)" :
+                pos.partilinje === "Avstår" ? "var(--color-chip-abs-fg)" : "var(--color-chip-neutral-fg)",
             }}
           >
-            Majoritet: {pos.dominantVote}
+            Partilinje: {pos.partilinje}
           </span>
         )}
       </div>

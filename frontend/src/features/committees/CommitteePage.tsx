@@ -240,8 +240,8 @@ export function CommitteePage() {
           {/* Positions are stated, never scored. The promise sits above and the
               reader draws the connection; the site does not draw it for them. */}
           <p className="text-xs text-on-surface-variant mb-4">
-            Varje rad är en förslagspunkt och den ståndpunkt partiets ledamöter
-            tog. Utan beslutsdatum: registret innehåller inget sådant datum.{" "}
+            Varje rad är en förslagspunkt och partiets Partilinje: den ståndpunkt
+            som flest av de avgivna rösterna (ja, nej, avstår) tog. Frånvarande räknas inte. Utan beslutsdatum: registret innehåller inget sådant datum.{" "}
             <SourceMarker sourceId="riksdagen" />
           </p>
 
@@ -296,7 +296,7 @@ export function CommitteePage() {
                 {v.partyPositions.map((pp) => (
                   <span key={pp.party} className="text-xs text-on-surface-variant">
                     <span className="font-semibold text-on-surface">{pp.party}</span>{" "}
-                    {pp.position}
+                    {pp.position ?? "ingen avgiven röst"}
                   </span>
                 ))}
               </div>
