@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { votesApi } from "./api";
-import { ProposalOriginTag } from "@/shared/components";
+import { ProposedBy } from "@/shared/components";
 import { committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 
@@ -41,8 +41,8 @@ export function VotesPage() {
           const committee = committeeFromBeteckning(v.beteckning);
           return (
             <Link
-              key={`${v.beteckning}-${v.forslagspunkt}`}
-              to={`/votes/${v.beteckning}/${v.forslagspunkt}`}
+              key={`${v.riksmote}-${v.beteckning}-${v.forslagspunkt}`}
+              to={`/votes/${v.beteckning}/${v.forslagspunkt}?session=${encodeURIComponent(v.riksmote)}`}
               className="flex items-start justify-between gap-4 py-3.5 px-4 rounded-lg transition-all hover:shadow-ambient group"
               style={{ background: "var(--color-surface-lowest)" }}
             >
@@ -58,9 +58,8 @@ export function VotesPage() {
                   {committee && (
                     <span className="text-[11px] text-on-surface-variant">· {committee}</span>
                   )}
-                  {(v.proposedByParty || v.proposalType) && (
-                    <ProposalOriginTag proposedBy={v.proposedByParty} proposalType={v.proposalType} />
-                  )}
+                  <span className="text-[11px] text-on-surface-variant">· {v.riksmote}</span>
+                  <ProposedBy proposedBy={v.proposedBy} compact />
                 </div>
               </div>
             </Link>

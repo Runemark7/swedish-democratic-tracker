@@ -70,7 +70,7 @@ func (w *KeywordMatcherWorker) matchGoal(ctx context.Context, goal *goalsdomain.
 			}
 
 			relevance := scoreRelevance(hits)
-			direction := inferDirection(goal.Party, vs.ProposedByParty)
+			direction := inferDirection(goal.Party, vs.ProposedBy.SoleParty())
 
 			matchedKeywords := findMatchedKeywords(goal.Keywords, vs.DocumentTitle)
 
@@ -81,8 +81,8 @@ func (w *KeywordMatcherWorker) matchGoal(ctx context.Context, goal *goalsdomain.
 				RelevanceScore:   relevance,
 				AlignedDirection: direction,
 				Explanation:      fmt.Sprintf("Matchat via utskott %s och nyckelord: %s", committee, strings.Join(matchedKeywords, ", ")),
-				ProposedByParty:  vs.ProposedByParty,
-				ProposalType:     vs.ProposalType,
+				ProposedByParty:  vs.ProposedBy.SoleParty(),
+				ProposalType:     vs.ProposedBy.Kind(),
 				DocumentTitle:    vs.DocumentTitle,
 			}
 

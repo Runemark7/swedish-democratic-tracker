@@ -19,23 +19,26 @@ type ListVotesResult struct {
 	Total int
 }
 
-// VoteSummary is a lightweight projection for matching (distinct beteckning/punkt pairs).
+// VoteSummary is a lightweight projection for the decision feed and matching
+// (distinct riksmöte/beteckning/punkt triples).
 type VoteSummary struct {
-	Beteckning      string `json:"beteckning"`
-	Forslagspunkt   string `json:"forslagspunkt"`
-	DocumentTitle   string `json:"documentTitle"`
-	ProposedByParty string `json:"proposedByParty,omitempty"`
-	ProposalType    string `json:"proposalType,omitempty"`
+	Riksmote      string `json:"riksmote"`
+	Beteckning    string `json:"beteckning"`
+	Forslagspunkt string `json:"forslagspunkt"`
+	DocumentTitle string `json:"documentTitle"`
+	// ProposedBy is derived from the Motioner link; see domain.ProposedBy.
+	ProposedBy domain.ProposedBy `json:"proposedBy"`
 }
 
-// VotePoint identifies one decided förslagspunkt. Proposal origin is a
-// property of the vote point, not of each member's ballot: every MP voting on
-// AU9:1 shares one origin, so it must be resolved once and applied to all.
-type VotePoint struct {
-	Beteckning    string
-	Forslagspunkt string
-	Session       string
-	DokID         string
+// BetRef names a betänkande by riksmöte and beteckning.
+type BetRef struct{ Session, Beteckning string }
+
+// PointKey identifies one förslagspunkt: numbering restarts every riksmöte, so
+// all three parts are the key.
+type PointKey struct {
+	Riksmote   string
+	Beteckning string
+	Punkt      string
 }
 
 type ListDistinctVotesFilter struct {
@@ -94,21 +97,18 @@ type VoteRepository interface {
 	ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error)
 	ListDistinctVotes(ctx context.Context, f ListDistinctVotesFilter) (ListDistinctVotesResult, error)
 	UpsertMany(ctx context.Context, vv []*domain.Vote) error
-	// ListVotePointsWithoutOrigin returns vote points still needing origin
-	// resolution — one row per votering, not per ballot — ordered by
-	// (session, beteckning, forslagspunkt). Only points strictly after `after`
-	// in that order are returned; the zero VotePoint starts from the beginning.
-	// The cursor lets a long recompute move past a point that cannot be
-	// resolved instead of re-reading it forever.
-	ListVotePointsWithoutOrigin(ctx context.Context, after VotePoint, limit int) ([]VotePoint, error)
-	// UpdateProposalOriginForPoint applies one resolved origin to the votering
-	// of exactly one riksmöte. Beteckning and förslagspunkt numbering restart
-	// every riksmöte, so the session is part of the key.
-	UpdateProposalOriginForPoint(ctx context.Context, session, beteckning, forslagspunkt string, o domain.ProposalOrigin) (int64, error)
-	// MarkAllOriginsForRecompute flags every votering for re-enrichment and
-	// returns how many it flagged. It changes only origin_enriched; existing
-	// origins stay in place until a recompute overwrites them.
-	MarkAllOriginsForRecompute(ctx context.Context) (int64, error)
+	// ListUntitledBetankanden returns up to limit riksmöte + beteckning pairs
+	// whose voteringar have no stored title, in random order so a pair Riksdagen
+	// cannot answer for never starves the others.
+	ListUntitledBetankanden(ctx context.Context, limit int) ([]BetRef, error)
+	// SetBetankandeTitle writes document_title on every votering of one
+	// riksmöte + beteckning that has none. Title only; idempotent.
+	SetBetankandeTitle(ctx context.Context, session, beteckning, title string) error
+	// ProposedByForPoints derives "proposed by" for each förslagspunkt from
+	// the stored yrkande → förslagspunkt links (motions, their parties and the
+	// yrkanden decided), the propositions the punkt text cites and the
+	// alternative put to the vote. A point with no links gets an empty value.
+	ProposedByForPoints(ctx context.Context, keys []PointKey) (map[PointKey]domain.ProposedBy, error)
 	ListDistinctByCommitteePrefix(ctx context.Context, prefix string) ([]VoteSummary, error)
 	// PeriodExists reports whether the mandate period is one the record knows,
 	// mirroring committees/ports.Repository.PeriodExists — an unrecognised
@@ -119,8 +119,8 @@ type VoteRepository interface {
 	// mandate period, with each party's dominant position, plus the total
 	// count for pagination.
 	//
-	// Must not filter on origin_enriched: enrichment is about who proposed a
-	// bill, and gating on it would remove real voteringar from the record.
+	// Must not filter on the deprecated origin_enriched column: it says nothing
+	// about whether a votering is real.
 	// periodCode is required, scoping the query the same way /committees/{code}
 	// scopes by mandate_periods — the record already anticipates holding more
 	// than one period.

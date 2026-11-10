@@ -1,0 +1,953 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HD01SkU16.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HD01SkU16.json",
+ "note": "Reduced to förslagspunkt 6; reservations, activities and document text removed.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5278355",
+    "dok_id": "HD01SkU16",
+    "rm": "2025/26",
+    "beteckning": "SkU16",
+    "typ": "bet",
+    "subtyp": "bet",
+    "doktyp": "bet",
+    "typrubrik": "Betänkande 2025/26:SkU16",
+    "dokumentnamn": "Betänkande",
+    "debattnamn": "Debatt om förslag",
+    "tempbeteckning": "",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "16",
+    "slutnummer": "0",
+    "datum": "2026-03-19 00:00:00",
+    "systemdatum": "2026-07-03 12:10:42",
+    "publicerad": "2026-01-20 10:17:10",
+    "titel": "Punktskatt",
+    "subtitel": "",
+    "status": "Webbpublicering",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "RIM",
+    "sourceid": "d59e4de9-f9ce-4d65-ad7c-8bd3c970ec04",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/HD01SkU16/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/HD01SkU16",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/HD01SkU16",
+    "utskottsforslag_url_xml": "https://data.riksdagen.se/utskottsforslag/HD01SkU16"
+   },
+   "dokutskottsforslag": {
+    "utskottsforslag": [
+     {
+      "punkt": "6",
+      "rubrik": "Avveckling av klimatskadliga subventioner",
+      "forslag": "<BR/>Riksdagen avslår motion \n\n2025/26:2783 av Ilona Szatmári Waldau m.fl. (V) yrkande 15.<BR/><BR/>",
+      "beslutstyp": "röstning",
+      "motforslag_nummer": "8",
+      "motforslag_partier": "\"V\",\"MP\"",
+      "votering_id": "c0404929-505f-4cdc-bba9-1cb8a5141507",
+      "votering_sammanfattning_html": {
+       "table": {
+        "caption": {
+         "b": "Omröstning i sakfrågan",
+         "br": null,
+         "#text": "Utskottets förslag mot reservation 8 (V, MP)"
+        },
+        "thead": {
+         "tr": {
+          "th": [
+           "Parti",
+           "Ja",
+           "Nej",
+           "Avstående",
+           "Frånvarande"
+          ]
+         }
+        },
+        "tbody": {
+         "tr": [
+          {
+           "th": "S",
+           "td": [
+            "92",
+            "0",
+            "0",
+            "14"
+           ]
+          },
+          {
+           "th": "SD",
+           "td": [
+            "57",
+            "0",
+            "0",
+            "13"
+           ]
+          },
+          {
+           "th": "M",
+           "td": [
+            "59",
+            "0",
+            "0",
+            "9"
+           ]
+          },
+          {
+           "th": "V",
+           "td": [
+            "0",
+            "19",
+            "0",
+            "3"
+           ]
+          },
+          {
+           "th": "C",
+           "td": [
+            "17",
+            "0",
+            "0",
+            "7"
+           ]
+          },
+          {
+           "th": "KD",
+           "td": [
+            "17",
+            "0",
+            "0",
+            "2"
+           ]
+          },
+          {
+           "th": "MP",
+           "td": [
+            "0",
+            "15",
+            "0",
+            "3"
+           ]
+          },
+          {
+           "th": "L",
+           "td": [
+            "14",
+            "0",
+            "0",
+            "2"
+           ]
+          },
+          {
+           "th": "-",
+           "td": [
+            "3",
+            "2",
+            "0",
+            "1"
+           ]
+          }
+         ]
+        },
+        "tfooter": {
+         "tr": {
+          "th": "Totalt",
+          "td": [
+           "259",
+           "36",
+           "0",
+           "54"
+          ]
+         }
+        }
+       },
+       "br": null
+      },
+      "votering_url_xml": "http://data.riksdagen.se/votering/C0404929-505F-4CDC-BBA9-1CB8A5141507",
+      "rm": "2025/26",
+      "bet": "SkU16",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:1141 Mer solenergi",
+      "ref_dok_id": "HD021141",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "1141",
+      "ref_dok_titel": "Mer solenergi",
+      "ref_dok_subtitel": "av Martina Johansson (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:1253 Rättvisare avgifter för tung trafik på svenska vägar",
+      "ref_dok_id": "HD021253",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "1253",
+      "ref_dok_titel": "Rättvisare avgifter för tung trafik på svenska vägar",
+      "ref_dok_subtitel": "av Denis Begic (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:133 Befrielse av fordonsskatt för familjer med tre barn",
+      "ref_dok_id": "HD02133",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "133",
+      "ref_dok_titel": "Befrielse av fordonsskatt för familjer med tre barn",
+      "ref_dok_subtitel": "av Josef Fransson (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:154 Sänkt fordonsskatt på dieseldrivna personbilar och lätta lastbilar",
+      "ref_dok_id": "HD02154",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "154",
+      "ref_dok_titel": "Sänkt fordonsskatt på dieseldrivna personbilar och lätta lastbilar",
+      "ref_dok_subtitel": "av Eric Palmqvist (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:1842 Förtydligande av punktskatten på bekämpningsmedel",
+      "ref_dok_id": "HD021842",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "1842",
+      "ref_dok_titel": "Förtydligande av punktskatten på bekämpningsmedel",
+      "ref_dok_subtitel": "av Monica Haider (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:1859 Hänsyn till medicinska behov i omställningen av fordonsflottan",
+      "ref_dok_id": "HD021859",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "1859",
+      "ref_dok_titel": "Hänsyn till medicinska behov i omställningen av fordonsflottan",
+      "ref_dok_subtitel": "av Hanna Westerén (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:1872 Rättvisa villkor för energikooperativ",
+      "ref_dok_id": "HD021872",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "1872",
+      "ref_dok_titel": "Rättvisa villkor för energikooperativ",
+      "ref_dok_subtitel": "av Tomas Kronståhl m.fl. (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:189 Antibiotikaskatt för att förebygga antibiotikaresistens",
+      "ref_dok_id": "HD02189",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "189",
+      "ref_dok_titel": "Antibiotikaskatt för att förebygga antibiotikaresistens",
+      "ref_dok_subtitel": "av Annika Hirvonen m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:194 Avskaffande av malus i fordonsskatten",
+      "ref_dok_id": "HD02194",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "194",
+      "ref_dok_titel": "Avskaffande av malus i fordonsskatten",
+      "ref_dok_subtitel": "av Rashid Farivar m.fl. (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:1997 Borttagen skatt på bekämpningsmedel",
+      "ref_dok_id": "HD021997",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "1997",
+      "ref_dok_titel": "Borttagen skatt på bekämpningsmedel",
+      "ref_dok_subtitel": "av Sten Bergheden (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2065 Införande av en ny Lidingöregel",
+      "ref_dok_id": "HD022065",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2065",
+      "ref_dok_titel": "Införande av en ny Lidingöregel",
+      "ref_dok_subtitel": "av Kerstin Lundgren och Anna Lasses (båda C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2146 Översyn och utvärdering av kemikalieskatten",
+      "ref_dok_id": "HD022146",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2146",
+      "ref_dok_titel": "Översyn och utvärdering av kemikalieskatten",
+      "ref_dok_subtitel": "av Sten Bergheden (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2191 Återbetalning av fordonsskatt",
+      "ref_dok_id": "HD022191",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2191",
+      "ref_dok_titel": "Återbetalning av fordonsskatt",
+      "ref_dok_subtitel": "av Ann-Sofie Lifvenhage (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2425 Beskattning av snus",
+      "ref_dok_id": "HD022425",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2425",
+      "ref_dok_titel": "Beskattning av snus",
+      "ref_dok_subtitel": "av Oliver Rosengren (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2466 Ett fritt och konkurrenskraftigt jordbruk",
+      "ref_dok_id": "HD022466",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2466",
+      "ref_dok_titel": "Ett fritt och konkurrenskraftigt jordbruk",
+      "ref_dok_subtitel": "av John E Weinerhall (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2683 Producentavgift på sockersötad dryck",
+      "ref_dok_id": "HD022683",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2683",
+      "ref_dok_titel": "Producentavgift på sockersötad dryck",
+      "ref_dok_subtitel": "av Magnus Manhammar och Mats Wiking (båda S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2699 Sockersötade dryckers påverkan på folkhälsan",
+      "ref_dok_id": "HD022699",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2699",
+      "ref_dok_titel": "Sockersötade dryckers påverkan på folkhälsan",
+      "ref_dok_subtitel": "av Per-Arne Håkansson (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2780 Transporteffektivt och hållbart samhälle",
+      "ref_dok_id": "HD022780",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2780",
+      "ref_dok_titel": "Transporteffektivt och hållbart samhälle",
+      "ref_dok_subtitel": "av Nooshi Dadgostar m.fl. (V)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2783 Ett rättvist skattesystem",
+      "ref_dok_id": "HD022783",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2783",
+      "ref_dok_titel": "Ett rättvist skattesystem",
+      "ref_dok_subtitel": "av Ilona Szatmári Waldau m.fl. (V)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2784 Biologisk mångfald",
+      "ref_dok_id": "HD022784",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2784",
+      "ref_dok_titel": "Biologisk mångfald",
+      "ref_dok_subtitel": "av Nooshi Dadgostar m.fl. (V)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2789 Klimatet",
+      "ref_dok_id": "HD022789",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2789",
+      "ref_dok_titel": "Klimatet",
+      "ref_dok_subtitel": "av Nooshi Dadgostar m.fl. (V)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2823 Cirkulär ekonomi och kemikalier",
+      "ref_dok_id": "HD022823",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2823",
+      "ref_dok_titel": "Cirkulär ekonomi och kemikalier",
+      "ref_dok_subtitel": "av Stina Larsson m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2829 Utvärdering av kemikalieskatten",
+      "ref_dok_id": "HD022829",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2829",
+      "ref_dok_titel": "Utvärdering av kemikalieskatten",
+      "ref_dok_subtitel": "av Larry Söder och Camilla Brodin (båda KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2833 Jord, skog, jakt",
+      "ref_dok_id": "HD022833",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2833",
+      "ref_dok_titel": "Jord, skog, jakt",
+      "ref_dok_subtitel": "av Helena Lindahl m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2835 Skatter för företagande och tillväxt",
+      "ref_dok_id": "HD022835",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2835",
+      "ref_dok_titel": "Skatter för företagande och tillväxt",
+      "ref_dok_subtitel": "av Anders Ådahl m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2909 Slopad skatt på egenanvänd el",
+      "ref_dok_id": "HD022909",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2909",
+      "ref_dok_titel": "Slopad skatt på egenanvänd el",
+      "ref_dok_subtitel": "av Joanna Lewerentz m.fl. (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2921 Avvecklad malus för bilar som används av personer med funktionsnedsättning",
+      "ref_dok_id": "HD022921",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2921",
+      "ref_dok_titel": "Avvecklad malus för bilar som används av personer med funktionsnedsättning",
+      "ref_dok_subtitel": "av Lars Beckman (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2939 Avskaffande av kemikalieskatten",
+      "ref_dok_id": "HD022939",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2939",
+      "ref_dok_titel": "Avskaffande av kemikalieskatten",
+      "ref_dok_subtitel": "av Marléne Lund Kopparklint (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:2988 Konsumentskydd mot dyra och ineffektiva miljöskatter",
+      "ref_dok_id": "HD022988",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "2988",
+      "ref_dok_titel": "Konsumentskydd mot dyra och ineffektiva miljöskatter",
+      "ref_dok_subtitel": "av Marléne Lund Kopparklint (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3182 Återinförande av plastpåseskatt",
+      "ref_dok_id": "HD023182",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3182",
+      "ref_dok_titel": "Återinförande av plastpåseskatt",
+      "ref_dok_subtitel": "av Stina Larsson (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3198 Avskaffande av elektronikskatten",
+      "ref_dok_id": "HD023198",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3198",
+      "ref_dok_titel": "Avskaffande av elektronikskatten",
+      "ref_dok_subtitel": "av Mathias Bengtsson (KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3212 Sänkt bensin- och dieselskatt",
+      "ref_dok_id": "HD023212",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3212",
+      "ref_dok_titel": "Sänkt bensin- och dieselskatt",
+      "ref_dok_subtitel": "av Sten Bergheden och Marléne Lund Kopparklint (båda M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3268 Hästnäringens finansiering",
+      "ref_dok_id": "HD023268",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3268",
+      "ref_dok_titel": "Hästnäringens finansiering",
+      "ref_dok_subtitel": "av Alexandra Anstrell (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3273 Ett miljövänligt, robust och konkurrenskraftigt energisystem",
+      "ref_dok_id": "HD023273",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3273",
+      "ref_dok_titel": "Ett miljövänligt, robust och konkurrenskraftigt energisystem",
+      "ref_dok_subtitel": "av Linus Lakso m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3275 Flyget i en ohållbar tid",
+      "ref_dok_id": "HD023275",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3275",
+      "ref_dok_titel": "Flyget i en ohållbar tid",
+      "ref_dok_subtitel": "av Linus Lakso m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3278 Ett utsläppsfritt och transporteffektivt samhälle",
+      "ref_dok_id": "HD023278",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3278",
+      "ref_dok_titel": "Ett utsläppsfritt och transporteffektivt samhälle",
+      "ref_dok_subtitel": "av Linus Lakso m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3281 En kollektivtrafik i världsklass",
+      "ref_dok_id": "HD023281",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3281",
+      "ref_dok_titel": "En kollektivtrafik i världsklass",
+      "ref_dok_subtitel": "av Linus Lakso m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3313 Differentierad koldioxidskatt på biogena bränslen",
+      "ref_dok_id": "HD023313",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3313",
+      "ref_dok_titel": "Differentierad koldioxidskatt på biogena bränslen",
+      "ref_dok_subtitel": "av Rebecka Le Moine (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3326 Differentierad alkoholskatt för cider - jämställda villkor för små producenter",
+      "ref_dok_id": "HD023326",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3326",
+      "ref_dok_titel": "Differentierad alkoholskatt för cider - jämställda villkor för små producenter",
+      "ref_dok_subtitel": "av Camilla Brunsberg och Marléne Lund Kopparklint (båda M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3355 Avskaffande av malus i fordonsskatten",
+      "ref_dok_id": "HD023355",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3355",
+      "ref_dok_titel": "Avskaffande av malus i fordonsskatten",
+      "ref_dok_subtitel": "av Ann-Sofie Lifvenhage (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3422 En grön klimathandlingsplan 2026",
+      "ref_dok_id": "HD023422",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3422",
+      "ref_dok_titel": "En grön klimathandlingsplan 2026",
+      "ref_dok_subtitel": "av Katarina Luhr m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3428 Ett motståndskraftigt och hållbart svenskt lantbruk",
+      "ref_dok_id": "HD023428",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3428",
+      "ref_dok_titel": "Ett motståndskraftigt och hållbart svenskt lantbruk",
+      "ref_dok_subtitel": "av Emma Nohrén m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3548 Cirkulär ekonomi",
+      "ref_dok_id": "HD023548",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3548",
+      "ref_dok_titel": "Cirkulär ekonomi",
+      "ref_dok_subtitel": "av Daniel Helldén m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3553 Skattepolitik",
+      "ref_dok_id": "HD023553",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3553",
+      "ref_dok_titel": "Skattepolitik",
+      "ref_dok_subtitel": "av Niklas Karlsson m.fl. (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3561 13 svenska lagar som bör avskaffas",
+      "ref_dok_id": "HD023561",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3561",
+      "ref_dok_titel": "13 svenska lagar som bör avskaffas",
+      "ref_dok_subtitel": "av Rickard Nordin och Niels Paarup-Petersen (båda C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3582 Ledarskap för klimat och grön omställning",
+      "ref_dok_id": "HD023582",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3582",
+      "ref_dok_titel": "Ledarskap för klimat och grön omställning",
+      "ref_dok_subtitel": "av Rickard Nordin m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3596 En folkrörelse för klimatet",
+      "ref_dok_id": "HD023596",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3596",
+      "ref_dok_titel": "En folkrörelse för klimatet",
+      "ref_dok_subtitel": "av Elisabeth Thand Ringqvist m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3613 Insatser mot fetma hos barn",
+      "ref_dok_id": "HD023613",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3613",
+      "ref_dok_titel": "Insatser mot fetma hos barn",
+      "ref_dok_subtitel": "av Lina Nordquist och Helene Odenjung (båda L)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3627 En ny modell för beskattning av vägtrafiken",
+      "ref_dok_id": "HD023627",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3627",
+      "ref_dok_titel": "En ny modell för beskattning av vägtrafiken",
+      "ref_dok_subtitel": "av Magnus Jacobsson och Camilla Rinaldo Miller (båda KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3653 Transportpolitik för Sveriges trygghet, konkurrenskraft och jämlikhet",
+      "ref_dok_id": "HD023653",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3653",
+      "ref_dok_titel": "Transportpolitik för Sveriges trygghet, konkurrenskraft och jämlikhet",
+      "ref_dok_subtitel": "av Aylin Nouri m.fl. (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3728 En infrastruktur som fungerar i hela landet",
+      "ref_dok_id": "HD023728",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3728",
+      "ref_dok_titel": "En infrastruktur som fungerar i hela landet",
+      "ref_dok_subtitel": "av Ulrika Heie m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3732 Utgiftsområde 20 Klimat, miljö och natur",
+      "ref_dok_id": "HD023732",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3732",
+      "ref_dok_titel": "Utgiftsområde 20 Klimat, miljö och natur",
+      "ref_dok_subtitel": "av Åsa Westlund m.fl. (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:3733 Utgiftsområde 23 Areella näringar, landsbygd och livsmedel",
+      "ref_dok_id": "HD023733",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "3733",
+      "ref_dok_titel": "Utgiftsområde 23 Areella näringar, landsbygd och livsmedel",
+      "ref_dok_subtitel": "av Åsa Westlund m.fl. (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:380 Passager vid betalstation för trängselskatt",
+      "ref_dok_id": "HD02380",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "380",
+      "ref_dok_titel": "Passager vid betalstation för trängselskatt",
+      "ref_dok_subtitel": "av Michael Rubbestad (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:47 Borttagande av malus från fordonsskatten",
+      "ref_dok_id": "HD0247",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "47",
+      "ref_dok_titel": "Borttagande av malus från fordonsskatten",
+      "ref_dok_subtitel": "av Josef Fransson (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:48 Avskaffande av kemikalieskatten",
+      "ref_dok_id": "HD0248",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "48",
+      "ref_dok_titel": "Avskaffande av kemikalieskatten",
+      "ref_dok_subtitel": "av Nima Gholam Ali Pour (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:527 En rättvisare spelskatt",
+      "ref_dok_id": "HD02527",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "527",
+      "ref_dok_titel": "En rättvisare spelskatt",
+      "ref_dok_subtitel": "av Caroline Helmersson Olsson och Hans Ekström (båda S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:812 Sänkt skatt på biodrivmedel",
+      "ref_dok_id": "HD02812",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "812",
+      "ref_dok_titel": "Sänkt skatt på biodrivmedel",
+      "ref_dok_subtitel": "av Stina Larsson (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:833 Differentierad alkoholskatt för ciderproducenter",
+      "ref_dok_id": "HD02833",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "833",
+      "ref_dok_titel": "Differentierad alkoholskatt för ciderproducenter",
+      "ref_dok_subtitel": "av Niels Paarup-Petersen (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "beslut_id",
+      "uppgift": "Beslut 2025/26:SkU16",
+      "ref_dok_id": "HDC320260325SkU16",
+      "ref_dok_typ": "kammakt",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "SkU16",
+      "ref_dok_titel": "Beslut: Punktskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "vo",
+      "ref_dok_dokumentnamn": "Votering"
+     },
+     {
+      "referenstyp": "föredragningslista",
+      "uppgift": "föredragningslista 2025/26:97 Onsdag den 25 mars 2026",
+      "ref_dok_id": "HD0I97",
+      "ref_dok_typ": "f-lista",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "97",
+      "ref_dok_titel": "Onsdag den 25 mars 2026",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Kammarens föredragningslista"
+     },
+     {
+      "referenstyp": "protokollbeslut",
+      "uppgift": "2026-03-25",
+      "ref_dok_id": "HD0997",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "97",
+      "ref_dok_titel": "Protokoll 2025/26:97 Onsdagen den 25 mars",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "protokolldebatt",
+      "uppgift": "2026-03-25",
+      "ref_dok_id": "HD0997",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "97",
+      "ref_dok_titel": "Protokoll 2025/26:97 Onsdagen den 25 mars",
+      "ref_dok_subtitel": "Punktskatt",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "talarlista",
+      "uppgift": "talarlista 2025/26:20260325 Onsdag den 25 mars 2026",
+      "ref_dok_id": "HD0J20260325",
+      "ref_dok_typ": "t-lista",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "20260325",
+      "ref_dok_titel": "Onsdag den 25 mars 2026",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Talarlista"
+     }
+    ]
+   }
+  }
+ }
+}

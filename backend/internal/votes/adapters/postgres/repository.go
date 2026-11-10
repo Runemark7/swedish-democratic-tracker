@@ -43,8 +43,7 @@ func (r *Repository) ListByPolitician(ctx context.Context, f ports.ListVotesFilt
 	offset := (f.Page - 1) * f.PageSize
 	args = append(args, f.PageSize, offset)
 	q := fmt.Sprintf(`SELECT vg.votering_id, b.politician_id, b.party, b.vote_result, vg.beteckning, vg.forslagspunkt,
-		vg.session, vg.dok_id, vg.proposed_by_party, vg.proposal_type, vg.proposal_dok_id, vg.document_title,
-		vg.origin_enriched, vg.created_at
+		vg.session, vg.dok_id, vg.document_title, vg.created_at
 		%s%s ORDER BY vg.created_at DESC LIMIT $%d OFFSET $%d`, from, where, n, n+1)
 
 	rows, err := r.db.Query(ctx, q, args...)
@@ -66,8 +65,7 @@ func (r *Repository) ListByPolitician(ctx context.Context, f ports.ListVotesFilt
 
 func (r *Repository) ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error) {
 	const q = `SELECT vg.votering_id, b.politician_id, b.party, b.vote_result, vg.beteckning, vg.forslagspunkt,
-		vg.session, vg.dok_id, vg.proposed_by_party, vg.proposal_type, vg.proposal_dok_id, vg.document_title,
-		vg.origin_enriched, vg.created_at
+		vg.session, vg.dok_id, vg.document_title, vg.created_at
 		FROM ballots b
 		JOIN voteringar vg ON vg.id = b.votering_ref
 		WHERE vg.beteckning = $1 AND vg.forslagspunkt = $2
@@ -100,9 +98,9 @@ func (r *Repository) UpsertMany(ctx context.Context, vv []*domain.Vote) error {
 	// every case, including a re-run where the votering is already present, or
 	// the ballot insert would select from an empty CTE and silently drop.
 	//
-	// The proposal_* columns are deliberately absent. They belong to the
-	// votering and are written by enrich-vote-origins; listing them here with
-	// their zero values would erase enrichment on every re-ingest.
+	// The deprecated proposed_by_party / proposal_type / proposal_dok_id /
+	// origin_enriched columns are deliberately absent: nothing writes them any
+	// more (proposed-by is derived from the Motioner link at read time).
 	const q = `
 		WITH vg AS (
 			INSERT INTO voteringar (votering_id, beteckning, forslagspunkt, session, dok_id, system_datum)
@@ -143,106 +141,26 @@ func (r *Repository) UpsertMany(ctx context.Context, vv []*domain.Vote) error {
 	return br.Close()
 }
 
-// ListVotePointsWithoutOrigin returns vote points still needing origin
-// resolution, in (session, beteckning, forslagspunkt) order after `after`.
-func (r *Repository) ListVotePointsWithoutOrigin(ctx context.Context, after ports.VotePoint, limit int) ([]ports.VotePoint, error) {
-	// Reads voteringar directly: one row per votering, so no DISTINCT is needed.
-	// Rows are keyed on session as well, because the same beteckning and
-	// förslagspunkt recur every riksmöte.
-	const q = `SELECT beteckning, forslagspunkt, session, COALESCE(dok_id, '')
-		FROM voteringar
-		WHERE origin_enriched = false
-		  AND (session, beteckning, forslagspunkt) > ($2, $3, $4)
-		ORDER BY session, beteckning, forslagspunkt
-		LIMIT $1`
-
-	rows, err := r.db.Query(ctx, q, limit, after.Session, after.Beteckning, after.Forslagspunkt)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var pp []ports.VotePoint
-	for rows.Next() {
-		var v ports.VotePoint
-		if err := rows.Scan(&v.Beteckning, &v.Forslagspunkt, &v.Session, &v.DokID); err != nil {
-			return nil, err
-		}
-		pp = append(pp, v)
-	}
-	return pp, rows.Err()
-}
-
-// MarkAllOriginsForRecompute flags every votering for re-enrichment. It leaves
-// the stored origin untouched; the recompute overwrites it per riksmöte.
-func (r *Repository) MarkAllOriginsForRecompute(ctx context.Context) (int64, error) {
-	tag, err := r.db.Exec(ctx, `UPDATE voteringar SET origin_enriched = false WHERE origin_enriched = true`)
-	if err != nil {
-		return 0, err
-	}
-	return tag.RowsAffected(), nil
-}
-
-// UpdateProposalOriginForPoint applies one origin to the vote point and reports
-// how many rows it touched.
-//
-// The count now means voteringar rather than ballots: origin is a property of
-// the votering, so one point that previously updated ~350 rows updates one or
-// two. Callers use it only to detect "nothing matched", which still holds.
-//
-// Keyed on session + beteckning + förslagspunkt. Without the session, SkU16
-// punkt 6 of 2021/22 overwrote the same punkt of every other riksmöte.
-func (r *Repository) UpdateProposalOriginForPoint(ctx context.Context, session, beteckning, forslagspunkt string, o domain.ProposalOrigin) (int64, error) {
-	const q = `
-		UPDATE voteringar SET
-			proposed_by_party = $4,
-			proposal_type     = $5,
-			proposal_dok_id   = $6,
-			document_title    = $7,
-			origin_enriched   = true
-		WHERE session = $1 AND beteckning = $2 AND forslagspunkt = $3`
-
-	var proposalType *string
-	if o.ProposalType != "" {
-		s := string(o.ProposalType)
-		proposalType = &s
-	}
-	var proposedBy, dokID, title *string
-	if o.ProposedByParty != "" {
-		proposedBy = &o.ProposedByParty
-	}
-	if o.ProposalDokID != "" {
-		dokID = &o.ProposalDokID
-	}
-	if o.DocumentTitle != "" {
-		title = &o.DocumentTitle
-	}
-
-	tag, err := r.db.Exec(ctx, q, session, beteckning, forslagspunkt, proposedBy, proposalType, dokID, title)
-	if err != nil {
-		return 0, err
-	}
-	return tag.RowsAffected(), nil
-}
-
 func (r *Repository) ListDistinctVotes(ctx context.Context, f ports.ListDistinctVotesFilter) (ports.ListDistinctVotesResult, error) {
 	var total int
-	// DISTINCT survives the move to voteringar, unlike elsewhere: it is not
-	// collapsing duplicated ballots but two genuinely separate voteringar that
-	// share a beteckning and förslagspunkt — 18 of them in 2022-2026. This
-	// listing is by vote point, so those still count once.
+	// One row per riksmöte + beteckning + förslagspunkt. DISTINCT survives the
+	// move to voteringar: it is not collapsing duplicated ballots but two
+	// genuinely separate voteringar that share all three — 18 of them in
+	// 2022-2026. Not gated on the deprecated origin_enriched flag.
 	if err := r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM (SELECT DISTINCT beteckning, forslagspunkt FROM voteringar WHERE origin_enriched = true) sub`,
+		`SELECT COUNT(*) FROM (SELECT DISTINCT session, beteckning, forslagspunkt FROM voteringar) sub`,
 	).Scan(&total); err != nil {
 		return ports.ListDistinctVotesResult{}, err
 	}
 
 	offset := (f.Page - 1) * f.PageSize
-	const q = `SELECT DISTINCT ON (beteckning, forslagspunkt)
-		beteckning, forslagspunkt, COALESCE(document_title, ''), proposed_by_party, proposal_type
-		FROM voteringar
-		WHERE origin_enriched = true
-		ORDER BY beteckning, forslagspunkt
+	// The title comes from the betänkande the Motioner link holds when there is
+	// one, else the title stored on the votering by the retired origin step.
+	const q = `SELECT DISTINCT ON (vg.session, vg.beteckning, vg.forslagspunkt)
+		vg.session, vg.beteckning, vg.forslagspunkt, COALESCE(NULLIF(bt.title, ''), vg.document_title, '')
+		FROM voteringar vg
+		LEFT JOIN betankanden bt ON bt.riksmote = vg.session AND bt.beteckning = vg.beteckning AND bt.found
+		ORDER BY vg.session DESC, vg.beteckning, vg.forslagspunkt
 		LIMIT $1 OFFSET $2`
 
 	rows, err := r.db.Query(ctx, q, f.PageSize, offset)
@@ -254,15 +172,8 @@ func (r *Repository) ListDistinctVotes(ctx context.Context, f ports.ListDistinct
 	var ss []ports.VoteSummary
 	for rows.Next() {
 		var s ports.VoteSummary
-		var proposedBy, propType *string
-		if err := rows.Scan(&s.Beteckning, &s.Forslagspunkt, &s.DocumentTitle, &proposedBy, &propType); err != nil {
+		if err := rows.Scan(&s.Riksmote, &s.Beteckning, &s.Forslagspunkt, &s.DocumentTitle); err != nil {
 			return ports.ListDistinctVotesResult{}, err
-		}
-		if proposedBy != nil {
-			s.ProposedByParty = *proposedBy
-		}
-		if propType != nil {
-			s.ProposalType = *propType
 		}
 		ss = append(ss, s)
 	}
@@ -270,12 +181,12 @@ func (r *Repository) ListDistinctVotes(ctx context.Context, f ports.ListDistinct
 }
 
 func (r *Repository) ListDistinctByCommitteePrefix(ctx context.Context, prefix string) ([]ports.VoteSummary, error) {
-	const q = `SELECT DISTINCT beteckning, forslagspunkt, document_title, proposed_by_party, proposal_type
-		FROM voteringar
-		WHERE beteckning LIKE $1 || '%'
-		  AND origin_enriched = true
-		  AND document_title IS NOT NULL
-		ORDER BY beteckning, forslagspunkt`
+	const q = `SELECT DISTINCT vg.session, vg.beteckning, vg.forslagspunkt, COALESCE(NULLIF(bt.title, ''), vg.document_title)
+		FROM voteringar vg
+		LEFT JOIN betankanden bt ON bt.riksmote = vg.session AND bt.beteckning = vg.beteckning AND bt.found
+		WHERE vg.beteckning LIKE $1 || '%'
+		  AND COALESCE(NULLIF(bt.title, ''), vg.document_title) IS NOT NULL
+		ORDER BY vg.session, vg.beteckning, vg.forslagspunkt`
 
 	rows, err := r.db.Query(ctx, q, prefix)
 	if err != nil {
@@ -286,19 +197,122 @@ func (r *Repository) ListDistinctByCommitteePrefix(ctx context.Context, prefix s
 	var ss []ports.VoteSummary
 	for rows.Next() {
 		var s ports.VoteSummary
-		var proposedBy, propType *string
-		if err := rows.Scan(&s.Beteckning, &s.Forslagspunkt, &s.DocumentTitle, &proposedBy, &propType); err != nil {
+		if err := rows.Scan(&s.Riksmote, &s.Beteckning, &s.Forslagspunkt, &s.DocumentTitle); err != nil {
 			return nil, err
-		}
-		if proposedBy != nil {
-			s.ProposedByParty = *proposedBy
-		}
-		if propType != nil {
-			s.ProposalType = *propType
 		}
 		ss = append(ss, s)
 	}
 	return ss, rows.Err()
+}
+
+func (r *Repository) ListUntitledBetankanden(ctx context.Context, limit int) ([]ports.BetRef, error) {
+	rows, err := r.db.Query(ctx, `SELECT session, beteckning FROM voteringar
+		WHERE COALESCE(document_title, '') = '' GROUP BY session, beteckning ORDER BY random() LIMIT $1`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []ports.BetRef
+	for rows.Next() {
+		var b ports.BetRef
+		if err := rows.Scan(&b.Session, &b.Beteckning); err != nil {
+			return nil, err
+		}
+		out = append(out, b)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) SetBetankandeTitle(ctx context.Context, session, beteckning, title string) error {
+	_, err := r.db.Exec(ctx, `UPDATE voteringar SET document_title = $3
+		WHERE session = $1 AND beteckning = $2 AND COALESCE(document_title, '') = ''`, session, beteckning, title)
+	return err
+}
+
+// ProposedByForPoints derives proposed-by from the stored Motioner link, keyed
+// on riksmöte + beteckning + förslagspunkt.
+func (r *Repository) ProposedByForPoints(ctx context.Context, keys []ports.PointKey) (map[ports.PointKey]domain.ProposedBy, error) {
+	out := make(map[ports.PointKey]domain.ProposedBy, len(keys))
+	if len(keys) == 0 {
+		return out, nil
+	}
+	rms, bets, punkts := make([]string, len(keys)), make([]string, len(keys)), make([]string, len(keys))
+	for i, k := range keys {
+		rms[i], bets[i], punkts[i] = k.Riksmote, k.Beteckning, k.Punkt
+		out[k] = domain.ProposedBy{Motions: []domain.ProposingMotion{}, Propositions: []domain.PropositionRef{}}
+	}
+	const keysCTE = `WITH k AS (SELECT * FROM unnest($1::text[], $2::text[], $3::text[]) AS t(rm, bet, p))`
+
+	// Punkt text (propositions) and the alternative put to the vote.
+	prows, err := r.db.Query(ctx, keysCTE+`
+		SELECT f.riksmote, f.beteckning, f.punkt, f.forslag_text, f.alternativ
+		FROM forslagspunkter f JOIN k ON k.rm = f.riksmote AND k.bet = f.beteckning AND k.p = f.punkt`,
+		rms, bets, punkts)
+	if err != nil {
+		return nil, err
+	}
+	for prows.Next() {
+		var key ports.PointKey
+		var text, alt string
+		if err := prows.Scan(&key.Riksmote, &key.Beteckning, &key.Punkt, &text, &alt); err != nil {
+			prows.Close()
+			return nil, err
+		}
+		pb := out[key]
+		pb.Propositions = domain.PropositionsIn(text)
+		if pb.Propositions == nil {
+			pb.Propositions = []domain.PropositionRef{}
+		}
+		pb.Alternativ = alt
+		out[key] = pb
+	}
+	prows.Close()
+	if err := prows.Err(); err != nil {
+		return nil, err
+	}
+
+	// Motions and yrkanden the punkt decided, with the motion's authors' parties.
+	lrows, err := r.db.Query(ctx, keysCTE+`
+		SELECT l.riksmote, l.beteckning, l.punkt, m.dok_id, m.riksmote, m.beteckning, m.title, m.subtyp,
+		       l.yrkande_nummer,
+		       COALESCE((SELECT array_agg(a.party ORDER BY a.ordning) FROM motion_authors a
+		                 WHERE a.dok_id = m.dok_id AND a.party <> ''), '{}')
+		FROM yrkande_forslagspunkt l
+		JOIN k ON k.rm = l.riksmote AND k.bet = l.beteckning AND k.p = l.punkt
+		JOIN motions m ON m.dok_id = l.motion_dok_id
+		ORDER BY l.riksmote, l.beteckning, l.punkt, m.dok_id, l.yrkande_nummer`,
+		rms, bets, punkts)
+	if err != nil {
+		return nil, err
+	}
+	defer lrows.Close()
+	for lrows.Next() {
+		var key ports.PointKey
+		var m domain.ProposingMotion
+		var nr int
+		var authorParties []string
+		if err := lrows.Scan(&key.Riksmote, &key.Beteckning, &key.Punkt, &m.DokID, &m.Riksmote, &m.Beteckning,
+			&m.Title, &m.Subtyp, &nr, &authorParties); err != nil {
+			return nil, err
+		}
+		pb := out[key]
+		if n := len(pb.Motions); n > 0 && pb.Motions[n-1].DokID == m.DokID {
+			pb.Motions[n-1].Yrkanden = append(pb.Motions[n-1].Yrkanden, nr)
+		} else {
+			seen := map[string]bool{}
+			m.Parties = []string{}
+			for _, p := range authorParties {
+				if !seen[p] {
+					seen[p] = true
+					m.Parties = append(m.Parties, p)
+				}
+			}
+			m.Yrkanden = []int{nr}
+			pb.Motions = append(pb.Motions, m)
+		}
+		out[key] = pb
+	}
+	return out, lrows.Err()
 }
 
 type scanner interface {
@@ -307,24 +321,14 @@ type scanner interface {
 
 func scanVote(s scanner) (*domain.Vote, error) {
 	var v domain.Vote
-	var dokID, proposedByParty, proposalType, proposalDokID, documentTitle *string
+	var dokID, documentTitle *string
 	err := s.Scan(
 		&v.VoteringID, &v.PoliticianID, &v.Party, &v.VoteResult,
 		&v.Beteckning, &v.Forslagspunkt, &v.Session, &dokID,
-		&proposedByParty, &proposalType, &proposalDokID, &documentTitle,
-		&v.OriginEnriched, &v.CreatedAt,
+		&documentTitle, &v.CreatedAt,
 	)
 	if dokID != nil {
 		v.DokID = *dokID
-	}
-	if proposedByParty != nil {
-		v.ProposalOrigin.ProposedByParty = *proposedByParty
-	}
-	if proposalType != nil {
-		v.ProposalOrigin.ProposalType = domain.ProposalType(*proposalType)
-	}
-	if proposalDokID != nil {
-		v.ProposalOrigin.ProposalDokID = *proposalDokID
 	}
 	if documentTitle != nil {
 		v.ProposalOrigin.DocumentTitle = *documentTitle

@@ -1,0 +1,159 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H9023312.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H9023312.json",
+ "note": "dokforslag cut to the yrkanden handled in 2021/22:SkU16; document text removed.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5109038",
+    "dok_id": "H9023312",
+    "rm": "2021/22",
+    "beteckning": "3312",
+    "typ": "mot",
+    "subtyp": "Enskild motion",
+    "doktyp": "mot",
+    "typrubrik": "Motion 2021/22:3312 av Jan Ericson (M)",
+    "dokumentnamn": "Motion",
+    "debattnamn": "Motion",
+    "tempbeteckning": "1090",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "3312",
+    "slutnummer": "0",
+    "datum": "2021-10-04 00:00:00",
+    "systemdatum": "2023-02-15 09:10:37",
+    "publicerad": "2021-10-04 00:00:00",
+    "titel": "Översyn av momsregler vid anställdas hemarbete",
+    "subtitel": "av Jan Ericson (M)",
+    "status": "Klar",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Filur",
+    "sourceid": "8b12b745-1339-400e-b1bf-aa74a549c614",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H9023312/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H9023312",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H9023312"
+   },
+   "dokforslag": {
+    "forslag": [
+     {
+      "nummer": "1",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om en översyn av momsregler vid anställdas hemarbete och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2021/22:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     }
+    ]
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2021-10-04 17:06:58",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Granskad",
+      "namn": "Granskad",
+      "datum": "2021-10-04 19:11:31",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "HÄN",
+      "namn": "Hänvisad",
+      "datum": "2021-10-14 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": {
+     "intressent_id": "0940980416614",
+     "namn": "Jan Ericson",
+     "partibet": "M",
+     "ordning": "1",
+     "roll": "undertecknare"
+    }
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "motkat",
+      "namn": "Motionskategori",
+      "text": "Fristående motion",
+      "dok_id": "H9023312",
+      "systemdatum": "2023-02-15 09:10:17"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är avslutat",
+      "dok_id": "H9023312",
+      "systemdatum": "2022-04-28 17:43:11"
+     },
+     {
+      "kod": "tilldelat",
+      "namn": "Tilldelat",
+      "text": "Skatteutskottet",
+      "dok_id": "H9023312",
+      "systemdatum": "2023-02-15 09:10:17"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "H9023312",
+      "subtitel": "av Jan Ericson (M)",
+      "filnamn": "mot_202122__3312.pdf",
+      "filstorlek": "66629",
+      "filtyp": "pdf",
+      "titel": "Översyn av momsregler vid anställdas hemarbete",
+      "fil_url": "https://data.riksdagen.se/fil/742E65D7-9BD0-46EB-A9E4-C39FCCA1DC5A"
+     },
+     {
+      "dok_id": "H9023312",
+      "subtitel": "av Jan Ericson (M)",
+      "filnamn": "mot_202122__3312.docx",
+      "filstorlek": "70102",
+      "filtyp": "docx",
+      "titel": "Översyn av momsregler vid anställdas hemarbete",
+      "fil_url": "https://data.riksdagen.se/fil/51324E88-ADB0-4D0E-BBB0-8AEDF17A4423"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": {
+     "referenstyp": "behandlas_i",
+     "uppgift": "2021/22:SkU16",
+     "ref_dok_id": "H901SkU16",
+     "ref_dok_typ": "bet",
+     "ref_dok_rm": "2021/22",
+     "ref_dok_bet": "SkU16",
+     "ref_dok_titel": "Mervärdesskatt",
+     "ref_dok_subtitel": "",
+     "ref_dok_subtyp": "bet",
+     "ref_dok_dokumentnamn": "Betänkande"
+    }
+   }
+  }
+ }
+}

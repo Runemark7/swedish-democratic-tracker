@@ -21,13 +21,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     -trimpath \
     -o /backfill ./cmd/backfill
 
-# One-off origin recompute (#133). Opt-in: never started by the API container
-# or the scheduler. Run with `kubectl exec` — see cmd/recompute-origins.
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -ldflags="-s -w -extldflags=-static" \
-    -trimpath \
-    -o /recompute-origins ./cmd/recompute-origins
-
 # ── Development stage ──────────────────────────────────────────────────────
 # Alpine-based: includes wget for docker-compose healthchecks.
 # Used by docker-compose.yml via `target: dev`.
@@ -38,7 +31,6 @@ RUN addgroup -g 1000 appgroup \
 
 COPY --from=builder /app /app
 COPY --from=builder /backfill /backfill
-COPY --from=builder /recompute-origins /recompute-origins
 COPY --chown=appuser:appgroup migrations /migrations
 
 USER appuser:appgroup
@@ -57,7 +49,6 @@ FROM gcr.io/distroless/static-debian12:nonroot AS production
 
 COPY --from=builder /app /app
 COPY --from=builder /backfill /backfill
-COPY --from=builder /recompute-origins /recompute-origins
 COPY --chown=nonroot:nonroot migrations /migrations
 
 USER nonroot:nonroot

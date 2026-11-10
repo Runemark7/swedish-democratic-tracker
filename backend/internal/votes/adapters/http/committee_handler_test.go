@@ -19,7 +19,6 @@ import (
 // ListByCommitteeWithPositions are exercised by the committee-votes handler
 // under test; every other method is a no-op stub, following the same
 // faking style already used for this interface in
-// internal/votes/enrich_test.go (enrichRepo) and
 // internal/ingestion/workers/votes_worker_test.go (fakeVoteRepo) — no
 // mocking library.
 type fakeCommitteeRepo struct {
@@ -56,14 +55,8 @@ func (r *fakeCommitteeRepo) ListDistinctVotes(context.Context, ports.ListDistinc
 	return ports.ListDistinctVotesResult{}, nil
 }
 func (r *fakeCommitteeRepo) UpsertMany(context.Context, []*domain.Vote) error { return nil }
-func (r *fakeCommitteeRepo) ListVotePointsWithoutOrigin(context.Context, ports.VotePoint, int) ([]ports.VotePoint, error) {
+func (r *fakeCommitteeRepo) ProposedByForPoints(context.Context, []ports.PointKey) (map[ports.PointKey]domain.ProposedBy, error) {
 	return nil, nil
-}
-func (r *fakeCommitteeRepo) MarkAllOriginsForRecompute(context.Context) (int64, error) {
-	return 0, nil
-}
-func (r *fakeCommitteeRepo) UpdateProposalOriginForPoint(context.Context, string, string, string, domain.ProposalOrigin) (int64, error) {
-	return 0, nil
 }
 func (r *fakeCommitteeRepo) ListDistinctByCommitteePrefix(context.Context, string) ([]ports.VoteSummary, error) {
 	return nil, nil
@@ -178,4 +171,11 @@ func TestListByCommittee_ReturnsPageShape(t *testing.T) {
 	if len(body.Items) != 1 || body.Items[0].VoteringID != "V1" {
 		t.Errorf("items = %+v, want one item with voteringId \"V1\"", body.Items)
 	}
+}
+
+func (r *fakeCommitteeRepo) ListUntitledBetankanden(context.Context, int) ([]ports.BetRef, error) {
+	return nil, nil
+}
+func (r *fakeCommitteeRepo) SetBetankandeTitle(context.Context, string, string, string) error {
+	return nil
 }

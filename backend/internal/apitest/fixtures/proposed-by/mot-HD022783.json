@@ -1,0 +1,289 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HD022783.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HD022783.json",
+ "note": "dokforslag cut to the yrkanden handled in 2025/26:SkU16; document text removed.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5256265",
+    "dok_id": "HD022783",
+    "rm": "2025/26",
+    "beteckning": "2783",
+    "typ": "mot",
+    "subtyp": "Kommittémotion",
+    "doktyp": "mot",
+    "typrubrik": "Motion 2025/26:2783 av Ilona Szatmári Waldau m.fl. (V)",
+    "dokumentnamn": "Motion",
+    "debattnamn": "Motion",
+    "tempbeteckning": "704",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "2783",
+    "slutnummer": "0",
+    "datum": "2025-10-06 00:00:00",
+    "systemdatum": "2026-04-28 15:39:23",
+    "publicerad": "2025-10-06 00:00:00",
+    "titel": "Ett rättvist skattesystem",
+    "subtitel": "av Ilona Szatmári Waldau m.fl. (V)",
+    "status": "Klar",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Filur",
+    "sourceid": "c1565f7e-cbfd-4e8c-8029-b262d34d84bb",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/HD022783/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/HD022783",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/HD022783"
+   },
+   "dokforslag": {
+    "forslag": [
+     {
+      "nummer": "13",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att regeringen bör utreda förutsättningarna för en geografiskt anpassad vägskatt för personbilar och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2025/26:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     },
+     {
+      "nummer": "14",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att regeringen bör återkomma till riksdagen med ett förslag om en avståndsbaserad skatt för godstransporter på väg och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2025/26:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     },
+     {
+      "nummer": "15",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att regeringen bör presentera en handlingsplan för hur övriga klimatskadliga subventioner kan avvecklas i närtid och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2025/26:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     },
+     {
+      "nummer": "16",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att regeringen bör återkomma till riksdagen med ett förslag om en progressiv flygskatt och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2025/26:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     },
+     {
+      "nummer": "17",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att regeringen bör återkomma med förslag på en ny bekämpningsmedelsskatt differentierad utifrån bekämpningsmedlens olika miljö- och hälsorisker och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2025/26:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     }
+    ]
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2025-10-06 13:00:03",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Granskad",
+      "namn": "Granskad",
+      "datum": "2025-10-06 13:23:27",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "HÄN",
+      "namn": "Hänvisad",
+      "datum": "2025-10-15 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0229350341619",
+      "namn": "Ilona Szatmári Waldau",
+      "partibet": "V",
+      "ordning": "1",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "025158809026",
+      "namn": "Ida Gabrielsson",
+      "partibet": "V",
+      "ordning": "2",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0825441263617",
+      "namn": "Birger Lahti",
+      "partibet": "V",
+      "ordning": "3",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0802091197024",
+      "namn": "Andrea Andersson Tay",
+      "partibet": "V",
+      "ordning": "4",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0627450126815",
+      "namn": "Kajsa Fredholm",
+      "partibet": "V",
+      "ordning": "5",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0939158389321",
+      "namn": "Samuel Gonzalez Westling",
+      "partibet": "V",
+      "ordning": "6",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0388994689418",
+      "namn": "Malin Östh",
+      "partibet": "V",
+      "ordning": "7",
+      "roll": "undertecknare"
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "motkat",
+      "namn": "Motionskategori",
+      "text": "Fristående motion",
+      "dok_id": "HD022783",
+      "systemdatum": "2026-04-28 15:39:06"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är avslutat",
+      "dok_id": "HD022783",
+      "systemdatum": "2026-03-25 16:47:14"
+     },
+     {
+      "kod": "tilldelat",
+      "namn": "Tilldelat",
+      "text": "Skatteutskottet",
+      "dok_id": "HD022783",
+      "systemdatum": "2026-04-28 15:39:06"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "HD022783",
+      "subtitel": "av Ilona Szatmári Waldau m.fl. (V)",
+      "filnamn": "mot_202526__2783.pdf",
+      "filstorlek": "124351",
+      "filtyp": "pdf",
+      "titel": "Ett rättvist skattesystem",
+      "fil_url": "https://data.riksdagen.se/fil/AC7DEAC4-BB90-467B-AA0B-E1C74D893F58"
+     },
+     {
+      "dok_id": "HD022783",
+      "subtitel": "av Ilona Szatmári Waldau m.fl. (V)",
+      "filnamn": "mot_202526__2783.docx",
+      "filstorlek": "97359",
+      "filtyp": "docx",
+      "titel": "Ett rättvist skattesystem",
+      "fil_url": "https://data.riksdagen.se/fil/BB746695-08DD-4304-A239-945C5CC801B3"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2025/26:SkU13",
+      "ref_dok_id": "HD01SkU13",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "SkU13",
+      "ref_dok_titel": "Inkomstskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2025/26:SkU15",
+      "ref_dok_id": "HD01SkU15",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "SkU15",
+      "ref_dok_titel": "Företag, kapital och fastighet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2025/26:SkU16",
+      "ref_dok_id": "HD01SkU16",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "SkU16",
+      "ref_dok_titel": "Punktskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     }
+    ]
+   }
+  }
+ }
+}

@@ -206,6 +206,7 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 			"partyBreakdown": []any{},
 			"avvikare":       []any{},
 		}
+		resp["proposedBy"] = h.proposedBy(r, info.Session, bet, punkt)
 		if ds, err := h.svc.GetDocumentStatus(r.Context(), info.DokID); err == nil && ds != nil {
 			resp["subtitle"] = ds.Subtitle
 			resp["summary"] = ds.Summary
@@ -234,17 +235,16 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := map[string]any{
-		"beteckning":      bet,
-		"forslagspunkt":   punkt,
-		"dokId":           meta.DokID,
-		"documentTitle":   meta.ProposalOrigin.DocumentTitle,
-		"proposedByParty": meta.ProposalOrigin.ProposedByParty,
-		"proposalType":    string(meta.ProposalOrigin.ProposalType),
-		"session":         meta.Session,
-		"partyBreakdown":  breakdown,
-		"avvikare":        avvikare,
-		"status":          computeStatus(breakdown),
+		"beteckning":     bet,
+		"forslagspunkt":  punkt,
+		"dokId":          meta.DokID,
+		"documentTitle":  meta.ProposalOrigin.DocumentTitle,
+		"session":        meta.Session,
+		"partyBreakdown": breakdown,
+		"avvikare":       avvikare,
+		"status":         computeStatus(breakdown),
 	}
+	resp["proposedBy"] = h.proposedBy(r, meta.Session, bet, punkt)
 	if ds, err := h.svc.GetDocumentStatus(r.Context(), meta.DokID); err == nil && ds != nil {
 		resp["date"] = ds.Date
 		resp["subtitle"] = ds.Subtitle
@@ -256,6 +256,21 @@ func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 		resp["notis"] = ds.Notis
 	}
 	jsonOK(w, resp)
+}
+
+// proposedBy derives "proposed by" for one förslagspunkt from the Motioner
+// link. A failed lookup yields the empty value rather than failing the page.
+func (h *Handler) proposedBy(r *http.Request, riksmote, bet, punkt string) domain.ProposedBy {
+	empty := domain.ProposedBy{Motions: []domain.ProposingMotion{}, Propositions: []domain.PropositionRef{}}
+	if riksmote == "" {
+		return empty
+	}
+	key := ports.PointKey{Riksmote: riksmote, Beteckning: bet, Punkt: punkt}
+	m, err := h.svc.ProposedByFor(r.Context(), []ports.PointKey{key})
+	if err != nil {
+		return empty
+	}
+	return m[key]
 }
 
 // recent serves the complete, dated betänkande feed the front page's timeline

@@ -86,15 +86,9 @@ func (r *fakeVoteRepo) ListDistinctByCommitteePrefix(context.Context, string) ([
 	return nil, nil
 }
 
-func (r *fakeVoteRepo) ListVotePointsWithoutOrigin(context.Context, voteports.VotePoint, int) ([]voteports.VotePoint, error) {
+func (r *fakeVoteRepo) ProposedByForPoints(context.Context, []voteports.PointKey) (map[voteports.PointKey]votedomain.ProposedBy, error) {
 	return nil, nil
 }
-
-func (r *fakeVoteRepo) MarkAllOriginsForRecompute(context.Context) (int64, error) { return 0, nil }
-func (r *fakeVoteRepo) UpdateProposalOriginForPoint(context.Context, string, string, string, votedomain.ProposalOrigin) (int64, error) {
-	return 0, nil
-}
-
 func (r *fakeVoteRepo) ListByCommitteeWithPositions(context.Context, string, string, int, int) ([]voteports.CommitteeVotering, int, error) {
 	return nil, 0, nil
 }
@@ -251,3 +245,8 @@ func TestCurrentRiksmote(t *testing.T) {
 		}
 	}
 }
+
+func (r *fakeVoteRepo) ListUntitledBetankanden(context.Context, int) ([]voteports.BetRef, error) {
+	return nil, nil
+}
+func (r *fakeVoteRepo) SetBetankandeTitle(context.Context, string, string, string) error { return nil }

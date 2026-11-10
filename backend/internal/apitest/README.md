@@ -94,7 +94,7 @@ rec := h.Do(httptest.NewRequest(http.MethodGet, "/api/politicians/"+id+"/votes?s
 Assert on the HTTP response. Do not assert on tables.
 
 Worker names include `fetch-politicians`, `fetch-votes`, `fetch-speeches`,
-`enrich-vote-origins`, `enrich-speech-text`, `keyword-matcher`,
+`enrich-speech-text`, `keyword-matcher`,
 `refresh-scorecards`, `refresh-coverage`, `agency-intel`, `authorities`,
 `authority-headcount`, `authority-expenditure`, `national-kpis`,
 `region-budget`, `municipality-budget`, and `sync-proposals`.

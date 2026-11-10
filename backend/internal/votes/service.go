@@ -3,10 +3,6 @@ package votes
 import (
 	"context"
 	"errors"
-	"fmt"
-	"log/slog"
-	"strings"
-	"time"
 
 	"riksdagskollen/internal/votes/domain"
 	"riksdagskollen/internal/votes/ports"
@@ -22,18 +18,11 @@ var ErrPeriodNotFound = errors.New("unknown mandate period")
 type Service struct {
 	repo      ports.VoteRepository
 	riksdagen ports.RiksdagenVoteClient
-	// originDelay is the pause after each resolved vote point, so enrichment
-	// stays a polite client of data.riksdagen.se.
-	originDelay time.Duration
 }
 
 func NewService(repo ports.VoteRepository, riksdagen ports.RiksdagenVoteClient) *Service {
-	return &Service{repo: repo, riksdagen: riksdagen, originDelay: 100 * time.Millisecond}
+	return &Service{repo: repo, riksdagen: riksdagen}
 }
-
-// SetOriginDelay sets the pause between vote points during origin enrichment
-// and recompute. Production keeps the default; tests set zero.
-func (s *Service) SetOriginDelay(d time.Duration) { s.originDelay = d }
 
 // ListVoteringar enumerates voteringar for a riksmöte, newest first, together
 // with the total the API reports.
@@ -63,147 +52,33 @@ func (s *Service) SyncVotes(ctx context.Context, f ports.FetchVotesFilter) error
 	return s.repo.UpsertMany(ctx, vv)
 }
 
-// EnrichOrigins resolves proposal origin for vote points that lack it, and
-// returns how many points were enriched.
-//
-// Origin is a property of the vote point, not of an individual ballot: every
-// member voting on AU9:1 shares one proposal. Resolving per ballot re-fetched
-// the same document once per member — roughly 349 times per point — which made
-// the full 2022-2026 record (~895 000 ballots) a multi-day job instead of a
-// few minutes. One request per point, applied to every ballot on it.
-func (s *Service) EnrichOrigins(ctx context.Context, batchSize int) (int, error) {
-	points, err := s.repo.ListVotePointsWithoutOrigin(ctx, ports.VotePoint{}, batchSize)
+// EnrichTitles gives voteringar without a title the title of their betänkande,
+// for at most limit betänkanden per call. It writes the title only -- never a
+// proposer -- and only where none is stored, so it is idempotent. A betänkande
+// Riksdagen cannot answer for is left for a later run.
+func (s *Service) EnrichTitles(ctx context.Context, limit int) (int, error) {
+	refs, err := s.repo.ListUntitledBetankanden(ctx, limit)
 	if err != nil {
 		return 0, err
 	}
-
-	enriched := 0
-	for _, p := range points {
-		ok, err := s.enrichPoint(ctx, p)
-		if err != nil {
-			return enriched, err
+	done := 0
+	for _, b := range refs {
+		info, err := s.riksdagen.FetchBetankandeByBeteckning(ctx, b.Beteckning, b.Session)
+		if err != nil || info == nil || info.Title == "" {
+			continue
 		}
-		if ok {
-			enriched++
+		if err := s.repo.SetBetankandeTitle(ctx, b.Session, b.Beteckning, info.Title); err != nil {
+			return done, err
 		}
+		done++
 	}
-	return enriched, nil
+	return done, nil
 }
 
-// enrichPoint resolves one votering's origin from its own dok_id and writes it
-// to that votering alone (keyed on riksmöte + beteckning + förslagspunkt).
-// ok is false when resolution failed: the point is left unenriched to be
-// retried, and the batch carries on.
-func (s *Service) enrichPoint(ctx context.Context, p ports.VotePoint) (ok bool, err error) {
-	origin, rerr := s.resolveOrigin(ctx, &domain.Vote{
-		Beteckning:    p.Beteckning,
-		Forslagspunkt: p.Forslagspunkt,
-		Session:       p.Session,
-		DokID:         p.DokID,
-	})
-	if rerr != nil {
-		slog.Warn("origin: resolve failed", "session", p.Session, "bet", p.Beteckning, "punkt", p.Forslagspunkt, "error", rerr)
-		return false, nil
-	}
-	if _, err := s.repo.UpdateProposalOriginForPoint(ctx, p.Session, p.Beteckning, p.Forslagspunkt, origin); err != nil {
-		return false, err
-	}
-	// Rate limit: be gentle on the Riksdagen API
-	time.Sleep(s.originDelay)
-	return true, nil
-}
-
-// MarkOriginsForRecompute flags every votering for re-enrichment and returns
-// how many were flagged. Run it deliberately, once, before RecomputeOrigins.
-// Stored origins stay visible until each votering is re-resolved.
-func (s *Service) MarkOriginsForRecompute(ctx context.Context) (int64, error) {
-	return s.repo.MarkAllOriginsForRecompute(ctx)
-}
-
-// RecomputeOrigins re-resolves every votering still flagged for enrichment,
-// per riksmöte, walking in (session, beteckning, förslagspunkt) order in
-// batches and pausing between requests. It returns how many it resolved.
-//
-// It is resumable and idempotent: each resolved votering is unflagged as it is
-// written, so an interrupted run restarts where it stopped, and a run with
-// nothing flagged does nothing. A point that cannot be resolved stays flagged
-// and is skipped, so it cannot stall the walk; a later run retries it.
-func (s *Service) RecomputeOrigins(ctx context.Context, batchSize int) (int, error) {
-	if batchSize <= 0 {
-		batchSize = 100
-	}
-	var after ports.VotePoint
-	total := 0
-	for {
-		if err := ctx.Err(); err != nil {
-			return total, err
-		}
-		points, err := s.repo.ListVotePointsWithoutOrigin(ctx, after, batchSize)
-		if err != nil {
-			return total, err
-		}
-		if len(points) == 0 {
-			return total, nil
-		}
-		for _, p := range points {
-			ok, err := s.enrichPoint(ctx, p)
-			if err != nil {
-				return total, err
-			}
-			if ok {
-				total++
-			}
-			after = p
-		}
-	}
-}
-
-// resolveOrigin traces beteckning → dokumentstatus → prop/mot → proposing party.
-func (s *Service) resolveOrigin(ctx context.Context, v *domain.Vote) (domain.ProposalOrigin, error) {
-	// Use the vote's dok_id directly (e.g. "HC01AU10") — this is the correct format
-	// for the dokumentstatus API. Falls back to constructing from session+beteckning.
-	dokID := v.DokID
-	if dokID == "" {
-		session := strings.ReplaceAll(v.Session, "/", "")
-		dokID = fmt.Sprintf("%s:%s", session, v.Beteckning)
-	}
-
-	ds, err := s.riksdagen.FetchDocumentStatus(ctx, dokID)
-	if err != nil || ds == nil {
-		return domain.ProposalOrigin{}, err
-	}
-
-	origin := domain.ProposalOrigin{
-		DocumentTitle: ds.Title,
-		ProposalDokID: dokID,
-	}
-
-	for _, ref := range ds.References {
-		switch ref.RefDokTyp {
-		case "prop":
-			origin.ProposedByParty = "Regeringen"
-			origin.ProposalType = domain.ProposalProp
-			origin.ProposalDokID = ref.RefDokID
-			return origin, nil
-		case "mot":
-			// Fetch the motion's document to get the proposing party
-			motDS, err := s.riksdagen.FetchDocumentStatus(ctx, ref.RefDokID)
-			if err == nil && motDS != nil {
-				for _, mr := range motDS.References {
-					if mr.PartyBet != "" {
-						origin.ProposedByParty = mr.PartyBet
-						break
-					}
-				}
-			}
-			origin.ProposalType = domain.ProposalMot
-			origin.ProposalDokID = ref.RefDokID
-			return origin, nil
-		}
-	}
-	// Fallback: the betänkande itself
-	origin.ProposalType = domain.ProposalBet
-	return origin, nil
+// ProposedByFor derives "proposed by" for the given förslagspunkter from the
+// Motioner link. See domain.ProposedBy.
+func (s *Service) ProposedByFor(ctx context.Context, keys []ports.PointKey) (map[ports.PointKey]domain.ProposedBy, error) {
+	return s.repo.ProposedByForPoints(ctx, keys)
 }
 
 func (s *Service) ListByPolitician(ctx context.Context, f ports.ListVotesFilter) (ports.ListVotesResult, error) {
@@ -217,7 +92,27 @@ func (s *Service) ListByPolitician(ctx context.Context, f ports.ListVotesFilter)
 }
 
 func (s *Service) ListDistinctByCommitteePrefix(ctx context.Context, prefix string) ([]ports.VoteSummary, error) {
-	return s.repo.ListDistinctByCommitteePrefix(ctx, prefix)
+	ss, err := s.repo.ListDistinctByCommitteePrefix(ctx, prefix)
+	if err != nil {
+		return nil, err
+	}
+	return ss, s.attachProposedBy(ctx, ss)
+}
+
+// attachProposedBy fills each summary's ProposedBy from the Motioner link.
+func (s *Service) attachProposedBy(ctx context.Context, ss []ports.VoteSummary) error {
+	keys := make([]ports.PointKey, len(ss))
+	for i, v := range ss {
+		keys[i] = ports.PointKey{Riksmote: v.Riksmote, Beteckning: v.Beteckning, Punkt: v.Forslagspunkt}
+	}
+	pb, err := s.repo.ProposedByForPoints(ctx, keys)
+	if err != nil {
+		return err
+	}
+	for i := range ss {
+		ss[i].ProposedBy = pb[keys[i]]
+	}
+	return nil
 }
 
 // ListByCommitteeWithPositions returns the committee's voteringar — the RÖSTAT
@@ -247,7 +142,11 @@ func (s *Service) ListDistinctVotes(ctx context.Context, f ports.ListDistinctVot
 	if f.PageSize == 0 {
 		f.PageSize = 50
 	}
-	return s.repo.ListDistinctVotes(ctx, f)
+	res, err := s.repo.ListDistinctVotes(ctx, f)
+	if err != nil {
+		return res, err
+	}
+	return res, s.attachProposedBy(ctx, res.Votes)
 }
 
 func (s *Service) ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error) {
