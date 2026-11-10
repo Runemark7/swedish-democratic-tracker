@@ -1,0 +1,937 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H901SkU16.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H901SkU16.json",
+ "note": "Recorded 2026-11-10 from data.riksdagen.se. dokutskottsforslag cut to punkterna 1, 5 and 6.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5119829",
+    "dok_id": "H901SkU16",
+    "rm": "2021/22",
+    "beteckning": "SkU16",
+    "typ": "bet",
+    "subtyp": "bet",
+    "doktyp": "bet",
+    "typrubrik": "Betänkande 2021/22:SkU16",
+    "dokumentnamn": "Betänkande",
+    "debattnamn": "Debatt om förslag",
+    "tempbeteckning": "",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "16",
+    "slutnummer": "0",
+    "datum": "2022-04-07 00:00:00",
+    "systemdatum": "2022-07-08 18:18:37",
+    "publicerad": "2022-02-10 13:33:49",
+    "titel": "Mervärdesskatt",
+    "subtitel": "",
+    "status": "Webbpublicering",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "RIM",
+    "sourceid": "c52fe716-8f6d-4a4f-bf7a-5da137592a4a",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H901SkU16/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H901SkU16",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H901SkU16",
+    "utskottsforslag_url_xml": "https://data.riksdagen.se/utskottsforslag/H901SkU16"
+   },
+   "dokutskottsforslag": {
+    "utskottsforslag": [
+     {
+      "punkt": "1",
+      "rubrik": "Skattesatser m.m.",
+      "forslag": "<BR/>Riksdagen avslår motionerna \n\n2021/22:55 av Angelika Bengtsson (SD), \n\n2021/22:434 av Per Lodenius (C), \n\n2021/22:473 av Michael Rubbestad (SD) yrkande 2, \n\n2021/22:1211 av Anders Åkesson och Magnus Ek (båda C), \n\n2021/22:1672 av Johan Hultberg (M) yrkande 1, \n\n2021/22:1703 av Camilla Waltersson Grönvall (M), \n\n2021/22:1844 av Sten Bergheden (M), \n\n2021/22:2086 av Lars Püss och Åsa Coenraads (båda M), \n\n2021/22:2193 av Margareta Cederfelt (M), \n\n2021/22:2290 av Helena Gellerman (L), \n\n2021/22:2449 av Eric Palmqvist m.fl. (SD) yrkande 8, \n\n2021/22:2501 av Michael Rubbestad m.fl. (SD) yrkande 6, \n\n2021/22:2690 av Laila Naraghi (S), \n\n2021/22:2711 av Sten Bergheden (M) yrkande 2, \n\n2021/22:2894 av Runar Filper (SD), \n\n2021/22:3026 av Markus Wiechel (SD), \n\n2021/22:3172 av Camilla Brodin (KD) yrkande 4, \n\n2021/22:3350 av Sten Bergheden (M) yrkande 2, \n\n2021/22:3366 av Viktor Wärnick m.fl. (M) yrkande 3, \n\n2021/22:3374 av Viktor Wärnick m.fl. (M) yrkande 14, \n\n2021/22:3526 av Catarina Deremar m.fl. (C) yrkande 10, \n\n2021/22:3666 av Annie Lööf m.fl. (C) yrkande 118, \n\n2021/22:3954 av Eric Westroth m.fl. (SD) yrkandena 8 och 11, \n\n2021/22:4162 av Roland Utbult m.fl. (KD) yrkande 2, \n\n2021/22:4202 av Hampus Hagman m.fl. (KD) yrkande 14 och \n\n2021/22:4217 av Camilla Brodin m.fl. (KD) yrkande 22.<BR/><BR/>",
+      "beslutstyp": "röstning",
+      "motforslag_nummer": "2",
+      "motforslag_partier": "\"SD\"",
+      "votering_id": "cfd60a1a-f5e4-4ee4-9315-b043e05988d5",
+      "votering_sammanfattning_html": {
+       "table": {
+        "tr": [
+         {
+          "td": {
+           "h4": "Omröstning i sakfrågan",
+           "p": "Utskottets förslag mot reservation 2 (SD)"
+          }
+         },
+         {
+          "th": [
+           "Parti",
+           "Ja",
+           "Nej",
+           "Avstående",
+           "Frånvarande"
+          ]
+         },
+         {
+          "td": [
+           "S",
+           "89",
+           "0",
+           "0",
+           "11"
+          ]
+         },
+         {
+          "td": [
+           "M",
+           "0",
+           "0",
+           "62",
+           "8"
+          ]
+         },
+         {
+          "td": [
+           "SD",
+           "0",
+           "54",
+           "0",
+           "7"
+          ]
+         },
+         {
+          "td": [
+           "C",
+           "0",
+           "0",
+           "28",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "V",
+           "22",
+           "0",
+           "0",
+           "5"
+          ]
+         },
+         {
+          "td": [
+           "KD",
+           "0",
+           "0",
+           "19",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "L",
+           "16",
+           "0",
+           "0",
+           "4"
+          ]
+         },
+         {
+          "td": [
+           "MP",
+           "0",
+           "0",
+           "13",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "-",
+           "1",
+           "1",
+           "0",
+           "0"
+          ]
+         },
+         {
+          "td": [
+           "Totalt",
+           "128",
+           "55",
+           "122",
+           "44"
+          ]
+         },
+         {
+          "td": {
+           "h4": ""
+          }
+         }
+        ]
+       },
+       "br": null
+      },
+      "votering_url_xml": "http://data.riksdagen.se/votering/CFD60A1A-F5E4-4EE4-9315-B043E05988D5",
+      "rm": "2021/22",
+      "bet": "SkU16",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     },
+     {
+      "punkt": "5",
+      "rubrik": "Omvandling av lokaler och kontor till bostäder",
+      "forslag": "Riksdagen ställer sig bakom det som utskottet anför om att skyndsamt se över skattelagstiftningen i syfte att säkerställa att den inte i onödan minskar incitamenten att omvandla lokaler och kontor till bostäder och tillkännager detta för regeringen.<BR/>Därmed bifaller riksdagen motion \n\n2021/22:3708 av Carl-Oskar Bohlin m.fl. (M) yrkande 15 och \n\nbifaller delvis motion \n\n2021/22:4222 av Larry Söder m.fl. (KD) yrkande 4 i denna del.<BR/><BR/>",
+      "beslutstyp": "acklamation",
+      "motforslag_nummer": "0",
+      "motforslag_partier": "",
+      "votering_id": "",
+      "votering_sammanfattning_html": "",
+      "votering_url_xml": "",
+      "rm": "2021/22",
+      "bet": "SkU16",
+      "vinnare": "utskottet",
+      "voteringskrav": "",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     },
+     {
+      "punkt": "6",
+      "rubrik": "Övriga mervärdesskattefrågor",
+      "forslag": "<BR/>Riksdagen avslår motionerna \n\n2021/22:3312 av Jan Ericson (M), \n\n2021/22:3637 av Niklas Wykman m.fl. (M) yrkande 6, \n\n2021/22:3638 av Niklas Wykman m.fl. (M) yrkande 9, \n\n2021/22:3685 av Per Åsling m.fl. (C) yrkande 17 och \n\n2021/22:4217 av Camilla Brodin m.fl. (KD) yrkande 4.<BR/><BR/>",
+      "beslutstyp": "röstning",
+      "motforslag_nummer": "12",
+      "motforslag_partier": "\"M\"",
+      "votering_id": "0944d710-bc94-493b-981d-9c70815ca406",
+      "votering_sammanfattning_html": {
+       "table": {
+        "tr": [
+         {
+          "td": {
+           "h4": "Omröstning i sakfrågan",
+           "p": "Utskottets förslag mot reservation 12 (M)"
+          }
+         },
+         {
+          "th": [
+           "Parti",
+           "Ja",
+           "Nej",
+           "Avstående",
+           "Frånvarande"
+          ]
+         },
+         {
+          "td": [
+           "S",
+           "89",
+           "0",
+           "0",
+           "11"
+          ]
+         },
+         {
+          "td": [
+           "M",
+           "0",
+           "62",
+           "0",
+           "8"
+          ]
+         },
+         {
+          "td": [
+           "SD",
+           "54",
+           "0",
+           "0",
+           "7"
+          ]
+         },
+         {
+          "td": [
+           "C",
+           "0",
+           "0",
+           "28",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "V",
+           "22",
+           "0",
+           "0",
+           "5"
+          ]
+         },
+         {
+          "td": [
+           "KD",
+           "0",
+           "0",
+           "19",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "L",
+           "16",
+           "0",
+           "0",
+           "4"
+          ]
+         },
+         {
+          "td": [
+           "MP",
+           "13",
+           "0",
+           "0",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "-",
+           "2",
+           "0",
+           "0",
+           "0"
+          ]
+         },
+         {
+          "td": [
+           "Totalt",
+           "196",
+           "62",
+           "47",
+           "44"
+          ]
+         },
+         {
+          "td": {
+           "h4": ""
+          }
+         }
+        ]
+       },
+       "br": null
+      },
+      "votering_url_xml": "http://data.riksdagen.se/votering/0944D710-BC94-493B-981D-9C70815CA406",
+      "rm": "2021/22",
+      "bet": "SkU16",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:1211 Dansbandsmoms",
+      "ref_dok_id": "H9021211",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "1211",
+      "ref_dok_titel": "Dansbandsmoms",
+      "ref_dok_subtitel": "av Anders Åkesson och Magnus Ek (båda C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:1672 Stärk den maritima besöksnäringen",
+      "ref_dok_id": "H9021672",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "1672",
+      "ref_dok_titel": "Stärk den maritima besöksnäringen",
+      "ref_dok_subtitel": "av Johan Hultberg (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:1703 Dansbandsmoms och övriga förutsättningar för kultursektorn",
+      "ref_dok_id": "H9021703",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "1703",
+      "ref_dok_titel": "Dansbandsmoms och övriga förutsättningar för kultursektorn",
+      "ref_dok_subtitel": "av Camilla Waltersson Grönvall (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:1844 Dansbandsmoms",
+      "ref_dok_id": "H9021844",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "1844",
+      "ref_dok_titel": "Dansbandsmoms",
+      "ref_dok_subtitel": "av Sten Bergheden (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:1852 Ta bort momsen på trähus",
+      "ref_dok_id": "H9021852",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "1852",
+      "ref_dok_titel": "Ta bort momsen på trähus",
+      "ref_dok_subtitel": "av Sten Bergheden (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:1973 Ta bort momsen på körkort och inför ett RATT-avdrag",
+      "ref_dok_id": "H9021973",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "1973",
+      "ref_dok_titel": "Ta bort momsen på körkort och inför ett RATT-avdrag",
+      "ref_dok_subtitel": "av Sten Bergheden (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2008 Vårdmoms förstör vård på lika villkor ",
+      "ref_dok_id": "H9022008",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2008",
+      "ref_dok_titel": "Vårdmoms förstör vård på lika villkor ",
+      "ref_dok_subtitel": "av Elisabeth Björnsdotter Rahm och Ann-Britt Åsebol (båda M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2086 Enklare momsregler",
+      "ref_dok_id": "H9022086",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2086",
+      "ref_dok_titel": "Enklare momsregler",
+      "ref_dok_subtitel": "av Lars Püss och Åsa Coenraads (båda M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2128 Momsfria vårdtjänster",
+      "ref_dok_id": "H9022128",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2128",
+      "ref_dok_titel": "Momsfria vårdtjänster",
+      "ref_dok_subtitel": "av Camilla Waltersson Grönvall (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2193 En enhetlig moms",
+      "ref_dok_id": "H9022193",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2193",
+      "ref_dok_titel": "En enhetlig moms",
+      "ref_dok_subtitel": "av Margareta Cederfelt (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2288 Mervärdesskatt på interna tjänster i civilsamhällesorganisationer",
+      "ref_dok_id": "H9022288",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2288",
+      "ref_dok_titel": "Mervärdesskatt på interna tjänster i civilsamhällesorganisationer",
+      "ref_dok_subtitel": "av Malin Danielsson (L)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2290 Frigör potentialen i svensk turistnäring",
+      "ref_dok_id": "H9022290",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2290",
+      "ref_dok_titel": "Frigör potentialen i svensk turistnäring",
+      "ref_dok_subtitel": "av Helena Gellerman (L)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2449 Turism och besöksnäring",
+      "ref_dok_id": "H9022449",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2449",
+      "ref_dok_titel": "Turism och besöksnäring",
+      "ref_dok_subtitel": "av Eric Palmqvist m.fl. (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2501 Framtidens e-sport ",
+      "ref_dok_id": "H9022501",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2501",
+      "ref_dok_titel": "Framtidens e-sport ",
+      "ref_dok_subtitel": "av Michael Rubbestad m.fl. (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2515 Avskaffande av den dolda momsen för utbildningsföretag",
+      "ref_dok_id": "H9022515",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2515",
+      "ref_dok_titel": "Avskaffande av den dolda momsen för utbildningsföretag",
+      "ref_dok_subtitel": "av Alexandra Anstrell och Maria Stockhaus (båda M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2593 Jämlik idrott, friluftsliv och rätt till motion",
+      "ref_dok_id": "H9022593",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2593",
+      "ref_dok_titel": "Jämlik idrott, friluftsliv och rätt till motion",
+      "ref_dok_subtitel": "av Vasiliki Tsouplaki m.fl. (V)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2690 Sänkt moms på begagnade kläder",
+      "ref_dok_id": "H9022690",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2690",
+      "ref_dok_titel": "Sänkt moms på begagnade kläder",
+      "ref_dok_subtitel": "av Laila Naraghi (S)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2711 Insatser för ökad turism i Sverige",
+      "ref_dok_id": "H9022711",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2711",
+      "ref_dok_titel": "Insatser för ökad turism i Sverige",
+      "ref_dok_subtitel": "av Sten Bergheden (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:2894 Dansbandsmomsen",
+      "ref_dok_id": "H9022894",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "2894",
+      "ref_dok_titel": "Dansbandsmomsen",
+      "ref_dok_subtitel": "av Runar Filper (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3026 Likvärdiga möjligheter för båtlivet",
+      "ref_dok_id": "H9023026",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3026",
+      "ref_dok_titel": "Likvärdiga möjligheter för båtlivet",
+      "ref_dok_subtitel": "av Markus Wiechel (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3109 Hästens betydelse för Sverige",
+      "ref_dok_id": "H9023109",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3109",
+      "ref_dok_titel": "Hästens betydelse för Sverige",
+      "ref_dok_subtitel": "av Cecilia Widegren (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:312 Utökad avdragsrätt och skattefrihet",
+      "ref_dok_id": "H902312",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "312",
+      "ref_dok_titel": "Utökad avdragsrätt och skattefrihet",
+      "ref_dok_subtitel": "av Markus Wiechel och Alexander Christiansson (båda SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3172 Mikromobilitet",
+      "ref_dok_id": "H9023172",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3172",
+      "ref_dok_titel": "Mikromobilitet",
+      "ref_dok_subtitel": "av Camilla Brodin (KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3312 Översyn av momsregler vid anställdas hemarbete",
+      "ref_dok_id": "H9023312",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3312",
+      "ref_dok_titel": "Översyn av momsregler vid anställdas hemarbete",
+      "ref_dok_subtitel": "av Jan Ericson (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3350 Insatser för ökad turism i Sverige",
+      "ref_dok_id": "H9023350",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3350",
+      "ref_dok_titel": "Insatser för ökad turism i Sverige",
+      "ref_dok_subtitel": "av Sten Bergheden (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3366 Filmpolitisk motion",
+      "ref_dok_id": "H9023366",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3366",
+      "ref_dok_titel": "Filmpolitisk motion",
+      "ref_dok_subtitel": "av Viktor Wärnick m.fl. (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3368 En mediepolitik för mångfald",
+      "ref_dok_id": "H9023368",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3368",
+      "ref_dok_titel": "En mediepolitik för mångfald",
+      "ref_dok_subtitel": "av Viktor Wärnick m.fl. (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3374 Kulturpolitisk motion ",
+      "ref_dok_id": "H9023374",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3374",
+      "ref_dok_titel": "Kulturpolitisk motion ",
+      "ref_dok_subtitel": "av Viktor Wärnick m.fl. (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3526 Ett fritt och brett kulturliv i hela landet",
+      "ref_dok_id": "H9023526",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3526",
+      "ref_dok_titel": "Ett fritt och brett kulturliv i hela landet",
+      "ref_dok_subtitel": "av Catarina Deremar m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3543 Hyresmomsen",
+      "ref_dok_id": "H9023543",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3543",
+      "ref_dok_titel": "Hyresmomsen",
+      "ref_dok_subtitel": "av Lars Beckman (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3637 Rättvisa fordons- och miljöskatter",
+      "ref_dok_id": "H9023637",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3637",
+      "ref_dok_titel": "Rättvisa fordons- och miljöskatter",
+      "ref_dok_subtitel": "av Niklas Wykman m.fl. (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3638 Fler jobb, bättre integration och en växande ekonomi",
+      "ref_dok_id": "H9023638",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3638",
+      "ref_dok_titel": "Fler jobb, bättre integration och en växande ekonomi",
+      "ref_dok_subtitel": "av Niklas Wykman m.fl. (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3666 Jämställdhet för en hållbar utveckling",
+      "ref_dok_id": "H9023666",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3666",
+      "ref_dok_titel": "Jämställdhet för en hållbar utveckling",
+      "ref_dok_subtitel": "av Annie Lööf m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3685 Skatter för företagande och tillväxt i hela landet",
+      "ref_dok_id": "H9023685",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3685",
+      "ref_dok_titel": "Skatter för företagande och tillväxt i hela landet",
+      "ref_dok_subtitel": "av Per Åsling m.fl. (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3708 Reformer för ett ökat byggande och en bättre fungerande bostadsmarknad",
+      "ref_dok_id": "H9023708",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3708",
+      "ref_dok_titel": "Reformer för ett ökat byggande och en bättre fungerande bostadsmarknad",
+      "ref_dok_subtitel": "av Carl-Oskar Bohlin m.fl. (M)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3809 En tillgänglig sjukvård i världsklass",
+      "ref_dok_id": "H9023809",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3809",
+      "ref_dok_titel": "En tillgänglig sjukvård i världsklass",
+      "ref_dok_subtitel": "av Per Ramhorn m.fl. (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3879 Utgiftsområde 22 Kommunikationer",
+      "ref_dok_id": "H9023879",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3879",
+      "ref_dok_titel": "Utgiftsområde 22 Kommunikationer",
+      "ref_dok_subtitel": "av Magnus Jacobsson m.fl. (KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:3954 Sverigevänlig skatte- och indrivningspolitik för välfärd, trygghet och företagande",
+      "ref_dok_id": "H9023954",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "3954",
+      "ref_dok_titel": "Sverigevänlig skatte- och indrivningspolitik för välfärd, trygghet och företagande",
+      "ref_dok_subtitel": "av Eric Westroth m.fl. (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:4162 Utgiftsområde 17 Kultur, medier, trossamfund och fritid",
+      "ref_dok_id": "H9024162",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "4162",
+      "ref_dok_titel": "Utgiftsområde 17 Kultur, medier, trossamfund och fritid",
+      "ref_dok_subtitel": "av Roland Utbult m.fl. (KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:4202 Utgiftsområde 3 Skatt, tull och exekution",
+      "ref_dok_id": "H9024202",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "4202",
+      "ref_dok_titel": "Utgiftsområde 3 Skatt, tull och exekution",
+      "ref_dok_subtitel": "av Hampus Hagman m.fl. (KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:4217 Utgiftsområde 24 Näringsliv",
+      "ref_dok_id": "H9024217",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "4217",
+      "ref_dok_titel": "Utgiftsområde 24 Näringsliv",
+      "ref_dok_subtitel": "av Camilla Brodin m.fl. (KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:4222 Utgiftsområde 18 Samhällsplanering, bostadsförsörjning och byggande samt konsumentpolitik",
+      "ref_dok_id": "H9024222",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "4222",
+      "ref_dok_titel": "Utgiftsområde 18 Samhällsplanering, bostadsförsörjning och byggande samt konsumentpolitik",
+      "ref_dok_subtitel": "av Larry Söder m.fl. (KD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:434 Sänkt dansmoms för återstart efter pandemin",
+      "ref_dok_id": "H902434",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "434",
+      "ref_dok_titel": "Sänkt dansmoms för återstart efter pandemin",
+      "ref_dok_subtitel": "av Per Lodenius (C)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:473 Förändrad mervärdesskatt för utövande konstnärer och danstillställningar",
+      "ref_dok_id": "H902473",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "473",
+      "ref_dok_titel": "Förändrad mervärdesskatt för utövande konstnärer och danstillställningar",
+      "ref_dok_subtitel": "av Michael Rubbestad (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2021/22:55 Översyn av momssats",
+      "ref_dok_id": "H90255",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "55",
+      "ref_dok_titel": "Översyn av momssats",
+      "ref_dok_subtitel": "av Angelika Bengtsson (SD)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "föredragningslista",
+      "uppgift": "föredragningslista 2021/22:99 Onsdag den 20 april 2022",
+      "ref_dok_id": "H90I99",
+      "ref_dok_typ": "f-lista",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "99",
+      "ref_dok_titel": "Onsdag den 20 april 2022",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Kammarens föredragningslista"
+     },
+     {
+      "referenstyp": "protokollbeslut",
+      "uppgift": "2022-04-20",
+      "ref_dok_id": "H90999",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "99",
+      "ref_dok_titel": "Protokoll 2021/22:99 Onsdagen den 20 april",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "protokolldebatt",
+      "uppgift": "2022-04-20",
+      "ref_dok_id": "H90999",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "99",
+      "ref_dok_titel": "Protokoll 2021/22:99 Onsdagen den 20 april",
+      "ref_dok_subtitel": "Mervärdesskatt",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "rskr",
+      "uppgift": "",
+      "ref_dok_id": "H90K236",
+      "ref_dok_typ": "rskr",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "236",
+      "ref_dok_titel": "Riksdagsskrivelse 2021/22:236",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "rskr",
+      "ref_dok_dokumentnamn": "Riksdagsskrivelse"
+     },
+     {
+      "referenstyp": "talarlista",
+      "uppgift": "talarlista 2021/22:20220324 Torsdag den 24 mars 2022",
+      "ref_dok_id": "H90J20220324",
+      "ref_dok_typ": "t-lista",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "20220324",
+      "ref_dok_titel": "Torsdag den 24 mars 2022",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Talarlista"
+     }
+    ]
+   }
+  }
+ }
+}

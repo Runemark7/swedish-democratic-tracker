@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -225,4 +227,128 @@ func parseTime(s string) time.Time {
 		}
 	}
 	return time.Time{}
+}
+
+// FindBetankande lists /dokumentlista for doktyp=bet and picks the exact
+// riksmöte and beteckning.
+func (c *Client) FindBetankande(ctx context.Context, rm, bet string) (ports.BetankandeRef, bool, error) {
+	q := url.Values{}
+	q.Set("doktyp", "bet")
+	q.Set("rm", rm)
+	q.Set("bet", bet)
+	q.Set("sz", "5")
+	q.Set("utformat", "json")
+	var payload struct {
+		Dokumentlista struct {
+			Dokument flexList[struct {
+				DokID       string `json:"dok_id"`
+				Rm          string `json:"rm"`
+				Beteckning  string `json:"beteckning"`
+				Systemdatum string `json:"systemdatum"`
+			}] `json:"dokument"`
+		} `json:"dokumentlista"`
+	}
+	if err := c.getJSON(ctx, c.baseURL+"/dokumentlista/?"+q.Encode(), &payload); err != nil {
+		return ports.BetankandeRef{}, false, fmt.Errorf("find betänkande %s:%s: %w", rm, bet, err)
+	}
+	for _, d := range payload.Dokumentlista.Dokument {
+		if d.Rm == rm && strings.EqualFold(d.Beteckning, bet) && d.DokID != "" {
+			return ports.BetankandeRef{DokID: d.DokID, SystemDatum: parseTime(d.Systemdatum)}, true, nil
+		}
+	}
+	return ports.BetankandeRef{}, false, nil
+}
+
+// FetchBetankande reads /dokumentstatus/{dok_id}.json and its
+// dokutskottsforslag.
+func (c *Client) FetchBetankande(ctx context.Context, dokID string) (*domain.Betankande, error) {
+	var payload struct {
+		Status struct {
+			Dokument struct {
+				DokID       string `json:"dok_id"`
+				Rm          string `json:"rm"`
+				Beteckning  string `json:"beteckning"`
+				Organ       string `json:"organ"`
+				Systemdatum string `json:"systemdatum"`
+				Titel       string `json:"titel"`
+			} `json:"dokument"`
+			Forslag struct {
+				Forslag flexList[struct {
+					Punkt      string          `json:"punkt"`
+					Rubrik     string          `json:"rubrik"`
+					Forslag    string          `json:"forslag"`
+					Beslutstyp string          `json:"beslutstyp"`
+					VoteringID string          `json:"votering_id"`
+					Summary    json.RawMessage `json:"votering_sammanfattning_html"`
+					Vinnare    string          `json:"vinnare"`
+				}] `json:"utskottsforslag"`
+			} `json:"dokutskottsforslag"`
+		} `json:"dokumentstatus"`
+	}
+	if err := c.getJSON(ctx, c.baseURL+"/dokumentstatus/"+url.PathEscape(dokID)+".json", &payload); err != nil {
+		return nil, fmt.Errorf("fetch betänkande %s: %w", dokID, err)
+	}
+	d := payload.Status.Dokument
+	if d.DokID == "" || d.Rm == "" || d.Beteckning == "" {
+		return nil, fmt.Errorf("fetch betänkande %s: response has no dok_id, rm or beteckning", dokID)
+	}
+	b := &domain.Betankande{
+		DokID: d.DokID, Riksmote: d.Rm, Beteckning: d.Beteckning, Title: d.Titel,
+		Organ: d.Organ, SystemDatum: parseTime(d.Systemdatum),
+	}
+	for _, f := range payload.Status.Forslag.Forslag {
+		if f.Punkt == "" {
+			continue
+		}
+		b.Punkter = append(b.Punkter, domain.Forslagspunkt{
+			Number: f.Punkt, Rubrik: f.Rubrik, Text: f.Forslag, Beslutstyp: f.Beslutstyp,
+			VoteringID: f.VoteringID, Alternativ: votedAlternative(f.Summary), Vinnare: f.Vinnare,
+		})
+	}
+	return b, nil
+}
+
+var alternativeRe = regexp.MustCompile(`(?i)\bmot\b.*(förslag|reservation)|förslag.*\bmot\b`)
+
+// votedAlternative finds the line naming the alternative put to the vote
+// ("Utskottets förslag mot reservation 12 (M)") in the votering summary,
+// which Riksdagen serves as differently shaped HTML-to-JSON objects. It
+// returns "" when there is none.
+func votedAlternative(raw json.RawMessage) string {
+	if len(raw) == 0 {
+		return ""
+	}
+	var v any
+	if err := json.Unmarshal(raw, &v); err != nil {
+		return ""
+	}
+	var found string
+	var walk func(any)
+	walk = func(n any) {
+		if found != "" {
+			return
+		}
+		switch t := n.(type) {
+		case string:
+			s := strings.TrimSpace(t)
+			if len(s) < 200 && alternativeRe.MatchString(s) {
+				found = s
+			}
+		case []any:
+			for _, e := range t {
+				walk(e)
+			}
+		case map[string]any:
+			keys := make([]string, 0, len(t))
+			for k := range t {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			for _, k := range keys {
+				walk(t[k])
+			}
+		}
+	}
+	walk(v)
+	return found
 }

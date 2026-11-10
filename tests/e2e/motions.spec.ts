@@ -1,7 +1,25 @@
 import { test, expect } from "@playwright/test";
 
 // Shape of GET /api/motions/2017%2F18/3293, as recorded from Riksdagen on 2026-11-10.
+const DECISION_3293 = {
+  betankandeRiksmote: "2017/18",
+  betankandeBeteckning: "SkU11",
+  betankandeTitle: "Mervärdesskatt",
+  betankandeSourceUrl: "https://data.riksdagen.se/dokument/H501SkU11.html",
+  punkt: "6",
+  rubrik: "Övriga frågor",
+  linkedBy: "forslag_text",
+  beslutstyp: "acklamation",
+  mode: "acklamation",
+  modeLabel: "Avgjord utan omröstning",
+  alternativ: "",
+  outcome: "Avslagen",
+  voteringStored: false,
+  parties: [],
+};
+
 const MOTION_3293 = {
+  outcome: { word: "Avslagen", counts: { Avslagen: 1 }, total: 1 },
   dokId: "H5023293",
   riksmote: "2017/18",
   beteckning: "3293",
@@ -29,6 +47,40 @@ const MOTION_3293 = {
       chamberDecision: "Avslag",
       behandlasI: "2017/18:SkU11",
       behandlasIPunkt: "",
+      outcome: "Avslagen",
+      decisions: [DECISION_3293],
+    },
+  ],
+};
+
+// 2021/22:3638 yrkande 9, decided by votering in 2021/22:SkU16 punkt 6.
+const MOTION_3638 = {
+  ...MOTION_3293,
+  dokId: "H9023638",
+  riksmote: "2021/22",
+  beteckning: "3638",
+  behandlasI: "2021/22:SkU16",
+  yrkanden: [
+    {
+      ...MOTION_3293.yrkanden[0],
+      decisions: [
+        {
+          ...DECISION_3293,
+          betankandeRiksmote: "2021/22",
+          betankandeBeteckning: "SkU16",
+          betankandeSourceUrl: "https://data.riksdagen.se/dokument/H901SkU16.html",
+          beslutstyp: "röstning",
+          mode: "votering",
+          modeLabel: "Avgjord genom omröstning",
+          alternativ: "Utskottets förslag mot reservation 12 (M)",
+          voteringStored: true,
+          parties: [
+            { party: "M", partilinje: "Nej", ja: 0, nej: 8, avstar: 0, franvarande: 1 },
+            { party: "S", partilinje: "Ja", ja: 8, nej: 0, avstar: 0, franvarande: 1 },
+            { party: "C", partilinje: "Avstår", ja: 0, nej: 0, avstar: 8, franvarande: 1 },
+          ],
+        },
+      ],
     },
   ],
 };
@@ -67,6 +119,27 @@ test.describe("motion page 2017/18:3293", () => {
     // The slash form is sent encoded, never as 2017-18.
     expect(requested).toBe("/api/motions/2017%2F18/3293");
     expect(page.url()).not.toContain("2017-18");
+  });
+
+  test("shows acklamation as Avgjord utan omröstning and no party table", async ({ page }) => {
+    await page.route("**/api/motions/**", (route) => route.fulfill({ json: MOTION_3293 }));
+    await page.goto("/motioner/2017%2F18/3293");
+    const decision = page.getByTestId("decision");
+    await expect(decision).toContainText("betänkande 2017/18:SkU11");
+    await expect(decision).toContainText("förslagspunkt 6");
+    await expect(page.getByTestId("decision-mode")).toContainText("Avgjord utan omröstning");
+    await expect(page.getByTestId("yrkande-outcome")).toContainText("Avslagen");
+    await expect(page.getByTestId("party-table")).toHaveCount(0);
+  });
+
+  test("shows the Partilinje of every party for a votering", async ({ page }) => {
+    await page.route("**/api/motions/**", (route) => route.fulfill({ json: MOTION_3638 }));
+    await page.goto("/motioner/2021%2F22/3638");
+    await expect(page.getByTestId("decision-mode")).toContainText("reservation 12 (M)");
+    const table = page.getByTestId("party-table");
+    await expect(table).toBeVisible();
+    await expect(table).toContainText("Partilinje");
+    await expect(table.getByRole("row")).toHaveCount(4);
   });
 
   test("says so when the motion is not in the record", async ({ page }) => {

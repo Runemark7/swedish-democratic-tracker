@@ -8,6 +8,7 @@ skapar `SourceRegistry.generated.ts`.
 |---|---|---|---|
 | [riksdagen](./riksdagen.md) | Riksdagen Open Data | api | beslut, omröstningar, anföranden |
 | [motions](./motions.md) | Motioner (Riksdagen) | api | motionssidan (/motioner) |
+| [betankanden](./betankanden.md) | Betänkanden och förslagspunkter (Riksdagen) | api | betänkande, förslagspunkt, beslut och Partilinje per yrkande (/motioner/:riksmöte/:beteckning) |
 | [kolada](./kolada.md) | Kolada API v3 | api | region/kommun KPIs |
 | [kolada-spending](./kolada-spending.md) | Kolada — kommunal verksamhetsutgift | api | kommun budget |
 | [scb-kfmandat](./scb-kfmandat.md) | SCB Kfmandat | api | kommunala mandat |

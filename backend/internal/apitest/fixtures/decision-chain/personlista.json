@@ -1,0 +1,684 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "rdlstatus": "tjanstgorande",
+  "parti": "",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?rdlstatus=tjanstgorande&parti=&utformat=json",
+ "note": "Recorded 2026-11-10 from data.riksdagen.se. Reduced to the members in the votering fixture and to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "person": [
+    {
+     "intressent_id": "0363228965800",
+     "tilltalsnamn": "Barbro",
+     "efternamn": "Westerholm",
+     "parti": "L",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/e7e41401-b4df-11d5-8079-0040ca16072a_192.jpg",
+     "status": "Avliden  2023-03-13"
+    },
+    {
+     "intressent_id": "0128805841317",
+     "tilltalsnamn": "Katarina",
+     "efternamn": "Brännström",
+     "parti": "M",
+     "valkrets": "Kronobergs län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/97a9cfb7-de78-4995-8e29-40891595e8d2_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0237055280513",
+     "tilltalsnamn": "Roland",
+     "efternamn": "Utbult",
+     "parti": "KD",
+     "valkrets": "Västra Götalands läns västra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/e3b6587d-15fd-4a54-a95b-c1eaa56d2f68_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0155487380917",
+     "tilltalsnamn": "Kerstin",
+     "efternamn": "Lundgren",
+     "parti": "C",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/4a514760-f0a7-47a7-8a51-91bd46693df7_192.jpg",
+     "status": "Tredje vice talman (tjänstgörande riksdagsledamot)"
+    },
+    {
+     "intressent_id": "0161597857912",
+     "tilltalsnamn": "Tuve",
+     "efternamn": "Skånberg",
+     "parti": "KD",
+     "valkrets": "Skåne läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/d7c31c8c-83e4-11d4-ae60-0050040c9b55_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0121939297619",
+     "tilltalsnamn": "Jamal",
+     "efternamn": "El-Haj",
+     "parti": "-",
+     "valkrets": "Malmö kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/6a1b02dd-bdc4-4019-ab3e-dfeb133018ed_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0116759114313",
+     "tilltalsnamn": "Bengt",
+     "efternamn": "Eliasson",
+     "parti": "L",
+     "valkrets": "Hallands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/18cd4aa9-d266-4c2b-bcaa-6118032ece49_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0229760896014",
+     "tilltalsnamn": "Anders",
+     "efternamn": "W Jonsson",
+     "parti": "C",
+     "valkrets": "Gävleborgs län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/6ad91da1-1287-4e8f-9778-3315390fdfca_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0136310791918",
+     "tilltalsnamn": "Marie",
+     "efternamn": "Granlund",
+     "parti": "S",
+     "valkrets": "Malmö kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/d7c3202c-83e4-11d4-ae60-0050040c9b55_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0150200797210",
+     "tilltalsnamn": "Mats",
+     "efternamn": "Sander",
+     "parti": "M",
+     "valkrets": "Skåne läns västra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/783cb616-bbb0-49ff-9f2a-1200fd90f133_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0285631067215",
+     "tilltalsnamn": "Robert",
+     "efternamn": "Halef",
+     "parti": "KD",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/4eda0e46-58a1-446f-b12b-1de6132f4f35_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0446541913415",
+     "tilltalsnamn": "Allan",
+     "efternamn": "Widman",
+     "parti": "L",
+     "valkrets": "Malmö kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/b58dac92-0bb0-4fe3-a052-9049b9a99959_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0136801772915",
+     "tilltalsnamn": "Maria",
+     "efternamn": "Strömkvist",
+     "parti": "S",
+     "valkrets": "Dalarnas län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/566a8a1c-0625-4f24-9beb-6b6dec928df7_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "064711971110",
+     "tilltalsnamn": "Maria",
+     "efternamn": "Gardfjell",
+     "parti": "MP",
+     "valkrets": "Uppsala län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/d9a13d2e-85ec-4c59-af10-773ff99b8eb1_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0224712677012",
+     "tilltalsnamn": "Johan",
+     "efternamn": "Pehrson",
+     "parti": "L",
+     "valkrets": "Örebro län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/d7c327f8-83e4-11d4-ae60-0050040c9b55_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0105632258713",
+     "tilltalsnamn": "Boriana",
+     "efternamn": "Åberg",
+     "parti": "M",
+     "valkrets": "Skåne läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/d3628aa4-ea6a-4466-8e2c-f3d0cb2d9cad_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "010343930918",
+     "tilltalsnamn": "Cecilie",
+     "efternamn": "Tenfjord Toftby",
+     "parti": "M",
+     "valkrets": "Västra Götalands läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/4c83b0e0-8dda-47a4-9464-81c56db30430_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0545353563812",
+     "tilltalsnamn": "Amineh",
+     "efternamn": "Kakabaveh",
+     "parti": "-",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/8399ff3f-1fbe-4984-b59c-4ada1ec670ec_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0103624617217",
+     "tilltalsnamn": "Helén",
+     "efternamn": "Pettersson",
+     "parti": "S",
+     "valkrets": "Västerbottens län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/13c0a836-8abf-453d-92d0-44d009c27f85_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "014386615025",
+     "tilltalsnamn": "Ali",
+     "efternamn": "Esbati",
+     "parti": "V",
+     "valkrets": "Stockholms kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/979e9852-69ed-4077-8140-52ab99414a6c_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "012576033427",
+     "tilltalsnamn": "Hannah",
+     "efternamn": "Bergstedt",
+     "parti": "S",
+     "valkrets": "Norrbottens län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/f11ff8d6-c6c7-458d-be30-e478c5053ce1_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0306286538528",
+     "tilltalsnamn": "Sofia",
+     "efternamn": "Damm",
+     "parti": "KD",
+     "valkrets": "Skåne läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/a6a33386-bc67-4702-aa8c-331ffe7e2f9c_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0126797549328",
+     "tilltalsnamn": "Johan",
+     "efternamn": "Forssell",
+     "parti": "M",
+     "valkrets": "Stockholms kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/0b564224-f764-4bfc-87f6-80fcaa33fa46_192.jpg",
+     "status": "Migrationsminister"
+    },
+    {
+     "intressent_id": "0216534495014",
+     "tilltalsnamn": "Jens",
+     "efternamn": "Holm",
+     "parti": "V",
+     "valkrets": "Stockholms kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/5b7ac02c-0819-426d-bc5d-41b8c21ca4dd_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0166790812128",
+     "tilltalsnamn": "Hanif",
+     "efternamn": "Bali",
+     "parti": "M",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/b86c28d2-48d1-41a6-bea3-b3317cdfeec8_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0144048894712",
+     "tilltalsnamn": "Ellen",
+     "efternamn": "Juntti",
+     "parti": "M",
+     "valkrets": "Västra Götalands läns västra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/efb2daaa-8053-411f-9fc7-dfcca1395bb0_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0108109641223",
+     "tilltalsnamn": "Carl-Oskar",
+     "efternamn": "Bohlin",
+     "parti": "M",
+     "valkrets": "Dalarnas län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/7223f863-4406-4833-8f54-ed21dd2ccbc3_192.jpg",
+     "status": "Minister för civilt försvar"
+    },
+    {
+     "intressent_id": "0194498232620",
+     "tilltalsnamn": "Roza",
+     "efternamn": "Güclü Hedin",
+     "parti": "S",
+     "valkrets": "Dalarnas län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/e53ce4a4-b399-4ed6-9815-cb96818871b3_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0204443909416",
+     "tilltalsnamn": "Johan",
+     "efternamn": "Hedin",
+     "parti": "C",
+     "valkrets": "Stockholms kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/6014c0f6-d3b6-4ed4-ae63-ace3af71dc86_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "025158809026",
+     "tilltalsnamn": "Ida",
+     "efternamn": "Gabrielsson",
+     "parti": "V",
+     "valkrets": "Stockholms kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/964e3aff-b4df-4f49-acc1-3bba2afc2f80_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0150118366721",
+     "tilltalsnamn": "Linda",
+     "efternamn": "W Snecker",
+     "parti": "V",
+     "valkrets": "Östergötlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/1c03e794-a9a3-43d5-810a-7951e4c70901_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0170630324419",
+     "tilltalsnamn": "Per",
+     "efternamn": "Schöldberg",
+     "parti": "C",
+     "valkrets": "Kronobergs län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/679f593a-0cce-4fbc-a5e4-0d803b93ac20_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0132818093422",
+     "tilltalsnamn": "Rickard",
+     "efternamn": "Nordin",
+     "parti": "C",
+     "valkrets": "Göteborgs kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/a57d39bb-9f60-4def-ab90-97791ec56447_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0228027853620",
+     "tilltalsnamn": "Vasiliki",
+     "efternamn": "Tsouplaki",
+     "parti": "V",
+     "valkrets": "Västmanlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/9d24d55a-be20-4caa-ac48-4da11b50969c_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0138741628520",
+     "tilltalsnamn": "Angelika",
+     "efternamn": "Bengtsson",
+     "parti": "SD",
+     "valkrets": "Västernorrlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/9d68c0c3-2102-402d-998f-dc56a410d19d_192.jpg",
+     "status": "Tjänstledig riksdagsledamot"
+    },
+    {
+     "intressent_id": "0122987223112",
+     "tilltalsnamn": "Lotta",
+     "efternamn": "Johnsson Fornarve",
+     "parti": "V",
+     "valkrets": "Södermanlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/4468626c-27a1-46c7-b530-f346b70b753b_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0628870165823",
+     "tilltalsnamn": "Emma",
+     "efternamn": "Hult",
+     "parti": "MP",
+     "valkrets": "Skåne läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/ae37cc33-2580-4221-aa93-4dd4621ecb98_192.jpg",
+     "status": "Tillgänglig ersättare"
+    },
+    {
+     "intressent_id": "0254695027922",
+     "tilltalsnamn": "Malcolm Momodou",
+     "efternamn": "Jallow",
+     "parti": "-",
+     "valkrets": "Malmö kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/f257311a-2900-4db5-a2e2-df250c764ad6_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0145294944502",
+     "tilltalsnamn": "Roger",
+     "efternamn": "Richthoff",
+     "parti": "-",
+     "valkrets": "Södermanlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/b4329cc3-9256-470c-a712-5e2501c6fde7_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0134101155612",
+     "tilltalsnamn": "Rikard",
+     "efternamn": "Larsson",
+     "parti": "S",
+     "valkrets": "Skåne läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/d3a9b52a-0d94-4610-b20e-d0ed8375c9d1_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "023767922422",
+     "tilltalsnamn": "Mats",
+     "efternamn": "Persson",
+     "parti": "L",
+     "valkrets": "Skåne läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/66fca0ac-0ebb-4bd0-b1e1-f34e223d2f1b_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0183544538819",
+     "tilltalsnamn": "Patrik",
+     "efternamn": "Jönsson",
+     "parti": "SD",
+     "valkrets": "Hallands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/0007cc9d-247c-4136-80d1-0bae44bd20ba_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0111479807829",
+     "tilltalsnamn": "Anna",
+     "efternamn": "Wallentheim",
+     "parti": "S",
+     "valkrets": "Skåne läns norra och östra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/200035cd-228a-4afa-8849-844f2c1e35fb_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0223069839622",
+     "tilltalsnamn": "Robert",
+     "efternamn": "Hannah",
+     "parti": "L",
+     "valkrets": "Göteborgs kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/99a5ca75-949e-470a-9b44-e2cdbcec920b_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0170585430421",
+     "tilltalsnamn": "Jimmy",
+     "efternamn": "Ståhl",
+     "parti": "SD",
+     "valkrets": "Göteborgs kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/c63331e9-02ca-4f71-a7de-9a17e2ec4ac4_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0198917587520",
+     "tilltalsnamn": "Maj",
+     "efternamn": "Karlsson",
+     "parti": "V",
+     "valkrets": "Göteborgs kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/9d6489d6-6fa5-4420-9224-8968abaa569c_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0519542449425",
+     "tilltalsnamn": "Fredrik",
+     "efternamn": "Christensson",
+     "parti": "C",
+     "valkrets": "Västra Götalands läns norra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/08f0d4c3-a02f-4e08-88b2-c03d384f63fc_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0316505710324",
+     "tilltalsnamn": "Janine",
+     "efternamn": "Alm Ericson",
+     "parti": "MP",
+     "valkrets": "Västra Götalands läns västra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/7e408079-a5cd-432a-a30e-fd61fd15c65a_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0130789484021",
+     "tilltalsnamn": "Mattias",
+     "efternamn": "Bäckström Johansson",
+     "parti": "SD",
+     "valkrets": "Kalmar län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/cb0336b4-54a8-4384-abe3-8d6cbebc63fa_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0495661214429",
+     "tilltalsnamn": "Lorentz",
+     "efternamn": "Tovatt",
+     "parti": "MP",
+     "valkrets": "Stockholms kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/087644a0-838d-4768-9133-62745aeee287_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0389220391128",
+     "tilltalsnamn": "Christian",
+     "efternamn": "Carlsson",
+     "parti": "KD",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/2774ffff-fec1-459c-b172-974af448f147_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "019430605328",
+     "tilltalsnamn": "Josefin",
+     "efternamn": "Malmqvist",
+     "parti": "M",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/698a36fb-19f3-48cf-bfda-20a17195fbd5_192.jpg",
+     "status": "Tjänstledig riksdagsledamot"
+    },
+    {
+     "intressent_id": "0194021108712",
+     "tilltalsnamn": "Mikael",
+     "efternamn": "Strandman",
+     "parti": "SD",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/eda7cbeb-16f4-4a35-b0cd-ca4158e60906_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0378597308227",
+     "tilltalsnamn": "Camilla",
+     "efternamn": "Brodin",
+     "parti": "KD",
+     "valkrets": "Stockholms kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/86c365a5-452c-4bca-8871-45bf67a44645_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0161616238120",
+     "tilltalsnamn": "Lina",
+     "efternamn": "Nordquist",
+     "parti": "L",
+     "valkrets": "Uppsala län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/87042942-c4f6-46ff-9eac-fceaf25729d5_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0229350341619",
+     "tilltalsnamn": "Ilona",
+     "efternamn": "Szatmári Waldau",
+     "parti": "V",
+     "valkrets": "Uppsala län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/ffe5107b-dc51-4209-ae87-9eabf8fe014d_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0119851690521",
+     "tilltalsnamn": "David",
+     "efternamn": "Perez",
+     "parti": "SD",
+     "valkrets": "Uppsala län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/c5cc2c67-3638-430e-bccb-a04db799a9f0_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "033935884729",
+     "tilltalsnamn": "Martina",
+     "efternamn": "Johansson",
+     "parti": "C",
+     "valkrets": "Södermanlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/5f965f4e-69e5-489d-99bf-a8908fc3e34a_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0465804601318",
+     "tilltalsnamn": "Pia",
+     "efternamn": "Steensland",
+     "parti": "KD",
+     "valkrets": "Södermanlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/0255b271-a7f0-43bc-9f5b-9fa694990dab_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0409655917321",
+     "tilltalsnamn": "Jakob",
+     "efternamn": "Olofsgård",
+     "parti": "L",
+     "valkrets": "Jönköpings län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/cf93a30c-7563-418e-a111-60d31ad24bcc_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0304498908019",
+     "tilltalsnamn": "Gudrun",
+     "efternamn": "Brunegård",
+     "parti": "KD",
+     "valkrets": "Kalmar län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/aecfc5a6-954f-41b7-8593-998f1c446e1b_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0130640724922",
+     "tilltalsnamn": "Clara",
+     "efternamn": "Aranda",
+     "parti": "SD",
+     "valkrets": "Östergötlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/6977f22f-363b-40fb-8f8f-8163b4492345_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0556755096938",
+     "tilltalsnamn": "Axel",
+     "efternamn": "Hallberg",
+     "parti": "MP",
+     "valkrets": "Skåne läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/839960b7-7e73-41f6-a590-ff7d7301a868_192.jpg",
+     "status": "Tidigare ersättare"
+    },
+    {
+     "intressent_id": "010643534813",
+     "tilltalsnamn": "Eric",
+     "efternamn": "Westroth",
+     "parti": "SD",
+     "valkrets": "Jönköpings län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/a7390cef-27c2-4068-800d-ee21b1a94c69_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0640627133410",
+     "tilltalsnamn": "Elisabeth",
+     "efternamn": "Falkhaven",
+     "parti": "MP",
+     "valkrets": "Hallands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/cb53466b-8349-484e-9a7b-084561cdf8b4_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0309480686522",
+     "tilltalsnamn": "Leila",
+     "efternamn": "Ali Elmi",
+     "parti": "MP",
+     "valkrets": "Göteborgs kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/5997ba96-4f01-46f4-8bd8-e1411a9d503b_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "051870309210",
+     "tilltalsnamn": "Anna",
+     "efternamn": "Sibinska",
+     "parti": "MP",
+     "valkrets": "Göteborgs kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/214d9393-c01e-497c-8580-d033b9f57705_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0226631365426",
+     "tilltalsnamn": "Mikael",
+     "efternamn": "Larsson",
+     "parti": "C",
+     "valkrets": "Västra Götalands läns södra",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/39797ca4-c136-41c6-bf6b-feb256dee6b3_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0322827326923",
+     "tilltalsnamn": "Arman",
+     "efternamn": "Teimouri",
+     "parti": "L",
+     "valkrets": "Värmlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/92355c36-d95d-42ed-9ad9-463bf9558767_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0148424181819",
+     "tilltalsnamn": "Ann-Christine",
+     "efternamn": "Frohm",
+     "parti": "SD",
+     "valkrets": "Kronobergs län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/3298ed49-917f-4230-8cf5-e10a70a93727_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0201207390210",
+     "tilltalsnamn": "Lars",
+     "efternamn": "Adaktusson",
+     "parti": "KD",
+     "valkrets": "Jönköpings län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/4a2cb0d8-5569-4f1b-bd0f-62c7e812a2fb_192.jpg",
+     "status": "Tillgänglig ersättare"
+    },
+    {
+     "intressent_id": "0203877548421",
+     "tilltalsnamn": "Malin",
+     "efternamn": "Larsson",
+     "parti": "S",
+     "valkrets": "Västernorrlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/39523176-322e-469e-a754-3c46db2b0756_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0238095659621",
+     "tilltalsnamn": "Linda",
+     "efternamn": "Modig",
+     "parti": "C",
+     "valkrets": "Norrbottens län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/63ea9085-f68c-4782-ae6e-12d84809d352_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0389795960120",
+     "tilltalsnamn": "Martin",
+     "efternamn": "Marmgren",
+     "parti": "MP",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/bbae3c94-0baa-41c3-afac-0f0cc3d713d3_192.jpg",
+     "status": "Tillgänglig ersättare"
+    }
+   ]
+  }
+ }
+}

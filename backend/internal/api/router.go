@@ -261,6 +261,11 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		slog.Error("failed to register fetch-motions worker", "error", err)
 		return nil, err
 	}
+	betankandenWorker := workers.NewBetankandenWorker(motionSvc)
+	if err := sched.RegisterSync("@daily", &betankandenWorker); err != nil {
+		slog.Error("failed to register fetch-betankanden worker", "error", err)
+		return nil, err
+	}
 	if err := sched.RegisterSync("@daily", &enrichSpeechesWorker); err != nil {
 		slog.Error("failed to register enrich-speech-text worker", "error", err)
 		return nil, err

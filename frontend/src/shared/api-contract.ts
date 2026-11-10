@@ -1142,8 +1142,60 @@ export interface components {
             /** @example 2017/18:SkU11 */
             behandlasI: string;
             behandlasIPunkt: string;
+            /** @description Avslagen, Bifallen, Delvis bifallen, Besvarad or Ej avgjord än; an unknown word is Riksdagen's own. A yrkande no förslagspunkt is linked to is Ej avgjord än. */
+            outcome: string;
+            /** @description The förslagspunkt(er) that decided the yrkande */
+            decisions: components["schemas"]["YrkandeDecision"][];
+        };
+        PartyPartilinje: {
+            party: string;
+            /** @description Ja, Nej, Avstår or Delad; empty when the party has no Partilinje */
+            partilinje: string;
+            ja: number;
+            nej: number;
+            avstar: number;
+            franvarande: number;
+        };
+        YrkandeDecision: {
+            /** @example 2017/18 */
+            betankandeRiksmote: string;
+            /** @example SkU11 */
+            betankandeBeteckning: string;
+            betankandeTitle: string;
+            betankandeSourceUrl: string;
+            /** @example 6 */
+            punkt: string;
+            /** @example Övriga frågor */
+            rubrik: string;
+            /**
+             * @description How the yrkande was tied to the punkt
+             * @enum {string}
+             */
+            linkedBy: "behandlas_i_punkt" | "forslag_text";
+            /** @description As Riksdagen gives it */
+            beslutstyp: string;
+            /** @enum {string} */
+            mode: "acklamation" | "votering" | "ej_beslutad" | "annat";
+            /** @description Avgjord utan omröstning for acklamation; Riksdagen's own word for an unknown beslutstyp */
+            modeLabel: string;
+            /** @description The alternative put to the vote, as Riksdagen words it; empty without a votering */
+            alternativ: string;
+            outcome: string;
+            /** @description True when the ballots of the votering are held */
+            voteringStored: boolean;
+            /** @description Partilinje of every party in the votering (shared definition); empty for acklamation */
+            parties: components["schemas"]["PartyPartilinje"][];
+        };
+        MotionOutcome: {
+            /** @description Avslagen, Bifallen, Delvis bifallen, Besvarad, Blandat utfall or Ej avgjord än */
+            word: string;
+            counts: {
+                [key: string]: number;
+            };
+            total: number;
         };
         Motion: {
+            outcome: components["schemas"]["MotionOutcome"];
             /** @example H5023293 */
             dokId: string;
             /** @example 2017/18 */

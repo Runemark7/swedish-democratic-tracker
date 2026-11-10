@@ -2,6 +2,18 @@
 import type { SourceEntry } from "./SourceRegistry";
 
 export const SOURCES: Record<string, SourceEntry> = {
+  "betankanden": {
+    "id": "betankanden",
+    "name": "Betänkanden och förslagspunkter (Riksdagen)",
+    "kind": "api",
+    "upstream": "https://data.riksdagen.se/dokumentlista/?doktyp=bet",
+    "license": "Public domain — Sveriges riksdag",
+    "freshness": "dagligen (cron: fetch-betankanden @daily, högst 25 betänkanden per körning)",
+    "lastVerified": "Tue Nov 10 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "blurb": "Ett betänkande är utskottets förslag till riksdagen. Det delas in i förslagspunkter, och varje motions yrkanden avgörs i en förslagspunkt. Kammaren beslutar antingen genom acklamation (ingen omröstning) eller genom votering. Riksdagen publicerar betänkandet, varje punkts förslagstext, beslutstyp och, vid votering, votering-id.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
   "kolada-spending": {
     "id": "kolada-spending",
     "name": "Kolada — kommunal verksamhetsutgift",

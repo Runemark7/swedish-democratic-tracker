@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { motionsApi } from "./api";
+import { motionsApi, type Motion } from "./api";
 import { ApiError } from "@/shared/api-client";
 import { PartyBadge } from "@/shared/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
@@ -20,6 +20,62 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
     <div>
       <dt className="text-xs uppercase tracking-wider text-on-surface-variant">{label}</dt>
       <dd className="text-sm">{children}</dd>
+    </div>
+  );
+}
+
+type Yrkande = Motion["yrkanden"][number];
+type Decision = Yrkande["decisions"][number];
+
+/** The decision chain of one yrkande: where it was decided, how, and by whom.
+ *  Facts only: the chamber's decision, the votering's Partilinje per party,
+ *  with a link to Riksdagen's betänkande. */
+function DecisionBlock({ d }: { d: Decision }) {
+  return (
+    <div className="mt-3 rounded border p-3 text-sm" style={{ borderColor: "var(--color-border)" }} data-testid="decision">
+      <p>
+        Avgjordes i{" "}
+        <a href={d.betankandeSourceUrl} className="text-link hover:underline" rel="noreferrer" target="_blank">
+          betänkande {d.betankandeRiksmote}:{d.betankandeBeteckning}
+        </a>
+        {d.betankandeTitle ? ` ${d.betankandeTitle}` : ""}, förslagspunkt {d.punkt}
+        {d.rubrik ? ` "${d.rubrik}"` : ""}
+        <SourceMarker sourceId="betankanden" />
+      </p>
+      <p className="mt-1" data-testid="decision-mode">
+        <strong>{d.modeLabel}</strong>
+        {d.alternativ ? <span> – {d.alternativ}</span> : null}
+      </p>
+      {d.mode === "votering" && d.voteringStored && d.parties.length > 0 ? (
+        <table className="mt-2 text-xs" data-testid="party-table">
+          <caption className="text-left text-on-surface-variant mb-1">Partilinje i omröstningen</caption>
+          <thead>
+            <tr className="text-left text-on-surface-variant">
+              <th className="pr-4">Parti</th>
+              <th className="pr-4">Partilinje</th>
+              <th className="pr-3">Ja</th>
+              <th className="pr-3">Nej</th>
+              <th className="pr-3">Avstår</th>
+              <th>Frånvarande</th>
+            </tr>
+          </thead>
+          <tbody>
+            {d.parties.map((p) => (
+              <tr key={p.party}>
+                <td className="pr-4"><PartyBadge party={p.party} /></td>
+                <td className="pr-4">{p.partilinje || "Ingen"}</td>
+                <td className="pr-3">{p.ja}</td>
+                <td className="pr-3">{p.nej}</td>
+                <td className="pr-3">{p.avstar}</td>
+                <td>{p.franvarande}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      {d.mode === "votering" && !d.voteringStored ? (
+        <p className="mt-1 text-xs text-on-surface-variant">Omröstningen finns ännu inte inläst hos oss.</p>
+      ) : null}
     </div>
   );
 }
@@ -51,6 +107,16 @@ export function MotionPage() {
       <p className="text-sm mb-1" data-testid="motion-kind">
         <strong>{motion.kind}</strong>
         {motion.kindExplanation ? <span> – {motion.kindExplanation}</span> : null}
+      </p>
+
+      <p className="text-sm mb-1" data-testid="motion-outcome">
+        Utfall: <strong>{motion.outcome.word}</strong>
+        {Object.keys(motion.outcome.counts).length > 1
+          ? ` (${Object.entries(motion.outcome.counts)
+              .map(([w, n]) => `${n} ${w.toLowerCase()}`)
+              .join(", ")} av ${motion.outcome.total} yrkanden)`
+          : ""}
+        <SourceMarker sourceId="betankanden" />
       </p>
 
       <dl className="grid gap-3 my-6" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
@@ -104,6 +170,17 @@ export function MotionPage() {
               >
                 <p className="font-mono text-xs text-on-surface-variant mb-1">Yrkande {y.number}</p>
                 <p className="text-sm">{y.wording}</p>
+                <p className="text-sm mt-2" data-testid="yrkande-outcome">
+                  Utfall: <strong>{y.outcome}</strong>
+                </p>
+                {y.decisions.map((d) => (
+                  <DecisionBlock key={`${d.betankandeRiksmote}:${d.betankandeBeteckning}:${d.punkt}`} d={d} />
+                ))}
+                {y.decisions.length === 0 ? (
+                  <p className="text-xs text-on-surface-variant mt-1">
+                    Vi har inte hittat någon förslagspunkt som avgjort yrkandet.
+                  </p>
+                ) : null}
                 <p className="text-xs text-on-surface-variant mt-2">
                   Utskottets förslag: {y.utskottProposal || "ej angivet"} · Kammarens beslut:{" "}
                   {y.chamberDecision || "ej angivet"}
