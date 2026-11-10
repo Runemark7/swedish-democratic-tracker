@@ -43,6 +43,10 @@ import (
 	ministersHTTP "riksdagskollen/internal/ministers/adapters/http"
 	ministersPG "riksdagskollen/internal/ministers/adapters/postgres"
 	ministersRD "riksdagskollen/internal/ministers/adapters/riksdagen"
+	"riksdagskollen/internal/motions"
+	motionsHTTP "riksdagskollen/internal/motions/adapters/http"
+	motionsPG "riksdagskollen/internal/motions/adapters/postgres"
+	motionsRD "riksdagskollen/internal/motions/adapters/riksdagen"
 	"riksdagskollen/internal/parties"
 	partiesHTTP "riksdagskollen/internal/parties/adapters/http"
 	partiesPG "riksdagskollen/internal/parties/adapters/postgres"
@@ -114,6 +118,9 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	voteRD := votesRD.NewClientWithBaseURL(riksdagenBaseURL)
 	voteSvc := votes.NewService(voteRepo, voteRD)
 	voteHandler := votesHTTP.NewHandler(voteSvc)
+
+	motionSvc := motions.NewService(motionsPG.NewRepository(db), motionsRD.NewClientWithBaseURL(riksdagenBaseURL))
+	motionHandler := motionsHTTP.NewHandler(motionSvc)
 
 	goalRepo := goalsPG.NewRepository(db)
 	goalSvc := goals.NewService(goalRepo)
@@ -202,6 +209,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		apiRouter = api
 		polHandler.Routes(api)
 		voteHandler.Routes(api)
+		motionHandler.Routes(api)
 		speechHandler.Routes(api)
 		goalsHandler.Routes(api)
 		promisesHandler.Routes(api)
@@ -245,6 +253,12 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	sched.SetFreshness(freshnessRepo)
 	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, enrichWorker, keywordWorker, refreshWorker, coverageWorker); err != nil {
 		slog.Error("failed to register ingestion workers", "error", err)
+		return nil, err
+	}
+	motionsWorker := workers.NewMotionsWorker(motionSvc, ingestionPG.NewMandateRepository(db))
+	motionsWorker.SetNow(clk.Now)
+	if err := sched.RegisterSync("@daily", &motionsWorker); err != nil {
+		slog.Error("failed to register fetch-motions worker", "error", err)
 		return nil, err
 	}
 	if err := sched.RegisterSync("@daily", &enrichSpeechesWorker); err != nil {
