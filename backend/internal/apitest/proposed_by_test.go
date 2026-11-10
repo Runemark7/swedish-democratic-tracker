@@ -171,7 +171,8 @@ func TestDecisionFeedShowsDerivedProposedBy(t *testing.T) {
 	}
 }
 
-// Nothing writes the retired single-motion origin any more.
+// Nothing writes the retired single-motion origin any more. (The one place a
+// test reads a table: the point is that a column stays untouched.)
 func TestNoOriginStepWritesTheOldColumns(t *testing.T) {
 	h := startProposedBy(t)
 	var n int

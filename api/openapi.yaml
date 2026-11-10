@@ -1767,23 +1767,74 @@ components:
     ProposalOrigin:
       type: object
       description: >-
-        Who initiated the proposal being voted on. Filled by the
-        enrich-vote-origins worker, so every field is absent until that
-        worker has processed the vote — check `originEnriched` rather than
-        treating a missing field as "no proposer".
+        The title stored with the votering. Who proposed it is `proposedBy` on
+        the vote detail and the decision feed, derived from the Motioner link;
+        the single-party origin this object used to carry is retired.
       properties:
-        proposedByParty:
-          type: string
-          description: >-
-            Party abbreviation, or "Regeringen" when the proposal is a
-            government bill. Not a PartyCode — the record holds proposer
-            labels that are not party codes.
-        proposalType:
-          $ref: "#/components/schemas/ProposalType"
-        proposalDokId:
-          type: string
         documentTitle:
           type: string
+
+    ProposingMotion:
+      type: object
+      description: One motion the förslagspunkt decided.
+      required: [dokId, riksmote, beteckning, title, parties, yrkanden]
+      properties:
+        dokId:
+          type: string
+        riksmote:
+          type: string
+          example: "2021/22"
+        beteckning:
+          type: string
+          example: "3638"
+        title:
+          type: string
+        subtyp:
+          type: string
+          description: Riksdagen's subtyp, as given (Kommittémotion, Partimotion, ...).
+        parties:
+          type: array
+          items:
+            type: string
+          description: Distinct parties of the motion's authors, in signing order.
+        yrkanden:
+          type: array
+          items:
+            type: integer
+          description: The yrkande numbers of this motion the förslagspunkt decided.
+
+    PropositionRef:
+      type: object
+      required: [riksmote, beteckning]
+      properties:
+        riksmote:
+          type: string
+        beteckning:
+          type: string
+
+    ProposedBy:
+      type: object
+      description: >-
+        Who proposed what a votering decided, derived at read time from the
+        förslagspunkt's links and keyed on riksmöte + beteckning +
+        förslagspunkt: every motion and yrkande it decided, the propositions
+        its text cites, and the alternative put to the vote (the reservation).
+        Empty lists mean no link is held, not that nobody proposed it.
+      required: [motions, propositions]
+      properties:
+        motions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProposingMotion"
+        propositions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropositionRef"
+        alternativ:
+          type: string
+          description: >-
+            The alternative put to the vote, as Riksdagen words it ("Utskottets
+            förslag mot reservation 12 (M)").
 
     Vote:
       type: object
@@ -1807,7 +1858,6 @@ components:
           forslagspunkt,
           session,
           proposalOrigin,
-          originEnriched,
           createdAt,
         ]
       properties:
@@ -1834,9 +1884,6 @@ components:
           type: string
         proposalOrigin:
           $ref: "#/components/schemas/ProposalOrigin"
-        originEnriched:
-          type: boolean
-          description: True once enrich-vote-origins has filled proposalOrigin.
         createdAt:
           type: string
           format: date-time
@@ -1862,8 +1909,8 @@ components:
       description: >-
         One förslagspunkt with each party's tally. Served from the record
         when the votering is stored, otherwise assembled live from
-        Riksdagen — the live path returns an empty partyBreakdown and omits
-        proposedByParty/proposalType, so neither can be relied on.
+        Riksdagen — the live path returns an empty partyBreakdown and still
+        carries proposedBy when the Motioner link is held.
         Everything under "Riksdagen dokumentstatus" below is present only
         when that document lookup succeeds.
       required:
@@ -1886,11 +1933,8 @@ components:
           type: string
         documentTitle:
           type: string
-        proposedByParty:
-          type: string
-          description: >-
-            Party abbreviation, or "Regeringen" for a government bill. Not a
-            PartyCode. Absent on the live-from-Riksdagen path.
+        proposedBy:
+          $ref: "#/components/schemas/ProposedBy"
         avvikare:
           type: array
           description: >-
@@ -1899,11 +1943,6 @@ components:
             blends their ballots). Empty on the live-from-Riksdagen path.
           items:
             $ref: "#/components/schemas/Avvikare"
-        proposalType:
-          type: string
-          description: >-
-            prop | mot | bet, or "" when the vote has not been enriched yet.
-            Absent on the live-from-Riksdagen path.
         session:
           type: string
         partyBreakdown:
@@ -1953,18 +1992,19 @@ components:
 
     VoteSummary:
       type: object
-      required: [beteckning, forslagspunkt, documentTitle]
+      required: [riksmote, beteckning, forslagspunkt, documentTitle, proposedBy]
       properties:
+        riksmote:
+          type: string
+          example: "2021/22"
         beteckning:
           type: string
         forslagspunkt:
           type: string
         documentTitle:
           type: string
-        proposedByParty:
-          type: string
-        proposalType:
-          type: string
+        proposedBy:
+          $ref: "#/components/schemas/ProposedBy"
     VoteSummaryListResponse:
       type: object
       required: [data, total, page, pageSize]

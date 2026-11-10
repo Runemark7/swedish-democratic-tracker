@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { votesApi } from "./api";
-import { PartyBadge, VoteBar, ProposalOriginTag } from "@/shared/components";
+import { PartyBadge, VoteBar, ProposedBy } from "@/shared/components";
 import { PARTY_COLORS, committeeFromBeteckning } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import type { components } from "@/shared/api-contract";
@@ -216,10 +216,11 @@ function ShareDropdown({ beteckning, punkt }: { beteckning: string; punkt: strin
 
 export function VoteDetailPage() {
   const { beteckning = "", punkt = "" } = useParams();
+  const session = useSearchParams()[0].get("session") ?? undefined;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["vote-detail", beteckning, punkt],
-    queryFn: () => votesApi.getDetail(beteckning, punkt),
+    queryKey: ["vote-detail", beteckning, punkt, session ?? ""],
+    queryFn: () => votesApi.getDetail(beteckning, punkt, session),
     enabled: !!beteckning && !!punkt,
   });
 
@@ -267,9 +268,7 @@ export function VoteDetailPage() {
             </span>
           )}
         </div>
-        {(data.proposedByParty || data.proposalType) && (
-          <ProposalOriginTag proposedBy={data.proposedByParty} proposalType={data.proposalType} />
-        )}
+        <ProposedBy proposedBy={data.proposedBy} />
       </div>
 
       {/* ── Proposal description ───────────────────────────────────── */}

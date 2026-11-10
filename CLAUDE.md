@@ -149,7 +149,6 @@ graph TD
             W1["① politicians @daily"]
             W2["② speeches @daily"]
             W3["③ votes @daily"]
-            W4["④ enrich-vote-origins @daily\n⟳ stops when enriched=0"]
             W5["⑤ keyword-matcher @daily"]
             W6["⑥ refresh-scorecards @weekly"]
             W7["⑦ fetch-motions @daily\nper riksmöte from mandate_periods"]
@@ -184,7 +183,7 @@ graph TD
     API --> features
     features --> DB
 
-    W1 & W2 & W3 & W4 -->|HTTP| RD
+    W1 & W2 & W3 -->|HTTP| RD
     W5 & W6 --> DB
 
     W7 -->|HTTP| MO

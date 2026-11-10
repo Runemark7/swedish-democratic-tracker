@@ -1,3 +1,4 @@
+import { ProposedBy } from "@/shared/components";
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -318,6 +319,12 @@ export function BeslutDetailPage() {
         {data?.subtitle && (
           <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--color-fg-muted)", marginBottom: 32, letterSpacing: "0.05em" }}>
             {data.subtitle}
+          </div>
+        )}
+
+        {data?.proposedBy && (data.proposedBy.motions.length > 0 || data.proposedBy.propositions.length > 0) && (
+          <div style={{ marginBottom: 24 }}>
+            <ProposedBy proposedBy={data.proposedBy} />
           </div>
         )}
 

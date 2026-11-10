@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 import { PARTY_COLORS, SPECIFICITY_CONFIG, TOPIC_LABELS, deltaColor, formatBudgetAmount } from "./design";
 import { DeltaIndicator } from "@/features/budget/components/DeltaIndicator";
 import { contextApi } from "@/features/context/api";
 import type { components } from "@/shared/api-contract";
 
+type ProposedByData = components["schemas"]["ProposedBy"];
 type BudgetTrendEntry = components["schemas"]["BudgetTrendEntry"];
 type FundingRow = components["schemas"]["FundingRow"];
 type RelatedBudgetArea = components["schemas"]["RelatedBudgetArea"];
@@ -68,7 +71,95 @@ export function SpecificityBadge({ specificity }: { specificity: string }) {
   );
 }
 
+// ── ProposedBy ────────────────────────────────────────────────────────
+/** Who proposed what a votering decided: the motions (with their parties and
+ *  the yrkanden decided) and propositions the förslagspunkt handled, from the
+ *  Motioner link, plus the alternative put to the vote. Raw sourced facts;
+ *  nothing here ranks or labels the proposers. */
+export function ProposedBy({ proposedBy, compact = false }: {
+  proposedBy?: ProposedByData;
+  compact?: boolean;
+}) {
+  if (!proposedBy) return null;
+  const { motions, propositions, alternativ } = proposedBy;
+  if (motions.length === 0 && propositions.length === 0) return null;
+
+  const partyChip = (party: string) => {
+    const c = PARTY_COLORS[party];
+    return (
+      <span
+        key={party}
+        className="px-1.5 py-px rounded text-[10px] font-bold"
+        style={{ background: c?.bg ?? "#666", color: c?.text ?? "#fff" }}
+      >
+        {party}
+      </span>
+    );
+  };
+
+  if (compact) {
+    const parties = [...new Set(motions.flatMap((m) => m.parties))];
+    return (
+      <div className="flex flex-wrap items-center gap-1.5 text-[11px]" data-testid="proposed-by">
+        <span className="text-on-surface-variant">Förslag från:</span>
+        {propositions.length > 0 && (
+          <span className="px-1.5 py-px rounded bg-surface-high text-on-surface-variant text-[10px] font-semibold">
+            Proposition
+          </span>
+        )}
+        {parties.map(partyChip)}
+        {motions.length > 0 && (
+          <span className="text-on-surface-variant">
+            {motions.length} {motions.length === 1 ? "motion" : "motioner"}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-md bg-surface-low px-3 py-2.5 text-[12px]" data-testid="proposed-by">
+      <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-2">
+        Förslag från <SourceMarker sourceId="betankanden" />
+      </p>
+      <ul className="flex flex-col gap-1.5">
+        {propositions.map((p) => (
+          <li key={`${p.riksmote}:${p.beteckning}`} className="flex items-center gap-2">
+            <span className="px-1.5 py-px rounded bg-surface-high text-on-surface-variant text-[10px] font-semibold">
+              Proposition
+            </span>
+            <span className="font-mono">{p.riksmote}:{p.beteckning}</span>
+          </li>
+        ))}
+        {motions.map((m) => (
+          <li key={m.dokId} className="flex flex-wrap items-center gap-2">
+            {m.parties.map(partyChip)}
+            <Link
+              to={`/motioner/${encodeURIComponent(m.riksmote)}/${encodeURIComponent(m.beteckning)}`}
+              className="font-mono text-link hover:underline"
+            >
+              {m.riksmote}:{m.beteckning}
+            </Link>
+            {m.yrkanden.length > 0 && (
+              <span className="text-on-surface-variant">
+                yrkande {m.yrkanden.join(", ")}
+              </span>
+            )}
+            {m.title && <span className="text-on-surface-variant truncate">{m.title}</span>}
+          </li>
+        ))}
+      </ul>
+      {alternativ && (
+        <p className="mt-2 text-on-surface-variant">
+          Alternativ i omröstningen: <span className="text-on-surface">{alternativ}</span>
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ── ProposalOriginTag ─────────────────────────────────────────────────
+/** Used only for goal matches, which store their own proposer label. */
 export function ProposalOriginTag({ proposedBy, proposalType }: {
   proposedBy?: string;
   proposalType?: string;
