@@ -1,0 +1,228 @@
+// Package riksdagen reads motions from data.riksdagen.se.
+package riksdagen
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
+
+	"riksdagskollen/internal/motions/domain"
+	"riksdagskollen/internal/motions/ports"
+)
+
+const defaultBaseURL = "https://data.riksdagen.se"
+
+type Client struct {
+	http    *http.Client
+	baseURL string
+}
+
+// NewClientWithBaseURL points the client at baseURL; empty means production.
+func NewClientWithBaseURL(baseURL string) *Client {
+	if baseURL == "" {
+		baseURL = defaultBaseURL
+	}
+	return &Client{http: &http.Client{Timeout: 30 * time.Second}, baseURL: strings.TrimRight(baseURL, "/")}
+}
+
+func (c *Client) getJSON(ctx context.Context, u string, out any) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("riksdagen returned %d for %s", resp.StatusCode, req.URL.Path)
+	}
+	return json.NewDecoder(resp.Body).Decode(out)
+}
+
+// ListMotions pages /dokumentlista for doktyp=mot. The riksmöte is sent in its
+// slash form; the client encodes it.
+func (c *Client) ListMotions(ctx context.Context, rm string, page, size int) ([]ports.MotionRef, int, error) {
+	if page == 0 {
+		page = 1
+	}
+	if size == 0 {
+		size = 200
+	}
+	q := url.Values{}
+	q.Set("doktyp", "mot")
+	q.Set("rm", rm)
+	q.Set("utformat", "json")
+	q.Set("sz", strconv.Itoa(size))
+	q.Set("p", strconv.Itoa(page))
+	q.Set("sort", "datum")
+	q.Set("sortorder", "desc")
+
+	var payload struct {
+		Dokumentlista struct {
+			Traffar  string `json:"@traffar"`
+			Dokument flexList[struct {
+				DokID       string `json:"dok_id"`
+				Systemdatum string `json:"systemdatum"`
+			}] `json:"dokument"`
+		} `json:"dokumentlista"`
+	}
+	if err := c.getJSON(ctx, c.baseURL+"/dokumentlista/?"+q.Encode(), &payload); err != nil {
+		return nil, 0, fmt.Errorf("list motions: %w", err)
+	}
+	total, _ := strconv.Atoi(payload.Dokumentlista.Traffar)
+	refs := make([]ports.MotionRef, 0, len(payload.Dokumentlista.Dokument))
+	for _, d := range payload.Dokumentlista.Dokument {
+		refs = append(refs, ports.MotionRef{DokID: d.DokID, SystemDatum: parseTime(d.Systemdatum)})
+	}
+	return refs, total, nil
+}
+
+// FetchMotion reads /dokumentstatus/{dok_id}.json.
+func (c *Client) FetchMotion(ctx context.Context, dokID string) (*domain.Motion, error) {
+	var payload struct {
+		Status struct {
+			Dokument struct {
+				DokID       string `json:"dok_id"`
+				Rm          string `json:"rm"`
+				Beteckning  string `json:"beteckning"`
+				Subtyp      string `json:"subtyp"`
+				Organ       string `json:"organ"`
+				Datum       string `json:"datum"`
+				Systemdatum string `json:"systemdatum"`
+				Titel       string `json:"titel"`
+				Status      string `json:"status"`
+			} `json:"dokument"`
+			Forslag struct {
+				Forslag flexList[forslag] `json:"forslag"`
+			} `json:"dokforslag"`
+			Intressenter struct {
+				Intressent flexList[intressent] `json:"intressent"`
+			} `json:"dokintressent"`
+			Uppgifter struct {
+				Uppgift flexList[uppgift] `json:"uppgift"`
+			} `json:"dokuppgift"`
+			Referenser struct {
+				Referens flexList[referens] `json:"referens"`
+			} `json:"dokreferens"`
+		} `json:"dokumentstatus"`
+	}
+	if err := c.getJSON(ctx, c.baseURL+"/dokumentstatus/"+url.PathEscape(dokID)+".json", &payload); err != nil {
+		return nil, fmt.Errorf("fetch motion %s: %w", dokID, err)
+	}
+	d := payload.Status.Dokument
+	if d.DokID == "" || d.Rm == "" || d.Beteckning == "" {
+		return nil, fmt.Errorf("fetch motion %s: response has no dok_id, rm or beteckning", dokID)
+	}
+
+	m := &domain.Motion{
+		DokID: d.DokID, Riksmote: d.Rm, Beteckning: d.Beteckning, Title: d.Titel,
+		Subtyp: d.Subtyp, Organ: d.Organ, Status: d.Status,
+		SystemDatum: parseTime(d.Systemdatum),
+	}
+	if t := parseTime(d.Datum); !t.IsZero() {
+		day := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+		m.Date = &day
+	}
+	for _, u := range payload.Status.Uppgifter.Uppgift {
+		if u.Kod == "tilldelat" {
+			m.Tilldelat = u.Text
+		}
+	}
+	for _, r := range payload.Status.Referenser.Referens {
+		if r.Referenstyp == "behandlas_i" {
+			m.BehandlasI = r.Uppgift
+			break
+		}
+	}
+	for i, a := range payload.Status.Intressenter.Intressent {
+		order, err := strconv.Atoi(a.Ordning)
+		if err != nil {
+			order = i + 1
+		}
+		m.Authors = append(m.Authors, domain.Author{
+			Order: order, PoliticianID: a.IntressentID, Name: a.Namn, Party: a.Partibet, Role: a.Roll,
+		})
+	}
+	for i, f := range payload.Status.Forslag.Forslag {
+		n, err := strconv.Atoi(f.Nummer)
+		if err != nil {
+			n = i + 1
+		}
+		m.Yrkanden = append(m.Yrkanden, domain.Yrkande{
+			Number: n, Wording: f.Lydelse, UtskottProposal: f.Utskottet, ChamberDecision: f.Kammaren,
+			BehandlasI: f.BehandlasI, BehandlasIPunkt: f.BehandlasIPunkt,
+		})
+	}
+	return m, nil
+}
+
+type forslag struct {
+	Nummer          string `json:"nummer"`
+	Lydelse         string `json:"lydelse"`
+	Utskottet       string `json:"utskottet"`
+	Kammaren        string `json:"kammaren"`
+	BehandlasI      string `json:"behandlas_i"`
+	BehandlasIPunkt string `json:"behandlas_i_punkt"`
+}
+
+type intressent struct {
+	IntressentID string `json:"intressent_id"`
+	Namn         string `json:"namn"`
+	Partibet     string `json:"partibet"`
+	Ordning      string `json:"ordning"`
+	Roll         string `json:"roll"`
+}
+
+type uppgift struct {
+	Kod  string `json:"kod"`
+	Text string `json:"text"`
+}
+
+type referens struct {
+	Referenstyp string `json:"referenstyp"`
+	Uppgift     string `json:"uppgift"`
+}
+
+// flexList decodes what Riksdagen serves as an object when there is one item,
+// an array when there are several, and null or "" when there are none.
+type flexList[T any] []T
+
+func (l *flexList[T]) UnmarshalJSON(b []byte) error {
+	s := strings.TrimSpace(string(b))
+	switch {
+	case s == "" || s == "null" || s == `""`:
+		*l = nil
+		return nil
+	case s[0] == '[':
+		var arr []T
+		if err := json.Unmarshal(b, &arr); err != nil {
+			return err
+		}
+		*l = arr
+		return nil
+	case s[0] == '{':
+		var one T
+		if err := json.Unmarshal(b, &one); err != nil {
+			return err
+		}
+		*l = []T{one}
+		return nil
+	}
+	return fmt.Errorf("unexpected JSON %.20q", s)
+}
+
+func parseTime(s string) time.Time {
+	for _, layout := range []string{"2006-01-02 15:04:05", "2006-01-02"} {
+		if t, err := time.Parse(layout, s); err == nil {
+			return t
+		}
+	}
+	return time.Time{}
+}

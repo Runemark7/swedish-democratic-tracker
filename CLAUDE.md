@@ -142,6 +142,7 @@ graph TD
             RS["regions / municipalities"]
             RKS["riksdag / myndigheter"]
             CS["committees"]
+            MS["motions"]
         end
 
         subgraph ingestion["Ingestion scheduler (cron)"]
@@ -151,6 +152,7 @@ graph TD
             W4["④ enrich-vote-origins @daily\n⟳ stops when enriched=0"]
             W5["⑤ keyword-matcher @daily"]
             W6["⑥ refresh-scorecards @weekly"]
+            W7["⑦ fetch-motions @daily\nper riksmöte from mandate_periods"]
         end
 
         subgraph seeder["Election seeder"]
@@ -169,6 +171,7 @@ graph TD
         KLS["SCB KLS AM0102\napi.scb.se — månadsanställda statlig sektor"]
         AKU["SCB AKU AM0401\napi.scb.se — arbetslöshetstal"]
         KPIINF["SCB KPI PR0101\napi.scb.se — inflationstakt årsförändring"]
+        MO["Riksdagen motioner\ndata.riksdagen.se dokumentlista + dokumentstatus (doktyp=mot)"]
         RO["Riksdagsordningen 2014:801\nBilaga tb 7.5.1 — utskott→utgiftsområde"]
         VM["Valmyndigheten\nval.se — riksdagsmandat (seed)"]
     end
@@ -182,6 +185,8 @@ graph TD
     W1 & W2 & W3 & W4 -->|HTTP| RD
     W5 & W6 --> DB
 
+    W7 -->|HTTP| MO
+    MS -->|motion per riksmöte + beteckning| MO
     VS -->|GET /dokumentlista betänkanden\nriksdags-feed endpoint| RD
     RS -->|"Region strip: N60008 N63016 N63007 N79173 N79179 N60404 N85012\nMunicipality strip: N00900 N03102 N03106 N15428 N00708\nMunicipality spending: N11004 N15028 N17014 N20014 N30005 N07037 N09022 N05011 N45014"| KO
     RS -->|population trend| SC
@@ -222,7 +227,7 @@ internal/{feature}/
 - Never import an adapter package into domain.
 - `cmd/api/main.go` is the only wiring point — it instantiates all services and registers all HTTP routes.
 
-**Current features**: `politicians`, `speeches`, `votes`, `goals`, `promises`, `matching`, `budget`, `context`, `regions`, `ingestion`, `riksdag`
+**Current features**: `politicians`, `speeches`, `votes`, `motions`, `goals`, `promises`, `matching`, `budget`, `context`, `regions`, `ingestion`, `riksdag`
 
 The `ingestion` feature contains scheduled workers (`internal/ingestion/workers/`) that sync data from the Riksdagen open API on a cron schedule. Workers: `politicians`, `speeches`, `votes`, `scorecards`, `keyword_matcher`.
 
@@ -296,7 +301,7 @@ postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable
   `DATABASE_URL` secret named by the chart's `dbSecretName` — there is no
   bitnami subchart and the database is not Neon. Local dev compose still uses
   `postgres:17-alpine`.
-- 40 migrations in `backend/migrations/` (numbered `000001`–`000040`).
+- 43 migrations in `backend/migrations/` (numbered `000001`–`000043`).
 - The voting record lives in two tables, not one: `voteringar` (one row per
   decided förslagspunkt) and `ballots` (one row per member per votering).
   `votering_id` is the identity — two voteringar can share a beteckning and

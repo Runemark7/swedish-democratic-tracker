@@ -7,6 +7,7 @@ skapar `SourceRegistry.generated.ts`.
 | ID | Namn | Kind | Backas i UI av |
 |---|---|---|---|
 | [riksdagen](./riksdagen.md) | Riksdagen Open Data | api | beslut, omröstningar, anföranden |
+| [motions](./motions.md) | Motioner (Riksdagen) | api | motionssidan (/motioner) |
 | [kolada](./kolada.md) | Kolada API v3 | api | region/kommun KPIs |
 | [kolada-spending](./kolada-spending.md) | Kolada — kommunal verksamhetsutgift | api | kommun budget |
 | [scb-kfmandat](./scb-kfmandat.md) | SCB Kfmandat | api | kommunala mandat |

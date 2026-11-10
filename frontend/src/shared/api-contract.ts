@@ -336,6 +336,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/motions/coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What Riksdagen's listing reports per riksmöte and source, and how many motions we hold */
+        get: operations["getMotionCoverage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/motions/{riksmote}/{beteckning}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One motion with its authors and every yrkande */
+        get: operations["getMotion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/votes/recent": {
         parameters: {
             query?: never;
@@ -1077,6 +1111,66 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        MotionCoverage: {
+            /** @example 2017/18 */
+            riksmote: string;
+            /** @example riksdagen-dokumentlista */
+            source: string;
+            /** @description Total Riksdagen's listing reports (@traffar) */
+            expected: number;
+            /** @description Motions we hold for the riksmöte, counted at read time */
+            held: number;
+            /** Format: date-time */
+            lastEnumeratedAt: string;
+        };
+        MotionAuthor: {
+            politicianId: string;
+            name: string;
+            /** @description Party recorded on the motion when it was signed, not the member's party today */
+            party: string;
+            /** @example undertecknare */
+            role: string;
+        };
+        MotionYrkande: {
+            number: number;
+            /** @description Full wording of the demand, as Riksdagen gives it */
+            wording: string;
+            /** @description The utskott's proposal as given, e.g. Avslag */
+            utskottProposal: string;
+            /** @description The chamber's decision as given; empty before it decides */
+            chamberDecision: string;
+            /** @example 2017/18:SkU11 */
+            behandlasI: string;
+            behandlasIPunkt: string;
+        };
+        Motion: {
+            /** @example H5023293 */
+            dokId: string;
+            /** @example 2017/18 */
+            riksmote: string;
+            /** @example 3293 */
+            beteckning: string;
+            title: string;
+            /** @description Riksdagen's own subtyp, stored as given */
+            subtyp: string;
+            /** @description Kommittémotion, Partimotion, Enskild motion or Flerpartimotion (derived: an enskild motion whose signers span parties). An unknown subtyp is returned as Riksdagen gave it. */
+            kind: string;
+            /** @description One line in the glossary's wording; empty for an unknown subtyp */
+            kindExplanation: string;
+            /** Format: date */
+            date: string | null;
+            /** @example SkU */
+            utskott: string;
+            /** @example Skatteutskottet */
+            utskottName: string;
+            status: string;
+            /** @description Betänkande the motion is handled in, as given */
+            behandlasI: string;
+            /** Format: uri */
+            sourceUrl: string;
+            authors: components["schemas"]["MotionAuthor"][];
+            yrkanden: components["schemas"]["MotionYrkande"][];
+        };
         HealthResponse: {
             /** @enum {string} */
             status: "ok";
@@ -2586,6 +2680,62 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VoteSummaryListResponse"];
+                };
+            };
+        };
+    };
+    getMotionCoverage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One row per riksmöte and source, newest riksmöte first */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MotionCoverage"][];
+                    };
+                };
+            };
+        };
+    };
+    getMotion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Riksmöte in slash form, `2017/18`, never `2017-18`. It sits in one path segment, so the slash is URL-encoded as `2017%2F18`. */
+                riksmote: string;
+                beteckning: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The motion */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Motion"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            /** @description No motion with that riksmöte and beteckning */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

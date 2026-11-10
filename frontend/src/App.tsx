@@ -6,6 +6,7 @@ import { GoalVotesPage } from "./features/parties/GoalVotesPage";
 import { CommitteePage } from "./features/committees/CommitteePage";
 import { PoliticiansPage } from "./features/politicians/PoliticiansPage";
 import { PoliticianPage } from "./features/politicians/PoliticianPage";
+import { MotionPage } from "./features/motions/MotionPage";
 import { VotesPage } from "./features/votes/VotesPage";
 import { VoteDetailPage } from "./features/votes/VoteDetailPage";
 import { VoteSharePage } from "./features/votes/VoteSharePage";
@@ -286,6 +287,8 @@ export default function App() {
           <Route path="/votes/:beteckning/:punkt"              element={<VoteDetailPage />} />
           <Route path="/beslut"                                element={<VotesPage />} />
           <Route path="/beslut/:beteckning"                    element={<BeslutDetailPage />} />
+          {/* The riksmöte sits in one segment, so its slash is encoded: /motioner/2017%2F18/3293 */}
+          <Route path="/motioner/:riksmote/:beteckning"        element={<MotionPage />} />
           <Route path="/budget/areas/:code"                    element={<LegacyRegeringenRedirect />} />
           <Route path="/budget"                                element={<LegacyRegeringenRedirect />} />
           <Route path="/manifestos"                            element={<ManifestosPage />} />
