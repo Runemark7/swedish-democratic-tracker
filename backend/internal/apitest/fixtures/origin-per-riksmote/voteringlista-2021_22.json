@@ -1,0 +1,93 @@
+{
+ "method": "GET",
+ "path": "/voteringlista/",
+ "query": {
+  "rm": "2021/22",
+  "parti": "",
+  "iid": "",
+  "bet": "SkU16",
+  "sz": "10000",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/voteringlista/?rm=2021/22&bet=SkU16&sz=10000&utformat=json",
+ "note": "Recorded 2026-11-10. Reduced to förslagspunkt 6, one ballot per party (max 6) and the fields the client reads.",
+ "body": {
+  "voteringlista": {
+   "votering": [
+    {
+     "votering_id": "0944D710-BC94-493B-981D-9C70815CA406",
+     "intressent_id": "0252067342313",
+     "namn": "Åsa Lindestam",
+     "parti": "S",
+     "rost": "Frånvarande",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2021/22",
+     "dok_id": "H901SkU16",
+     "systemdatum": "2022-04-20 16:35:18"
+    },
+    {
+     "votering_id": "0944D710-BC94-493B-981D-9C70815CA406",
+     "intressent_id": "0122987223112",
+     "namn": "Lotta Johnsson Fornarve",
+     "parti": "V",
+     "rost": "Ja",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2021/22",
+     "dok_id": "H901SkU16",
+     "systemdatum": "2022-04-20 16:35:18"
+    },
+    {
+     "votering_id": "0944D710-BC94-493B-981D-9C70815CA406",
+     "intressent_id": "0155487380917",
+     "namn": "Kerstin Lundgren",
+     "parti": "C",
+     "rost": "Avstår",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2021/22",
+     "dok_id": "H901SkU16",
+     "systemdatum": "2022-04-20 16:35:18"
+    },
+    {
+     "votering_id": "0944D710-BC94-493B-981D-9C70815CA406",
+     "intressent_id": "0722683622001",
+     "namn": "Lars Jilmstad",
+     "parti": "M",
+     "rost": "Nej",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2021/22",
+     "dok_id": "H901SkU16",
+     "systemdatum": "2022-04-20 16:35:18"
+    },
+    {
+     "votering_id": "0944D710-BC94-493B-981D-9C70815CA406",
+     "intressent_id": "0363228965800",
+     "namn": "Barbro Westerholm",
+     "parti": "L",
+     "rost": "Ja",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2021/22",
+     "dok_id": "H901SkU16",
+     "systemdatum": "2022-04-20 16:35:18"
+    },
+    {
+     "votering_id": "0944D710-BC94-493B-981D-9C70815CA406",
+     "intressent_id": "0973782197017",
+     "namn": "Mikael Oscarsson",
+     "parti": "KD",
+     "rost": "Avstår",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2021/22",
+     "dok_id": "H901SkU16",
+     "systemdatum": "2022-04-20 16:35:18"
+    }
+   ]
+  }
+ }
+}

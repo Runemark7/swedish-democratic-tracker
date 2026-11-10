@@ -86,11 +86,12 @@ func (r *fakeVoteRepo) ListDistinctByCommitteePrefix(context.Context, string) ([
 	return nil, nil
 }
 
-func (r *fakeVoteRepo) ListVotePointsWithoutOrigin(context.Context, int) ([]voteports.VotePoint, error) {
+func (r *fakeVoteRepo) ListVotePointsWithoutOrigin(context.Context, voteports.VotePoint, int) ([]voteports.VotePoint, error) {
 	return nil, nil
 }
 
-func (r *fakeVoteRepo) UpdateProposalOriginForPoint(context.Context, string, string, votedomain.ProposalOrigin) (int64, error) {
+func (r *fakeVoteRepo) MarkAllOriginsForRecompute(context.Context) (int64, error) { return 0, nil }
+func (r *fakeVoteRepo) UpdateProposalOriginForPoint(context.Context, string, string, string, votedomain.ProposalOrigin) (int64, error) {
 	return 0, nil
 }
 

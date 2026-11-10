@@ -1,0 +1,93 @@
+{
+ "method": "GET",
+ "path": "/voteringlista/",
+ "query": {
+  "rm": "2025/26",
+  "parti": "",
+  "iid": "",
+  "bet": "SkU16",
+  "sz": "10000",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/voteringlista/?rm=2025/26&bet=SkU16&sz=10000&utformat=json",
+ "note": "Recorded 2026-11-10. Reduced to förslagspunkt 6, one ballot per party (max 6) and the fields the client reads.",
+ "body": {
+  "voteringlista": {
+   "votering": [
+    {
+     "votering_id": "C0404929-505F-4CDC-BBA9-1CB8A5141507",
+     "intressent_id": "0257612529618",
+     "namn": "Kenneth G Forslund",
+     "parti": "S",
+     "rost": "Frånvarande",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2025/26",
+     "dok_id": "HD01SkU16",
+     "systemdatum": "2026-03-25 16:38:10"
+    },
+    {
+     "votering_id": "C0404929-505F-4CDC-BBA9-1CB8A5141507",
+     "intressent_id": "0638497389621",
+     "namn": "Julia Kronlid",
+     "parti": "SD",
+     "rost": "Ja",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2025/26",
+     "dok_id": "HD01SkU16",
+     "systemdatum": "2026-03-25 16:38:10"
+    },
+    {
+     "votering_id": "C0404929-505F-4CDC-BBA9-1CB8A5141507",
+     "intressent_id": "0155487380917",
+     "namn": "Kerstin Lundgren",
+     "parti": "C",
+     "rost": "Ja",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2025/26",
+     "dok_id": "HD01SkU16",
+     "systemdatum": "2026-03-25 16:38:10"
+    },
+    {
+     "votering_id": "C0404929-505F-4CDC-BBA9-1CB8A5141507",
+     "intressent_id": "0970259744617",
+     "namn": "Margareta Cederfelt",
+     "parti": "M",
+     "rost": "Ja",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2025/26",
+     "dok_id": "HD01SkU16",
+     "systemdatum": "2026-03-25 16:38:10"
+    },
+    {
+     "votering_id": "C0404929-505F-4CDC-BBA9-1CB8A5141507",
+     "intressent_id": "0381853591928",
+     "namn": "Malte Tängmark Roos",
+     "parti": "MP",
+     "rost": "Nej",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2025/26",
+     "dok_id": "HD01SkU16",
+     "systemdatum": "2026-03-25 16:38:10"
+    },
+    {
+     "votering_id": "C0404929-505F-4CDC-BBA9-1CB8A5141507",
+     "intressent_id": "0766496753128",
+     "namn": "Fredrik Malm",
+     "parti": "L",
+     "rost": "Ja",
+     "beteckning": "SkU16",
+     "punkt": "6",
+     "rm": "2025/26",
+     "dok_id": "HD01SkU16",
+     "systemdatum": "2026-03-25 16:38:10"
+    }
+   ]
+  }
+ }
+}

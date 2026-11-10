@@ -1,0 +1,43 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HA021022.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HA021022.json",
+ "note": "Recorded 2026-11-10. Reduced to dokument header and intressenter.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "dok_id": "HA021022",
+    "titel": "Sverigevänlig skatte- och indrivningspolitik för välfärd, trygghet och företagande",
+    "typ": "mot",
+    "datum": "2022-11-22 00:00:00",
+    "undertitel": null,
+    "beteckning": "1022"
+   },
+   "dokreferens": {},
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0492644357418",
+      "namn": "Per Söderlund",
+      "partibet": "SD",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "010643534813",
+      "namn": "Eric Westroth",
+      "partibet": "SD",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0331791853028",
+      "namn": "Yasmine Eriksson",
+      "partibet": "SD",
+      "roll": "undertecknare"
+     }
+    ]
+   }
+  }
+ }
+}

@@ -81,3 +81,7 @@ func (h *Harness) Served(path string) int {
 	}
 	return n
 }
+
+// ReplayURL is the base URL of the replay server, for tests that build their
+// own Riksdagen client (for example to run a service outside the scheduler).
+func (h *Harness) ReplayURL() string { return h.replay.URL }

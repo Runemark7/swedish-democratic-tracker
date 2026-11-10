@@ -14,16 +14,17 @@ type enrichRepo struct {
 	updates []string // "bet:punkt" per update
 }
 
-func (r *enrichRepo) ListVotePointsWithoutOrigin(context.Context, int) ([]ports.VotePoint, error) {
+func (r *enrichRepo) ListVotePointsWithoutOrigin(context.Context, ports.VotePoint, int) ([]ports.VotePoint, error) {
 	return r.points, nil
 }
 
-func (r *enrichRepo) UpdateProposalOriginForPoint(_ context.Context, bet, punkt string, _ domain.ProposalOrigin) (int64, error) {
-	r.updates = append(r.updates, bet+":"+punkt)
+func (r *enrichRepo) UpdateProposalOriginForPoint(_ context.Context, session, bet, punkt string, _ domain.ProposalOrigin) (int64, error) {
+	r.updates = append(r.updates, session+":"+bet+":"+punkt)
 	return 349, nil // one statement covers every ballot on the point
 }
 
-func (r *enrichRepo) UpsertMany(context.Context, []*domain.Vote) error { return nil }
+func (r *enrichRepo) MarkAllOriginsForRecompute(context.Context) (int64, error) { return 0, nil }
+func (r *enrichRepo) UpsertMany(context.Context, []*domain.Vote) error          { return nil }
 func (r *enrichRepo) ListByPolitician(context.Context, ports.ListVotesFilter) (ports.ListVotesResult, error) {
 	return ports.ListVotesResult{}, nil
 }
