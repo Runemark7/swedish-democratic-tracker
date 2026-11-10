@@ -461,6 +461,51 @@ paths:
               schema:
                 $ref: "#/components/schemas/VoteSummaryListResponse"
 
+  /motions:
+    get:
+      operationId: listMotions
+      tags: [motions]
+      summary: Motions, most recently decided first, with filters and free-text search
+      description: >-
+        Undecided motions come after the decided ones, newest filing first.
+        "Decided" is the date of the newest betänkande that decided one of the
+        motion's yrkanden (Riksdagen's last-changed date for it). The
+        `utskott` filter matches the utskott a motion is filed to and the
+        utskott whose betänkande decided one of its yrkanden. `party` matches
+        any signer. Each filter takes several values, repeated or
+        comma-separated; values of one filter are alternatives, filters are
+        combined with AND. Paginate with `nextCursor`; a page can be shorter
+        than `limit` while `nextCursor` is set, when an `outcome` filter
+        matches rarely.
+      parameters:
+        - { name: party, in: query, required: false, description: "Signer party, e.g. `M`", schema: { type: string } }
+        - { name: utskott, in: query, required: false, description: "Utskott code, e.g. `SkU`", schema: { type: string } }
+        - name: outcome
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "One or more of Avslagen, Bifallen, Delvis bifallen, Besvarad, Ej avgjord än, Blandat utfall"
+        - { name: riksmote, in: query, required: false, description: "Riksmöte in slash form, `2017/18`; several allowed", schema: { type: string, example: "2017/18,2021/22" } }
+        - name: kind
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "One or more of Kommittémotion, Partimotion, Enskild motion, Flerpartimotion"
+        - { name: q, in: query, required: false, description: "Free text over title and yrkande wording; every word must match", schema: { type: string, maxLength: 200 } }
+        - { name: limit, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 25 } }
+        - { name: cursor, in: query, required: false, description: "Opaque `nextCursor` of the previous page", schema: { type: string } }
+      responses:
+        "200":
+          description: One page of motions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MotionListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
   /motions/coverage:
     get:
       operationId: getMotionCoverage
@@ -1527,6 +1572,32 @@ components:
           description: Partilinje of every party in the votering (shared definition); empty for acklamation
           items: { $ref: "#/components/schemas/PartyPartilinje" }
 
+    MotionListRow:
+      type: object
+      required: [dokId, riksmote, beteckning, title, subtyp, kind, parties, date, utskott, utskottName, handledIn, sourceUrl, outcome]
+      properties:
+        dokId: { type: string }
+        riksmote: { type: string, example: "2017/18" }
+        beteckning: { type: string, example: "3293" }
+        title: { type: string }
+        subtyp: { type: string, description: "Riksdagen's own value" }
+        kind: { type: string, description: "Kommittémotion, Partimotion, Enskild motion or the derived Flerpartimotion" }
+        parties: { type: array, items: { type: string }, description: "Distinct signer parties" }
+        date: { type: [string, "null"], format: date }
+        utskott: { type: string, description: "Utskott the motion is filed to" }
+        utskottName: { type: string }
+        handledIn:
+          type: array
+          items: { type: string, example: "2018/19:SkU11" }
+          description: Betänkanden that decided its yrkanden
+        sourceUrl: { type: string }
+        outcome: { $ref: "#/components/schemas/MotionOutcome" }
+    MotionListResponse:
+      type: object
+      required: [data, nextCursor]
+      properties:
+        data: { type: array, items: { $ref: "#/components/schemas/MotionListRow" } }
+        nextCursor: { type: [string, "null"] }
     MotionOutcome:
       type: object
       required: [word, counts, total]
