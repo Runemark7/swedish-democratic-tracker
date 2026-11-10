@@ -1,0 +1,482 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H9024217.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H9024217.json",
+ "note": "dokforslag cut to the yrkanden handled in 2021/22:SkU16; document text removed.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5109977",
+    "dok_id": "H9024217",
+    "rm": "2021/22",
+    "beteckning": "4217",
+    "typ": "mot",
+    "subtyp": "Kommittémotion",
+    "doktyp": "mot",
+    "typrubrik": "Motion 2021/22:4217 av Camilla Brodin m.fl. (KD)",
+    "dokumentnamn": "Motion",
+    "debattnamn": "Motion",
+    "tempbeteckning": "",
+    "organ": "NU",
+    "mottagare": "",
+    "nummer": "4217",
+    "slutnummer": "0",
+    "datum": "2021-10-05 00:00:00",
+    "systemdatum": "2023-03-21 14:22:49",
+    "publicerad": "2021-10-05 00:00:00",
+    "titel": "Utgiftsområde 24 Näringsliv",
+    "subtitel": "av Camilla Brodin m.fl. (KD)",
+    "status": "Klar",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Filur",
+    "sourceid": "5aef7a05-6667-4683-89ce-0283662108b4",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H9024217/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H9024217",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H9024217"
+   },
+   "dokforslag": {
+    "forslag": [
+     {
+      "nummer": "4",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om förenklad moms för småföretag och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2021/22:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     },
+     {
+      "nummer": "22",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att se över och harmonisera momssatser inom besöksnäringen och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2021/22:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     }
+    ]
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2021-10-05 18:32:27",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Granskad",
+      "namn": "Granskad",
+      "datum": "2021-10-06 18:44:40",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "HÄN",
+      "namn": "Hänvisad",
+      "datum": "2021-10-14 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0378597308227",
+      "namn": "Camilla Brodin",
+      "partibet": "KD",
+      "ordning": "1",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0992473266516",
+      "namn": "Larry Söder",
+      "partibet": "KD",
+      "ordning": "2",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0977592683711",
+      "namn": "Magnus Jacobsson",
+      "partibet": "KD",
+      "ordning": "3",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0792733370419",
+      "namn": "Magnus Oscarsson",
+      "partibet": "KD",
+      "ordning": "4",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0509415296421",
+      "namn": "Kjell-Arne Ottosson",
+      "partibet": "KD",
+      "ordning": "5",
+      "roll": "undertecknare"
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "motkat",
+      "namn": "Motionskategori",
+      "text": "Fristående motion",
+      "dok_id": "H9024217",
+      "systemdatum": "2023-03-21 14:22:29"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är avslutat",
+      "dok_id": "H9024217",
+      "systemdatum": "2022-06-21 16:20:07"
+     },
+     {
+      "kod": "tilldelat",
+      "namn": "Tilldelat",
+      "text": "Näringsutskottet",
+      "dok_id": "H9024217",
+      "systemdatum": "2023-03-21 14:22:29"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "H9024217",
+      "subtitel": "av Camilla Brodin m.fl. (KD)",
+      "filnamn": "mot_202122__4217.pdf",
+      "filstorlek": "285674",
+      "filtyp": "pdf",
+      "titel": "Utgiftsområde 24 Näringsliv",
+      "fil_url": "https://data.riksdagen.se/fil/57E83D05-E310-4DA4-ADB5-6E7FC5BAC579"
+     },
+     {
+      "dok_id": "H9024217",
+      "subtitel": "av Camilla Brodin m.fl. (KD)",
+      "filnamn": "mot_202122__4217.docx",
+      "filstorlek": "144217",
+      "filtyp": "docx",
+      "titel": "Utgiftsområde 24 Näringsliv",
+      "fil_url": "https://data.riksdagen.se/fil/188E960F-91D1-401D-8874-6D815E00C81B"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:FiU26",
+      "ref_dok_id": "H901FiU26",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "FiU26",
+      "ref_dok_titel": "Kommunala frågor",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:FiU34",
+      "ref_dok_id": "H901FiU34",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "FiU34",
+      "ref_dok_titel": "Offentlig upphandling",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:JuU22",
+      "ref_dok_id": "H901JuU22",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "JuU22",
+      "ref_dok_titel": "Polisfrågor",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:MJU19",
+      "ref_dok_id": "H901MJU19",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "MJU19",
+      "ref_dok_titel": "Klimatpolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:MJU20",
+      "ref_dok_id": "H901MJU20",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "MJU20",
+      "ref_dok_titel": "Klimatpolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:MJU22",
+      "ref_dok_id": "H901MJU22",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "MJU22",
+      "ref_dok_titel": "Vattenvård",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:MJU23",
+      "ref_dok_id": "H901MJU23",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "MJU23",
+      "ref_dok_titel": "Vattenvård",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:MJU29",
+      "ref_dok_id": "H901MJU29",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "MJU29",
+      "ref_dok_titel": "Straffbestämmelser till EU:s förordning om fartygsåtervinning och övergripande miljöfrågor",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU1",
+      "ref_dok_id": "H901NU1",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU1",
+      "ref_dok_titel": "Utgiftsområde 24 Näringsliv",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU12",
+      "ref_dok_id": "H901NU12",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU12",
+      "ref_dok_titel": "Näringspolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU15",
+      "ref_dok_id": "H901NU15",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU15",
+      "ref_dok_titel": "Energipolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU16",
+      "ref_dok_id": "H901NU16",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU16",
+      "ref_dok_titel": "En förenklingspolitik för stärkt konkurrenskraft, tillväxt och innovationsförmåga",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU19",
+      "ref_dok_id": "H901NU19",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU19",
+      "ref_dok_titel": "Handelspolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU20",
+      "ref_dok_id": "H901NU20",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU20",
+      "ref_dok_titel": "Mineralpolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU22",
+      "ref_dok_id": "H901NU22",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU22",
+      "ref_dok_titel": "Immaterialrätt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU4",
+      "ref_dok_id": "H901NU4",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU4",
+      "ref_dok_titel": "2021 års redogörelse för bolag med statligt ägande",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU13",
+      "ref_dok_id": "H901SkU13",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU13",
+      "ref_dok_titel": "Inkomstskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU14",
+      "ref_dok_id": "H901SkU14",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU14",
+      "ref_dok_titel": "Företag, kapital och fastighet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU16",
+      "ref_dok_id": "H901SkU16",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU16",
+      "ref_dok_titel": "Mervärdesskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU17",
+      "ref_dok_id": "H901SkU17",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU17",
+      "ref_dok_titel": "Skatteförfarande och folkbokföring",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SoU12",
+      "ref_dok_id": "H901SoU12",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SoU12",
+      "ref_dok_titel": "Stöd till personer med funktionsnedsättning",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SoU15",
+      "ref_dok_id": "H901SoU15",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SoU15",
+      "ref_dok_titel": "Hälso- och sjukvårdens organisation m.m.",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:UbU15",
+      "ref_dok_id": "H901UbU15",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "UbU15",
+      "ref_dok_titel": "Grundläggande om utbildning",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:UbU19",
+      "ref_dok_id": "H901UbU19",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "UbU19",
+      "ref_dok_titel": "Högskolan",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     }
+    ]
+   }
+  }
+ }
+}

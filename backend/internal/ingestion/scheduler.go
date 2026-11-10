@@ -101,7 +101,6 @@ func (s *Scheduler) RegisterDefaults(
 	pw workers.PoliticiansWorker,
 	sw workers.SpeechesWorker,
 	vw workers.VotesWorker,
-	ew workers.EnrichOriginsWorker,
 	kw workers.KeywordMatcherWorker,
 	rw workers.RefreshScorecardsWorker,
 	cw workers.CoverageWorker,
@@ -113,7 +112,6 @@ func (s *Scheduler) RegisterDefaults(
 		{"@daily", &pw},
 		{"@daily", &sw},
 		{"@daily", &vw},
-		{"@daily", &ew},
 		{"@daily", &kw},
 		{"@weekly", &rw},
 		{"@daily", &cw},
@@ -147,7 +145,7 @@ func (s *Scheduler) Stop() { s.cron.Stop() }
 func (s *Scheduler) RunNamed(ctx context.Context, name string) error {
 	for _, e := range s.entries {
 		if e.w.Name() == name {
-			return s.invoke(ctx, e.w, false)
+			return s.invoke(ctx, e.w)
 		}
 	}
 	names := make([]string, len(s.entries))
@@ -177,14 +175,13 @@ func (s *Scheduler) RunDue(ctx context.Context) {
 		if !due(e.spec, now) {
 			continue
 		}
-		s.runWorker(ctx, e.w, false)
+		s.runWorker(ctx, e.w)
 	}
 	s.reportFreshness(ctx)
 }
 
 // RunInitialSync runs the whole chain once, including weekly workers, in the
-// same order as the cron. Enrich-vote-origins loops until it drains, which
-// the daily cron does not: the cron enriches one batch.
+// same order as the cron.
 func (s *Scheduler) RunInitialSync(ctx context.Context) error {
 	if !s.running.CompareAndSwap(false, true) {
 		slog.Warn("ingestion chain still running, skipping initial sync")
@@ -198,14 +195,14 @@ func (s *Scheduler) RunInitialSync(ctx context.Context) error {
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
-		s.runWorker(ctx, e.w, true)
+		s.runWorker(ctx, e.w)
 	}
 	s.reportFreshness(ctx)
 	slog.Info("initial sync: complete", "elapsed", time.Since(start))
 	return nil
 }
 
-func (s *Scheduler) runWorker(ctx context.Context, w Worker, loopEnrich bool) {
+func (s *Scheduler) runWorker(ctx context.Context, w Worker) {
 	if ctx.Err() != nil {
 		slog.Error("ingestion worker skipped", "worker", w.Name(), "error", ctx.Err())
 		return
@@ -225,7 +222,7 @@ func (s *Scheduler) runWorker(ctx context.Context, w Worker, loopEnrich bool) {
 
 	slog.Info("ingestion worker starting", "worker", w.Name())
 	started := time.Now()
-	err := s.invoke(jobCtx, w, loopEnrich)
+	err := s.invoke(jobCtx, w)
 	elapsed := time.Since(started)
 
 	if runID != 0 && s.runs != nil {
@@ -245,7 +242,7 @@ func (s *Scheduler) runWorker(ctx context.Context, w Worker, loopEnrich bool) {
 	slog.Info("ingestion worker done", "worker", w.Name(), "elapsed", elapsed)
 }
 
-func (s *Scheduler) invoke(ctx context.Context, w Worker, loopEnrich bool) (err error) {
+func (s *Scheduler) invoke(ctx context.Context, w Worker) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			slog.Error("ingestion worker panicked",
@@ -253,35 +250,7 @@ func (s *Scheduler) invoke(ctx context.Context, w Worker, loopEnrich bool) (err 
 			err = fmt.Errorf("panic: %v", r)
 		}
 	}()
-	if loopEnrich {
-		if ew, ok := w.(*workers.EnrichOriginsWorker); ok {
-			return s.runEnrichLoop(ctx, ew)
-		}
-	}
 	return w.Run(ctx)
-}
-
-func (s *Scheduler) runEnrichLoop(ctx context.Context, w *workers.EnrichOriginsWorker) error {
-	for round := 1; round <= 50; round++ {
-		if ctx.Err() != nil {
-			return ctx.Err()
-		}
-		n, err := w.RunBatch(ctx)
-		if err != nil {
-			return err
-		}
-		slog.Info("initial sync: enrich round", "round", round, "enriched", n)
-		if n == 0 {
-			slog.Info("initial sync: enrich complete, no more unenriched votes", "rounds", round)
-			break
-		}
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-time.After(500 * time.Millisecond):
-		}
-	}
-	return nil
 }
 
 func (s *Scheduler) reportFreshness(ctx context.Context) {

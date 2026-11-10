@@ -118,23 +118,3 @@ func (w *VotesWorker) Run(ctx context.Context) error {
 	}
 	return w.cursors.Upsert(ctx, ingPorts.Cursor{DataType: "votes", LastDate: &newest})
 }
-
-type EnrichOriginsWorker struct {
-	svc *votes.Service
-}
-
-func NewEnrichOriginsWorker(svc *votes.Service) EnrichOriginsWorker {
-	return EnrichOriginsWorker{svc: svc}
-}
-
-func (w *EnrichOriginsWorker) Name() string { return "enrich-vote-origins" }
-
-func (w *EnrichOriginsWorker) Run(ctx context.Context) error {
-	_, err := w.svc.EnrichOrigins(ctx, 100)
-	return err
-}
-
-// RunBatch returns the number of votes enriched so the loop can stop early.
-func (w *EnrichOriginsWorker) RunBatch(ctx context.Context) (int, error) {
-	return w.svc.EnrichOrigins(ctx, 100)
-}

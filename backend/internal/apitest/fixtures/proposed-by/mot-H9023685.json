@@ -1,0 +1,349 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H9023685.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H9023685.json",
+ "note": "dokforslag cut to the yrkanden handled in 2021/22:SkU16; document text removed.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5109429",
+    "dok_id": "H9023685",
+    "rm": "2021/22",
+    "beteckning": "3685",
+    "typ": "mot",
+    "subtyp": "Kommittémotion",
+    "doktyp": "mot",
+    "typrubrik": "Motion 2021/22:3685 av Per Åsling m.fl. (C)",
+    "dokumentnamn": "Motion",
+    "debattnamn": "Motion",
+    "tempbeteckning": "",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "3685",
+    "slutnummer": "0",
+    "datum": "2021-10-05 00:00:00",
+    "systemdatum": "2023-02-15 09:10:43",
+    "publicerad": "2021-10-05 00:00:00",
+    "titel": "Skatter för företagande och tillväxt i hela landet",
+    "subtitel": "av Per Åsling m.fl. (C)",
+    "status": "Klar",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Filur",
+    "sourceid": "4082c0b7-e9cd-4a1d-a7f9-c5005768030d",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H9023685/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H9023685",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H9023685"
+   },
+   "dokforslag": {
+    "forslag": [
+     {
+      "nummer": "16",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att genomföra en översyn av mervärdesskattereglerna för ideella föreningar och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2021/22:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     },
+     {
+      "nummer": "17",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att genomföra en översyn av oönskade effekter av mervärdesskatteregelverket och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2021/22:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     }
+    ]
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2021-10-05 12:01:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Granskad",
+      "namn": "Granskad",
+      "datum": "2021-10-05 15:30:38",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "HÄN",
+      "namn": "Hänvisad",
+      "datum": "2021-10-14 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0679228585116",
+      "namn": "Per Åsling",
+      "partibet": "C",
+      "ordning": "1",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0903081277919",
+      "namn": "Helena Vilhelmsson",
+      "partibet": "C",
+      "ordning": "2",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0364687971222",
+      "namn": "Alireza Akhondi",
+      "partibet": "C",
+      "ordning": "3",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0853831481615",
+      "namn": "Lars Thomsson",
+      "partibet": "C",
+      "ordning": "4",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0494843794418",
+      "namn": "Martin Ådahl",
+      "partibet": "C",
+      "ordning": "5",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0681030112815",
+      "namn": "Peter Helander",
+      "partibet": "C",
+      "ordning": "6",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "084624777218",
+      "namn": "Helena Lindahl",
+      "partibet": "C",
+      "ordning": "7",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0170630324419",
+      "namn": "Per Schöldberg",
+      "partibet": "C",
+      "ordning": "8",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0587736055221",
+      "namn": "Niels Paarup-Petersen",
+      "partibet": "C",
+      "ordning": "9",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0576619284416",
+      "namn": "Aphram Melki",
+      "partibet": "C",
+      "ordning": "10",
+      "roll": "undertecknare"
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "motkat",
+      "namn": "Motionskategori",
+      "text": "Fristående motion",
+      "dok_id": "H9023685",
+      "systemdatum": "2023-02-15 09:10:23"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är avslutat",
+      "dok_id": "H9023685",
+      "systemdatum": "2022-05-31 15:26:35"
+     },
+     {
+      "kod": "tilldelat",
+      "namn": "Tilldelat",
+      "text": "Skatteutskottet",
+      "dok_id": "H9023685",
+      "systemdatum": "2023-02-15 09:10:23"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "H9023685",
+      "subtitel": "av Per Åsling m.fl. (C)",
+      "filnamn": "mot_202122__3685.pdf",
+      "filstorlek": "129390",
+      "filtyp": "pdf",
+      "titel": "Skatter för företagande och tillväxt i hela landet",
+      "fil_url": "https://data.riksdagen.se/fil/7A58138A-B7A4-4582-88BD-C3FF7F357DE6"
+     },
+     {
+      "dok_id": "H9023685",
+      "subtitel": "av Per Åsling m.fl. (C)",
+      "filnamn": "mot_202122__3685.docx",
+      "filstorlek": "88872",
+      "filtyp": "docx",
+      "titel": "Skatter för företagande och tillväxt i hela landet",
+      "fil_url": "https://data.riksdagen.se/fil/49F086E3-1B6E-47A3-B310-30A94B7B7DF9"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:FiU26",
+      "ref_dok_id": "H901FiU26",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "FiU26",
+      "ref_dok_titel": "Kommunala frågor",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU11",
+      "ref_dok_id": "H901NU11",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU11",
+      "ref_dok_titel": "Regional utveckling",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU16",
+      "ref_dok_id": "H901NU16",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU16",
+      "ref_dok_titel": "En förenklingspolitik för stärkt konkurrenskraft, tillväxt och innovationsförmåga",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:NU99",
+      "ref_dok_id": "H901NU99",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "NU99",
+      "ref_dok_titel": "Regional utveckling",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SfU11",
+      "ref_dok_id": "H901SfU11",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SfU11",
+      "ref_dok_titel": "Socialavgifter",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU13",
+      "ref_dok_id": "H901SkU13",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU13",
+      "ref_dok_titel": "Inkomstskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU14",
+      "ref_dok_id": "H901SkU14",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU14",
+      "ref_dok_titel": "Företag, kapital och fastighet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU15",
+      "ref_dok_id": "H901SkU15",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU15",
+      "ref_dok_titel": "Punktskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU16",
+      "ref_dok_id": "H901SkU16",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU16",
+      "ref_dok_titel": "Mervärdesskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU17",
+      "ref_dok_id": "H901SkU17",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU17",
+      "ref_dok_titel": "Skatteförfarande och folkbokföring",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     }
+    ]
+   }
+  }
+ }
+}

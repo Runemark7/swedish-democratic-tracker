@@ -1,0 +1,227 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H9023638.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H9023638.json",
+ "note": "dokforslag cut to the yrkanden handled in 2021/22:SkU16; document text removed.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5109380",
+    "dok_id": "H9023638",
+    "rm": "2021/22",
+    "beteckning": "3638",
+    "typ": "mot",
+    "subtyp": "Kommittémotion",
+    "doktyp": "mot",
+    "typrubrik": "Motion 2021/22:3638 av Niklas Wykman m.fl. (M)",
+    "dokumentnamn": "Motion",
+    "debattnamn": "Motion",
+    "tempbeteckning": "",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "3638",
+    "slutnummer": "0",
+    "datum": "2021-10-05 00:00:00",
+    "systemdatum": "2023-02-15 09:10:28",
+    "publicerad": "2021-10-05 00:00:00",
+    "titel": "Fler jobb, bättre integration och en växande ekonomi",
+    "subtitel": "av Niklas Wykman m.fl. (M)",
+    "status": "Klar",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Filur",
+    "sourceid": "8b7db077-7ca2-44ee-9fdd-21eae5ca7ad0",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H9023638/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H9023638",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H9023638"
+   },
+   "dokforslag": {
+    "forslag": [
+     {
+      "nummer": "9",
+      "beteckning": "",
+      "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att tillsätta en utredning för att se över den skatterättsliga bedömningen av handel med virtuella varor och tillkännager detta för regeringen.",
+      "lydelse2": "",
+      "utskottet": "Avslag",
+      "kammaren": "Avslag",
+      "behandlas_i": "2021/22:SkU16",
+      "behandlas_i_punkt": "",
+      "kammarbeslutstyp": "",
+      "intressent": "SkU",
+      "avsnitt": "",
+      "grundforfattning": "",
+      "andringsforfattning": ""
+     }
+    ]
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2021-10-05 11:21:40",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Granskad",
+      "namn": "Granskad",
+      "datum": "2021-10-05 12:43:12",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "HÄN",
+      "namn": "Hänvisad",
+      "datum": "2021-10-14 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0493288854424",
+      "namn": "Niklas Wykman",
+      "partibet": "M",
+      "ordning": "1",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0729710260118",
+      "namn": "Helena Bouveng",
+      "partibet": "M",
+      "ordning": "2",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0105632258713",
+      "namn": "Boriana Åberg",
+      "partibet": "M",
+      "ordning": "3",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0779329190517",
+      "namn": "Kjell Jansson",
+      "partibet": "M",
+      "ordning": "4",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0210198640127",
+      "namn": "Fredrik Schulte",
+      "partibet": "M",
+      "ordning": "5",
+      "roll": "undertecknare"
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "motkat",
+      "namn": "Motionskategori",
+      "text": "Fristående motion",
+      "dok_id": "H9023638",
+      "systemdatum": "2023-02-15 09:10:08"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är avslutat",
+      "dok_id": "H9023638",
+      "systemdatum": "2022-05-12 16:41:00"
+     },
+     {
+      "kod": "tilldelat",
+      "namn": "Tilldelat",
+      "text": "Skatteutskottet",
+      "dok_id": "H9023638",
+      "systemdatum": "2023-02-15 09:10:08"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "H9023638",
+      "subtitel": "av Niklas Wykman m.fl. (M)",
+      "filnamn": "mot_202122__3638.pdf",
+      "filstorlek": "91686",
+      "filtyp": "pdf",
+      "titel": "Fler jobb, bättre integration och en växande ekonomi",
+      "fil_url": "https://data.riksdagen.se/fil/E4BA8489-0610-4A8F-8315-B8AC00F4931A"
+     },
+     {
+      "dok_id": "H9023638",
+      "subtitel": "av Niklas Wykman m.fl. (M)",
+      "filnamn": "mot_202122__3638.docx",
+      "filstorlek": "76325",
+      "filtyp": "docx",
+      "titel": "Fler jobb, bättre integration och en växande ekonomi",
+      "fil_url": "https://data.riksdagen.se/fil/B3C1414F-8706-4892-B737-211D24E496D4"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU13",
+      "ref_dok_id": "H901SkU13",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU13",
+      "ref_dok_titel": "Inkomstskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU14",
+      "ref_dok_id": "H901SkU14",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU14",
+      "ref_dok_titel": "Företag, kapital och fastighet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU16",
+      "ref_dok_id": "H901SkU16",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU16",
+      "ref_dok_titel": "Mervärdesskatt",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     },
+     {
+      "referenstyp": "behandlas_i",
+      "uppgift": "2021/22:SkU17",
+      "ref_dok_id": "H901SkU17",
+      "ref_dok_typ": "bet",
+      "ref_dok_rm": "2021/22",
+      "ref_dok_bet": "SkU17",
+      "ref_dok_titel": "Skatteförfarande och folkbokföring",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "bet",
+      "ref_dok_dokumentnamn": "Betänkande"
+     }
+    ]
+   }
+  }
+ }
+}

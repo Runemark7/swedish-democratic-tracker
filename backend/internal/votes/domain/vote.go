@@ -11,20 +11,17 @@ const (
 	VoteFranvarande VoteResult = "Frånvarande"
 )
 
-type ProposalType string
-
-const (
-	ProposalProp ProposalType = "prop"
-	ProposalMot  ProposalType = "mot"
-	ProposalBet  ProposalType = "bet"
-)
-
-// ProposalOrigin describes who initiated the proposal being voted on.
+// ProposalOrigin carries the title stored with a votering.
+//
+// It used to say who proposed the votering (a single party and a single
+// motion, found by the enrich-vote-origins step). That was wrong whenever a
+// förslagspunkt decided several motions, and the step is gone: "proposed by"
+// is ProposedBy, derived from the förslagspunkt's links at read time. The
+// proposed_by_party, proposal_type, proposal_dok_id and origin_enriched
+// columns on voteringar are DEPRECATED -- nothing reads or writes them -- and
+// a later migration can drop them.
 type ProposalOrigin struct {
-	ProposedByParty string       `json:"proposedByParty,omitempty"`
-	ProposalType    ProposalType `json:"proposalType,omitempty"`
-	ProposalDokID   string       `json:"proposalDokId,omitempty"`
-	DocumentTitle   string       `json:"documentTitle,omitempty"`
+	DocumentTitle string `json:"documentTitle,omitempty"`
 }
 
 type Vote struct {
@@ -41,7 +38,6 @@ type Vote struct {
 	Session        string         `json:"session"`
 	DokID          string         `json:"dokId,omitempty"`
 	ProposalOrigin ProposalOrigin `json:"proposalOrigin"`
-	OriginEnriched bool           `json:"originEnriched"`
 	CreatedAt      time.Time      `json:"createdAt"`
 	// SystemDatum is Riksdagen's own timestamp for the record. It is the only
 	// safe basis for the ingestion cursor; CreatedAt is our insert time and

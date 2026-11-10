@@ -1,0 +1,181 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "mot",
+  "rm": "2025/26",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=mot&rm=2025/26&nr=<nummer>&sz=5&utformat=json",
+ "note": "Live rows for the motions kept; @traffar is the live total for the riksmöte.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "240.0",
+   "@version": "3.9.0",
+   "@q": "sz=5&utformat=json&doktyp=mot&rm=2025%2f26&nr=2783",
+   "@datum": "2026-11-11 00:37:59",
+   "@sida": "1",
+   "@sidor": "1",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "@traffar": "4234",
+   "@dPre": "0",
+   "@dSol": "15",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null,
+   "dokument": [
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2025-10-06",
+     "id": "hd022783",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2025-10-06",
+     "systemdatum": "2026-04-28 15:39:23",
+     "undertitel": "av Ilona Szatmári Waldau m.fl. (V)",
+     "kalla": "Filur",
+     "kall_id": "c1565f7e-cbfd-4e8c-8029-b262d34d84bb",
+     "dok_id": "HD022783",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/HD022783.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/HD022783.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Ett rättvist skattesystem",
+     "rm": "2025/26",
+     "organ": "SkU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Kommittémotion",
+     "beteckning": "2783",
+     "tempbeteckning": "704",
+     "nummer": "2783",
+     "status": "Klar",
+     "score": "240",
+     "sokdata": {
+      "titel": "Ett rättvist skattesystem",
+      "undertitel": "Motion 2025/26:2783 av Ilona Szatmári Waldau m.fl. (V)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2025-10-06</dd> <dt>Förslag</dt> <dd>19</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2025-10-06</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Inkomstskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"HD01SkU13\">2025/26:SkU13</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Företag, kapital och fastighet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"HD01SkU15\">2025/26:SkU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Punktskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"HD01SkU16\">2025/26:SkU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(19 yrkanden): \n\t\t\t\t\t \n\t\t\t\t\t\t19 avslag\n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2025/26:2783\n av Ilona Szatmári Waldau m.fl. (V)\n Ett rättvist skattesystem\n Innehållsförteckning\n Förslag till riksdagsbeslut\n 1 Inledning\n 2 Enhetliga kapitalskatter\n 3 Egendomsskatter\n 4 Beskattning av fastigheter\n 5 Beskattning av förvärvsinkomster\n 6 Skattereduktion för fackföreningsavgiften\n",
+     "notisrubrik": "Ett rättvist skattesystem",
+     "notis": "Motion till riksdagen\n 2025/26:2783\n av Ilona Szatmári Waldau m.fl. (V)\n Ett rättvist skattesystem\n Innehållsförteckning\n Förslag till riksdagsbeslut\n 1 Inledning\n 2 Enhetliga kapitalskatter\n 3 Egendomsskatter\n 4 Beskattning av fastigheter\n 5 Beskattning av förvärvsinkomster\n 6 Skattereduktion för fackföreningsavgiften\n",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Ilona Szatmári Waldau",
+        "partibet": "V",
+        "intressent_id": "0229350341619"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Ida Gabrielsson",
+        "partibet": "V",
+        "intressent_id": "025158809026"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Birger Lahti",
+        "partibet": "V",
+        "intressent_id": "0825441263617"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Andrea Andersson Tay",
+        "partibet": "V",
+        "intressent_id": "0802091197024"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Kajsa Fredholm",
+        "partibet": "V",
+        "intressent_id": "0627450126815"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Samuel Gonzalez Westling",
+        "partibet": "V",
+        "intressent_id": "0939158389321"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Malin Östh",
+        "partibet": "V",
+        "intressent_id": "0388994689418"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_202526__2783.docx",
+        "storlek": "97359",
+        "url": "https://data.riksdagen.se/fil/BB746695-08DD-4304-A239-945C5CC801B3"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_202526__2783.pdf",
+        "storlek": "124351",
+        "url": "https://data.riksdagen.se/fil/AC7DEAC4-BB90-467B-AA0B-E1C74D893F58"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    }
+   ]
+  }
+ }
+}

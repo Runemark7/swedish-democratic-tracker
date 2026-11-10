@@ -1,0 +1,707 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "mot",
+  "rm": "2021/22",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=mot&rm=2021/22&nr=<nummer>&sz=5&utformat=json",
+ "note": "Live rows for the motions kept; @traffar is the live total for the riksmöte.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "214.0",
+   "@version": "3.9.0",
+   "@q": "sz=5&utformat=json&doktyp=mot&rm=2021%2f22&nr=4217",
+   "@datum": "2026-11-11 00:37:58",
+   "@sida": "1",
+   "@sidor": "1",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "@traffar": "4777",
+   "@dPre": "0",
+   "@dSol": "15",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null,
+   "dokument": [
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2021-10-05",
+     "id": "h9024217",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2021-10-05",
+     "systemdatum": "2023-03-21 14:22:49",
+     "undertitel": "av Camilla Brodin m.fl. (KD)",
+     "kalla": "Filur",
+     "kall_id": "5aef7a05-6667-4683-89ce-0283662108b4",
+     "dok_id": "H9024217",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/H9024217.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/H9024217.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Utgiftsområde 24 Näringsliv",
+     "rm": "2021/22",
+     "organ": "NU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Kommittémotion",
+     "beteckning": "4217",
+     "tempbeteckning": "",
+     "nummer": "4217",
+     "status": "Klar",
+     "score": "214",
+     "sokdata": {
+      "titel": "Utgiftsområde 24 Näringsliv",
+      "undertitel": "Motion 2021/22:4217 av Camilla Brodin m.fl. (KD)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2021-10-05</dd> <dt>Förslag</dt> <dd>61</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2021-10-05</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Kommunala frågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901FiU26\">2021/22:FiU26</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Polisfrågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901JuU22\">2021/22:JuU22</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Klimatpolitik\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901MJU20\">2021/22:MJU20</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Vattenvård\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901MJU23\">2021/22:MJU23</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Straffbestämmelser till EU:s förordning om fartygsåtervinning och övergripande miljöfrågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901MJU29\">2021/22:MJU29</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Utgiftsområde 24 Näringsliv\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU1\">2021/22:NU1</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Näringspolitik\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU12\">2021/22:NU12</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Energipolitik\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU15\">2021/22:NU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"En förenklingspolitik för stärkt konkurrenskraft, tillväxt och innovationsförmåga\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU16\">2021/22:NU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Handelspolitik\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU19\">2021/22:NU19</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Mineralpolitik\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU20\">2021/22:NU20</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Immaterialrätt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU22\">2021/22:NU22</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"2021 års redogörelse för bolag med statligt ägande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU4\">2021/22:NU4</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Inkomstskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU13\">2021/22:SkU13</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Företag, kapital och fastighet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU14\">2021/22:SkU14</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Mervärdesskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU16\">2021/22:SkU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Skatteförfarande och folkbokföring\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU17\">2021/22:SkU17</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Stöd till personer med funktionsnedsättning\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SoU12\">2021/22:SoU12</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Hälso- och sjukvårdens organisation m.m.\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SoU15\">2021/22:SoU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Grundläggande om utbildning\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901UbU15\">2021/22:UbU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Högskolan\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901UbU19\">2021/22:UbU19</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(61 yrkanden): \n\t\t\t\t\t \n\t\t\t\t\t\t60 avslag, 1 bifall, \n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2021/22:4217\n av Camilla Brodin m.fl. (KD)\n Utgiftsområde 24 Näringsliv\n Förslag till riksdagsbeslut\n Riksdagen anvisar anslagen för 2022 inom utgiftsområde 24 Näringsliv enligt förslaget i tabell 1 i motionen.\n Riksdagen ställer sig bakom det som anförs i motionen om fler växande företag och tillkännager",
+     "notisrubrik": "Utgiftsområde 24 Näringsliv",
+     "notis": "Motion till riksdagen\n 2021/22:4217\n av Camilla Brodin m.fl. (KD)\n Utgiftsområde 24 Näringsliv\n Förslag till riksdagsbeslut\n Riksdagen anvisar anslagen för 2022 inom utgiftsområde 24 Näringsliv enligt förslaget i tabell 1 i motionen.\n Riksdagen ställer sig bakom det som anförs i motionen om fler växande företag och tillkännager",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Camilla Brodin",
+        "partibet": "KD",
+        "intressent_id": "0378597308227"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Larry Söder",
+        "partibet": "KD",
+        "intressent_id": "0992473266516"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Magnus Jacobsson",
+        "partibet": "KD",
+        "intressent_id": "0977592683711"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Magnus Oscarsson",
+        "partibet": "KD",
+        "intressent_id": "0792733370419"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Kjell-Arne Ottosson",
+        "partibet": "KD",
+        "intressent_id": "0509415296421"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_202122__4217.docx",
+        "storlek": "144217",
+        "url": "https://data.riksdagen.se/fil/188E960F-91D1-401D-8874-6D815E00C81B"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_202122__4217.pdf",
+        "storlek": "285674",
+        "url": "https://data.riksdagen.se/fil/57E83D05-E310-4DA4-ADB5-6E7FC5BAC579"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    },
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2021-10-05",
+     "id": "h9023637",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2021-10-05",
+     "systemdatum": "2023-02-15 09:11:16",
+     "undertitel": "av Niklas Wykman m.fl. (M)",
+     "kalla": "Filur",
+     "kall_id": "59d966cd-d2a9-4352-ba19-1b08da94d460",
+     "dok_id": "H9023637",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/H9023637.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/H9023637.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Rättvisa fordons- och miljöskatter",
+     "rm": "2021/22",
+     "organ": "SkU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Kommittémotion",
+     "beteckning": "3637",
+     "tempbeteckning": "",
+     "nummer": "3637",
+     "status": "Klar",
+     "score": "214",
+     "sokdata": {
+      "titel": "Rättvisa fordons- och miljöskatter",
+      "undertitel": "Motion 2021/22:3637 av Niklas Wykman m.fl. (M)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2021-10-05</dd> <dt>Förslag</dt> <dd>10</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2021-10-05</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Inkomstskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU13\">2021/22:SkU13</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Punktskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU15\">2021/22:SkU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Mervärdesskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU16\">2021/22:SkU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(10 yrkanden): \n\t\t\t\t\t \n\t\t\t\t\t\t10 avslag\n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2021/22:3637\n av Niklas Wykman m.fl. (M)\n Rättvisa fordons- och miljöskatter\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att avskaffa bonus–malus-systemet i dess nuvarande form och tillkännager detta för regeringen.\n Riksdagen ställer sig bakom det som anförs",
+     "notisrubrik": "Rättvisa fordons- och miljöskatter",
+     "notis": "Motion till riksdagen\n 2021/22:3637\n av Niklas Wykman m.fl. (M)\n Rättvisa fordons- och miljöskatter\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att avskaffa bonus–malus-systemet i dess nuvarande form och tillkännager detta för regeringen.\n Riksdagen ställer sig bakom det som anförs",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Niklas Wykman",
+        "partibet": "M",
+        "intressent_id": "0493288854424"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Helena Bouveng",
+        "partibet": "M",
+        "intressent_id": "0729710260118"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Boriana Åberg",
+        "partibet": "M",
+        "intressent_id": "0105632258713"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Kjell Jansson",
+        "partibet": "M",
+        "intressent_id": "0779329190517"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Fredrik Schulte",
+        "partibet": "M",
+        "intressent_id": "0210198640127"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_202122__3637.docx",
+        "storlek": "77998",
+        "url": "https://data.riksdagen.se/fil/E616F588-6428-400F-A8E0-8C8061C9C617"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_202122__3637.pdf",
+        "storlek": "96541",
+        "url": "https://data.riksdagen.se/fil/D9943C62-16F8-4825-9EBD-BCA5AC122E45"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    },
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2021-10-05",
+     "id": "h9023685",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2021-10-05",
+     "systemdatum": "2023-02-15 09:10:43",
+     "undertitel": "av Per Åsling m.fl. (C)",
+     "kalla": "Filur",
+     "kall_id": "4082c0b7-e9cd-4a1d-a7f9-c5005768030d",
+     "dok_id": "H9023685",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/H9023685.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/H9023685.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Skatter för företagande och tillväxt i hela landet",
+     "rm": "2021/22",
+     "organ": "SkU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Kommittémotion",
+     "beteckning": "3685",
+     "tempbeteckning": "",
+     "nummer": "3685",
+     "status": "Klar",
+     "score": "214",
+     "sokdata": {
+      "titel": "Skatter för företagande och tillväxt i hela landet",
+      "undertitel": "Motion 2021/22:3685 av Per Åsling m.fl. (C)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2021-10-05</dd> <dt>Förslag</dt> <dd>36</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2021-10-05</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Kommunala frågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901FiU26\">2021/22:FiU26</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Regional utveckling\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU11\">2021/22:NU11</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"En förenklingspolitik för stärkt konkurrenskraft, tillväxt och innovationsförmåga\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901NU16\">2021/22:NU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Socialavgifter\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SfU11\">2021/22:SfU11</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Inkomstskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU13\">2021/22:SkU13</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Företag, kapital och fastighet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU14\">2021/22:SkU14</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Punktskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU15\">2021/22:SkU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Mervärdesskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU16\">2021/22:SkU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Skatteförfarande och folkbokföring\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU17\">2021/22:SkU17</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(36 yrkanden): \n\t\t\t\t\t \n\t\t\t\t\t\t35 avslag, 1 bifall, \n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2021/22:3685\n av Per Åsling m.fl. (C)\n Skatter för företagande och tillväxt i hela landet\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att skatteutjämningssystemet bör ses över så att gleshet ges större vikt samtidigt som incitamenten för jobb och företagande",
+     "notisrubrik": "Skatter för företagande och tillväxt i hela landet",
+     "notis": "Motion till riksdagen\n 2021/22:3685\n av Per Åsling m.fl. (C)\n Skatter för företagande och tillväxt i hela landet\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att skatteutjämningssystemet bör ses över så att gleshet ges större vikt samtidigt som incitamenten för jobb och företagande",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Per Åsling",
+        "partibet": "C",
+        "intressent_id": "0679228585116"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Helena Vilhelmsson",
+        "partibet": "C",
+        "intressent_id": "0903081277919"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Alireza Akhondi",
+        "partibet": "C",
+        "intressent_id": "0364687971222"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Lars Thomsson",
+        "partibet": "C",
+        "intressent_id": "0853831481615"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Martin Ådahl",
+        "partibet": "C",
+        "intressent_id": "0494843794418"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Peter Helander",
+        "partibet": "C",
+        "intressent_id": "0681030112815"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Helena Lindahl",
+        "partibet": "C",
+        "intressent_id": "084624777218"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Per Schöldberg",
+        "partibet": "C",
+        "intressent_id": "0170630324419"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Niels Paarup-Petersen",
+        "partibet": "C",
+        "intressent_id": "0587736055221"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Aphram Melki",
+        "partibet": "C",
+        "intressent_id": "0576619284416"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_202122__3685.docx",
+        "storlek": "88872",
+        "url": "https://data.riksdagen.se/fil/49F086E3-1B6E-47A3-B310-30A94B7B7DF9"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_202122__3685.pdf",
+        "storlek": "129390",
+        "url": "https://data.riksdagen.se/fil/7A58138A-B7A4-4582-88BD-C3FF7F357DE6"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    },
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2021-10-04",
+     "id": "h9023312",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2021-10-04",
+     "systemdatum": "2023-02-15 09:10:37",
+     "undertitel": "av Jan Ericson (M)",
+     "kalla": "Filur",
+     "kall_id": "8b12b745-1339-400e-b1bf-aa74a549c614",
+     "dok_id": "H9023312",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/H9023312.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/H9023312.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Översyn av momsregler vid anställdas hemarbete",
+     "rm": "2021/22",
+     "organ": "SkU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Enskild motion",
+     "beteckning": "3312",
+     "tempbeteckning": "1090",
+     "nummer": "3312",
+     "status": "Klar",
+     "score": "214",
+     "sokdata": {
+      "titel": "Översyn av momsregler vid anställdas hemarbete",
+      "undertitel": "Motion 2021/22:3312 av Jan Ericson (M)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2021-10-04</dd> <dt>Förslag</dt> <dd>1</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2021-10-04</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Mervärdesskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU16\">2021/22:SkU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(1 yrkande): \n\t\t\t\t\t \n\t\t\t\t\t\t1 avslag\n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2021/22:3312\n av Jan Ericson (M)\n Översyn av momsregler vid anställdas hemarbete\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om en översyn av momsregler vid anställdas hemarbete och tillkännager detta för regeringen.\n Motivering\n Under pandemin har många anställda",
+     "notisrubrik": "Översyn av momsregler vid anställdas hemarbete",
+     "notis": "Motion till riksdagen\n 2021/22:3312\n av Jan Ericson (M)\n Översyn av momsregler vid anställdas hemarbete\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om en översyn av momsregler vid anställdas hemarbete och tillkännager detta för regeringen.\n Motivering\n Under pandemin har många anställda",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Jan Ericson",
+        "partibet": "M",
+        "intressent_id": "0940980416614"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_202122__3312.docx",
+        "storlek": "70102",
+        "url": "https://data.riksdagen.se/fil/51324E88-ADB0-4D0E-BBB0-8AEDF17A4423"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_202122__3312.pdf",
+        "storlek": "66629",
+        "url": "https://data.riksdagen.se/fil/742E65D7-9BD0-46EB-A9E4-C39FCCA1DC5A"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    },
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2021-10-05",
+     "id": "h9023638",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2021-10-05",
+     "systemdatum": "2023-02-15 09:10:28",
+     "undertitel": "av Niklas Wykman m.fl. (M)",
+     "kalla": "Filur",
+     "kall_id": "8b7db077-7ca2-44ee-9fdd-21eae5ca7ad0",
+     "dok_id": "H9023638",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/H9023638.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/H9023638.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Fler jobb, bättre integration och en växande ekonomi",
+     "rm": "2021/22",
+     "organ": "SkU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Kommittémotion",
+     "beteckning": "3638",
+     "tempbeteckning": "",
+     "nummer": "3638",
+     "status": "Klar",
+     "score": "214",
+     "sokdata": {
+      "titel": "Fler jobb, bättre integration och en växande ekonomi",
+      "undertitel": "Motion 2021/22:3638 av Niklas Wykman m.fl. (M)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2021-10-05</dd> <dt>Förslag</dt> <dd>9</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2021-10-05</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Inkomstskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU13\">2021/22:SkU13</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Företag, kapital och fastighet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU14\">2021/22:SkU14</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Mervärdesskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU16\">2021/22:SkU16</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Skatteförfarande och folkbokföring\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H901SkU17\">2021/22:SkU17</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(9 yrkanden): \n\t\t\t\t\t \n\t\t\t\t\t\t9 avslag\n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2021/22:3638\n av Niklas Wykman m.fl. (M)\n Fler jobb, bättre integration och en växande ekonomi\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att utreda införandet av en skattelättnad för företag som köper utbildning till sina anställda så att det blir mindre",
+     "notisrubrik": "Fler jobb, bättre integration och en växande ekonomi",
+     "notis": "Motion till riksdagen\n 2021/22:3638\n av Niklas Wykman m.fl. (M)\n Fler jobb, bättre integration och en växande ekonomi\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att utreda införandet av en skattelättnad för företag som köper utbildning till sina anställda så att det blir mindre",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Niklas Wykman",
+        "partibet": "M",
+        "intressent_id": "0493288854424"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Helena Bouveng",
+        "partibet": "M",
+        "intressent_id": "0729710260118"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Boriana Åberg",
+        "partibet": "M",
+        "intressent_id": "0105632258713"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Kjell Jansson",
+        "partibet": "M",
+        "intressent_id": "0779329190517"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Fredrik Schulte",
+        "partibet": "M",
+        "intressent_id": "0210198640127"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_202122__3638.docx",
+        "storlek": "76325",
+        "url": "https://data.riksdagen.se/fil/B3C1414F-8706-4892-B737-211D24E496D4"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_202122__3638.pdf",
+        "storlek": "91686",
+        "url": "https://data.riksdagen.se/fil/E4BA8489-0610-4A8F-8315-B8AC00F4931A"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    }
+   ]
+  }
+ }
+}
