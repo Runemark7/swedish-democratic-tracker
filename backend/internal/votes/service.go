@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -21,11 +22,18 @@ var ErrPeriodNotFound = errors.New("unknown mandate period")
 type Service struct {
 	repo      ports.VoteRepository
 	riksdagen ports.RiksdagenVoteClient
+	// originDelay is the pause after each resolved vote point, so enrichment
+	// stays a polite client of data.riksdagen.se.
+	originDelay time.Duration
 }
 
 func NewService(repo ports.VoteRepository, riksdagen ports.RiksdagenVoteClient) *Service {
-	return &Service{repo: repo, riksdagen: riksdagen}
+	return &Service{repo: repo, riksdagen: riksdagen, originDelay: 100 * time.Millisecond}
 }
+
+// SetOriginDelay sets the pause between vote points during origin enrichment
+// and recompute. Production keeps the default; tests set zero.
+func (s *Service) SetOriginDelay(d time.Duration) { s.originDelay = d }
 
 // ListVoteringar enumerates voteringar for a riksmöte, newest first, together
 // with the total the API reports.
@@ -64,31 +72,90 @@ func (s *Service) SyncVotes(ctx context.Context, f ports.FetchVotesFilter) error
 // the full 2022-2026 record (~895 000 ballots) a multi-day job instead of a
 // few minutes. One request per point, applied to every ballot on it.
 func (s *Service) EnrichOrigins(ctx context.Context, batchSize int) (int, error) {
-	points, err := s.repo.ListVotePointsWithoutOrigin(ctx, batchSize)
+	points, err := s.repo.ListVotePointsWithoutOrigin(ctx, ports.VotePoint{}, batchSize)
 	if err != nil {
 		return 0, err
 	}
 
 	enriched := 0
 	for _, p := range points {
-		origin, err := s.resolveOrigin(ctx, &domain.Vote{
-			Beteckning:    p.Beteckning,
-			Forslagspunkt: p.Forslagspunkt,
-			Session:       p.Session,
-			DokID:         p.DokID,
-		})
+		ok, err := s.enrichPoint(ctx, p)
 		if err != nil {
-			// Log and continue — don't abort the whole batch
-			continue
-		}
-		if _, err := s.repo.UpdateProposalOriginForPoint(ctx, p.Beteckning, p.Forslagspunkt, origin); err != nil {
 			return enriched, err
 		}
-		enriched++
-		// Rate limit: be gentle on the Riksdagen API
-		time.Sleep(100 * time.Millisecond)
+		if ok {
+			enriched++
+		}
 	}
 	return enriched, nil
+}
+
+// enrichPoint resolves one votering's origin from its own dok_id and writes it
+// to that votering alone (keyed on riksmöte + beteckning + förslagspunkt).
+// ok is false when resolution failed: the point is left unenriched to be
+// retried, and the batch carries on.
+func (s *Service) enrichPoint(ctx context.Context, p ports.VotePoint) (ok bool, err error) {
+	origin, rerr := s.resolveOrigin(ctx, &domain.Vote{
+		Beteckning:    p.Beteckning,
+		Forslagspunkt: p.Forslagspunkt,
+		Session:       p.Session,
+		DokID:         p.DokID,
+	})
+	if rerr != nil {
+		slog.Warn("origin: resolve failed", "session", p.Session, "bet", p.Beteckning, "punkt", p.Forslagspunkt, "error", rerr)
+		return false, nil
+	}
+	if _, err := s.repo.UpdateProposalOriginForPoint(ctx, p.Session, p.Beteckning, p.Forslagspunkt, origin); err != nil {
+		return false, err
+	}
+	// Rate limit: be gentle on the Riksdagen API
+	time.Sleep(s.originDelay)
+	return true, nil
+}
+
+// MarkOriginsForRecompute flags every votering for re-enrichment and returns
+// how many were flagged. Run it deliberately, once, before RecomputeOrigins.
+// Stored origins stay visible until each votering is re-resolved.
+func (s *Service) MarkOriginsForRecompute(ctx context.Context) (int64, error) {
+	return s.repo.MarkAllOriginsForRecompute(ctx)
+}
+
+// RecomputeOrigins re-resolves every votering still flagged for enrichment,
+// per riksmöte, walking in (session, beteckning, förslagspunkt) order in
+// batches and pausing between requests. It returns how many it resolved.
+//
+// It is resumable and idempotent: each resolved votering is unflagged as it is
+// written, so an interrupted run restarts where it stopped, and a run with
+// nothing flagged does nothing. A point that cannot be resolved stays flagged
+// and is skipped, so it cannot stall the walk; a later run retries it.
+func (s *Service) RecomputeOrigins(ctx context.Context, batchSize int) (int, error) {
+	if batchSize <= 0 {
+		batchSize = 100
+	}
+	var after ports.VotePoint
+	total := 0
+	for {
+		if err := ctx.Err(); err != nil {
+			return total, err
+		}
+		points, err := s.repo.ListVotePointsWithoutOrigin(ctx, after, batchSize)
+		if err != nil {
+			return total, err
+		}
+		if len(points) == 0 {
+			return total, nil
+		}
+		for _, p := range points {
+			ok, err := s.enrichPoint(ctx, p)
+			if err != nil {
+				return total, err
+			}
+			if ok {
+				total++
+			}
+			after = p
+		}
+	}
 }
 
 // resolveOrigin traces beteckning → dokumentstatus → prop/mot → proposing party.

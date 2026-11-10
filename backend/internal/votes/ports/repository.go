@@ -95,11 +95,20 @@ type VoteRepository interface {
 	ListDistinctVotes(ctx context.Context, f ListDistinctVotesFilter) (ListDistinctVotesResult, error)
 	UpsertMany(ctx context.Context, vv []*domain.Vote) error
 	// ListVotePointsWithoutOrigin returns vote points still needing origin
-	// resolution — one row per point, not per ballot.
-	ListVotePointsWithoutOrigin(ctx context.Context, limit int) ([]VotePoint, error)
-	// UpdateProposalOriginForPoint applies one resolved origin to the vote
-	// point in a single statement.
-	UpdateProposalOriginForPoint(ctx context.Context, beteckning, forslagspunkt string, o domain.ProposalOrigin) (int64, error)
+	// resolution — one row per votering, not per ballot — ordered by
+	// (session, beteckning, forslagspunkt). Only points strictly after `after`
+	// in that order are returned; the zero VotePoint starts from the beginning.
+	// The cursor lets a long recompute move past a point that cannot be
+	// resolved instead of re-reading it forever.
+	ListVotePointsWithoutOrigin(ctx context.Context, after VotePoint, limit int) ([]VotePoint, error)
+	// UpdateProposalOriginForPoint applies one resolved origin to the votering
+	// of exactly one riksmöte. Beteckning and förslagspunkt numbering restart
+	// every riksmöte, so the session is part of the key.
+	UpdateProposalOriginForPoint(ctx context.Context, session, beteckning, forslagspunkt string, o domain.ProposalOrigin) (int64, error)
+	// MarkAllOriginsForRecompute flags every votering for re-enrichment and
+	// returns how many it flagged. It changes only origin_enriched; existing
+	// origins stay in place until a recompute overwrites them.
+	MarkAllOriginsForRecompute(ctx context.Context) (int64, error)
 	ListDistinctByCommitteePrefix(ctx context.Context, prefix string) ([]VoteSummary, error)
 	// PeriodExists reports whether the mandate period is one the record knows,
 	// mirroring committees/ports.Repository.PeriodExists — an unrecognised

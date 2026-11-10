@@ -1,0 +1,44 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "votering",
+  "rm": "2022/23",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=votering&rm=2022/23&bet=SkU15&utformat=json&sz=1&p=1&sort=datum&sortorder=desc",
+ "note": "Recorded 2026-11-10. Live sz=1 page filtered to SkU15, reduced to the fields the client reads; served for the worker's sz=200 request.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "41.0",
+   "@version": "3.9.0",
+   "@q": "sz=1&p=1&sortorder=desc&doktyp=votering&sort=datum&rm=2022%2f23&utformat=json&bet=SkU15",
+   "@datum": "2026-11-10 23:38:14",
+   "@nasta_sida": "http://data.riksdagen.se/dokumentlista/?sz=1&p=2&sortorder=desc&doktyp=votering&sort=datum&rm=2022%2f23&utformat=json&bet=SkU15",
+   "@sida": "1",
+   "@sidor": "2",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "@traffar": "2",
+   "@dPre": "15",
+   "@dSol": "0",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null,
+   "dokument": [
+    {
+     "dok_id": "HA19SkU15p4",
+     "beteckning": "SkU15",
+     "organ": "SkU",
+     "datum": "2023-04-20",
+     "systemdatum": "2026-09-22 10:05:25"
+    }
+   ]
+  }
+ }
+}

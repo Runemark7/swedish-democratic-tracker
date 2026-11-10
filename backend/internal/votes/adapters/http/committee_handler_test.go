@@ -56,10 +56,13 @@ func (r *fakeCommitteeRepo) ListDistinctVotes(context.Context, ports.ListDistinc
 	return ports.ListDistinctVotesResult{}, nil
 }
 func (r *fakeCommitteeRepo) UpsertMany(context.Context, []*domain.Vote) error { return nil }
-func (r *fakeCommitteeRepo) ListVotePointsWithoutOrigin(context.Context, int) ([]ports.VotePoint, error) {
+func (r *fakeCommitteeRepo) ListVotePointsWithoutOrigin(context.Context, ports.VotePoint, int) ([]ports.VotePoint, error) {
 	return nil, nil
 }
-func (r *fakeCommitteeRepo) UpdateProposalOriginForPoint(context.Context, string, string, domain.ProposalOrigin) (int64, error) {
+func (r *fakeCommitteeRepo) MarkAllOriginsForRecompute(context.Context) (int64, error) {
+	return 0, nil
+}
+func (r *fakeCommitteeRepo) UpdateProposalOriginForPoint(context.Context, string, string, string, domain.ProposalOrigin) (int64, error) {
 	return 0, nil
 }
 func (r *fakeCommitteeRepo) ListDistinctByCommitteePrefix(context.Context, string) ([]ports.VoteSummary, error) {

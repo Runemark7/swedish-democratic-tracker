@@ -1,0 +1,31 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HD021141.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HD021141.json",
+ "note": "Recorded 2026-11-10. Reduced to dokument header and intressenter.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "dok_id": "HD021141",
+    "titel": "Mer solenergi",
+    "typ": "mot",
+    "datum": "2025-10-02 00:00:00",
+    "undertitel": null,
+    "beteckning": "1141"
+   },
+   "dokreferens": {},
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "033935884729",
+      "namn": "Martina Johansson",
+      "partibet": "C",
+      "roll": "undertecknare"
+     }
+    ]
+   }
+  }
+ }
+}

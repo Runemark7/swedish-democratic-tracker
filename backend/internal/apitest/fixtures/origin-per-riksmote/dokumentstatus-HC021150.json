@@ -1,0 +1,31 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HC021150.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HC021150.json",
+ "note": "Recorded 2026-11-10. Reduced to dokument header and intressenter.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "dok_id": "HC021150",
+    "titel": "Dansbandsmomsen",
+    "typ": "mot",
+    "datum": "2024-10-01 00:00:00",
+    "undertitel": null,
+    "beteckning": "1150"
+   },
+   "dokreferens": {},
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0834510274913",
+      "namn": "Charlotte Nordström",
+      "partibet": "M",
+      "roll": "undertecknare"
+     }
+    ]
+   }
+  }
+ }
+}

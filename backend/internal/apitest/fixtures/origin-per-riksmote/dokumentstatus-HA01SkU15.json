@@ -1,0 +1,39 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HA01SkU15.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HA01SkU15.json",
+ "note": "Recorded 2026-11-10. Reduced to dokument header and the first 3 references.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "dok_id": "HA01SkU15",
+    "titel": "Mervärdesskatt",
+    "typ": "bet",
+    "datum": "2023-03-31 00:00:00",
+    "undertitel": null,
+    "beteckning": "SkU15"
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "ref_dok_typ": "mot",
+      "ref_dok_id": "HA021022"
+     },
+     {
+      "ref_dok_typ": "mot",
+      "ref_dok_id": "HA021070"
+     },
+     {
+      "ref_dok_typ": "mot",
+      "ref_dok_id": "HA021511"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": []
+   }
+  }
+ }
+}

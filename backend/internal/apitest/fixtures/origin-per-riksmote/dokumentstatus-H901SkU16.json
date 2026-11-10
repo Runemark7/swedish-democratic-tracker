@@ -1,0 +1,39 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H901SkU16.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H901SkU16.json",
+ "note": "Recorded 2026-11-10. Reduced to dokument header and the first 3 references.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "dok_id": "H901SkU16",
+    "titel": "Mervärdesskatt",
+    "typ": "bet",
+    "datum": "2022-04-07 00:00:00",
+    "undertitel": null,
+    "beteckning": "SkU16"
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "ref_dok_typ": "mot",
+      "ref_dok_id": "H9021211"
+     },
+     {
+      "ref_dok_typ": "mot",
+      "ref_dok_id": "H9021672"
+     },
+     {
+      "ref_dok_typ": "mot",
+      "ref_dok_id": "H9021703"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": []
+   }
+  }
+ }
+}

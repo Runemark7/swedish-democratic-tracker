@@ -144,19 +144,19 @@ func (r *Repository) UpsertMany(ctx context.Context, vv []*domain.Vote) error {
 }
 
 // ListVotePointsWithoutOrigin returns vote points still needing origin
-// resolution.
-func (r *Repository) ListVotePointsWithoutOrigin(ctx context.Context, limit int) ([]ports.VotePoint, error) {
-	// Reads voteringar directly. Against the old table this needed DISTINCT ON
-	// to collapse ~350 identical ballot rows per point; the votering table
-	// already holds one row per point, so the dedupe is gone with the
-	// duplication that made it necessary.
+// resolution, in (session, beteckning, forslagspunkt) order after `after`.
+func (r *Repository) ListVotePointsWithoutOrigin(ctx context.Context, after ports.VotePoint, limit int) ([]ports.VotePoint, error) {
+	// Reads voteringar directly: one row per votering, so no DISTINCT is needed.
+	// Rows are keyed on session as well, because the same beteckning and
+	// förslagspunkt recur every riksmöte.
 	const q = `SELECT beteckning, forslagspunkt, session, COALESCE(dok_id, '')
 		FROM voteringar
 		WHERE origin_enriched = false
-		ORDER BY beteckning, forslagspunkt
+		  AND (session, beteckning, forslagspunkt) > ($2, $3, $4)
+		ORDER BY session, beteckning, forslagspunkt
 		LIMIT $1`
 
-	rows, err := r.db.Query(ctx, q, limit)
+	rows, err := r.db.Query(ctx, q, limit, after.Session, after.Beteckning, after.Forslagspunkt)
 	if err != nil {
 		return nil, err
 	}
@@ -173,21 +173,34 @@ func (r *Repository) ListVotePointsWithoutOrigin(ctx context.Context, limit int)
 	return pp, rows.Err()
 }
 
+// MarkAllOriginsForRecompute flags every votering for re-enrichment. It leaves
+// the stored origin untouched; the recompute overwrites it per riksmöte.
+func (r *Repository) MarkAllOriginsForRecompute(ctx context.Context) (int64, error) {
+	tag, err := r.db.Exec(ctx, `UPDATE voteringar SET origin_enriched = false WHERE origin_enriched = true`)
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
+}
+
 // UpdateProposalOriginForPoint applies one origin to the vote point and reports
 // how many rows it touched.
 //
 // The count now means voteringar rather than ballots: origin is a property of
 // the votering, so one point that previously updated ~350 rows updates one or
 // two. Callers use it only to detect "nothing matched", which still holds.
-func (r *Repository) UpdateProposalOriginForPoint(ctx context.Context, beteckning, forslagspunkt string, o domain.ProposalOrigin) (int64, error) {
+//
+// Keyed on session + beteckning + förslagspunkt. Without the session, SkU16
+// punkt 6 of 2021/22 overwrote the same punkt of every other riksmöte.
+func (r *Repository) UpdateProposalOriginForPoint(ctx context.Context, session, beteckning, forslagspunkt string, o domain.ProposalOrigin) (int64, error) {
 	const q = `
 		UPDATE voteringar SET
-			proposed_by_party = $3,
-			proposal_type     = $4,
-			proposal_dok_id   = $5,
-			document_title    = $6,
+			proposed_by_party = $4,
+			proposal_type     = $5,
+			proposal_dok_id   = $6,
+			document_title    = $7,
 			origin_enriched   = true
-		WHERE beteckning = $1 AND forslagspunkt = $2`
+		WHERE session = $1 AND beteckning = $2 AND forslagspunkt = $3`
 
 	var proposalType *string
 	if o.ProposalType != "" {
@@ -205,7 +218,7 @@ func (r *Repository) UpdateProposalOriginForPoint(ctx context.Context, betecknin
 		title = &o.DocumentTitle
 	}
 
-	tag, err := r.db.Exec(ctx, q, beteckning, forslagspunkt, proposedBy, proposalType, dokID, title)
+	tag, err := r.db.Exec(ctx, q, session, beteckning, forslagspunkt, proposedBy, proposalType, dokID, title)
 	if err != nil {
 		return 0, err
 	}
