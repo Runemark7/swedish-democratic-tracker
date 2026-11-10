@@ -52,6 +52,29 @@ func (s *Service) SyncVotes(ctx context.Context, f ports.FetchVotesFilter) error
 	return s.repo.UpsertMany(ctx, vv)
 }
 
+// EnrichTitles gives voteringar without a title the title of their betänkande,
+// for at most limit betänkanden per call. It writes the title only -- never a
+// proposer -- and only where none is stored, so it is idempotent. A betänkande
+// Riksdagen cannot answer for is left for a later run.
+func (s *Service) EnrichTitles(ctx context.Context, limit int) (int, error) {
+	refs, err := s.repo.ListUntitledBetankanden(ctx, limit)
+	if err != nil {
+		return 0, err
+	}
+	done := 0
+	for _, b := range refs {
+		info, err := s.riksdagen.FetchBetankandeByBeteckning(ctx, b.Beteckning, b.Session)
+		if err != nil || info == nil || info.Title == "" {
+			continue
+		}
+		if err := s.repo.SetBetankandeTitle(ctx, b.Session, b.Beteckning, info.Title); err != nil {
+			return done, err
+		}
+		done++
+	}
+	return done, nil
+}
+
 // ProposedByFor derives "proposed by" for the given förslagspunkter from the
 // Motioner link. See domain.ProposedBy.
 func (s *Service) ProposedByFor(ctx context.Context, keys []ports.PointKey) (map[ports.PointKey]domain.ProposedBy, error) {

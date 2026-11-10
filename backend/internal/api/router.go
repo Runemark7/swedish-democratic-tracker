@@ -237,6 +237,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	enrichSpeechesWorker := workers.NewEnrichSpeechesWorker(speechSvc, 200)
 	voteWorker := workers.NewVotesWorker(voteSvc, cursorRepo)
 	voteWorker.SetNow(clk.Now)
+	titlesWorker := workers.NewVoteTitlesWorker(voteSvc)
 	keywordWorker := workers.NewKeywordMatcherWorker(goalSvc, voteSvc, matchSvc)
 	refreshWorker := workers.NewRefreshScorecardsWorker(matchSvc)
 	coverageWorker := workers.NewCoverageWorker(voteSvc, ingestionPG.NewCoverageRepo(db))
@@ -250,7 +251,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	sched := ingestion.NewScheduler()
 	sched.SetRunRecorder(ingestionRunsRepo)
 	sched.SetFreshness(freshnessRepo)
-	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, keywordWorker, refreshWorker, coverageWorker); err != nil {
+	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, titlesWorker, keywordWorker, refreshWorker, coverageWorker); err != nil {
 		slog.Error("failed to register ingestion workers", "error", err)
 		return nil, err
 	}

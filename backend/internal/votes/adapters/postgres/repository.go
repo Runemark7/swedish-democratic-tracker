@@ -205,6 +205,30 @@ func (r *Repository) ListDistinctByCommitteePrefix(ctx context.Context, prefix s
 	return ss, rows.Err()
 }
 
+func (r *Repository) ListUntitledBetankanden(ctx context.Context, limit int) ([]ports.BetRef, error) {
+	rows, err := r.db.Query(ctx, `SELECT session, beteckning FROM voteringar
+		WHERE COALESCE(document_title, '') = '' GROUP BY session, beteckning ORDER BY random() LIMIT $1`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []ports.BetRef
+	for rows.Next() {
+		var b ports.BetRef
+		if err := rows.Scan(&b.Session, &b.Beteckning); err != nil {
+			return nil, err
+		}
+		out = append(out, b)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) SetBetankandeTitle(ctx context.Context, session, beteckning, title string) error {
+	_, err := r.db.Exec(ctx, `UPDATE voteringar SET document_title = $3
+		WHERE session = $1 AND beteckning = $2 AND COALESCE(document_title, '') = ''`, session, beteckning, title)
+	return err
+}
+
 // ProposedByForPoints derives proposed-by from the stored Motioner link, keyed
 // on riksmöte + beteckning + förslagspunkt.
 func (r *Repository) ProposedByForPoints(ctx context.Context, keys []ports.PointKey) (map[ports.PointKey]domain.ProposedBy, error) {

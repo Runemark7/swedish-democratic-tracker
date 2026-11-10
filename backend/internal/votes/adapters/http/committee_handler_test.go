@@ -172,3 +172,10 @@ func TestListByCommittee_ReturnsPageShape(t *testing.T) {
 		t.Errorf("items = %+v, want one item with voteringId \"V1\"", body.Items)
 	}
 }
+
+func (r *fakeCommitteeRepo) ListUntitledBetankanden(context.Context, int) ([]ports.BetRef, error) {
+	return nil, nil
+}
+func (r *fakeCommitteeRepo) SetBetankandeTitle(context.Context, string, string, string) error {
+	return nil
+}

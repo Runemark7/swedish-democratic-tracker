@@ -118,3 +118,22 @@ func (w *VotesWorker) Run(ctx context.Context) error {
 	}
 	return w.cursors.Upsert(ctx, ingPorts.Cursor{DataType: "votes", LastDate: &newest})
 }
+
+// VoteTitlesWorker writes the betänkande title on voteringar that have none, so
+// the decision feed has a human title even when no motion points at the
+// betänkande. Title only, bounded per run.
+type VoteTitlesWorker struct {
+	svc *votes.Service
+}
+
+func NewVoteTitlesWorker(svc *votes.Service) VoteTitlesWorker { return VoteTitlesWorker{svc: svc} }
+
+func (w *VoteTitlesWorker) Name() string { return "enrich-vote-titles" }
+
+const voteTitlesPerRun = 100
+
+func (w *VoteTitlesWorker) Run(ctx context.Context) error {
+	n, err := w.svc.EnrichTitles(ctx, voteTitlesPerRun)
+	slog.Info("vote titles: run done", "titled", n)
+	return err
+}

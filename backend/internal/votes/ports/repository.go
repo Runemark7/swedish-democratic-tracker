@@ -30,6 +30,9 @@ type VoteSummary struct {
 	ProposedBy domain.ProposedBy `json:"proposedBy"`
 }
 
+// BetRef names a betänkande by riksmöte and beteckning.
+type BetRef struct{ Session, Beteckning string }
+
 // PointKey identifies one förslagspunkt: numbering restarts every riksmöte, so
 // all three parts are the key.
 type PointKey struct {
@@ -94,6 +97,13 @@ type VoteRepository interface {
 	ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error)
 	ListDistinctVotes(ctx context.Context, f ListDistinctVotesFilter) (ListDistinctVotesResult, error)
 	UpsertMany(ctx context.Context, vv []*domain.Vote) error
+	// ListUntitledBetankanden returns up to limit riksmöte + beteckning pairs
+	// whose voteringar have no stored title, in random order so a pair Riksdagen
+	// cannot answer for never starves the others.
+	ListUntitledBetankanden(ctx context.Context, limit int) ([]BetRef, error)
+	// SetBetankandeTitle writes document_title on every votering of one
+	// riksmöte + beteckning that has none. Title only; idempotent.
+	SetBetankandeTitle(ctx context.Context, session, beteckning, title string) error
 	// ProposedByForPoints derives "proposed by" for each förslagspunkt from
 	// the stored yrkande → förslagspunkt links (motions, their parties and the
 	// yrkanden decided), the propositions the punkt text cites and the

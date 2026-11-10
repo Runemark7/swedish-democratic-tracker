@@ -12,6 +12,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	votepg "riksdagskollen/internal/votes/adapters/postgres"
 )
 
 // Fixtures in fixtures/proposed-by were recorded from data.riksdagen.se on
@@ -35,6 +37,46 @@ type proposedByBody struct {
 		} `json:"propositions"`
 		Alternativ string `json:"alternativ"`
 	} `json:"proposedBy"`
+}
+
+// A votering whose betänkande no motion points at still gets the betänkande's
+// title in the feed, and stays visible to the keyword matcher's query.
+func TestFeedTitleForBetankandeWithoutMotions(t *testing.T) {
+	_, file, _, _ := runtime.Caller(0)
+	h := Start(t, filepath.Join(filepath.Dir(file), "fixtures", "proposed-by"))
+	ctx := context.Background()
+	seedBallotMembers(t, h, filepath.Join(filepath.Dir(file), "fixtures", "proposed-by", "votes-voteringlista-2021_22.json"))
+	h.App.SetNow(func() time.Time { return time.Date(2022, 3, 1, 12, 0, 0, 0, time.UTC) })
+	h.RunWorker(ctx, "fetch-votes")
+	// No fetch-motions / fetch-betankanden: nothing links to this betänkande.
+	h.RunWorker(ctx, "enrich-vote-titles")
+	h.RunWorker(ctx, "enrich-vote-titles") // idempotent
+
+	rec := h.Do(httptest.NewRequest(http.MethodGet, "/api/votes", nil))
+	var body struct {
+		Data []struct {
+			DocumentTitle string `json:"documentTitle"`
+			ProposedBy    struct {
+				Motions []any `json:"motions"`
+			} `json:"proposedBy"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if len(body.Data) != 1 || body.Data[0].DocumentTitle != "Mervärdesskatt" || len(body.Data[0].ProposedBy.Motions) != 0 {
+		t.Fatalf("feed = %s", rec.Body.String())
+	}
+	var n int
+	if err := h.DB.QueryRow(ctx, `SELECT count(*) FROM voteringar WHERE document_title = 'Mervärdesskatt'
+		AND proposed_by_party IS NULL AND proposal_type IS NULL AND NOT origin_enriched`).Scan(&n); err != nil || n != 1 {
+		t.Errorf("titled voteringar with no origin written = %d, %v", n, err)
+	}
+	// The keyword matcher lists voteringar by committee prefix and needs a title.
+	ss, err := votepg.NewRepository(h.DB).ListDistinctByCommitteePrefix(ctx, "SkU")
+	if err != nil || len(ss) != 1 || ss[0].DocumentTitle != "Mervärdesskatt" {
+		t.Errorf("matcher query = %+v, %v", ss, err)
+	}
 }
 
 func startProposedBy(t *testing.T) *Harness {

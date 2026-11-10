@@ -245,3 +245,8 @@ func TestCurrentRiksmote(t *testing.T) {
 		}
 	}
 }
+
+func (r *fakeVoteRepo) ListUntitledBetankanden(context.Context, int) ([]voteports.BetRef, error) {
+	return nil, nil
+}
+func (r *fakeVoteRepo) SetBetankandeTitle(context.Context, string, string, string) error { return nil }
