@@ -24,6 +24,7 @@ func NewHandler(svc *motions.Service) *Handler { return &Handler{svc: svc} }
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/beslut", h.listBeslut)
 	r.Get("/parties/{party}/record", h.partyRecord)
+	r.Get("/frontpage", h.frontPage)
 	r.Get("/motions", h.list)
 	r.Get("/motions/coverage", h.coverage)
 	r.Get("/motions/backfill", h.backfill)

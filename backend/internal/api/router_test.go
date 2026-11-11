@@ -28,6 +28,7 @@ var routesBeforeExtraction = []string{
 	"GET /api/betankanden/resolve",
 	"GET /api/betankanden/{riksmote}/{beteckning}",
 	"GET /api/beslut",
+	"GET /api/frontpage",
 	"GET /api/budget/areas",
 	"GET /api/budget/areas/{code}",
 	"GET /api/budget/years",

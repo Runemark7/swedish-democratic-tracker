@@ -515,6 +515,27 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
 
+  /frontpage:
+    get:
+      operationId: getFrontPage
+      tags: [motions]
+      summary: Front-page feed — newest decided betänkanden, recent motion outcomes, next planned betänkanden
+      description: >-
+        Up to 5 decided betänkanden (newest decision first, each with the
+        eight parties' Partilinje), up to 5 recently decided motions and up
+        to 3 upcoming betänkanden (soonest beslutsdag first). Decided is
+        Riksdagen's own rule (`beslutad`, else status and `beslutsdag`);
+        a planned betänkande is never in `decided`. `coverage` gives the
+        dates the decided rows cover; `stale` is true when the newest
+        decision is before the start (Monday) of the current week.
+      responses:
+        "200":
+          description: The feed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FrontPageResponse"
+
   /motions:
     get:
       operationId: listMotions
@@ -1935,6 +1956,27 @@ components:
           description: Betänkanden that decided its yrkanden
         sourceUrl: { type: string }
         outcome: { $ref: "#/components/schemas/MotionOutcome" }
+    FrontPageResponse:
+      type: object
+      required: [decided, motions, upcoming, coverage]
+      properties:
+        decided: { type: array, items: { $ref: "#/components/schemas/BeslutListRow" } }
+        motions: { type: array, items: { $ref: "#/components/schemas/FrontPageMotion" } }
+        upcoming: { type: array, items: { $ref: "#/components/schemas/BeslutListRow" } }
+        coverage:
+          type: object
+          required: [oldest, newest, stale]
+          properties:
+            oldest: { type: [string, "null"], format: date }
+            newest: { type: [string, "null"], format: date }
+            stale: { type: boolean, description: "The newest decision is older than the current week" }
+    FrontPageMotion:
+      allOf:
+        - $ref: "#/components/schemas/MotionListRow"
+        - type: object
+          required: [decidedAt]
+          properties:
+            decidedAt: { type: string, format: date, description: "Date of the newest betänkande that decided one of its yrkanden" }
     BeslutListResponse:
       type: object
       required: [data, nextCursor]
