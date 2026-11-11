@@ -14,6 +14,7 @@ export interface MotionFilters {
   outcome?: string;
   riksmote?: string;
   kind?: string;
+  author?: string;
 }
 
 /** Page URL for a motion. The riksmöte keeps its slash form, encoded as

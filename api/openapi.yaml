@@ -477,6 +477,7 @@ paths:
         comma-separated. Paginate with `nextCursor`.
       parameters:
         - { name: state, in: query, required: false, schema: { type: string, enum: [decided, upcoming] } }
+        - { name: author, in: query, required: false, description: "Signer politician id (intressent_id); several allowed", schema: { type: string } }
         - { name: utskott, in: query, required: false, description: "Utskott code, e.g. `SkU`", schema: { type: string } }
         - { name: party, in: query, required: false, description: "Party, e.g. `M`", schema: { type: string } }
         - { name: limit, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 25 } }
@@ -2592,6 +2593,15 @@ components:
           type: string
           format: date-time
           description: Our insert time. Not a decision date — see the schema note.
+        avvikare:
+          type: boolean
+          description: >-
+            Only on a member's own vote list. True when this ballot differs
+            from the party's Ja or Nej Partilinje in the same votering (the
+            shared Avvikare definition).
+        partilinje:
+          type: string
+          description: The member's party's Partilinje in this votering (Ja, Nej, Avstår, Delad, Saknas).
 
     VoteListResponse:
       type: object

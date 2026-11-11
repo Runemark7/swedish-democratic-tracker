@@ -63,6 +63,27 @@ func (r *Repository) ListByPolitician(ctx context.Context, f ports.ListVotesFilt
 	return ports.ListVotesResult{Votes: vv, Total: total}, rows.Err()
 }
 
+func (r *Repository) BallotsOfVoteringar(ctx context.Context, voteringIDs []string) ([]*domain.Vote, error) {
+	const q = `SELECT vg.votering_id, b.politician_id, b.party, b.vote_result, vg.beteckning, vg.forslagspunkt,
+		vg.session, vg.dok_id, vg.document_title, vg.created_at
+		FROM voteringar vg JOIN ballots b ON b.votering_ref = vg.id
+		WHERE vg.votering_id = ANY($1)`
+	rows, err := r.db.Query(ctx, q, voteringIDs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var vv []*domain.Vote
+	for rows.Next() {
+		v, err := scanVote(rows)
+		if err != nil {
+			return nil, err
+		}
+		vv = append(vv, v)
+	}
+	return vv, rows.Err()
+}
+
 func (r *Repository) ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error) {
 	const q = `SELECT vg.votering_id, b.politician_id, b.party, b.vote_result, vg.beteckning, vg.forslagspunkt,
 		vg.session, vg.dok_id, vg.document_title, vg.created_at

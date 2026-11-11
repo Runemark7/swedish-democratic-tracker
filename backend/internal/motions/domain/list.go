@@ -22,6 +22,7 @@ type ListFilter struct {
 	Riksmoten []string // "2017/18"
 	Kinds     []string // one of FilterableKinds
 	Outcomes  []string // one of FilterableOutcomes; applied by the service
+	Authors   []string // signer politician ids (intressent_id)
 	Query     string   // free text over title and yrkande wording
 }
 
