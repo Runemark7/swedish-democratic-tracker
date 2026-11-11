@@ -18,8 +18,6 @@ type Client struct {
 	baseURL string
 }
 
-func NewClient() *Client { return NewClientWithBaseURL("") }
-
 // NewClientWithBaseURL points the client at baseURL. An empty base URL uses
 // the production data.riksdagen.se origin.
 func NewClientWithBaseURL(baseURL string) *Client {

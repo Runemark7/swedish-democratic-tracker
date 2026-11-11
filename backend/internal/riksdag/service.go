@@ -119,10 +119,6 @@ func (s *Service) ListLiveVotes(ctx context.Context, limit int) ([]domain.LiveVo
 	return s.liveVotesRepo.ListLiveVotes(ctx, limit)
 }
 
-func NewService(primary, fallback ports.AuthorityClient) *Service {
-	return &Service{primary: primary, fallback: fallback}
-}
-
 func NewServiceWithSCB(primary, fallback ports.AuthorityClient, headcount ports.HeadcountClient) *Service {
 	return &Service{primary: primary, fallback: fallback, headcount: headcount}
 }
