@@ -21,6 +21,15 @@ func (f *fakeClient) FetchMembers(_ context.Context, party, _ string) ([]*domain
 	return f.members, nil
 }
 
+func (f *fakeClient) FetchPerson(_ context.Context, id string) (*domain.Politician, error) {
+	for _, m := range f.members {
+		if m.IntressentID == id {
+			return m, nil
+		}
+	}
+	return nil, nil
+}
+
 // fakeRepo records everything passed to UpsertMany.
 type fakeRepo struct {
 	upserted []*domain.Politician
@@ -29,6 +38,16 @@ type fakeRepo struct {
 func (r *fakeRepo) UpsertMany(_ context.Context, pp []*domain.Politician) error {
 	r.upserted = append(r.upserted, pp...)
 	return nil
+}
+func (r *fakeRepo) Missing(_ context.Context, ids []string) ([]string, error) {
+	have := map[string]bool{"held": true}
+	var out []string
+	for _, id := range ids {
+		if !have[id] {
+			out = append(out, id)
+		}
+	}
+	return out, nil
 }
 func (r *fakeRepo) GetByID(context.Context, string) (*domain.Politician, error) { return nil, nil }
 func (r *fakeRepo) List(context.Context, ports.ListFilter) (ports.ListResult, error) {
@@ -65,5 +84,24 @@ func TestSyncAll_FetchesEveryPartyIncludingVildar(t *testing.T) {
 	}
 	if !hasVilde {
 		t.Fatal("the party-less (\"-\") member was not upserted")
+	}
+}
+
+func TestCreateMissing_CreatesFromPersonDataAndReportsTheUnknown(t *testing.T) {
+	client := &fakeClient{members: []*domain.Politician{
+		{IntressentID: "former", FirstName: "Gun", LastName: "Olsson", Party: "S"},
+	}}
+	repo := &fakeRepo{}
+	svc := politicians.NewService(repo, client)
+
+	created, unresolved, err := svc.CreateMissing(context.Background(), []string{"held", "former", "ghost"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if created != 1 || len(repo.upserted) != 1 || repo.upserted[0].IntressentID != "former" {
+		t.Errorf("created = %d, upserted = %+v", created, repo.upserted)
+	}
+	if len(unresolved) != 1 || unresolved[0] != "ghost" {
+		t.Errorf("unresolved = %v, want [ghost]", unresolved)
 	}
 }

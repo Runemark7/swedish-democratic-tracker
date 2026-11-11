@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H50989-159.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H50989-159.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H50989",
+   "anforande_nummer": "159",
+   "anforandetext": "<p>Herr talman! Det är mycket glädjande att nu höra ett moderat engagemang för att Sverige ska ta emot flyktingar och för att man ska kunna få fram bostäder till flyktingar som kommer. Tyvärr ser vi bland moderater runt om i landet att de med alla till buds stående medel gör allt för att hindra att människor kommer till moderatstyrda kommuner. Och de vill att de flyktingar som har fått en bostad ska flytta till andra städer när etableringstiden har gått ut. Vi har sett det runt om i landet. Regeringen har varit aktiv för att de ska kunna bo kvar och vidtar nu åtgärder för att det ska bli så. </p><p>En anledning till att man inte har gjort något när det gäller denna fråga kan vara att vi har haft en pågående situation under lång tid med moderatkommuner runt om i landet som inte har tagit ansvar för situationen och som inte har velat ta det rättmätiga ansvar som vi måste ta för att klara denna situation nu och för att vi också ska kunna klara den framöver. </p><p>Detta är en fråga som jag också är beredd att se över. Jag tror att vi måste vända på väldigt många stenar i fråga om detta för att kunna klara det. </p><p>Det är bra att Jörgen Warborn är engagerad. Jag hoppas att du kan tala med flera av dina partikollegor, eftersom alla i ditt parti inte är med på banan i denna fråga. </p>"
+  }
+ }
+}

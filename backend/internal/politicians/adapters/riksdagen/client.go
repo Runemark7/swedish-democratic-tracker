@@ -84,3 +84,72 @@ func (c *Client) FetchMembers(ctx context.Context, party, status string) ([]*dom
 	}
 	return politicians, nil
 }
+
+// FetchPerson reads one person from /personlista/?iid=. Riksdagen answers with
+// a JSON object, not a list, when there is exactly one hit, and with no person
+// when it does not know the id.
+func (c *Client) FetchPerson(ctx context.Context, intressentID string) (*domain.Politician, error) {
+	url := fmt.Sprintf("%s/personlista/?iid=%s&utformat=json", c.baseURL, intressentID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("riksdagen API returned %d for person %s", resp.StatusCode, intressentID)
+	}
+
+	type person struct {
+		IntressentID string `json:"intressent_id"`
+		Tilltalsnamn string `json:"tilltalsnamn"`
+		Efternamn    string `json:"efternamn"`
+		Parti        string `json:"parti"`
+		Valkrets     string `json:"valkrets"`
+		BildURL192   string `json:"bild_url_192"`
+		Status       string `json:"status"`
+	}
+	var payload struct {
+		Personlista struct {
+			Person json.RawMessage `json:"person"`
+		} `json:"personlista"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+		return nil, fmt.Errorf("decode person: %w", err)
+	}
+	raw := payload.Personlista.Person
+	if len(raw) == 0 || string(raw) == "null" {
+		return nil, nil
+	}
+	var people []person
+	if raw[0] == '[' {
+		if err := json.Unmarshal(raw, &people); err != nil {
+			return nil, fmt.Errorf("decode person: %w", err)
+		}
+	} else {
+		var one person
+		if err := json.Unmarshal(raw, &one); err != nil {
+			return nil, fmt.Errorf("decode person: %w", err)
+		}
+		people = []person{one}
+	}
+	for _, p := range people {
+		if p.IntressentID != intressentID {
+			continue
+		}
+		return &domain.Politician{
+			IntressentID: p.IntressentID,
+			FirstName:    p.Tilltalsnamn,
+			LastName:     p.Efternamn,
+			Party:        p.Parti,
+			Constituency: p.Valkrets,
+			ImageURL:     p.BildURL192,
+			IsActive:     strings.Contains(strings.ToLower(p.Status), "tjänstgörande"),
+			UpdatedAt:    time.Now(),
+		}, nil
+	}
+	return nil, nil
+}

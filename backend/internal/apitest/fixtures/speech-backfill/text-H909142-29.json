@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-29.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-29.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "29",
+   "anforandetext": "<p>Herr talman! Jag börjar med att yrka bifall till reservation nummer 1. </p><p>I dag har vi en debatt om subsidiaritetsprövningen av kommissionens förslag till förordning om en hållbar användning av växtskyddsmedel. Det kanske inte verkar så spännande och viktigt vid första anblicken, men det är det. </p><p>Vi i Kristdemokraterna menar att ett beslut om en hållbar användning av växtskyddsmedel måste få vara en nationell fråga. Sverige är ett föregångsland när det gäller att ha minskat användningen av växtskydd. Vi har i dag en stark växtskyddslagstiftning som styr växtskyddet och vilka växtskyddsmedel som får användas. Det ska inte detaljstyras av EU. </p><p>Herr talman! Grunden i livsmedelsstrategin var att öka livsmedelsproduktionen i hela landet. Vi vet i dag att strategin inte håller utan att landets livsmedelsberedskap minskar år efter år. Dessutom har vi en väldigt osäker värld i och med Rysslands invasionskrig i Ukraina, vilket har den direkta följden att människor dör i svält. Sverige kan vara ett fantastiskt skafferi och en kornbod med hjälp av en ökad livsmedelsförsörjning, och då kan vi hjälpa svältande människor i vår omvärld. Det kan vi fortsatt göra om vi får använda växtskyddet på ett hållbart och ansvarsfullt sätt på nationell nivå. </p><p>Herr talman! Jag tycker att det är spännande att de två sista debatterna och de två sista omröstningarna vi har här i kammaren med den nuvarande riksdagen handlar om ägandet och brukandet av skogen samt om livsmedelsproduktionen. Det är så otroligt viktigt för vårt land. Jag kan säga att jag är väldigt förväntansfull inför att den nya regeringen tillträder och kan ta viktiga steg framåt i dessa frågor. </p><p>I detta anförande instämde Staffan Eklöf och Mats Nordberg (båda SD). </p>"
+  }
+ }
+}

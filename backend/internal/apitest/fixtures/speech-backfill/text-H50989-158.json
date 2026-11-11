@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H50989-158.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H50989-158.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H50989",
+   "anforande_nummer": "158",
+   "anforandetext": "<p>Fru talman! Detta är ett motionsbetänkande, och förslaget om momshöjningen är inte med i detta betänkande. Detta handlar om motioner. Förslaget om momshöjning finns med i den vanliga budgetberedningen. Jag valde att fokusera på det som står i betänkandet. </p><p>Jag har ytterligare en fråga, och den gäller avdragsförbudet för stadigvarande bostad. Det är en fråga som har aktualiserats i samband med det stora flyktingmottagandet. Det går ut på att privata företag kan omvandla lokaler till bostäder. Gör man det kan man som företagare och fastighetsägare drabbas av en ganska omodern lagstiftning som leder till högre hyror och stor osäkerhet. Man kan som fastighetsägare bli återbetalningsskyldig för moms tio år tillbaka i tiden genom att göra en sådan omvandling. Moderaterna vill se över denna lagstiftning och eventuellt modernisera den. </p><p>Miljöpartiet vill inte göra denna översyn, utan man skriver i betänkandet att man utgår från att regeringen från sitt håll ser över möjligheterna att förenkla för enskilda och företag som vill hyra ut lokaler som flyktingbostäder.</p><p>Jag vill fråga Rasmus Ling: När tror han att regeringen ska göra denna översyn? Kommer det att ske den närmaste månaden? Kommer det att ske innan mandatperioden är slut? Eller kommer det att ta ett år? Det är en ganska relevant fråga med anledning av att just denna skrivning är exakt densamma som Rasmus Ling och regeringspartierna hade för exakt ett år sedan. Moderaterna har en reservation på detta område och driver på i denna, men ni är mycket passiva. Vi tar fortfarande emot många flyktingar. Detta är därför en mycket aktuell fråga. </p>"
+  }
+ }
+}

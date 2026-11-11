@@ -1,0 +1,25 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "064711971110",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=064711971110&utformat=json",
+ "note": "Recorded 2026-11-11; the person object (Riksdagen returns an object, not a list, for one hit) reduced to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "@hits": "1",
+   "person": {
+    "intressent_id": "064711971110",
+    "tilltalsnamn": "Maria",
+    "efternamn": "Gardfjell",
+    "parti": "MP",
+    "valkrets": "Uppsala län",
+    "status": "Tidigare riksdagsledamot",
+    "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/d9a13d2e-85ec-4c59-af10-773ff99b8eb1_192.jpg"
+   }
+  }
+ }
+}

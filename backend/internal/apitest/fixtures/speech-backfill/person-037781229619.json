@@ -1,0 +1,25 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "037781229619",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=037781229619&utformat=json",
+ "note": "Recorded 2026-11-11; the person object (Riksdagen returns an object, not a list, for one hit) reduced to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "@hits": "1",
+   "person": {
+    "intressent_id": "037781229619",
+    "tilltalsnamn": "Staffan",
+    "efternamn": "Eklöf",
+    "parti": "SD",
+    "valkrets": "Jönköpings län",
+    "status": "Tillgänglig ersättare",
+    "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/5c165eb8-a2d3-4991-8732-430ea585d763_192.jpg"
+   }
+  }
+ }
+}

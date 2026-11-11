@@ -1,0 +1,21 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2017/18",
+  "parti": "L",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforandelista/?rm=2017/18&parti=L&iid=&sz=10000&anftyp=Akt&utformat=json",
+ "note": "Recorded 2026-11-11, reduced to the rows of the 2018-03-22 debate on 2017/18:SkU11 (rel_dok_id H501SkU11).",
+ "body": {
+  "anforandelista": {
+   "@antal": "0",
+   "anforande": []
+  }
+ }
+}

@@ -132,3 +132,27 @@ func scanPolitician(s scanner) (*domain.Politician, error) {
 }
 
 func ph(n int) string { return fmt.Sprintf("$%d", n) }
+
+// Missing returns the ids that have no politicians row.
+func (r *Repository) Missing(ctx context.Context, ids []string) ([]string, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	rows, err := r.db.Query(ctx, `
+		SELECT id FROM unnest($1::text[]) AS id
+		WHERE NOT EXISTS (SELECT 1 FROM politicians WHERE intressent_id = id)
+		ORDER BY id`, ids)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		out = append(out, id)
+	}
+	return out, rows.Err()
+}

@@ -1,0 +1,20 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2021/22",
+  "parti": "FP",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforandelista/?rm=2021/22&parti=FP&iid=&sz=10000&anftyp=Akt&utformat=json",
+ "note": "Recorded 2026-11-11 (Folkpartiet used the code FP until 2015; no speeches in this riksmöte).",
+ "body": {
+  "anforandelista": {
+   "@antal": "0"
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-33.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-33.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "33",
+   "anforandetext": "<p>Herr talman! Beslut fattades om den gröna given, och procentmål antogs. Detta gjordes helt utan konsekvensanalys. USDA, USA:s jordbruksdepartement, gjorde de analyser som kommissionen inte ville göra - de konsekvensanalyser som vi efterfrågade. Det handlade om konsekvenser för livsmedelsproduktion, konsekvenser för landsbygd och konsekvenser för världssvälten.</p><p>Man kom fram till att EU:s livsmedelsproduktion skulle minska avsevärt och att världssvälten skulle öka betydligt om EU skulle genomföra alla dessa procentmål.</p><p>Därför tycker jag att det är märkligt att säga så här: Nu har vi fattat detta beslut en gång för alla utan konsekvensanalyser, och när konsekvensanalyserna i framtiden kommer ska vi strunta i vad de säger. Så kan man inte styra en union. Det är också ett egoistiskt sätt att styra - man bryr sig inte om effekter och konsekvenser vare sig inom landet, inom EU eller för världens medborgare. Det bekräftar bara att det finns partier i Sveriges riksdag som har en osund syn på EU-samarbetet.</p><p>Det gläder mig att vi under två debatter här i dag har hört att många partier omvärderat detta och anser att vi måste ställa krav på EU. Vi måste säga vad som är bra och vad som inte är bra, och vi ska inte gå med på det som inte är bra.</p>"
+  }
+ }
+}
