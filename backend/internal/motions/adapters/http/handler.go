@@ -109,7 +109,33 @@ type yrkandeResponse struct {
 	// bifallen, Besvarad, Ej avgjord än, or Riksdagen's own word.
 	Outcome   string             `json:"outcome"`
 	Decisions []decisionResponse `json:"decisions"`
+	// Recurring is the Återkommande krav this yrkande belongs to; null when
+	// its wording was filed in only one riksmöte.
+	Recurring *recurringResponse `json:"recurring"`
 }
+
+type recurringResponse struct {
+	Rule      string                    `json:"rule"`
+	RuleLabel string                    `json:"ruleLabel"`
+	Members   []recurringMemberResponse `json:"members"`
+}
+
+type recurringMemberResponse struct {
+	Riksmote   string   `json:"riksmote"`
+	Beteckning string   `json:"beteckning"`
+	Number     int      `json:"number"`
+	Date       *string  `json:"date"`
+	Parties    []string `json:"parties"`
+	Outcome    string   `json:"outcome"`
+	// Rule is why this filing is in the group; per member so a later rule
+	// can sit beside identical wording.
+	Rule string `json:"rule"`
+	// Current is true for the yrkande the request is about.
+	Current   bool   `json:"current"`
+	SourceURL string `json:"sourceUrl"`
+}
+
+const ruleLabelIdenticalWording = "Identisk ordalydelse"
 
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 	rm, err := url.PathUnescape(chi.URLParam(r, "riksmote"))
@@ -132,7 +158,16 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	jsonOK(w, toResponse(m, decisions))
+	resp := toResponse(m, decisions)
+	for i, y := range m.Yrkanden {
+		rec, err := h.svc.Recurring(r.Context(), m.DokID, y)
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		resp.Yrkanden[i].Recurring = toRecurring(rec, m.DokID, y.Number)
+	}
+	jsonOK(w, resp)
 }
 
 func toResponse(m *domain.Motion, decisions []domain.YrkandeDecision) motionResponse {
@@ -174,6 +209,27 @@ func toResponse(m *domain.Motion, decisions []domain.YrkandeDecision) motionResp
 	}
 	agg := domain.MotionOutcome(words)
 	out.Outcome = outcomeResponse{Word: agg.Word, Counts: agg.Counts, Total: agg.Total}
+	return out
+}
+
+func toRecurring(rec *domain.Recurring, dokID string, number int) *recurringResponse {
+	if rec == nil {
+		return nil
+	}
+	out := &recurringResponse{Rule: rec.Rule, RuleLabel: ruleLabelIdenticalWording, Members: make([]recurringMemberResponse, 0, len(rec.Members))}
+	for _, m := range rec.Members {
+		mr := recurringMemberResponse{
+			Riksmote: m.Riksmote, Beteckning: m.Beteckning, Number: m.Number,
+			Parties: append([]string{}, m.Parties...), Outcome: m.Outcome, Rule: m.Rule,
+			Current:   m.DokID == dokID && m.Number == number,
+			SourceURL: sourceURLBase + m.DokID + ".html",
+		}
+		if m.Date != nil {
+			d := m.Date.Format("2006-01-02")
+			mr.Date = &d
+		}
+		out.Members = append(out.Members, mr)
+	}
 	return out
 }
 

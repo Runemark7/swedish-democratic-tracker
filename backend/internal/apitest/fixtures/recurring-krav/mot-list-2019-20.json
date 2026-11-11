@@ -1,0 +1,169 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "mot",
+  "rm": "2019/20",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=mot&rm=2019/20&bet=<beteckning>&utformat=json",
+ "note": "Recorded 2026-11-11 from data.riksdagen.se. Rows are the live rows for the motions kept; @traffar is the live total for the riksmöte.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "202.0",
+   "@version": "3.9.0",
+   "@q": "doktyp=mot&rm=2019%2f20&utformat=json&bet=2718",
+   "@datum": "2026-11-11 00:38:09",
+   "@sida": "1",
+   "@sidor": "1",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "@traffar": "1",
+   "@dPre": "15",
+   "@dSol": "0",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null,
+   "dokument": [
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2019-10-03",
+     "id": "h7022718",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2019-10-03",
+     "systemdatum": "2023-03-21 15:27:19",
+     "undertitel": "av Jessika Roswall m.fl. (M)",
+     "kalla": "Filur",
+     "kall_id": "da514c97-0bc3-46a3-aa95-0ffca532d884",
+     "dok_id": "H7022718",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/H7022718.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/H7022718.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Sverige ska vara ett digitalt föregångsland",
+     "rm": "2019/20",
+     "organ": "NU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Kommittémotion",
+     "beteckning": "2718",
+     "tempbeteckning": "",
+     "nummer": "2718",
+     "status": "Klar",
+     "score": "202",
+     "sokdata": {
+      "titel": "Sverige ska vara ett digitalt föregångsland",
+      "undertitel": "Motion 2019/20:2718 av Jessika Roswall m.fl. (M)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2019-10-03</dd> <dt>Förslag</dt> <dd>34</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2019-10-03</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Arbetsmarknadspolitik och arbetslöshetsförsäkringen\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701AU4\">2019/20:AU4</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Statlig förvaltning och statistikfrågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701FiU25\">2019/20:FiU25</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Civilt försvar och krisberedskap\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701FöU7\">2019/20:FöU7</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Kommunala och regionala frågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701KU15\">2019/20:KU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Näringspolitik\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701NU12\">2019/20:NU12</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Företag, kapital och fastighet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701SkU21\">2019/20:SkU21</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Hälso- och sjukvårdens organisation m.m.\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701SoU11\">2019/20:SoU11</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"It- och postfrågor\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701TU5\">2019/20:TU5</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Högskolan\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H701UbU15\">2019/20:UbU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Offentlighet, sekretess och integritet\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"H801KU19\">2020/21:KU19</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(34 yrkanden): \n\t\t\t\t\t \n\t\t\t\t\t\t34 avslag\n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2019/20:2718\n av Jessika Roswall m.fl. (M)\n Sverige ska vara ett digitalt föregångsland\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att återuppta trepartssamtalen mellan staten och arbetsmarknadens parter i syfte att hitta en modell för kompetensutveckling",
+     "notisrubrik": "Sverige ska vara ett digitalt föregångsland",
+     "notis": "Motion till riksdagen\n 2019/20:2718\n av Jessika Roswall m.fl. (M)\n Sverige ska vara ett digitalt föregångsland\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att återuppta trepartssamtalen mellan staten och arbetsmarknadens parter i syfte att hitta en modell för kompetensutveckling",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Jessika Roswall",
+        "partibet": "M",
+        "intressent_id": "0718034011110"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Lars Hjälmered",
+        "partibet": "M",
+        "intressent_id": "0980316377627"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Mats Green",
+        "partibet": "M",
+        "intressent_id": "0538387395826"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Kristina Axén Olin",
+        "partibet": "M",
+        "intressent_id": "0502490570219"
+       },
+       {
+        "roll": "undertecknare",
+        "namn": "Camilla Waltersson Grönvall",
+        "partibet": "M",
+        "intressent_id": "0781623040415"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_201920__2718.docx",
+        "storlek": "106420",
+        "url": "https://data.riksdagen.se/fil/45402566-7164-4D63-A2F2-4393D9F4D7BF"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_201920__2718.pdf",
+        "storlek": "197489",
+        "url": "https://data.riksdagen.se/fil/977EDBDB-9EFF-4276-B985-2B1CAE95B602"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    }
+   ]
+  }
+ }
+}

@@ -1520,7 +1520,7 @@ components:
 
     MotionYrkande:
       type: object
-      required: [number, wording, utskottProposal, chamberDecision, behandlasI, behandlasIPunkt, outcome, decisions]
+      required: [number, wording, utskottProposal, chamberDecision, behandlasI, behandlasIPunkt, outcome, decisions, recurring]
       properties:
         number: { type: integer }
         wording: { type: string, description: "Full wording of the demand, as Riksdagen gives it" }
@@ -1538,6 +1538,38 @@ components:
           type: array
           description: The förslagspunkt(er) that decided the yrkande
           items: { $ref: "#/components/schemas/YrkandeDecision" }
+        recurring:
+          nullable: true
+          description: >-
+            The Återkommande krav the yrkande belongs to; null when its
+            wording was filed in only one riksmöte.
+          allOf:
+            - $ref: "#/components/schemas/RecurringKrav"
+
+    RecurringKrav:
+      type: object
+      required: [rule, ruleLabel, members]
+      properties:
+        rule: { type: string, enum: [identical_wording], description: "Phase 1 groups only by identical normalised wording" }
+        ruleLabel: { type: string, example: "Identisk ordalydelse" }
+        members:
+          type: array
+          description: Every stored filing of the demand, earliest riksmöte first
+          items: { $ref: "#/components/schemas/RecurringMember" }
+
+    RecurringMember:
+      type: object
+      required: [riksmote, beteckning, number, date, parties, outcome, rule, current, sourceUrl]
+      properties:
+        riksmote: { type: string, example: "2018/19" }
+        beteckning: { type: string, example: "2900" }
+        number: { type: integer, description: "Yrkande number within the motion" }
+        date: { type: string, nullable: true, description: "Filing date, YYYY-MM-DD" }
+        parties: { type: array, items: { type: string }, description: "Distinct parties among the signers" }
+        outcome: { type: string, description: "Outcome word of this filing, as on the motion page" }
+        rule: { type: string, enum: [identical_wording], description: "Why this filing is in the group" }
+        current: { type: boolean, description: "True for the yrkande the request is about" }
+        sourceUrl: { type: string }
 
     PartyPartilinje:
       type: object

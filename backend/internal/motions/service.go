@@ -187,3 +187,74 @@ func (s *Service) List(ctx context.Context, f domain.ListFilter, after *domain.L
 	}
 	return res, nil
 }
+
+// BackfillWordingHashes fills the wording hash of yrkanden stored before the
+// hash existed, batch rows at a time, and returns how many it wrote. It is
+// resumable and idempotent: it only touches rows without a hash.
+func (s *Service) BackfillWordingHashes(ctx context.Context, batch int) (int, error) {
+	total := 0
+	var cur ports.YrkandeCursor
+	for {
+		written, scanned, last, err := s.repo.BackfillWordingHashes(ctx, cur, batch)
+		total += written
+		if err != nil {
+			return total, err
+		}
+		if scanned == 0 {
+			return total, nil
+		}
+		cur = last
+		if err := ctx.Err(); err != nil {
+			return total, err
+		}
+	}
+}
+
+// Recurring returns the Återkommande krav a yrkande belongs to: every stored
+// filing with identical normalised wording, earliest first, each with its
+// parties and outcome. It returns nil when the wording was filed in only one
+// riksmöte (or in none we hold besides this one). A hash that is missing on
+// the yrkande is computed and stored here, so old rows heal when read.
+func (s *Service) Recurring(ctx context.Context, motionDokID string, y domain.Yrkande) (*domain.Recurring, error) {
+	hash := y.WordingHash
+	if hash == "" {
+		hash = domain.WordingHash(y.Wording)
+		if hash == "" {
+			return nil, nil
+		}
+		if err := s.repo.SetWordingHash(ctx, motionDokID, y.Number, hash); err != nil {
+			return nil, err
+		}
+	}
+	members, err := s.repo.RecurringMembers(ctx, hash)
+	if err != nil {
+		return nil, err
+	}
+	riksmoten := map[string]bool{}
+	for _, m := range members {
+		riksmoten[m.Riksmote] = true
+	}
+	if len(riksmoten) < 2 {
+		return nil, nil
+	}
+	decisions := map[string][]domain.YrkandeDecision{}
+	for i := range members {
+		m := &members[i]
+		m.Rule = domain.RuleIdenticalWording
+		ds, ok := decisions[m.DokID]
+		if !ok {
+			if ds, err = s.repo.Decisions(ctx, m.DokID); err != nil {
+				return nil, err
+			}
+			decisions[m.DokID] = ds
+		}
+		var mine []string
+		for _, d := range ds {
+			if d.YrkandeNumber == m.Number {
+				mine = append(mine, d.Decision)
+			}
+		}
+		m.Outcome = domain.YrkandeWord(m.ChamberDecision, mine)
+	}
+	return &domain.Recurring{Rule: domain.RuleIdenticalWording, Members: members}, nil
+}
