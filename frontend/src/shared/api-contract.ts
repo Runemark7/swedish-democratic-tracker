@@ -356,6 +356,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/parties/{party}/record": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A party's recent decisions (with its Partilinje) and its Kommittémotioner (with outcomes)
+         * @description `decisions` are the party's ten most recently decided betänkanden: those that decide a motion signed by the party, carry a reservation by it, or were voted on by it. `partilinje` is the party's own line (see BeslutPartyLine), empty when no member cast a ballot (decided without votering). `motions` are the party's Kommittémotioner, most recently decided first, each with its outcome.
+         */
+        get: operations["getPartyRecord"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/motions": {
         parameters: {
             query?: never;
@@ -1500,6 +1520,27 @@ export interface components {
             sourceUrl: string;
             /** @description Empty for an upcoming row; otherwise the eight parties in a fixed order */
             parties: components["schemas"]["BeslutPartyLine"][];
+        };
+        PartyRecord: {
+            party: string;
+            decisions: components["schemas"]["PartyDecision"][];
+            motions: components["schemas"]["MotionListRow"][];
+        };
+        PartyDecision: {
+            /** @example 2025/26 */
+            riksmote: string;
+            /** @example UbU30 */
+            beteckning: string;
+            title: string;
+            utskott: string;
+            utskottName: string;
+            date: string | null;
+            decided: boolean;
+            outcome: string;
+            /** @description Ja, Nej, Avstår, Delad, Varierar, or empty when no member of the party cast a ballot */
+            partilinje: string;
+            voteringar: number;
+            sourceUrl: string;
         };
         BeslutPartyLine: {
             party: string;
@@ -3116,6 +3157,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BeslutListResponse"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+        };
+    };
+    getPartyRecord: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Party, e.g. `M` */
+                party: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The party's record */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PartyRecord"];
                 };
             };
             400: components["responses"]["BadRequest"];

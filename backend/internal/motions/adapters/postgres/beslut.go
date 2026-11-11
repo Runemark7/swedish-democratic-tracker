@@ -91,6 +91,18 @@ func (r *Repository) beslutQuery(ctx context.Context, f domain.BeslutFilter, tod
 				SELECT 1 FROM betankande_statements s, unnest(s.parties) sp
 				WHERE s.riksmote = l.riksmote AND s.beteckning = l.beteckning AND s.kind = 'reservation' AND upper(sp) = ANY(`+p+`)))`)
 	}
+	if len(f.Involved) > 0 {
+		p := arg(upperAll(f.Involved))
+		where = append(where, `(EXISTS (
+				SELECT 1 FROM yrkande_forslagspunkt y JOIN motion_authors a ON a.dok_id = y.motion_dok_id
+				WHERE y.riksmote = l.riksmote AND y.beteckning = l.beteckning AND upper(a.party) = ANY(`+p+`))
+			OR EXISTS (
+				SELECT 1 FROM betankande_statements s, unnest(s.parties) sp
+				WHERE s.riksmote = l.riksmote AND s.beteckning = l.beteckning AND s.kind = 'reservation' AND upper(sp) = ANY(`+p+`))
+			OR EXISTS (
+				SELECT 1 FROM voteringar v JOIN ballots b ON b.votering_ref = v.id
+				WHERE v.session = l.riksmote AND v.beteckning = l.beteckning AND upper(b.party) = ANY(`+p+`)))`)
+	}
 	// Decided rows run newest first by their decision date (else publication
 	// date); upcoming rows run soonest planned day first, undated ones last.
 	eff := "l.sort_date"

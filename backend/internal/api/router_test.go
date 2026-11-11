@@ -60,6 +60,7 @@ var routesBeforeExtraction = []string{
 	"GET /api/parties",
 	"GET /api/parties/{party}/goals",
 	"GET /api/parties/{party}/goals/{goalId}/votes",
+	"GET /api/parties/{party}/record",
 	"GET /api/party-meta",
 	"GET /api/party-meta/{code}",
 	"GET /api/politicians",

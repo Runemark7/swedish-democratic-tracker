@@ -24,6 +24,9 @@ type BeslutFilter struct {
 	State   string
 	Utskott []string // "SkU"
 	Parties []string // upper case
+	// Involved is Parties widened to a party that voted in the betänkande's
+	// votering, used by the party page; upper case.
+	Involved []string
 }
 
 // BeslutCursor is the keyset position after the last row returned. Upcoming
