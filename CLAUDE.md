@@ -143,6 +143,7 @@ graph TD
             RKS["riksdag / myndigheter"]
             CS["committees"]
             MS["motions"]
+            DC["data coverage\nGET /api/data/coverage"]
         end
 
         subgraph ingestion["Ingestion scheduler (cron)"]
@@ -188,6 +189,7 @@ graph TD
     DB[(PostgreSQL 18, self-hosted on the VPS)]
 
     FE -->|REST /api/*| API
+    DC -->|"reads coverage records only; no external calls"| DB
     API --> features
     features --> DB
 

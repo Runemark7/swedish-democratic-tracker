@@ -74,3 +74,9 @@ klara riksmöten hoppas över och inget sparat ändras. För varje riksmöte not
 mycket lagringsutrymme det tog (rader, text, tabell och index). Under Data visas, per
 riksmöte, hur många anföranden som lästs, kopplats och inte kopplats. Sajten drar inga
 slutsatser av dem.
+
+## Länkregler
+Ett anförande kopplas till ett betänkande bara via Riksdagens referens (`rel_dok_id`) eller när avsnittsrubriken och protokollets datum entydigt pekar ut ett betänkande. Annars förblir det okopplat.
+
+## Täckning
+Status och senaste uppdatering per riksmöte står under Data (`/data`, API: `/api/data/coverage`).

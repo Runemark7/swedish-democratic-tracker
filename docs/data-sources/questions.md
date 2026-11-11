@@ -39,7 +39,7 @@ curl -s 'https://data.riksdagen.se/dokumentstatus/HA12339.json'
 - `dokaktivitet` `Besvarad` — dagen en interpellation besvarades i kammaren.
 - `dokreferens` med `ref_dok_typ=mot` — en motion som Riksdagen själv pekar ut (regel `riksdagen-reference`).
 
-## Motionslänkar
+## Länkregler: motionslänkar
 En fråga kopplas till en motion bara när Riksdagens referens pekar på motionen, eller frågetexten
 anger motionens beteckning (t.ex. "motion 2017/18:3293", regel `cited-beteckning`). Regeln sparas
 med länken. En beteckning som står efter "proposition", "skrivelse" eller "betänkande", eller som
@@ -59,3 +59,6 @@ Anföranden hittas bland lagrade anföranden på avsnittsrubriken ("Svar på int
 ## Hur vi bearbetar
 Ett nattligt jobb (`fetch-questions`) tar det pågående riksmötet, högst 500 dokument per slag och
 körning, och räknar sedan om motionslänkarna från den lagrade texten. Att köra om ändrar inget.
+
+## Täckning
+Status och senaste uppdatering per riksmöte, för skriftliga frågor och interpellationer var för sig, står under Data (`/data`, API: `/api/data/coverage`).

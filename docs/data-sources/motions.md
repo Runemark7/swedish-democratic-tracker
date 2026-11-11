@@ -64,3 +64,14 @@ listan anger och läser in de motioner som är nya eller har ändrats. Att köra
 ändrar inget. Sajten visar uppgifterna som de anges, med länk till Riksdagens
 dokument, och drar inga slutsatser av dem. Typen Flerpartimotion är det enda vi
 härleder, och den följer av undertecknarnas partier.
+
+## Länkregler
+Sajten kopplar bara det som är säkert. Tre regler används, och regeln sparas med varje koppling:
+- **Riksdagens referens** (`riksdagen-reference`): Riksdagen pekar själv ut betänkandet motionen behandlas i (`dokreferens`, `behandlas_i`).
+- **Citerad beteckning** (`cited-beteckning`): en text anger motionens beteckning, t.ex. "motion 2017/18:3293".
+- **Identisk ordalydelse** (`identical_wording`): två yrkanden är ett återkommande krav när ordalydelsen är identisk efter att versaler, mellanslag och skiljetecken tagits bort. Liknande ordalydelse räcker inte.
+
+En motion som inte följer någon regel kopplas inte; sajten gissar inte.
+
+## Täckning
+Hur många riksmöten som är inlästa, och när de senast uppdaterades, står under Data (`/data`, API: `/api/data/coverage`). Ett riksmöte som inte står där är inte inläst.

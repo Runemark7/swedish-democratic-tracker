@@ -302,6 +302,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "verificationStatus": "verified",
     "verificationNotes": null
   },
+  "voteringar": {
+    "id": "voteringar",
+    "name": "Voteringar (Riksdagen)",
+    "kind": "api",
+    "upstream": "https://data.riksdagen.se/voteringlista/",
+    "license": "Public domain — Sveriges riksdag",
+    "freshness": "dagligen (cron: fetch-votes @daily); täckningens nämnare räknas om veckovis (söndagar)",
+    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "blurb": "En votering är en omröstning i kammaren om en förslagspunkt i ett betänkande. Riksdagen publicerar hur varje ledamot röstade (Ja, Nej, Avstår eller Frånvarande) och vilket datum omröstningen hölls. Beslut som fattas utan omröstning (acklamation) har ingen votering.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
   "wikimedia-svg": {
     "id": "wikimedia-svg",
     "name": "Sverige-karta SVG (Wikimedia Commons)",

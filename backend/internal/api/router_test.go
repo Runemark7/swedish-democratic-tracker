@@ -70,6 +70,7 @@ var routesBeforeExtraction = []string{
 	"GET /api/politicians/{id}/promises",
 	"GET /api/politicians/{id}/questions",
 	"GET /api/politicians/{id}/votes",
+	"GET /api/data/coverage",
 	"GET /api/questions/coverage",
 	"GET /api/questions/{kind}/{riksmote}/{beteckning}",
 	"GET /api/regions",

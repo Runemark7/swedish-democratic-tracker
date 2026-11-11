@@ -29,6 +29,9 @@ import (
 	topiccontext "riksdagskollen/internal/context"
 	contextHTTP "riksdagskollen/internal/context/adapters/http"
 	contextPG "riksdagskollen/internal/context/adapters/postgres"
+	"riksdagskollen/internal/datacoverage"
+	datacoverageHTTP "riksdagskollen/internal/datacoverage/adapters/http"
+	datacoveragePG "riksdagskollen/internal/datacoverage/adapters/postgres"
 	"riksdagskollen/internal/goals"
 	goalsHTTP "riksdagskollen/internal/goals/adapters/http"
 	goalsPG "riksdagskollen/internal/goals/adapters/postgres"
@@ -51,16 +54,16 @@ import (
 	partiesHTTP "riksdagskollen/internal/parties/adapters/http"
 	partiesPG "riksdagskollen/internal/parties/adapters/postgres"
 	"riksdagskollen/internal/politicians"
-	"riksdagskollen/internal/questions"
-	questionsHTTP "riksdagskollen/internal/questions/adapters/http"
-	questionsPG "riksdagskollen/internal/questions/adapters/postgres"
-	questionsRD "riksdagskollen/internal/questions/adapters/riksdagen"
 	politiciansHTTP "riksdagskollen/internal/politicians/adapters/http"
 	politiciansPG "riksdagskollen/internal/politicians/adapters/postgres"
 	politiciansRD "riksdagskollen/internal/politicians/adapters/riksdagen"
 	"riksdagskollen/internal/promises"
 	promisesHTTP "riksdagskollen/internal/promises/adapters/http"
 	promisesPG "riksdagskollen/internal/promises/adapters/postgres"
+	"riksdagskollen/internal/questions"
+	questionsHTTP "riksdagskollen/internal/questions/adapters/http"
+	questionsPG "riksdagskollen/internal/questions/adapters/postgres"
+	questionsRD "riksdagskollen/internal/questions/adapters/riksdagen"
 	"riksdagskollen/internal/regions"
 	regionsHTTP "riksdagskollen/internal/regions/adapters/http"
 	koladaAdapter "riksdagskollen/internal/regions/adapters/kolada"
@@ -129,6 +132,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 
 	questionSvc := questions.NewService(questionsPG.NewRepository(db), questionsRD.NewClientWithBaseURL(riksdagenBaseURL))
 	questionHandler := questionsHTTP.NewHandler(questionSvc)
+	dataCoverageHandler := datacoverageHTTP.NewHandler(datacoverage.NewService(datacoveragePG.NewRepository(db)))
 
 	goalRepo := goalsPG.NewRepository(db)
 	goalSvc := goals.NewService(goalRepo)
@@ -219,6 +223,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		voteHandler.Routes(api)
 		motionHandler.Routes(api)
 		questionHandler.Routes(api)
+		dataCoverageHandler.Routes(api)
 		speechHandler.Routes(api)
 		goalsHandler.Routes(api)
 		promisesHandler.Routes(api)

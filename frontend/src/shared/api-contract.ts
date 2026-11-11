@@ -396,6 +396,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/data/coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Per source and riksmöte, whether it is loaded and when it last changed
+         * @description One row per source (`motioner`, `betankanden`, `voteringar`, `anforanden`, `fragor`, `interpellationer`) and riksmöte that has an ingestion coverage record, newest riksmöte first. A riksmöte without a row has not been read. `status` is `complete` when the backfill marked it finished or what we hold reaches what Riksdagen reports, else `partial`. `lastUpdate` is the newest timestamp on the coverage record.
+         */
+        get: operations["getDataCoverage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/questions/coverage": {
         parameters: {
             query?: never;
@@ -1388,6 +1408,20 @@ export interface components {
                 date?: string;
                 excerpt?: string;
             }[];
+        };
+        DataCoverage: {
+            /** @enum {string} */
+            source: "motioner" | "betankanden" | "voteringar" | "anforanden" | "fragor" | "interpellationer";
+            /** @example 2021/22 */
+            riksmote: string;
+            /** @enum {string} */
+            status: "complete" | "partial";
+            /** @description What Riksdagen's own listing reports */
+            expected: number;
+            /** @description What we hold, counted live */
+            held: number;
+            /** Format: date-time */
+            lastUpdate: string;
         };
         QuestionCoverage: {
             riksmote?: string;
@@ -3431,6 +3465,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FrontPageResponse"];
+                };
+            };
+        };
+    };
+    getDataCoverage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Coverage rows */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DataCoverage"][];
+                    };
                 };
             };
         };
