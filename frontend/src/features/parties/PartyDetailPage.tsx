@@ -1,27 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { partiesApi, partyRecordApi } from "./api";
+import { partyRecordApi } from "./api";
 import { PartyDecisions, PartyMotions } from "./PartyRecordSections";
-import { committeesApi } from "@/features/committees/api";
 import { politiciansApi } from "@/features/politicians/api";
 import { regeringApi } from "@/features/regering/api";
 import { PARTY_COLORS, partyShortToName } from "@/shared/design";
-import { useRecordCoverage, useSpeechesByParty } from "@/hooks/useDemocracy";
+import { useSpeechesByParty } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { GoalCard } from "@/shared/GoalCard";
+import { loftenApi } from "@/features/loften/api";
+import { ArchiveNote, LoefteCard, ValmanifestList } from "@/features/loften/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { swedishDate } from "@/shared/dates";
-import type { components } from "@/shared/api-contract";
 
-type Goal = components["schemas"]["Goal"];
-
-type Tab = "beslut" | "motioner" | "mal" | "anforanden" | "politiker";
+type Tab = "beslut" | "motioner" | "loften" | "anforanden" | "politiker";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "beslut", label: "Beslut" },
   { key: "motioner", label: "Kommittémotioner" },
-  { key: "mal", label: "Mål" },
+  { key: "loften", label: "Löften" },
   { key: "anforanden", label: "Anföranden" },
   { key: "politiker", label: "Politiker" },
 ];
@@ -31,10 +27,9 @@ export function PartyDetailPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isMobile = useMediaQuery("(max-width: 640px)");
 
-  const tab: Tab =
-    (searchParams.get("tab") as Tab | null) && TABS.some((t) => t.key === searchParams.get("tab"))
-      ? (searchParams.get("tab") as Tab)
-      : "beslut";
+  // ?tab=mal was the Mål tab; the 2022 goals now live in the Löften archive.
+  const rawTab = searchParams.get("tab") === "mal" ? "loften" : searchParams.get("tab");
+  const tab: Tab = TABS.some((t) => t.key === rawTab) ? (rawTab as Tab) : "beslut";
 
   const setTab = (next: Tab) => {
     const params = new URLSearchParams(searchParams);
@@ -43,13 +38,6 @@ export function PartyDetailPage() {
     setSearchParams(params, { replace: true });
   };
 
-  const { data: parties } = useQuery({
-    queryKey: ["parties"],
-    queryFn: partiesApi.listParties,
-    staleTime: 5 * 60 * 1000,
-  });
-  const summary = parties?.find((p) => p.party === party);
-
   const { data: record, isLoading: loadingRecord, isError: recordError } = useQuery({
     queryKey: ["party-record", party],
     queryFn: () => partyRecordApi.get(party),
@@ -57,26 +45,18 @@ export function PartyDetailPage() {
     staleTime: 60_000,
   });
 
-  const { data: goals, isLoading: loadingGoals } = useQuery({
-    queryKey: ["party-goals", party],
-    queryFn: () => partiesApi.listGoals(party),
-    enabled: !!party && tab === "mal",
+  const { data: loften, isLoading: loadingLoften, isError: loftenError } = useQuery({
+    queryKey: ["loften", party],
+    queryFn: () => loftenApi.list(party),
+    enabled: !!party && tab === "loften",
     staleTime: 60_000,
   });
 
-  // The record is bound to a named mandate period, so the committee list is
-  // the one the period's record actually shows — never a hardcoded vintage.
-  const { data: coverage, isError: coverageError } = useRecordCoverage();
-  const period = coverage?.mandate.code;
-  // Without the period the committee query never runs, so it reports neither
-  // loading nor error. Treating that silence as "loaded" is what let a coverage
-  // outage publish every goal as lacking a committee in our reading.
-  const periodPending = !period && !coverageError;
-
-  const { data: committees, isLoading: loadingCommittees, isError: committeesError } = useQuery({
-    queryKey: ["committees", period],
-    queryFn: () => committeesApi.listCommittees(period!),
-    enabled: !!period && tab === "mal",
+  // Always loaded: every party page lists its Valmanifest as sources.
+  const { data: valmanifest } = useQuery({
+    queryKey: ["valmanifest", party],
+    queryFn: () => loftenApi.valmanifest(party),
+    enabled: !!party,
     staleTime: 5 * 60_000,
   });
 
@@ -102,32 +82,6 @@ export function PartyDetailPage() {
     .filter((m) => m.party === party && m.active);
 
   const pc = PARTY_COLORS[party];
-
-  // One subject taxonomy: committees. `topic` survives only as a tag on the
-  // card. Every committee in the period is listed, not only those where this
-  // party has goals — an absent row would read as the subject not existing.
-  //
-  // A goal whose remit spans several committees appears under each of them, so
-  // the section counts deliberately do not sum to the party's total. That is
-  // stated on the page rather than left for the reader to infer from arithmetic.
-  const goalList: Goal[] = goals ?? [];
-  const byCommittee = new Map<string, Goal[]>();
-  for (const c of committees ?? []) byCommittee.set(c.code, []);
-  const placed = new Set<number>();
-  for (const g of goalList) {
-    for (const code of g.relevantCommittees ?? []) {
-      const bucket = byCommittee.get(code);
-      if (bucket) {
-        bucket.push(g);
-        placed.add(g.id);
-      }
-    }
-  }
-  // A goal carrying no committee, or one naming a committee absent from the
-  // period's record, would otherwise vanish from a page that still claims to
-  // show the party's goals. None exist today; this is here so that if one ever
-  // does, it is visible rather than silently dropped.
-  const unplaced = goalList.filter((g) => !placed.has(g.id));
 
   return (
     <div className="sdt-page" style={{ paddingBottom: 64 }}>
@@ -188,20 +142,20 @@ export function PartyDetailPage() {
           >
             {partyShortToName(party)}
           </h1>
-          {summary && (
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                color: "var(--color-fg-muted)",
-                marginTop: 6,
-              }}
-            >
-              {summary.totalGoals ?? 0} mål
-            </div>
-          )}
         </div>
       </header>
+
+      {/* Every party page lists its Valmanifest as sources. */}
+      <section
+        aria-label="Valmanifest"
+        data-testid="party-valmanifest"
+        style={{ padding: isMobile ? "0 14px 16px" : "0 32px 20px", maxWidth: 920 }}
+      >
+        <h2 className="text-xs font-semibold text-on-surface-variant mb-2">
+          Valmanifest <SourceMarker sourceId="party-manifestos" />
+        </h2>
+        <ValmanifestList items={valmanifest ?? []} />
+      </section>
 
       {/* Tab strip */}
       <div
@@ -262,127 +216,30 @@ export function PartyDetailPage() {
           </section>
         )}
 
-        {tab === "mal" && (
+        {tab === "loften" && (
           <section>
-            {(loadingGoals || loadingCommittees || periodPending) && (
-              <div style={{ fontSize: 13, color: "var(--color-fg-muted)" }}>Laddar mål...</div>
+            {loadingLoften && (
+              <div style={{ fontSize: 13, color: "var(--color-fg-muted)" }}>Laddar löften...</div>
             )}
-
-            {/* Without the committee list there are no areas to order the goals
-                by, and every goal falls through to "Utan utskottsområde" — a
-                section whose caption says the goal names no committee in our
-                reading, which for all 73 of them is false. The goals are still
-                facts, so they are shown; only the ordering is missing. */}
-            {!loadingGoals && (committeesError || coverageError) && (
-              <>
-                <p className="text-sm text-on-surface-variant leading-relaxed mb-4">
-                  Vi kunde inte hämta utskottsindelningen just nu, så målen visas
-                  utan områden. Det säger inget om vilka områden målen rör —
-                  försök igen.
-                </p>
-                <div className="space-y-3">
-                  {goalList.map((g) => (
-                    <GoalCard key={g.id} goal={g} party={party} />
-                  ))}
-                </div>
-              </>
+            {loftenError && (
+              <p className="text-sm text-on-surface-variant">Kunde inte ladda löften. Försök igen.</p>
             )}
-
-            {!loadingGoals && !loadingCommittees && !committeesError && !coverageError && !periodPending && (
+            {loften && (
               <>
-                <p className="text-xs text-on-surface-variant leading-relaxed">
-                  {goalList.length} mål från valmanifest och partiprogram, ordnade
-                  efter utskottets område. Ett mål som rör flera områden visas under
-                  vart och ett, så summan av områdena är större än antalet mål.{" "}
-                  <SourceMarker sourceId="seed-party-goals" />
-                </p>
-
-                {coverage && (
-                  <p className="text-[11px] text-on-surface-variant mt-1 mb-5 leading-relaxed">
-                    {/* The record is bound to a named mandate period so votes from
-                        the next parliament are never attributed to this one. */}
-                    <span className="font-semibold">
-                      {coverage.mandate.label}
-                      {coverage.mandate.ended ? " (avslutad)" : ""}
-                    </span>
-                    {" · "}
-                    {/* Completeness is a claim, so it is stated rather than implied.
-                        The count we hold is read live; Riksdagen's count is fetched
-                        on a schedule, so its date is stated too — a denominator of
-                        unknown age is what let this figure drift toward looking more
-                        complete than it was. */}
-                    {coverage.ingested.toLocaleString("sv-SE")}
-                    {coverage.expected > 0
-                      ? ` av ${coverage.expected.toLocaleString("sv-SE")} omröstningar`
-                      : " omröstningar (Riksdagens antal för perioden saknas)"}
-                    <SourceMarker sourceId="riksdagen" />
-                    {coverage.expected > 0 && coverage.denominatorCheckedAt && (
-                      <> · Riksdagens antal hämtat {swedishDate(coverage.denominatorCheckedAt)}</>
-                    )}
-                    {coverage.ingested < coverage.expected && (
-                      <>
-                        {" "}
-                        <Link to="/data" className="underline">
-                          Vad saknas?
-                        </Link>
-                      </>
-                    )}
-                  </p>
-                )}
-
-                {(committees ?? []).map((c) => {
-                  const gg = byCommittee.get(c.code) ?? [];
-                  return (
-                    <section key={c.code} className="mb-8">
-                      <h3 className="font-display text-base font-semibold text-on-surface mb-3 pb-1">
-                        <Link to={`/committees/${c.code}`} className="hover:underline">
-                          {c.name}
-                        </Link>
-                      </h3>
-                      {gg.length > 0 ? (
-                        <div className="space-y-3">
-                          {gg.map((g) => (
-                            <GoalCard key={g.id} goal={g} party={party} />
-                          ))}
-                        </div>
-                      ) : (
-                        /* Our seed reading is the gap, never the party's silence.
-                           "Inga mål inom detta område" would read as the party
-                           having nothing to say about the subject. */
-                        <p className="text-sm text-on-surface-variant">
-                          Vi har inga inlästa mål från {partyShortToName(party)} inom
-                          detta område. <SourceMarker sourceId="seed-party-goals" />
-                        </p>
-                      )}
-                    </section>
-                  );
-                })}
-
-                {unplaced.length > 0 && (
-                  <section className="mb-8">
-                    <h3 className="font-display text-base font-semibold text-on-surface mb-3 pb-1">
-                      Utan utskottsområde
-                    </h3>
-                    <p className="text-sm text-on-surface-variant mb-3">
-                      Dessa mål saknar utskottsområde i vår inläsning, eller pekar på
-                      ett utskott som inte finns i periodens register. De visas här så
-                      att de inte försvinner ur listan.{" "}
-                      <SourceMarker sourceId="seed-party-goals" />
-                    </p>
-                    <div className="space-y-3">
-                      {unplaced.map((g) => (
-                        <GoalCard key={g.id} goal={g} party={party} />
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {goalList.length === 0 && (
+                <ArchiveNote />
+                {loften.length === 0 ? (
                   <p style={{ fontStyle: "italic", color: "var(--color-fg-muted)", fontSize: 13 }}>
-                    Vi har inga inlästa mål från {partyShortToName(party)}.{" "}
+                    Vi har inga inlästa löften från {partyShortToName(party)}.{" "}
                     <SourceMarker sourceId="seed-party-goals" />
                   </p>
+                ) : (
+                  <div className="space-y-3 mt-4">
+                    {loften.map((l) => <LoefteCard key={l.id} l={l} />)}
+                  </div>
                 )}
+                <p className="mt-6 text-xs">
+                  <Link to="/loften" className="text-link underline">Löften för alla partier</Link>
+                </p>
               </>
             )}
           </section>

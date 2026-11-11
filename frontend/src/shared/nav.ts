@@ -9,8 +9,9 @@
  * overview and the agencies. /regering, /budget and /riksdag redirect there.
  *
  * Lokalt (kommuner and regioner) is a side menu, not a core item. Om sajten
- * and Data are secondary. Manifest stays at /manifestos and is not a menu
- * item. Budget and Riksdag are not menu items; they are sections of Regeringen.
+ * and Data are secondary. Löften are a section under Partier (/loften), not a
+ * menu item; /manifestos redirects to the Valmanifest list. Budget and Riksdag
+ * are not menu items; they are sections of Regeringen.
  */
 export interface NavItem {
   to: string;
@@ -23,7 +24,7 @@ export const PRIMARY_NAV: NavItem[] = [
   { to: "/beslut", label: "Beslut", match: ["/beslut", "/votes"] },
   { to: "/motioner", label: "Motioner", match: ["/motioner"] },
   { to: "/politicians", label: "Ledamöter", match: ["/politicians"] },
-  { to: "/parties", label: "Partier", match: ["/parties"] },
+  { to: "/parties", label: "Partier", match: ["/parties", "/loften"] },
   { to: "/regeringen", label: "Regeringen", match: ["/regeringen", "/regering", "/budget", "/riksdag"] },
 ];
 
@@ -57,13 +58,11 @@ export function isLokaltSection(pathname: string): boolean {
 
 /** Browser tab title. Every route keeps the product name. */
 export function documentTitle(pathname: string): string {
+  if (pathname === "/loften" || pathname.startsWith("/loften/")) return "Riksdagskollen – Löften";
   const primary = PRIMARY_NAV.find((item) => isActive(item, pathname));
   if (primary) return `Riksdagskollen – ${primary.label}`;
   if (isLokaltSection(pathname)) return "Riksdagskollen – Lokalt";
   const secondary = SECONDARY_NAV.find((item) => isActive(item, pathname));
   if (secondary) return `Riksdagskollen – ${secondary.label}`;
-  if (pathname === "/manifestos" || pathname.startsWith("/manifestos/")) {
-    return "Riksdagskollen – Valmanifest";
-  }
   return "Riksdagskollen";
 }

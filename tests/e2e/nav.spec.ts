@@ -112,10 +112,12 @@ test.describe("routes the menu replaced", () => {
   });
 
   test("bookmarked pages still open, and manifestos stays off the menu", async ({ page }) => {
+    await page.route("**/api/loften", (r) => r.fulfill({ json: [] }));
+    await page.route("**/api/valmanifest", (r) => r.fulfill({ json: [] }));
     await page.goto("/manifestos");
-    await expect(page).toHaveURL(/\/manifestos$/);
-    await expect(page.getByRole("heading", { name: "Valmanifest" })).toBeVisible();
-    await expect(page).toHaveTitle("Riksdagskollen – Valmanifest");
+    await expect(page).toHaveURL(/\/loften#valmanifest$/);
+    await expect(page.getByRole("heading", { name: "Valmanifest (källor)" })).toBeVisible();
+    await expect(page).toHaveTitle("Riksdagskollen – Löften");
     await expect(
       page.getByRole("navigation", { name: "Huvudmeny" }).getByRole("link", { name: "Manifest", exact: true }),
     ).toHaveCount(0);
@@ -148,7 +150,7 @@ test.describe("routes the menu replaced", () => {
     ).toHaveAttribute("aria-current", "page");
 
     await page.goto("/parties/S/goals");
-    await expect(page).toHaveURL(/\/parties\/S$/);
+    await expect(page).toHaveURL(/\/parties\/S\?tab=loften$/);
 
     await page.goto("/kommun");
     await expect(page.getByRole("heading", { name: "Välj kommun" })).toBeVisible();

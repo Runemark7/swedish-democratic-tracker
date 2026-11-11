@@ -46,9 +46,9 @@ test.describe("Party page", () => {
     await expect(row.getByRole("link", { name: /Moms på virtuella varor/ })).toHaveAttribute("href", "/motioner/2017%2F18/3293");
   });
 
-  test("the old goals URL still reaches the goals tab", async ({ page }) => {
+  test("the old goals URL still reaches the Löften tab", async ({ page }) => {
     await page.route("**/api/parties/M/goals", (route) => route.fulfill({ json: [] }));
     await page.goto("/parties/M/goals");
-    await expect(page).toHaveURL(/\/parties\/M\?tab=mal/);
+    await expect(page).toHaveURL(/\/parties\/M\?tab=loften/);
   });
 });

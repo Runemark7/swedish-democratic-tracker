@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { partiesApi } from "./api";
 import { PartyBadge } from "@/shared/components";
-import { SourceMarker } from "@/components/sources/SourceMarker";
 
 export function PartiesPage() {
   const { data, isLoading, error } = useQuery({
@@ -37,7 +36,8 @@ export function PartiesPage() {
         </h2>
         <p className="text-sm text-on-surface-variant leading-relaxed max-w-lg">
           Varje partis uttalade mål, bredvid hur partiet faktiskt röstade i
-          riksdagen. Välj ett parti för att se målen och omröstningarna.
+          riksdagen. Välj ett parti för att se målen och omröstningarna.{" "}
+          <Link to="/loften" className="text-link underline">Löften för alla partier</Link>
         </p>
       </div>
 
@@ -88,10 +88,6 @@ export function PartiesPage() {
                       {metaByCode[p.party].ideology}
                     </span>
                   )}
-                  <span style={{ fontSize: 12, color: "var(--color-fg-muted)" }}>
-                    {p.totalGoals} mål
-                    <SourceMarker sourceId="seed-party-goals" />
-                  </span>
                 </div>
 
                 {/* Topic tags */}

@@ -217,6 +217,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/loften": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Löften (approved and archived), optionally for one party
+         * @description Proposed and struck Löften are never returned. Archived 2022 Löften carry no Löftesstatus; the schema has no such field.
+         */
+        get: operations["listLoften"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/loften/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One public Löfte. Archived 2022 Löften keep their old goal id. */
+        get: operations["getLoefte"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/parties/{party}/loften": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public Löften for one party */
+        get: operations["listPartyLoften"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/valmanifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every Valmanifest, newest election first */
+        get: operations["listValmanifest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/parties/{party}/valmanifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A party's Valmanifest, listed as sources */
+        get: operations["listPartyValmanifest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/parties/{party}/goals": {
         parameters: {
             query?: never;
@@ -1899,6 +1987,40 @@ export interface components {
             error: string;
             detail?: string;
         };
+        Loefte: {
+            id: number;
+            party: string;
+            valmanifestId?: number | null;
+            text: string;
+            quote?: string;
+            locator?: string;
+            sourceUrl?: string;
+            sourceDocument?: string;
+            topic?: string;
+            utskott: string[];
+            /** @example 2022-2026 */
+            mandatePeriod: string;
+            /** @enum {string} */
+            visibility: "approved" | "archived";
+            archived: boolean;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        Valmanifest: {
+            id: number;
+            party: string;
+            electionYear: number;
+            title: string;
+            /** Format: date-time */
+            publishedOn?: string | null;
+            url: string;
+            pdfUrl?: string;
+            /**
+             * @description The party's own marking
+             * @enum {string}
+             */
+            state: "draft" | "final";
+        };
         /**
          * @description Swedish party abbreviation
          * @enum {string}
@@ -3222,6 +3344,124 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PartySummary"][];
+                };
+            };
+        };
+    };
+    listLoften: {
+        parameters: {
+            query?: {
+                party?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Public Löften */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Loefte"][];
+                };
+            };
+            /** @description Invalid party */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getLoefte: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The Löfte */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Loefte"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listPartyLoften: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                party: components["parameters"]["PartyParam"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Public Löften */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Loefte"][];
+                };
+            };
+        };
+    };
+    listValmanifest: {
+        parameters: {
+            query?: {
+                party?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Valmanifest */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Valmanifest"][];
+                };
+            };
+        };
+    };
+    listPartyValmanifest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                party: components["parameters"]["PartyParam"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Valmanifest */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Valmanifest"][];
                 };
             };
         };

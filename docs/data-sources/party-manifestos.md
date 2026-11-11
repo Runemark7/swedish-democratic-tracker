@@ -9,8 +9,9 @@ last_verified: 2026-08-04
 verification_status: verified
 verification_notes: ~
 used_by:
-  - /manifestos (katalogen över valmanifest och valplattformar)
-  - /parties/:party (länk till partiets källdokument)
+  - /parties/:party (Valmanifest listade som källor)
+  - /loften (Valmanifest för alla partier, #valmanifest)
+  - /manifestos (omdirigerar till partisidan eller /loften#valmanifest)
 ---
 
 ## Vad det är
@@ -60,7 +61,7 @@ inget manifest vi har kunnat hitta.
 - `title` — dokumentets titel som partiet skrivit den.
 - `type` — `valmanifest`, `valplattform`, `partiprogram` eller
   `politiska-riktlinjer`, enligt vad partiet kallar dokumentet.
-- `status` — `published` (slutligt dokument) eller `draft` (partiet har
+- `state` (`status` i den gamla listan) — `final` (slutligt dokument) eller `draft` (partiet har
   publicerat ett utkast eller en preliminär version). Saknas dokumentet helt
   finns ingen post, och sidan skriver då att **vår** katalog är tom för det
   partiet och året.
@@ -80,10 +81,11 @@ inget manifest vi har kunnat hitta.
   dokument heter "Preliminär valplattform" och Miljöpartiets ligger på en
   URL märkt `utkast`. Vi återger den märkningen och rangordnar inte dokument
   efter den — läsaren avgör vad ett utkast är värt.
-- **Uppdatering kräver driftsättning.** Katalogen ligger i frontendkoden, så
-  varje nytt manifest kräver en ny version av sajten. Under valrörelsens
-  sista veckor är det den mest sannolika orsaken till att katalogen ligger
-  efter.
+- **Uppdatering kräver en migration.** Katalogen ligger sedan migration
+  000057 i tabellen `valmanifest` (tidigare hårdkodad i frontend). Den fylldes
+  en gång från den gamla listan; nya manifest läggs till med en migration tills
+  skriv-API:t för Löften finns. `published_on` är tom: vi har inte
+  registrerat utgivningsdatum.
 - Listan för 2014 och 2018 saknar sammanfattningar för flera partier.
 
 ## Hur vi bearbetar

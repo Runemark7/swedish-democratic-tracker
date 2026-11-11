@@ -226,7 +226,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "license": "Sammanställt från partiernas valmanifest 2022, valplattform 2026, Tidöavtalet och partiprogram",
     "freshness": "engångs (vid antagande); uppdateras manuellt vid nya manifest",
     "lastVerified": "Sun Jun 21 2026 02:00:00 GMT+0200 (Central European Summer Time)",
-    "blurb": "Hand-kuraterade mål från partiernas publicerade dokument — valmanifest 2022, valplattform 2026, Tidöavtalet och partiprogram. Varje mål har en `source_url` till källdokumentet och ett ordagrant `source_quote` ur det. På så sätt kan du för varje mål gå tillbaka och verifiera exakt vad partiet skrev.",
+    "blurb": "Sedan migration 000057 kopieras 2022 års mål (och mål utan valår) till tabellen `loften` med oförändrat id och synlighet `archived`; 2026-material kopieras inte. De visas som arkiv 2022–2026, utan Löftesstatus. Tabellen `party_goals` är orörd.",
     "verificationStatus": "frozen",
     "verificationNotes": null
   },

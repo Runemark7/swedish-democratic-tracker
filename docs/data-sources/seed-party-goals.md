@@ -10,11 +10,17 @@ verification_status: frozen
 verification_notes: ~
 used_by:
   - /parties (partiscorecards)
-  - /parties/:party/goals (mållista)
-  - /parties/:party/goals/:goalId/votes (målets omröstningar)
+  - /parties/:party?tab=loften (2022 års mål som arkiverade Löften)
+  - /loften och /loften/:id (arkivet, samma id som målet)
+  - /parties/:party/goals och /goals/:goalId/votes (omdirigerar till ovan)
 ---
 
 ## Vad det är
+Sedan migration 000057 kopieras 2022 års mål (och mål utan valår) till tabellen
+`loften` med oförändrat id och synlighet `archived`; 2026-material kopieras
+inte. De visas som arkiv 2022–2026, utan Löftesstatus. Tabellen `party_goals`
+är orörd.
+
 Hand-kuraterade mål från partiernas publicerade dokument — valmanifest 2022,
 valplattform 2026, Tidöavtalet och partiprogram. Varje mål har en `source_url`
 till källdokumentet och ett ordagrant `source_quote` ur det. På så sätt kan du
