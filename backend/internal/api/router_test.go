@@ -129,7 +129,10 @@ func TestRegisteredRoutesMatchThePreExtractionList(t *testing.T) {
 		t.Fatalf("a write token changed the public route list:\nwithout:\n%s\nwith token:\n%s",
 			strings.Join(got, "\n"), strings.Join(tokenRoutes, "\n"))
 	}
-	wantWrite := []string{"POST /api/write/aendringslogg/{id}/undo", "POST /api/write/valmanifest"}
+	wantWrite := []string{
+		"POST /api/write/aendringslogg/{id}/undo", "POST /api/write/loften", "POST /api/write/loften/{id}",
+		"POST /api/write/loften/{id}/approve", "POST /api/write/loften/{id}/strike", "POST /api/write/valmanifest",
+	}
 	if strings.Join(writeRoutes, "\n") != strings.Join(wantWrite, "\n") {
 		t.Fatalf("write routes = %v, want %v", writeRoutes, wantWrite)
 	}
