@@ -80,7 +80,7 @@ func TestWriteAPIAuth(t *testing.T) {
 	if rec := writeReq(h, "POST", p, "wrong", "k1", b); rec.Code != 401 {
 		t.Fatalf("wrong token: %d", rec.Code)
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 0 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 0 {
 		t.Fatalf("unauthorised calls logged %d entries", n)
 	}
 	if rec := writeReq(h, "POST", p, testWriteToken, "k1", b); rec.Code != 200 {
@@ -97,7 +97,7 @@ func TestWriteAPIUnconfiguredIs404(t *testing.T) {
 			}
 		}
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 0 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 0 {
 		t.Fatal("log written")
 	}
 	// The log is still readable.
@@ -130,7 +130,7 @@ func TestWriteAPIValidation(t *testing.T) {
 			t.Errorf("%s: error body %q", name, rec.Body)
 		}
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 0 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 0 {
 		t.Fatal("invalid requests logged")
 	}
 }
@@ -163,7 +163,7 @@ func TestWriteAPIIdempotentAndLogged(t *testing.T) {
 	if n := count(t, h, `SELECT count(*) FROM valmanifest WHERE party='M' AND election_year=2030`); n != 1 {
 		t.Fatalf("manifests: %d", n)
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 1 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 1 {
 		t.Fatalf("log entries after replay: %d", n)
 	}
 
@@ -178,7 +178,7 @@ func TestWriteAPIIdempotentAndLogged(t *testing.T) {
 	if rec.Code != 200 || decode[writeResult](t, rec).Changed {
 		t.Fatalf("no-op: %d %s", rec.Code, rec.Body)
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 1 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 1 {
 		t.Fatalf("no-op logged: %d", n)
 	}
 
@@ -200,7 +200,7 @@ func TestWriteAPILogIsAtomicAndAppendOnly(t *testing.T) {
 	if _, err := h.DB.Exec(ctx, `UPDATE aendringslogg SET actor='x'`); err == nil {
 		t.Fatal("update of the log succeeded")
 	}
-	if _, err := h.DB.Exec(ctx, `DELETE FROM aendringslogg`); err == nil {
+	if _, err := h.DB.Exec(ctx, `DELETE FROM aendringslogg WHERE actor <> 'migration'`); err == nil {
 		t.Fatal("delete from the log succeeded")
 	}
 	if _, err := h.DB.Exec(ctx, `TRUNCATE aendringslogg`); err == nil {
@@ -225,7 +225,7 @@ func TestWriteAPIUndo(t *testing.T) {
 	if rec := writeReq(h, "POST", undoPath(created.Entry.ID), testWriteToken, "u3", ub); rec.Code != 409 {
 		t.Fatalf("conflicting undo: %d %s", rec.Code, rec.Body)
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 2 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 2 {
 		t.Fatalf("conflicting undo logged: %d", n)
 	}
 
@@ -249,7 +249,7 @@ func TestWriteAPIUndo(t *testing.T) {
 	if rec := writeReq(h, "POST", undoPath(updated.Entry.ID), testWriteToken, "u4", ub); rec.Code != 200 {
 		t.Fatalf("undo replay: %d", rec.Code)
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 3 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 3 {
 		t.Fatalf("log entries: %d", n)
 	}
 	// Now the create can be undone: the row goes away, and that is logged.

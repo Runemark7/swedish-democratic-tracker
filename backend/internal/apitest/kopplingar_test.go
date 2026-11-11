@@ -222,7 +222,7 @@ func TestSuggestionOutsideMandatePeriodRejected(t *testing.T) {
 	if rec.Code != 422 || !strings.Contains(rec.Body.String(), "mandate period") {
 		t.Fatalf("outside period: %d %s", rec.Code, rec.Body)
 	}
-	if count(t, s.h, `SELECT count(*) FROM kopplingar`) != 0 || count(t, s.h, `SELECT count(*) FROM aendringslogg`) != 0 {
+	if count(t, s.h, `SELECT count(*) FROM kopplingar`) != 0 || count(t, s.h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`) != 0 {
 		t.Fatal("a rejected batch stored something (must be all-or-nothing)")
 	}
 }

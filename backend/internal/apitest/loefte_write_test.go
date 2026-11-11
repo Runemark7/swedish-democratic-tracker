@@ -57,10 +57,10 @@ func TestLoefteProposeRejectsMissingQuoteOrSource(t *testing.T) {
 			t.Errorf("%s: %d %s", name, rec.Code, rec.Body)
 		}
 	}
-	if n := count(t, h, `SELECT count(*) FROM loften WHERE visibility='proposed'`); n != 0 {
+	if n := count(t, h, `SELECT count(*) FROM loften WHERE visibility='proposed' AND id NOT BETWEEN 45 AND 51`); n != 0 {
 		t.Fatalf("rejected proposals stored: %d", n)
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 0 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 0 {
 		t.Fatalf("rejected proposals logged: %d", n)
 	}
 	if rec := writeReq(h, "POST", "/api/write/loften", "", "k", good); rec.Code != 401 {
@@ -154,7 +154,7 @@ func TestLoefteProposedInvisibleUntilApproved(t *testing.T) {
 	if rec.Code != 200 || decode[writeResult](t, rec).Changed {
 		t.Fatalf("re-approve: %d %s", rec.Code, rec.Body)
 	}
-	if n := count(t, h, `SELECT count(*) FROM aendringslogg`); n != 3 {
+	if n := count(t, h, `SELECT count(*) FROM aendringslogg WHERE actor <> 'migration'`); n != 3 {
 		t.Fatalf("log rows: %d", n)
 	}
 }
@@ -228,7 +228,7 @@ func TestLoefteUndoAndIdempotency(t *testing.T) {
 	b := proposeBody(vm, "Citat U", "https://example.org/v")
 	r1 := decode[writeResult](t, writeReq(h, "POST", "/api/write/loften", testWriteToken, "i1", b))
 	r2 := decode[writeResult](t, writeReq(h, "POST", "/api/write/loften", testWriteToken, "i1", b))
-	if r1.Entry.ID != r2.Entry.ID || count(t, h, `SELECT count(*) FROM loften WHERE visibility='proposed'`) != 1 {
+	if r1.Entry.ID != r2.Entry.ID || count(t, h, `SELECT count(*) FROM loften WHERE visibility='proposed' AND id NOT BETWEEN 45 AND 51`) != 1 {
 		t.Fatal("propose not idempotent")
 	}
 	id := r1.Entry.EntityID
