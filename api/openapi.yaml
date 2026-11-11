@@ -491,6 +491,30 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
 
+  /parties/{party}/record:
+    get:
+      operationId: getPartyRecord
+      tags: [motions]
+      summary: A party's recent decisions (with its Partilinje) and its Kommittémotioner (with outcomes)
+      description: >-
+        `decisions` are the party's ten most recently decided betänkanden: those
+        that decide a motion signed by the party, carry a reservation by it, or
+        were voted on by it. `partilinje` is the party's own line (see
+        BeslutPartyLine), empty when no member cast a ballot (decided without
+        votering). `motions` are the party's Kommittémotioner, most recently
+        decided first, each with its outcome.
+      parameters:
+        - { name: party, in: path, required: true, description: "Party, e.g. `M`", schema: { type: string } }
+      responses:
+        "200":
+          description: The party's record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PartyRecord"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
   /frontpage:
     get:
       operationId: getFrontPage
@@ -1981,6 +2005,28 @@ components:
           type: array
           description: "Empty for an upcoming row; otherwise the eight parties in a fixed order"
           items: { $ref: "#/components/schemas/BeslutPartyLine" }
+    PartyRecord:
+      type: object
+      required: [party, decisions, motions]
+      properties:
+        party: { type: string }
+        decisions: { type: array, items: { $ref: "#/components/schemas/PartyDecision" } }
+        motions: { type: array, items: { $ref: "#/components/schemas/MotionListRow" } }
+    PartyDecision:
+      type: object
+      required: [riksmote, beteckning, title, utskott, utskottName, date, decided, outcome, partilinje, voteringar, sourceUrl]
+      properties:
+        riksmote: { type: string, example: "2025/26" }
+        beteckning: { type: string, example: "UbU30" }
+        title: { type: string }
+        utskott: { type: string }
+        utskottName: { type: string }
+        date: { type: [string, "null"] }
+        decided: { type: boolean }
+        outcome: { type: string }
+        partilinje: { type: string, description: "Ja, Nej, Avstår, Delad, Varierar, or empty when no member of the party cast a ballot" }
+        voteringar: { type: integer }
+        sourceUrl: { type: string }
     BeslutPartyLine:
       type: object
       required: [party, partilinje, voteringar]
