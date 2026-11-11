@@ -47,7 +47,6 @@ test.describe("Party page", () => {
   });
 
   test("the old goals URL still reaches the Löften tab", async ({ page }) => {
-    await page.route("**/api/parties/M/goals", (route) => route.fulfill({ json: [] }));
     await page.goto("/parties/M/goals");
     await expect(page).toHaveURL(/\/parties\/M\?tab=loften/);
   });

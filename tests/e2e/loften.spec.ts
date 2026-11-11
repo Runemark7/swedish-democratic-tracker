@@ -24,7 +24,6 @@ test.describe("Löften under Partier", () => {
   });
 
   test("Löften are reached under Partier and there is no Löften item in the top menu", async ({ page }) => {
-    await page.route("**/api/parties", (r) => r.fulfill({ json: [{ party: "M", totalGoals: 1, topicBreakdown: [] }] }));
     await page.route("**/api/party-meta", (r) => r.fulfill({ json: [] }));
     await page.goto("/parties");
     const primary = page.getByRole("navigation", { name: "Huvudmeny" });
