@@ -320,7 +320,7 @@ postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable
   `DATABASE_URL` secret named by the chart's `dbSecretName` — there is no
   bitnami subchart and the database is not Neon. Local dev compose still uses
   `postgres:17-alpine`.
-- Migrations in `backend/migrations/` are numbered `000001`–`000052` (no `000045`; `000051` is taken on another branch).
+- Migrations in `backend/migrations/` are numbered `000001`–`000052` (no `000045`).
 - The voting record lives in two tables, not one: `voteringar` (one row per
   decided förslagspunkt) and `ballots` (one row per member per votering).
   `votering_id` is the identity — two voteringar can share a beteckning and
