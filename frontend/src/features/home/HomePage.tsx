@@ -5,7 +5,7 @@ import { PartyBadge } from "@/shared/components";
 import { partyShortToName } from "@/shared/design";
 import { partiesApi } from "@/features/parties/api";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { DecisionFeed } from "./DecisionFeed";
+import { FrontPageFeed } from "./FrontPageFeed";
 
 export function HomePage() {
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -86,7 +86,7 @@ export function HomePage() {
         </p>
       </header>
 
-      <DecisionFeed />
+      <FrontPageFeed />
 
       <section
         style={{

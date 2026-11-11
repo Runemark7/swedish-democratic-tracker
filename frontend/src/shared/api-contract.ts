@@ -356,6 +356,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/frontpage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Front-page feed — newest decided betänkanden, recent motion outcomes, next planned betänkanden
+         * @description Up to 5 decided betänkanden (newest decision first, each with the eight parties' Partilinje), up to 5 recently decided motions and up to 3 upcoming betänkanden (soonest beslutsdag first). Decided is Riksdagen's own rule (`beslutad`, else status and `beslutsdag`); a planned betänkande is never in `decided`. `coverage` gives the dates the decided rows cover; `stale` is true when the newest decision is before the start (Monday) of the current week.
+         */
+        get: operations["getFrontPage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/motions": {
         parameters: {
             query?: never;
@@ -1477,6 +1497,26 @@ export interface components {
             handledIn: string[];
             sourceUrl: string;
             outcome: components["schemas"]["MotionOutcome"];
+        };
+        FrontPageResponse: {
+            decided: components["schemas"]["BeslutListRow"][];
+            motions: components["schemas"]["FrontPageMotion"][];
+            upcoming: components["schemas"]["BeslutListRow"][];
+            coverage: {
+                /** Format: date */
+                oldest: string | null;
+                /** Format: date */
+                newest: string | null;
+                /** @description The newest decision is older than the current week */
+                stale: boolean;
+            };
+        };
+        FrontPageMotion: components["schemas"]["MotionListRow"] & {
+            /**
+             * Format: date
+             * @description Date of the newest betänkande that decided one of its yrkanden
+             */
+            decidedAt: string;
         };
         BeslutListResponse: {
             data: components["schemas"]["BeslutListRow"][];
@@ -3119,6 +3159,26 @@ export interface operations {
                 };
             };
             400: components["responses"]["BadRequest"];
+        };
+    };
+    getFrontPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The feed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FrontPageResponse"];
+                };
+            };
         };
     };
     listMotions: {
