@@ -2,7 +2,7 @@
 id: scb-kfmandat
 name: SCB Kfmandat (kommunala mandat)
 kind: api
-upstream: https://api.scb.se/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat
+upstream: https://statistikdatabasen.scb.se/api/v2/tables/TAB1971/metadata?lang=sv
 license: PxWeb open data — fri användning
 freshness: 4-årscykel (val)
 last_verified: 2026-06-08
@@ -22,6 +22,14 @@ Tabellen heter **Kfmandat** och finns i SCB:s statistikdatabas under
 val och demokrati. Du når den via SCBs webbgränssnitt på
 <https://www.statistikdatabasen.scb.se/> — sök på "Kfmandat" eller
 navigera via Val → Allmänna val → Kommunfullmäktige → Kfmandat.
+
+Sedan november 2026 läser vi tabellen via SCB:s PxWebApi v2 som tabell
+`TAB1971` (`https://statistikdatabasen.scb.se/api/v2/tables/TAB1971`; metadata
+via `/metadata`, data via POST till `/data?outputFormat=json-px`). Det
+gamla v1-API:t nedan används bara som reserv tills SCB stänger det vid
+årsskiftet 2026/2027. Båda versionerna svarar ibland med fel (v2 500, v1
+400) på giltiga frågor, så klienten (`backend/internal/scbpx`) försöker
+igen innan den ger upp.
 
 Teknisk åtkomst sker via SCB:s PxWeb API med sökvägen
 `/OV0104/v1/doris/sv/ssd/ME/ME0104/ME0104A/Kfmandat`. En GET mot

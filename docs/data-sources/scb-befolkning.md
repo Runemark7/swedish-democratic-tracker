@@ -2,7 +2,7 @@
 id: scb-befolkning
 name: SCB BefolkningNy
 kind: api
-upstream: https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy
+upstream: https://statistikdatabasen.scb.se/api/v2/tables/TAB638/metadata?lang=sv
 license: PxWeb open data — fri användning
 freshness: årlig (kvartal för kommunnivå)
 last_verified: 2026-06-08
@@ -23,6 +23,14 @@ Tabellen heter **BefolkningNy** och finns i SCB:s statistikdatabas under
 ämnesområdet Befolkning (BE). Du når den via SCBs webbgränssnitt på
 <https://www.statistikdatabasen.scb.se/> — sök på "BefolkningNy" eller
 navigera via Befolkning → Befolkningsstatistik → Folkmängd → BefolkningNy.
+
+Sedan november 2026 läser vi tabellen via SCB:s PxWebApi v2 som tabell
+`TAB638` (`https://statistikdatabasen.scb.se/api/v2/tables/TAB638`; metadata
+via `/metadata`, data via POST till `/data?outputFormat=json-px`). Det
+gamla v1-API:t nedan används bara som reserv tills SCB stänger det vid
+årsskiftet 2026/2027. Båda versionerna svarar ibland med fel (v2 500, v1
+400) på giltiga frågor, så klienten (`backend/internal/scbpx`) försöker
+igen innan den ger upp.
 
 Teknisk åtkomst sker via SCB:s PxWeb API. Tabellens sökväg i API:et är
 `/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy`. En GET mot

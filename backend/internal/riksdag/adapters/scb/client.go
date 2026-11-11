@@ -1,9 +1,7 @@
 package scb
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"sort"
@@ -12,10 +10,11 @@ import (
 	"time"
 
 	"riksdagskollen/internal/riksdag/ports"
+	"riksdagskollen/internal/scbpx"
 )
 
-// headcountURL is the SCB KLS table: monthly employees in statlig sektor by agency.
-const headcountURL = "https://api.scb.se/OV0104/v1/doris/sv/ssd/AM/AM0102/AM0102A/KLStabell14LpMan"
+// The SCB KLS table (scbpx.KLSHeadcount): monthly employees in statlig sektor
+// by agency, read via PxWebApi v2 with a v1 fallback.
 
 // klsCodeMap maps KLS agency codes to our canonical agency names.
 // C021 = polisväsendet (includes Polismyndigheten + Säkerhetspolisen).
@@ -32,7 +31,7 @@ var klsCodeMap = map[string]string{
 }
 
 type Client struct {
-	http     *http.Client
+	px       *scbpx.Client
 	mu       sync.Mutex
 	cached   []ports.HeadcountData
 	cachedAt time.Time
@@ -41,7 +40,7 @@ type Client struct {
 
 func NewClient() *Client {
 	return &Client{
-		http:     &http.Client{Timeout: 15 * time.Second},
+		px:       scbpx.New(&http.Client{Timeout: 30 * time.Second}),
 		cacheTTL: 24 * time.Hour,
 	}
 }
@@ -79,46 +78,24 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 		codes = append(codes, k)
 	}
 
-	body := map[string]any{
-		"query": []map[string]any{
-			{"code": "Myndighet", "selection": map[string]any{"filter": "item", "values": codes}},
-			{"code": "Kon", "selection": map[string]any{"filter": "item", "values": []string{"1+2"}}},
-			{"code": "Heltiddeltid", "selection": map[string]any{"filter": "item", "values": []string{"HT+DT"}}},
-			{"code": "ContentsCode", "selection": map[string]any{"filter": "item", "values": []string{"AM0102AB"}}},
-			{"code": "Tid", "selection": map[string]any{"filter": "item", "values": tidValues}},
-		},
-		"response": map[string]any{"format": "json"},
-	}
-
-	payload, err := json.Marshal(body)
+	// Ask only for published months; one missing month rejects the query.
+	tidValues, err := c.px.Has(ctx, scbpx.KLSHeadcount, "Tid", tidValues)
 	if err != nil {
-		return nil, fmt.Errorf("scb headcount marshal: %w", err)
+		return nil, fmt.Errorf("scb headcount: %w", err)
+	}
+	if len(tidValues) == 0 {
+		return nil, fmt.Errorf("scb headcount: no published December months")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, headcountURL, bytes.NewReader(payload))
+	rows, err := c.px.Data(ctx, scbpx.KLSHeadcount, []scbpx.Select{
+		{Code: "Myndighet", Values: codes},
+		{Code: "Kon", Values: []string{"1+2"}},
+		{Code: "Heltiddeltid", Values: []string{"HT+DT"}},
+		{Code: "ContentsCode", Values: []string{"AM0102AB"}},
+		{Code: "Tid", Values: tidValues},
+	})
 	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := c.http.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("scb headcount request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("scb headcount: HTTP %d", resp.StatusCode)
-	}
-
-	var result struct {
-		Data []struct {
-			Key    []string `json:"key"`
-			Values []string `json:"values"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("scb headcount decode: %w", err)
+		return nil, fmt.Errorf("scb headcount: %w", err)
 	}
 
 	// Aggregate per agency: key layout is [Myndighet, Kon, Heltiddeltid, Tid].
@@ -129,7 +106,7 @@ func (c *Client) fetch(ctx context.Context) ([]ports.HeadcountData, error) {
 	}
 	byName := map[string]*agencyAcc{}
 
-	for _, row := range result.Data {
+	for _, row := range rows {
 		if len(row.Key) < 4 || len(row.Values) == 0 {
 			continue
 		}

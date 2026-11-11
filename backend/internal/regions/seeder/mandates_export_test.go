@@ -3,13 +3,14 @@ package seeder
 import (
 	"context"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 )
 
 func TestFetchMandateTotals_LiveSmoke(t *testing.T) {
-	if testing.Short() {
-		t.Skip("hits live SCB; run without -short")
+	if testing.Short() || os.Getenv("SCB_LIVE_SMOKE") == "" {
+		t.Skip("hits live SCB (flaky since Nov 2026); set SCB_LIVE_SMOKE=1 to run")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

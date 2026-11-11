@@ -2,7 +2,7 @@
 id: scb-kostndrlt
 name: SCB KostnDRLT (regionernas driftkostnader)
 kind: api
-upstream: https://api.scb.se/OV0104/v1/doris/sv/ssd/OE/OE0107/OE0107D/KostnDRLT
+upstream: https://statistikdatabasen.scb.se/api/v2/tables/TAB4242/metadata?lang=sv
 license: PxWeb open data — fri användning
 freshness: årlig
 last_verified: 2026-06-08
@@ -21,6 +21,14 @@ Tabellen heter **KostnDRLT** och finns i SCB:s statistikdatabas under
 offentlig ekonomi. Du når den via SCBs webbgränssnitt på
 <https://www.statistikdatabasen.scb.se/> — sök på "KostnDRLT" eller
 navigera via Offentlig ekonomi → Landstingsekonomi → Driftkostnader.
+
+Sedan november 2026 läser vi tabellen via SCB:s PxWebApi v2 som tabell
+`TAB4242` (`https://statistikdatabasen.scb.se/api/v2/tables/TAB4242`; metadata
+via `/metadata`, data via POST till `/data?outputFormat=json-px`). Det
+gamla v1-API:t nedan används bara som reserv tills SCB stänger det vid
+årsskiftet 2026/2027. Båda versionerna svarar ibland med fel (v2 500, v1
+400) på giltiga frågor, så klienten (`backend/internal/scbpx`) försöker
+igen innan den ger upp.
 
 Teknisk åtkomst sker via SCB:s PxWeb API med sökvägen
 `/OV0104/v1/doris/sv/ssd/OE/OE0107/OE0107D/KostnDRLT`. En GET mot

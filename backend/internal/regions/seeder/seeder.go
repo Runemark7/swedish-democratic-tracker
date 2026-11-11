@@ -1,9 +1,7 @@
 package seeder
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"math"
@@ -13,14 +11,19 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"riksdagskollen/internal/scbpx"
 )
 
-const (
-	scbBase       = "https://api.scb.se/OV0104/v1/doris/sv/ssd"
-	kfmandatURL   = scbBase + "/ME/ME0104/ME0104A/Kfmandat"
-	ltmandatURL   = scbBase + "/ME/ME0104/ME0104B/Ltmandat"
-	befolkningURL = scbBase + "/BE/BE0101/BE0101A/BefolkningNy"
+// SCB tables (PxWebApi v2 first, v1 fallback; see package scbpx).
+var (
+	kfmandatTable   = scbpx.Kfmandat
+	ltmandatTable   = scbpx.Ltmandat
+	befolkningTable = scbpx.BefolkningNy
 )
+
+// populationYear is the BE0101 year the seeder reads (folkmängd 31 december).
+const populationYear = "2023"
 
 var (
 	rightBloc = map[string]bool{"M": true, "SD": true, "KD": true, "L": true, "C": true}
@@ -29,27 +32,13 @@ var (
 
 var allParties = []string{"M", "C", "FP", "KD", "MP", "S", "V", "SD", "ÖVRIGA"}
 
-type scbMeta struct {
-	Variables []struct {
-		Code       string   `json:"code"`
-		Values     []string `json:"values"`
-		ValueTexts []string `json:"valueTexts"`
-	} `json:"variables"`
-}
-
-type scbData struct {
-	Data []struct {
-		Key    []string `json:"key"`
-		Values []string `json:"values"`
-	} `json:"data"`
-}
-
-// Run seeds all 291 municipalities and 21 regions from the SCB PxWeb API (2022 election data).
+// Run seeds all 291 municipalities and 21 regions from SCB's Statistical
+// Database (2022 election data), via PxWebApi v2 with a v1 fallback.
 func Run(ctx context.Context, pool *pgxpool.Pool) error {
-	httpClient := &http.Client{Timeout: 30 * time.Second}
+	httpClient := scbpx.New(&http.Client{Timeout: 30 * time.Second})
 
 	slog.Info("seeder: fetching municipality metadata from SCB")
-	munMeta, err := getMeta(ctx, httpClient, kfmandatURL)
+	munMeta, err := getMeta(ctx, httpClient, kfmandatTable)
 	if err != nil {
 		return fmt.Errorf("fetch kfmandat meta: %w", err)
 	}
@@ -64,7 +53,7 @@ func Run(ctx context.Context, pool *pgxpool.Pool) error {
 	slog.Info("seeder: found municipalities", "count", len(munCodes))
 
 	slog.Info("seeder: fetching region metadata from SCB")
-	regMeta, err := getMeta(ctx, httpClient, ltmandatURL)
+	regMeta, err := getMeta(ctx, httpClient, ltmandatTable)
 	if err != nil {
 		return fmt.Errorf("fetch ltmandat meta: %w", err)
 	}
@@ -123,30 +112,23 @@ func Run(ctx context.Context, pool *pgxpool.Pool) error {
 	slog.Info("seeder: found regions", "count", len(regCodes))
 
 	slog.Info("seeder: fetching municipal mandates (2022)")
-	munMandates, err := fetchMandates(ctx, httpClient, kfmandatURL, munCodes, "ME0104C1")
+	munMandates, err := fetchMandates(ctx, httpClient, kfmandatTable, munCodes, "ME0104C1")
 	if err != nil {
 		return fmt.Errorf("fetch municipal mandates: %w", err)
 	}
 
 	slog.Info("seeder: fetching regional mandates (2022)")
-	regMandates, err := fetchMandates(ctx, httpClient, ltmandatURL, regCodes, "ME0104C2")
+	regMandates, err := fetchMandates(ctx, httpClient, ltmandatTable, regCodes, "ME0104C2")
 	if err != nil {
 		return fmt.Errorf("fetch regional mandates: %w", err)
 	}
 
 	slog.Info("seeder: fetching population metadata")
-	popMeta, err := getMeta(ctx, httpClient, befolkningURL)
+	popMeta, err := getMeta(ctx, httpClient, befolkningTable)
 	if err != nil {
 		return fmt.Errorf("fetch population meta: %w", err)
 	}
-	validPopCodes := make(map[string]bool)
-	for _, v := range popMeta.Variables {
-		if v.Code == "Region" {
-			for _, c := range v.Values {
-				validPopCodes[c] = true
-			}
-		}
-	}
+	validPopCodes := regionCodeSet(popMeta)
 	var popQueryCodes []string
 	for _, code := range munCodes {
 		if validPopCodes[code] {
@@ -299,65 +281,39 @@ func allRegionCodes(ctx context.Context, pool *pgxpool.Pool) ([]string, error) {
 	return codes, rows.Err()
 }
 
-func getMeta(ctx context.Context, c *http.Client, url string) (*scbMeta, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := c.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("SCB meta returned %d", resp.StatusCode)
-	}
-	var m scbMeta
-	return &m, json.NewDecoder(resp.Body).Decode(&m)
+func getMeta(ctx context.Context, c *scbpx.Client, t scbpx.Table) (*scbpx.Meta, error) {
+	return c.Meta(ctx, t)
 }
 
-func codesAndNames(m *scbMeta) (codes, names []string) {
-	for _, v := range m.Variables {
-		if v.Code == "Region" {
-			return v.Values, v.ValueTexts
-		}
+func codesAndNames(m *scbpx.Meta) (codes, names []string) {
+	if v := m.Variable("Region"); v != nil {
+		return v.Values, v.ValueTexts
 	}
 	return nil, nil
 }
 
-func fetchMandates(ctx context.Context, c *http.Client, url string, codes []string, contentsCode string) (map[string]map[string]int, error) {
-	body := map[string]any{
-		"query": []map[string]any{
-			{"code": "Region", "selection": map[string]any{"filter": "item", "values": codes}},
-			{"code": "Parti", "selection": map[string]any{"filter": "item", "values": allParties}},
-			{"code": "ContentsCode", "selection": map[string]any{"filter": "item", "values": []string{contentsCode}}},
-			{"code": "Tid", "selection": map[string]any{"filter": "item", "values": []string{"2022"}}},
-		},
-		"response": map[string]any{"format": "json"},
+func regionCodeSet(m *scbpx.Meta) map[string]bool {
+	set := make(map[string]bool)
+	if v := m.Variable("Region"); v != nil {
+		for _, c := range v.Values {
+			set[c] = true
+		}
 	}
-	b, err := json.Marshal(body)
+	return set
+}
+
+func fetchMandates(ctx context.Context, c *scbpx.Client, t scbpx.Table, codes []string, contentsCode string) (map[string]map[string]int, error) {
+	rows, err := c.Data(ctx, t, []scbpx.Select{
+		{Code: "Region", Values: codes},
+		{Code: "Parti", Values: allParties},
+		{Code: "ContentsCode", Values: []string{contentsCode}},
+		{Code: "Tid", Values: []string{"2022"}},
+	})
 	if err != nil {
-		return nil, err
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(b))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := c.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("SCB mandates returned %d", resp.StatusCode)
-	}
-	var data scbData
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("SCB mandates: %w", err)
 	}
 	result := make(map[string]map[string]int)
-	for _, row := range data.Data {
+	for _, row := range rows {
 		if len(row.Key) < 2 || len(row.Values) == 0 {
 			continue
 		}
@@ -375,14 +331,20 @@ func fetchMandates(ctx context.Context, c *http.Client, url string, codes []stri
 	return result, nil
 }
 
-func fetchPopulations(ctx context.Context, c *http.Client, munCodes []string) (map[string]int, error) {
-	result := make(map[string]int, len(munCodes))
-	for i := 0; i < len(munCodes); i += 50 {
-		end := i + 50
-		if end > len(munCodes) {
-			end = len(munCodes)
+// populationBatchSize is large enough to fetch all ~290 municipalities in one
+// request (290 cells, far below SCB's 150 000-cell limit). SCB's intermittent
+// failures do not depend on query size, so fewer requests means fewer chances
+// for one batch to exhaust its retries and fail the whole seeder.
+const populationBatchSize = 300
+
+func fetchPopulations(ctx context.Context, c *scbpx.Client, codes []string) (map[string]int, error) {
+	result := make(map[string]int, len(codes))
+	for i := 0; i < len(codes); i += populationBatchSize {
+		end := i + populationBatchSize
+		if end > len(codes) {
+			end = len(codes)
 		}
-		partial, err := fetchPopulationBatch(ctx, c, munCodes[i:end])
+		partial, err := fetchPopulationBatch(ctx, c, codes[i:end])
 		if err != nil {
 			return nil, err
 		}
@@ -393,38 +355,21 @@ func fetchPopulations(ctx context.Context, c *http.Client, munCodes []string) (m
 	return result, nil
 }
 
-func fetchPopulationBatch(ctx context.Context, c *http.Client, munCodes []string) (map[string]int, error) {
-	body := map[string]any{
-		"query": []map[string]any{
-			{"code": "Region", "selection": map[string]any{"filter": "item", "values": munCodes}},
-			{"code": "ContentsCode", "selection": map[string]any{"filter": "item", "values": []string{"BE0101N1"}}},
-			{"code": "Tid", "selection": map[string]any{"filter": "item", "values": []string{"2023"}}},
-		},
-		"response": map[string]any{"format": "json"},
-	}
-	b, err := json.Marshal(body)
+// fetchPopulationBatch reads total folkmängd per region code. Alder is pinned
+// to "tot" (Civilstand and Kon are eliminated): PxWebApi v2 rejects (500) a
+// query that eliminates all three, so the key is [Region, Alder, Tid].
+func fetchPopulationBatch(ctx context.Context, c *scbpx.Client, codes []string) (map[string]int, error) {
+	rows, err := c.Data(ctx, befolkningTable, []scbpx.Select{
+		{Code: "Region", Values: codes},
+		{Code: "Alder", Values: []string{"tot"}},
+		{Code: "ContentsCode", Values: []string{"BE0101N1"}},
+		{Code: "Tid", Values: []string{populationYear}},
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("SCB population batch starting %s: %w", codes[0], err)
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, befolkningURL, bytes.NewReader(b))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := c.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("SCB population returned %d for batch starting %s", resp.StatusCode, munCodes[0])
-	}
-	var data scbData
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		return nil, err
-	}
-	result := make(map[string]int, len(munCodes))
-	for _, row := range data.Data {
+	result := make(map[string]int, len(codes))
+	for _, row := range rows {
 		if len(row.Key) < 2 || len(row.Values) == 0 {
 			continue
 		}
@@ -458,19 +403,13 @@ func sumMandates(byParty map[string]int) int {
 // any code SCB does not list as a valid Region value, so one stale/unknown code
 // cannot reject (HTTP 400) an entire batch. Codes filtered out are simply
 // absent from the result; the caller reports them as "not in SCB set".
-func FetchPopulations(ctx context.Context, c *http.Client, codes []string) (map[string]int, error) {
-	meta, err := getMeta(ctx, c, befolkningURL)
+func FetchPopulations(ctx context.Context, hc *http.Client, codes []string) (map[string]int, error) {
+	c := scbpx.New(hc)
+	meta, err := getMeta(ctx, c, befolkningTable)
 	if err != nil {
 		return nil, fmt.Errorf("population meta: %w", err)
 	}
-	valid := make(map[string]bool)
-	for _, v := range meta.Variables {
-		if v.Code == "Region" {
-			for _, code := range v.Values {
-				valid[code] = true
-			}
-		}
-	}
+	valid := regionCodeSet(meta)
 	known := make([]string, 0, len(codes))
 	for _, code := range codes {
 		if valid[code] {
@@ -484,22 +423,23 @@ func FetchPopulations(ctx context.Context, c *http.Client, codes []string) (map[
 // fetched live from SCB's Kfmandat (municipalities) and Ltmandat (regions)
 // tables. It reuses the same PxWeb calls the startup seeder uses. Keyed by
 // name so callers need not reproduce the region code→SCB code mapping.
-func FetchMandateTotals(ctx context.Context, c *http.Client) (mun, reg map[string]int, err error) {
-	munMeta, err := getMeta(ctx, c, kfmandatURL)
+func FetchMandateTotals(ctx context.Context, hc *http.Client) (mun, reg map[string]int, err error) {
+	c := scbpx.New(hc)
+	munMeta, err := getMeta(ctx, c, kfmandatTable)
 	if err != nil {
 		return nil, nil, fmt.Errorf("kfmandat meta: %w", err)
 	}
 	munCodes, munNames := codesAndNames(munMeta)
-	munByCode, err := fetchMandates(ctx, c, kfmandatURL, munCodes, "ME0104C1")
+	munByCode, err := fetchMandates(ctx, c, kfmandatTable, munCodes, "ME0104C1")
 	if err != nil {
 		return nil, nil, fmt.Errorf("kfmandat: %w", err)
 	}
-	regMeta, err := getMeta(ctx, c, ltmandatURL)
+	regMeta, err := getMeta(ctx, c, ltmandatTable)
 	if err != nil {
 		return nil, nil, fmt.Errorf("ltmandat meta: %w", err)
 	}
 	regCodes, regNames := codesAndNames(regMeta)
-	regByCode, err := fetchMandates(ctx, c, ltmandatURL, regCodes, "ME0104C2")
+	regByCode, err := fetchMandates(ctx, c, ltmandatTable, regCodes, "ME0104C2")
 	if err != nil {
 		return nil, nil, fmt.Errorf("ltmandat: %w", err)
 	}
