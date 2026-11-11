@@ -387,6 +387,154 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationFailed"
 
+  /write/loften:
+    post:
+      operationId: proposeLoefte
+      tags: [write]
+      summary: Propose a Löfte (stored as proposed, never public)
+      description: >
+        A Löfte without quote or sourceUrl is rejected (422). The Valmanifest must belong to the party. The same quote cannot be proposed twice unless the earlier one was struck (409). Logged in the Ändringslogg, but a proposed Löfte never appears in the public log.
+      security:
+        - writeToken: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoefteProposalWrite"
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "400":
+          description: Malformed JSON, unknown field or invalid id
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WriteError" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Write API not configured, or no such Löfte
+        "409":
+          $ref: "#/components/responses/WriteConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+
+  /write/loften/{id}:
+    post:
+      operationId: editLoefte
+      tags: [write]
+      summary: Edit a proposed or approved Löfte
+      description: >
+        Replaces text, quote, locator, sourceUrl, topic, specificity and utskott. Quote and sourceUrl stay mandatory. Struck and archived Löften cannot be edited (409).
+      security:
+        - writeToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoefteEditWrite"
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "400":
+          description: Malformed JSON, unknown field or invalid id
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WriteError" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Write API not configured, or no such Löfte
+        "409":
+          $ref: "#/components/responses/WriteConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+
+  /write/loften/{id}/approve:
+    post:
+      operationId: approveLoefte
+      tags: [write]
+      summary: Approve a proposed Löfte (makes it public)
+      description: >
+        The Redaktör's decision, recorded with onBehalfOf and chatRef. Approving an approved Löfte changes nothing. A struck or archived Löfte cannot be approved (409).
+      security:
+        - writeToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Provenance"
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "400":
+          description: Malformed JSON, unknown field or invalid id
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WriteError" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Write API not configured, or no such Löfte
+        "409":
+          $ref: "#/components/responses/WriteConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+
+  /write/loften/{id}/strike:
+    post:
+      operationId: strikeLoefte
+      tags: [write]
+      summary: Strike a Löfte (withdraws it from the public view)
+      description: >
+        The row is kept as struck so the decision is traceable. Striking a struck Löfte changes nothing.
+      security:
+        - writeToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Provenance"
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "400":
+          description: Malformed JSON, unknown field or invalid id
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WriteError" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Write API not configured, or no such Löfte
+        "409":
+          $ref: "#/components/responses/WriteConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+
   /loften:
     get:
       operationId: listLoften
@@ -2079,6 +2227,31 @@ components:
         state: { type: string, enum: [draft, final] }
         onBehalfOf: { type: string }
         chatRef: { type: string }
+    LoefteFieldsWrite:
+      type: object
+      required: [text, quote, sourceUrl, onBehalfOf, chatRef]
+      properties:
+        text: { type: string, description: The testable claim, close to the source }
+        quote: { type: string, description: The exact words of the Valmanifest }
+        locator: { type: string, description: Page number or anchor }
+        sourceUrl: { type: string, description: http(s) link to the original, page or anchor }
+        topic: { type: string }
+        specificity: { type: string, enum: [concrete, directional, rhetorical] }
+        utskott: { type: array, items: { type: string } }
+        onBehalfOf: { type: string }
+        chatRef: { type: string }
+    LoefteEditWrite:
+      allOf:
+        - $ref: "#/components/schemas/LoefteFieldsWrite"
+    LoefteProposalWrite:
+      allOf:
+        - $ref: "#/components/schemas/LoefteFieldsWrite"
+        - type: object
+          required: [party, valmanifestId]
+          properties:
+            party: { type: string, example: S }
+            valmanifestId: { type: integer, format: int64 }
+            mandatePeriod: { type: string, example: 2026-2030, description: Defaults to 2026-2030 }
     AendringsloggEntry:
       type: object
       required: [id, createdAt, actor, onBehalfOf, chatRef, action, entity, entityId, oldValue, newValue, undoes]
@@ -2094,6 +2267,12 @@ components:
         oldValue: { type: object, nullable: true, additionalProperties: true, description: null when the entity did not exist before }
         newValue: { type: object, nullable: true, additionalProperties: true, description: null when the entity does not exist after }
         undoes: { type: integer, format: int64, nullable: true }
+        redacted:
+          type: boolean
+          description: >
+            Public log only. True when oldValue or newValue was withheld because
+            that side of the change was a proposed or struck Löfte. Changes
+            where neither side was public are not listed at all.
     WriteResult:
       type: object
       required: [changed, replayed, entry]

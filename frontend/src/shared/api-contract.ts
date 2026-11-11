@@ -277,6 +277,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/write/loften": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Propose a Löfte (stored as proposed, never public)
+         * @description A Löfte without quote or sourceUrl is rejected (422). The Valmanifest must belong to the party. The same quote cannot be proposed twice unless the earlier one was struck (409). Logged in the Ändringslogg, but a proposed Löfte never appears in the public log.
+         */
+        post: operations["proposeLoefte"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/loften/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Edit a proposed or approved Löfte
+         * @description Replaces text, quote, locator, sourceUrl, topic, specificity and utskott. Quote and sourceUrl stay mandatory. Struck and archived Löften cannot be edited (409).
+         */
+        post: operations["editLoefte"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/loften/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve a proposed Löfte (makes it public)
+         * @description The Redaktör's decision, recorded with onBehalfOf and chatRef. Approving an approved Löfte changes nothing. A struck or archived Löfte cannot be approved (409).
+         */
+        post: operations["approveLoefte"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/loften/{id}/strike": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Strike a Löfte (withdraws it from the public view)
+         * @description The row is kept as struck so the decision is traceable. Striking a struck Löfte changes nothing.
+         */
+        post: operations["strikeLoefte"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/loften": {
         parameters: {
             query?: never;
@@ -1535,6 +1615,34 @@ export interface components {
             onBehalfOf: string;
             chatRef: string;
         };
+        LoefteFieldsWrite: {
+            /** @description The testable claim */
+            text: string;
+            /** @description The exact words of the Valmanifest */
+            quote: string;
+            /** @description Page number or anchor */
+            locator?: string;
+            /** @description http(s) link to the original */
+            sourceUrl: string;
+            topic?: string;
+            /** @enum {string} */
+            specificity?: "concrete" | "directional" | "rhetorical";
+            utskott?: string[];
+            onBehalfOf: string;
+            chatRef: string;
+        };
+        LoefteEditWrite: components["schemas"]["LoefteFieldsWrite"];
+        LoefteProposalWrite: components["schemas"]["LoefteFieldsWrite"] & {
+            /** @example S */
+            party: string;
+            /** Format: int64 */
+            valmanifestId: number;
+            /**
+             * @description Defaults to 2026-2030
+             * @example 2026-2030
+             */
+            mandatePeriod?: string;
+        };
         AendringsloggEntry: {
             /** Format: int64 */
             id: number;
@@ -1559,6 +1667,8 @@ export interface components {
             } | null;
             /** Format: int64 */
             undoes: number | null;
+            /** @description Public log only. True when oldValue or newValue was withheld because that side of the change was a proposed or struck Löfte. Changes where neither side was public are not listed at all. */
+            redacted?: boolean;
         };
         WriteResult: {
             changed: boolean;
@@ -3597,6 +3707,164 @@ export interface operations {
             };
             401: components["responses"]["Unauthorized"];
             /** @description Write API not configured, or no such entry */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
+    proposeLoefte: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoefteProposalWrite"];
+            };
+        };
+        responses: {
+            200: components["responses"]["WriteResult"];
+            /** @description Malformed JSON, unknown field or invalid id */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WriteError"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Write API not configured, or no such Löfte */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
+    editLoefte: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoefteEditWrite"];
+            };
+        };
+        responses: {
+            200: components["responses"]["WriteResult"];
+            /** @description Malformed JSON, unknown field or invalid id */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WriteError"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Write API not configured, or no such Löfte */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
+    approveLoefte: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Provenance"];
+            };
+        };
+        responses: {
+            200: components["responses"]["WriteResult"];
+            /** @description Malformed JSON, unknown field or invalid id */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WriteError"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Write API not configured, or no such Löfte */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
+    strikeLoefte: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Provenance"];
+            };
+        };
+        responses: {
+            200: components["responses"]["WriteResult"];
+            /** @description Malformed JSON, unknown field or invalid id */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WriteError"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Write API not configured, or no such Löfte */
             404: {
                 headers: {
                     [name: string]: unknown;

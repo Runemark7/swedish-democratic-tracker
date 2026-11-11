@@ -14,6 +14,14 @@ export function LoefteDetailPage() {
     retry: false,
   });
 
+  const manifests = useQuery({
+    queryKey: ["valmanifest", l?.party],
+    queryFn: () => loftenApi.valmanifest(l!.party),
+    enabled: !!l?.valmanifestId,
+    staleTime: 60_000,
+  });
+  const manifest = manifests.data?.find((v) => v.id === l?.valmanifestId);
+
   return (
     <div className="sdt-page" style={{ padding: "24px 32px 64px", maxWidth: 760 }}>
       <Link to="/loften" className="text-xs text-link">← Löften</Link>
@@ -28,11 +36,16 @@ export function LoefteDetailPage() {
             {l.utskott.length > 0 ? ` · ${l.utskott.join(", ")}` : ""}
           </p>
           {l.archived && <ArchiveNote />}
-          {l.quote && <blockquote className="border-l-2 pl-3 my-4 text-sm">{l.quote}</blockquote>}
-          <p className="text-sm">
-            Källa: {l.sourceDocument || "Valmanifest"}
+          {l.quote && <blockquote className="border-l-2 pl-3 my-4 text-sm" data-testid="loefte-quote">{l.quote}</blockquote>}
+          <p className="text-sm" data-testid="loefte-source">
+            Källa:{" "}
+            {manifest ? (
+              <span data-testid="loefte-valmanifest">{manifest.title} ({manifest.electionYear})</span>
+            ) : (
+              l.sourceDocument || "Valmanifest"
+            )}
             {l.locator ? `, ${l.locator}` : ""}{" "}
-            {l.sourceUrl && <a href={l.sourceUrl} className="underline" target="_blank" rel="noopener noreferrer">Öppna dokumentet</a>}{" "}
+            {l.sourceUrl && <a href={l.sourceUrl} className="underline" target="_blank" rel="noopener noreferrer" data-testid="loefte-source-link">Öppna originalet</a>}{" "}
             <SourceMarker sourceId="seed-party-goals" />
           </p>
         </>

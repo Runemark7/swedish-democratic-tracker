@@ -137,6 +137,9 @@ type Entry struct {
 	OldValue   json.RawMessage `json:"oldValue"`
 	NewValue   json.RawMessage `json:"newValue"`
 	Undoes     *int64          `json:"undoes"`
+	// Redacted is set in the public log when oldValue/newValue was withheld
+	// because that side of the change was not public (a proposed Löfte).
+	Redacted bool `json:"redacted,omitempty"`
 
 	// Never serialised: the idempotency bookkeeping.
 	RequestKey  string `json:"-"`
