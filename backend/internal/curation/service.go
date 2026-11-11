@@ -154,8 +154,10 @@ func (s *Service) Undo(ctx context.Context, key string, id int64, p domain.Prove
 			cur, restore, err = undoValmanifest(ctx, st, target)
 		case domain.EntityLoefte:
 			cur, restore, err = undoLoefte(ctx, st, target)
+		case domain.EntityKoppling:
+			cur, restore, err = undoKoppling(ctx, st, target)
 		default:
-			return fmt.Errorf("undo of %q is not supported", target.Entity)
+			return &domain.ValidationError{Msg: fmt.Sprintf("undo of %q entries is not supported", target.Entity)}
 		}
 		if err != nil {
 			return err

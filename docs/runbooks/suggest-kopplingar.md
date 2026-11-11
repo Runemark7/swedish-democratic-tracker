@@ -50,6 +50,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: kopplingar-2
 
 ## What comes next
 
-Creating the numbered Veckobatch from open `foreslagen` rows and deciding it is
-#160; it also closes batches, which is what moves the "since" cutoff of the
-candidates read. Undo of a suggestion entry is not supported yet.
+Creating the numbered Veckobatch from open `foreslagen` rows, answering it and
+undoing decisions is described in [veckobatch.md](veckobatch.md). Closing a
+batch is what moves the "since" cutoff of the candidates read (to that batch's
+creation time). Undo of a suggestion entry is not supported.

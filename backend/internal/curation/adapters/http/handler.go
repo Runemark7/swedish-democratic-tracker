@@ -39,6 +39,10 @@ func (h *Handler) WriteRoutes(r chi.Router) {
 	r.Post("/aendringslogg/{id}/undo", h.undo)
 	r.Get("/candidates", h.candidates)
 	r.Post("/kopplingar", h.submitSuggestions)
+	r.Post("/veckobatch", h.createBatch)
+	r.Get("/veckobatch/latest", h.latestBatch)
+	r.Get("/veckobatch/{id}", h.getBatch)
+	r.Post("/veckobatch/{id}/answers", h.answerBatch)
 	r.Post("/loften", h.proposeLoefte)
 	r.Post("/loften/{id}", h.editLoefte)
 	r.Post("/loften/{id}/approve", h.approveLoefte)
@@ -219,4 +223,73 @@ func fail(w http.ResponseWriter, status int, code, msg string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(map[string]string{"error": msg, "code": code})
+}
+
+func (h *Handler) createBatch(w http.ResponseWriter, r *http.Request) {
+	var in domain.BatchRequest
+	if !readJSON(w, r, &in) {
+		return
+	}
+	b, err := h.svc.CreateBatch(r.Context(), r.Header.Get("Idempotency-Key"), in)
+	if err != nil {
+		h.respond(w, nil, err)
+		return
+	}
+	if b.Replayed {
+		w.Header().Set("Idempotent-Replayed", "true")
+	}
+	writeJSON(w, b)
+}
+
+func (h *Handler) latestBatch(w http.ResponseWriter, r *http.Request) {
+	b, err := h.svc.LatestBatch(r.Context())
+	if err == nil && b == nil {
+		err = domain.ErrNotFound
+	}
+	if err != nil {
+		h.respond(w, nil, err)
+		return
+	}
+	writeJSON(w, b)
+}
+
+func (h *Handler) getBatch(w http.ResponseWriter, r *http.Request) {
+	id, ok := pathID(w, r)
+	if !ok {
+		return
+	}
+	b, err := h.svc.Batch(r.Context(), id)
+	if err == nil && b == nil {
+		err = domain.ErrNotFound
+	}
+	if err != nil {
+		h.respond(w, nil, err)
+		return
+	}
+	writeJSON(w, b)
+}
+
+func (h *Handler) answerBatch(w http.ResponseWriter, r *http.Request) {
+	id, ok := pathID(w, r)
+	if !ok {
+		return
+	}
+	var in domain.AnswerRequest
+	if !readJSON(w, r, &in) {
+		return
+	}
+	res, err := h.svc.AnswerBatch(r.Context(), r.Header.Get("Idempotency-Key"), id, in)
+	if err != nil {
+		h.respond(w, nil, err)
+		return
+	}
+	if res.Replayed {
+		w.Header().Set("Idempotent-Replayed", "true")
+	}
+	writeJSON(w, res)
+}
+
+func writeJSON(w http.ResponseWriter, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(v)
 }

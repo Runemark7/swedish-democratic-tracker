@@ -64,7 +64,7 @@ func (s *store) InsertKoppling(ctx context.Context, loefteID, ref int64, k domai
 func (r *Repository) Candidates(ctx context.Context, limit int, afterRef int64) (*domain.Candidates, error) {
 	out := &domain.Candidates{Voteringar: []domain.Candidate{}}
 	var since *time.Time
-	if err := r.db.QueryRow(ctx, `SELECT max(closed_at) FROM veckobatch WHERE closed_at IS NOT NULL`).Scan(&since); err != nil {
+	if err := r.db.QueryRow(ctx, `SELECT max(created_at) FROM veckobatch WHERE closed_at IS NOT NULL`).Scan(&since); err != nil {
 		return nil, err
 	}
 	if since != nil {

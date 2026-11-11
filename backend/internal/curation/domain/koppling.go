@@ -83,6 +83,10 @@ type Koppling struct {
 	Threshold  float64 `json:"threshold"`
 	Reasoning  string  `json:"reasoning"`
 	Origin     string  `json:"origin"`
+	// Set once the koppling has been put to the Redaktör in a Veckobatch.
+	VeckobatchID *int64 `json:"veckobatchId,omitempty"`
+	Nr           *int   `json:"nr,omitempty"`
+	Answer       string `json:"answer,omitempty"` // "" while unanswered
 }
 
 // SuggestionResult is one line of the answer. Status is "created" or "existing"
