@@ -373,6 +373,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/motions/backfill": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Which riksmöten the operator's backfill has finished, per source
+         * @description One row per riksmöte and source (`motioner`, `betankanden`) the backfill command has worked on. `complete` is true when every motion the listing reports is held (`motioner`) or no betänkande the riksmöte's motions point at is left to read (`betankanden`).
+         */
+        get: operations["getMotionBackfill"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/motions/{riksmote}/{beteckning}": {
         parameters: {
             query?: never;
@@ -1179,6 +1199,19 @@ export interface components {
             held: number;
             /** Format: date-time */
             lastEnumeratedAt: string;
+        };
+        MotionBackfill: {
+            /** @example 2017/18 */
+            riksmote: string;
+            /** @enum {string} */
+            source: "motioner" | "betankanden";
+            /** @description Motions the listing reports, or betänkanden the riksmöte's motions point at */
+            expected: number;
+            /** @description How many of those we hold */
+            held: number;
+            complete: boolean;
+            /** Format: date-time */
+            completedAt: string | null;
         };
         MotionAuthor: {
             politicianId: string;
@@ -3030,6 +3063,28 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["MotionCoverage"][];
+                    };
+                };
+            };
+        };
+    };
+    getMotionBackfill: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One row per riksmöte and source, newest riksmöte first */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MotionBackfill"][];
                     };
                 };
             };

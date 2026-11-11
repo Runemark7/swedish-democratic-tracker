@@ -4,8 +4,8 @@ name: Motioner (Riksdagen)
 kind: api
 upstream: https://data.riksdagen.se/dokumentlista/?doktyp=mot
 license: Public domain — Sveriges riksdag
-freshness: "dagligen (cron: fetch-motions @daily)"
-last_verified: 2026-11-10
+freshness: "dagligen för pågående riksmöte (cron: fetch-motions @daily); äldre riksmöten via backfill-motions"
+last_verified: 2026-11-11
 verification_status: verified
 verification_notes: ""
 used_by:
@@ -56,8 +56,10 @@ Läs motionen på Riksdagens sida: <https://data.riksdagen.se/dokument/H5023293.
 - Täckningen jämför det vi har med det Riksdagen anger. Äldre riksmöten läses in i omgångar över flera dygn.
 
 ## Hur vi bearbetar
-Varje natt går ett jobb igenom riksmötena i tabellen över mandatperioder, de nyaste
-först. För varje riksmöte läser det Riksdagens lista, noterar hur många motioner
+Varje natt tar ett jobb det pågående riksmötet (högst 500 motioner per körning). Äldre riksmöten
+läses in av en operatör med kommandot `backfill-motions`, ett riksmöte i taget, de nyaste först
+tillbaka till 2002/03 (se `docs/runbooks/backfill-motions.md`). Kommandot kör aldrig av sig självt
+och inte vid driftsättning; under Data visas vilka riksmöten som är inlästa. För varje riksmöte läser det Riksdagens lista, noterar hur många motioner
 listan anger och läser in de motioner som är nya eller har ändrats. Att köra om jobbet
 ändrar inget. Sajten visar uppgifterna som de anges, med länk till Riksdagens
 dokument, och drar inga slutsatser av dem. Typen Flerpartimotion är det enda vi

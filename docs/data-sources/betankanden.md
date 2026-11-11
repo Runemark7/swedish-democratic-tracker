@@ -62,8 +62,8 @@ Reservationer, särskilda yttranden och "Utskottets ställningstagande" finns ba
 ## Hur vi bearbetar
 Samma jobb läser även betänkandets HTML (en begäran till). Misslyckas den läsningen försöker jobbet igen efter ett dygn; redan inlästa betänkanden utan HTML läses om i jobbets vanliga takt (högst 25 per körning).
 
-Varje natt läser ett jobb högst 25 betänkanden som sparade motioner pekar på och som inte är
-inlästa (eller är äldre än motionen som pekar på dem). Det går vidare nästa natt där det slutade.
+Varje natt läser ett jobb högst 25 betänkanden som sparade motioner från det pågående riksmötet pekar på och som inte är
+inlästa (eller är äldre än motionen som pekar på dem). Det går vidare nästa natt där det slutade. Betänkanden för äldre riksmöten läses in av operatörens kommando `backfill-motions` (se `docs/runbooks/backfill-motions.md`).
 För varje betänkande sparas förslagspunkterna och varje yrkande kopplas till den eller de
 punkter som avgjorde det. Att köra om jobbet ändrar inget. Vid votering visas Partilinje per
 parti enligt sajtens gemensamma definition; vid acklamation visas "Avgjord utan omröstning".

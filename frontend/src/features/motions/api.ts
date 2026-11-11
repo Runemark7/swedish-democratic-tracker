@@ -3,6 +3,7 @@ import type { components } from "@/shared/api-contract";
 
 export type Motion = components["schemas"]["Motion"];
 export type MotionListResponse = components["schemas"]["MotionListResponse"];
+export type MotionBackfill = components["schemas"]["MotionBackfill"];
 export type MotionListRow = components["schemas"]["MotionListRow"];
 
 /** The filters of the Motioner list; they live in the URL so a view can be shared. */
@@ -29,6 +30,7 @@ export const motionsApi = {
     p.set("limit", "25");
     return api.get<MotionListResponse>(`/motions?${p.toString()}`);
   },
+  backfill: () => api.get<{ data: MotionBackfill[] }>("/motions/backfill"),
   get: (riksmote: string, beteckning: string) =>
     api.get<Motion>(`/motions/${encodeURIComponent(riksmote)}/${encodeURIComponent(beteckning)}`),
 };

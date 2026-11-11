@@ -44,8 +44,8 @@ export const SOURCES: Record<string, SourceEntry> = {
     "kind": "api",
     "upstream": "https://data.riksdagen.se/dokumentlista/?doktyp=mot",
     "license": "Public domain — Sveriges riksdag",
-    "freshness": "dagligen (cron: fetch-motions @daily)",
-    "lastVerified": "Tue Nov 10 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "freshness": "dagligen för pågående riksmöte (cron: fetch-motions @daily); äldre riksmöten via backfill-motions",
+    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
     "blurb": "En motion är ett förslag till riksdagen från en eller flera ledamöter. Riksdagen publicerar varje motion med undertecknare, ett numrerat yrkande per krav och, när utskottet och kammaren har behandlat den, vad som beslutades. Samma uppgifter finns i Riksdagens öppna data.",
     "verificationStatus": "verified",
     "verificationNotes": null

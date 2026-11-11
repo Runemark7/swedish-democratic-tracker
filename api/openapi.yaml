@@ -525,6 +525,30 @@ paths:
                     items:
                       $ref: "#/components/schemas/MotionCoverage"
 
+  /motions/backfill:
+    get:
+      operationId: getMotionBackfill
+      tags: [motions]
+      summary: Which riksmöten the operator's backfill has finished, per source
+      description: >-
+        One row per riksmöte and source (`motioner`, `betankanden`) the backfill
+        command has worked on. `complete` is true when every motion the listing
+        reports is held (`motioner`) or no betänkande the riksmöte's motions point
+        at is left to read (`betankanden`).
+      responses:
+        "200":
+          description: One row per riksmöte and source, newest riksmöte first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/MotionBackfill"
+
   /motions/{riksmote}/{beteckning}:
     get:
       operationId: getMotion
@@ -1576,6 +1600,17 @@ components:
         expected: { type: integer, description: "Total Riksdagen's listing reports (@traffar)" }
         held: { type: integer, description: "Motions we hold for the riksmöte, counted at read time" }
         lastEnumeratedAt: { type: string, format: date-time }
+
+    MotionBackfill:
+      type: object
+      required: [riksmote, source, expected, held, complete, completedAt]
+      properties:
+        riksmote: { type: string, example: "2017/18" }
+        source: { type: string, enum: [motioner, betankanden] }
+        expected: { type: integer, description: "Motions the listing reports, or betänkanden the riksmöte's motions point at" }
+        held: { type: integer, description: "How many of those we hold" }
+        complete: { type: boolean }
+        completedAt: { type: string, format: date-time, nullable: true }
 
     MotionAuthor:
       type: object
