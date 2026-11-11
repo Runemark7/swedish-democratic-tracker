@@ -15,16 +15,21 @@ const BetankandenBudget = 25
 
 // BetankandenWorker reads the betänkanden that stored motions are handled in,
 // with their förslagspunkter, and links each yrkande to the punkt(er) that
-// decided it. It is idempotent: a betänkande is read again only when a motion
+// decided it. Run daily it reads only those the current riksmöte's motions point
+// at; older riksmöten are the operator's backfill (cmd/backfill-motions). It is idempotent: a betänkande is read again only when a motion
 // pointing at it was read after it, and links are replaced, not appended.
 type BetankandenWorker struct {
 	svc    *motions.Service
 	budget int
+	now    func() time.Time
 }
 
 func NewBetankandenWorker(svc *motions.Service) BetankandenWorker {
 	return BetankandenWorker{svc: svc, budget: BetankandenBudget}
 }
+
+// SetNow pins the clock that decides the current riksmöte. Set it before registration.
+func (w *BetankandenWorker) SetNow(now func() time.Time) { w.now = now }
 
 func (w *BetankandenWorker) Name() string { return "fetch-betankanden" }
 
@@ -33,7 +38,11 @@ func (w *BetankandenWorker) Run(ctx context.Context) error {
 	if budget <= 0 {
 		budget = BetankandenBudget
 	}
-	refs, err := w.svc.Pending(ctx, budget)
+	now := time.Now
+	if w.now != nil {
+		now = w.now
+	}
+	refs, err := w.svc.Pending(ctx, CurrentRiksmote(now().UTC()), budget)
 	if err != nil {
 		return err
 	}

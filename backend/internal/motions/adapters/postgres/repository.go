@@ -168,15 +168,15 @@ func (r *Repository) Coverage(ctx context.Context) ([]domain.Coverage, error) {
 	return out, rows.Err()
 }
 
-func (r *Repository) PendingBetankanden(ctx context.Context, limit int) ([]ports.BetRef, error) {
+func (r *Repository) PendingBetankanden(ctx context.Context, rm string, limit int) ([]ports.BetRef, error) {
 	rows, err := r.db.Query(ctx, `
 		WITH refs AS (
 			SELECT split_part(h, ':', 1) AS rm, split_part(h, ':', 2) AS bet, max(fetched_at) AS motion_fetched
 			FROM (
-				SELECT coalesce(nullif(y.behandlas_i, ''), m.behandlas_i) AS h, m.fetched_at
+				SELECT coalesce(nullif(y.behandlas_i, ''), m.behandlas_i) AS h, m.fetched_at, m.riksmote AS mrm
 				FROM motion_yrkanden y JOIN motions m ON m.dok_id = y.dok_id
 			) x
-			WHERE h ~ '^[0-9]{4}/[0-9]{2}:.+'
+			WHERE h ~ '^[0-9]{4}/[0-9]{2}:.+' AND ($2 = '' OR mrm = $2)
 			GROUP BY 1, 2
 		)
 		SELECT r.rm, r.bet
@@ -188,7 +188,7 @@ func (r *Repository) PendingBetankanden(ctx context.Context, limit int) ([]ports
 		       AND (b.html_attempted_at IS NULL OR b.html_attempted_at < now() - interval '1 day'))
 		   OR (NOT b.found AND b.fetched_at < now() - interval '1 day')
 		ORDER BY r.rm DESC, r.bet
-		LIMIT $1`, limit)
+		LIMIT $1`, limit, rm)
 	if err != nil {
 		return nil, err
 	}
@@ -683,4 +683,136 @@ func (r *Repository) ResolveBetankande(ctx context.Context, bet, punkt, rm strin
 		return "", false, nil
 	}
 	return *found, true, nil
+}
+
+func (r *Repository) BackfillProgress(ctx context.Context) ([]domain.BackfillProgress, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT riksmote, source, expected, held, completed_at, updated_at
+		FROM motion_backfill ORDER BY riksmote DESC, source`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []domain.BackfillProgress
+	for rows.Next() {
+		var p domain.BackfillProgress
+		if err := rows.Scan(&p.Riksmote, &p.Source, &p.Expected, &p.Held, &p.CompletedAt, &p.UpdatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, p)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) SaveBackfillProgress(ctx context.Context, p domain.BackfillProgress) error {
+	_, err := r.db.Exec(ctx, `
+		INSERT INTO motion_backfill (riksmote, source, expected, held, completed_at, updated_at)
+		VALUES ($1,$2,$3,$4,$5, now())
+		ON CONFLICT (riksmote, source) DO UPDATE SET
+			expected = EXCLUDED.expected, held = EXCLUDED.held,
+			completed_at = COALESCE(motion_backfill.completed_at, EXCLUDED.completed_at),
+			updated_at = now()`,
+		p.Riksmote, p.Source, p.Expected, p.Held, p.CompletedAt)
+	return err
+}
+
+func (r *Repository) BetankandeCounts(ctx context.Context, rm string) (int, int, error) {
+	var expected, held int
+	err := r.db.QueryRow(ctx, `
+		WITH refs AS (
+			SELECT DISTINCT split_part(h, ':', 1) AS rm, split_part(h, ':', 2) AS bet
+			FROM (
+				SELECT coalesce(nullif(y.behandlas_i, ''), m.behandlas_i) AS h
+				FROM motion_yrkanden y JOIN motions m ON m.dok_id = y.dok_id
+				WHERE m.riksmote = $1
+			) x
+			WHERE h ~ '^[0-9]{4}/[0-9]{2}:.+'
+		)
+		SELECT count(*), count(b.riksmote) FILTER (WHERE b.found)
+		FROM refs r LEFT JOIN betankanden b ON b.riksmote = r.rm AND b.beteckning = r.bet`, rm).Scan(&expected, &held)
+	return expected, held, err
+}
+
+func (r *Repository) MotionCount(ctx context.Context, rm string) (int, error) {
+	var n int
+	err := r.db.QueryRow(ctx, `SELECT count(*) FROM motions WHERE riksmote = $1`, rm).Scan(&n)
+	return n, err
+}
+
+func (r *Repository) BackfillRiksmoten(ctx context.Context) ([]string, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT rm FROM (
+			SELECT DISTINCT session AS rm FROM voteringar
+			UNION
+			SELECT unnest(riksmoten) FROM mandate_periods
+		) x WHERE rm ~ '^[0-9]{4}/[0-9]{2}$'
+		ORDER BY rm DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []string
+	for rows.Next() {
+		var rm string
+		if err := rows.Scan(&rm); err != nil {
+			return nil, err
+		}
+		out = append(out, rm)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) DecisionVocabulary(ctx context.Context) ([]domain.DecisionValue, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT field, value, count(*) FROM (
+			SELECT 'kammaren' AS field, kammaren AS value FROM motion_yrkanden
+			UNION ALL SELECT 'beslutstyp', beslutstyp FROM forslagspunkter
+			UNION ALL SELECT 'vinnare', vinnare FROM forslagspunkter
+			UNION ALL SELECT 'punktbeslut', decision FROM yrkande_forslagspunkt
+		) v
+		WHERE btrim(value) <> ''
+		GROUP BY field, value
+		ORDER BY field, count(*) DESC, value`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []domain.DecisionValue
+	for rows.Next() {
+		var v domain.DecisionValue
+		if err := rows.Scan(&v.Field, &v.Value, &v.Count); err != nil {
+			return nil, err
+		}
+		out = append(out, v)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) HeldBetankanden(ctx context.Context) ([]ports.BetRef, error) {
+	rows, err := r.db.Query(ctx, `SELECT riksmote, beteckning FROM betankanden WHERE found ORDER BY riksmote DESC, beteckning`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []ports.BetRef
+	for rows.Next() {
+		var b ports.BetRef
+		if err := rows.Scan(&b.Riksmote, &b.Beteckning); err != nil {
+			return nil, err
+		}
+		out = append(out, b)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) OriginCoverage(ctx context.Context) (int, int, error) {
+	var total, with int
+	err := r.db.QueryRow(ctx, `
+		SELECT count(*),
+		       count(*) FILTER (WHERE EXISTS (
+		           SELECT 1 FROM yrkande_forslagspunkt l
+		           WHERE l.riksmote = v.session AND upper(l.beteckning) = upper(v.beteckning)
+		             AND l.punkt = v.forslagspunkt))
+		FROM voteringar v`).Scan(&total, &with)
+	return total, with, err
 }

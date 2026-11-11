@@ -24,6 +24,7 @@ func NewHandler(svc *motions.Service) *Handler { return &Handler{svc: svc} }
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/motions", h.list)
 	r.Get("/motions/coverage", h.coverage)
+	r.Get("/motions/backfill", h.backfill)
 	// The riksmöte sits in one path segment, so its slash is encoded: 2017%2F18.
 	r.Get("/motions/{riksmote}/{beteckning}", h.get)
 	// The canonical betänkande page, keyed on riksmöte + beteckning. The
@@ -291,6 +292,36 @@ func (h *Handler) coverage(w http.ResponseWriter, r *http.Request) {
 			Riksmote: c.Riksmote, Source: c.Source, Expected: c.Expected, Held: c.Held,
 			LastEnumeratedAt: c.LastEnumeratedAt.UTC().Format(time.RFC3339),
 		})
+	}
+	jsonOK(w, map[string]any{"data": out})
+}
+
+type backfillResponse struct {
+	Riksmote    string  `json:"riksmote"`
+	Source      string  `json:"source"`
+	Expected    int     `json:"expected"`
+	Held        int     `json:"held"`
+	Complete    bool    `json:"complete"`
+	CompletedAt *string `json:"completedAt"`
+}
+
+// backfill serves which riksmöten the operator's backfill has finished, per
+// source (motioner, betankanden), so the Data section can show the coverage.
+func (h *Handler) backfill(w http.ResponseWriter, r *http.Request) {
+	rows, err := h.svc.BackfillProgress(r.Context())
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	out := make([]backfillResponse, 0, len(rows))
+	for _, p := range rows {
+		b := backfillResponse{Riksmote: p.Riksmote, Source: p.Source, Expected: p.Expected, Held: p.Held}
+		if p.CompletedAt != nil {
+			b.Complete = true
+			t := p.CompletedAt.UTC().Format(time.RFC3339)
+			b.CompletedAt = &t
+		}
+		out = append(out, b)
 	}
 	jsonOK(w, map[string]any{"data": out})
 }

@@ -63,9 +63,10 @@ func (s *Service) RecordExpected(ctx context.Context, rm string, expected int) e
 	return s.repo.UpsertCoverage(ctx, rm, domain.SourceRiksdagenDokumentlista, expected)
 }
 
-// Pending lists betänkanden to read, at most limit.
-func (s *Service) Pending(ctx context.Context, limit int) ([]ports.BetRef, error) {
-	return s.repo.PendingBetankanden(ctx, limit)
+// Pending lists betänkanden to read, at most limit. A non-empty rm keeps only
+// those that motions of that riksmöte point at.
+func (s *Service) Pending(ctx context.Context, rm string, limit int) ([]ports.BetRef, error) {
+	return s.repo.PendingBetankanden(ctx, rm, limit)
 }
 
 // SyncBetankande reads one betänkande, stores it with its förslagspunkter and
@@ -291,4 +292,63 @@ func (s *Service) Recurring(ctx context.Context, motionDokID string, y domain.Yr
 		m.Outcome = domain.YrkandeWord(m.ChamberDecision, mine)
 	}
 	return &domain.Recurring{Rule: domain.RuleIdenticalWording, Members: members}, nil
+}
+
+// BackfillRiksmoten lists, newest first, the riksmöten with voteringar or
+// declared in a mandate period.
+func (s *Service) BackfillRiksmoten(ctx context.Context) ([]string, error) {
+	return s.repo.BackfillRiksmoten(ctx)
+}
+
+// BackfillProgress lists the operator backfill's progress per riksmöte and source.
+func (s *Service) BackfillProgress(ctx context.Context) ([]domain.BackfillProgress, error) {
+	return s.repo.BackfillProgress(ctx)
+}
+
+// SaveBackfillProgress records progress. A completion already recorded stays.
+func (s *Service) SaveBackfillProgress(ctx context.Context, p domain.BackfillProgress) error {
+	return s.repo.SaveBackfillProgress(ctx, p)
+}
+
+// MotionCount counts the motions held for a riksmöte.
+func (s *Service) MotionCount(ctx context.Context, rm string) (int, error) {
+	return s.repo.MotionCount(ctx, rm)
+}
+
+// BetankandeCounts counts the betänkanden a riksmöte's motions point at, and
+// how many of them are held.
+func (s *Service) BetankandeCounts(ctx context.Context, rm string) (expected, held int, err error) {
+	return s.repo.BetankandeCounts(ctx, rm)
+}
+
+// DecisionVocabulary counts every distinct decision value stored.
+func (s *Service) DecisionVocabulary(ctx context.Context) ([]domain.DecisionValue, error) {
+	return s.repo.DecisionVocabulary(ctx)
+}
+
+// OriginCoverage counts voteringar and those with a decided yrkande linked.
+func (s *Service) OriginCoverage(ctx context.Context) (voteringar, withOrigin int, err error) {
+	return s.repo.OriginCoverage(ctx)
+}
+
+// RelinkAll recomputes the yrkande links of every betänkande held, from the
+// stored förslagspunkter. It makes no request to Riksdagen. A votering's
+// proposed-by is derived from these links when it is read, so after this the
+// origin of every votering reflects every motion and betänkande now stored.
+func (s *Service) RelinkAll(ctx context.Context) (int, error) {
+	refs, err := s.repo.HeldBetankanden(ctx)
+	if err != nil {
+		return 0, err
+	}
+	n := 0
+	for _, ref := range refs {
+		if err := ctx.Err(); err != nil {
+			return n, err
+		}
+		if err := s.Link(ctx, ref.Riksmote, ref.Beteckning); err != nil {
+			return n, err
+		}
+		n++
+	}
+	return n, nil
 }

@@ -94,3 +94,19 @@ func TestDecisionMode(t *testing.T) {
 		t.Errorf("label = %q", ModeAcklamation.Label())
 	}
 }
+
+func TestKnownOutcomeMapsRiksdagensWordsAndFlagsTheRest(t *testing.T) {
+	for _, w := range []string{"Avslag", " Bifall", "Delvis bifall", "Besvarad", "Avslag på motionen"} {
+		if !KnownOutcome(w) {
+			t.Errorf("%q should be mapped", w)
+		}
+	}
+	for _, w := range []string{"Återförvisas till utskottet", "Bordläggs", ""} {
+		if KnownOutcome(w) {
+			t.Errorf("%q should not be mapped", w)
+		}
+	}
+	if got := MappedOutcome("Återförvisas till utskottet"); got != "Återförvisas till utskottet" {
+		t.Errorf("an unknown word must be shown as written, got %q", got)
+	}
+}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"riksdagskollen/internal/ingestion/workers"
 	"testing"
 	"time"
 
@@ -48,7 +49,7 @@ func startRecurring(t *testing.T) *Harness {
 		VALUES ('test', 'test', '2014-09-14', '2026-09-13', '{2017/18,2018/19,2019/20,2021/22,2022/23,2023/24,2024/25}')`); err != nil {
 		t.Fatal(err)
 	}
-	h.RunWorker(ctx, "fetch-motions")
+	h.Backfill(ctx, workers.BackfillOptions{Sources: []string{"motioner"}})
 	return h
 }
 

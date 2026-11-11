@@ -43,6 +43,7 @@ var routesBeforeExtraction = []string{
 	"GET /api/ministers",
 	"GET /api/ministers/{id}",
 	"GET /api/motions",
+	"GET /api/motions/backfill",
 	"GET /api/motions/coverage",
 	"GET /api/motions/{riksmote}/{beteckning}",
 	"GET /api/municipalities",

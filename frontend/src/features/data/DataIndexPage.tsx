@@ -1,5 +1,8 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { motionsApi } from "@/features/motions/api";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SOURCES, type SourceKind } from "@/components/sources/SourceRegistry";
 
@@ -24,6 +27,55 @@ const STATUS_BG: Record<string, { bg: string; fg: string }> = {
   frozen: { bg: "transparent", fg: "var(--color-fg-muted)" },
   unsure: { bg: "var(--color-warn, #c08a2a)", fg: "var(--color-bg)" },
 };
+
+/** Which riksmöten the motions backfill has finished, for motions and betänkanden. */
+function MotionCoverage({ isMobile }: { isMobile: boolean }) {
+  const { data } = useQuery({ queryKey: ["motions-backfill"], queryFn: () => motionsApi.backfill() });
+  const rows = data?.data ?? [];
+  const riksmoten = [...new Set(rows.map((r) => r.riksmote))];
+  const cell = (rm: string, source: string) => {
+    const r = rows.find((x) => x.riksmote === rm && x.source === source);
+    if (!r) return "ej inläst";
+    return `${r.complete ? "klar" : "delvis"} · ${r.held} av ${r.expected}`;
+  };
+  return (
+    <section
+      data-testid="motion-coverage"
+      style={{ margin: isMobile ? "0 14px 28px" : "0 32px 28px", border: "1px solid var(--color-border)", padding: isMobile ? 14 : 20 }}
+    >
+      <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 20, fontWeight: 400, margin: "0 0 4px" }}>
+        Täckning: motioner och betänkanden
+      </h2>
+      <p style={{ fontSize: 12, color: "var(--color-fg-muted)", margin: "0 0 12px" }}>
+        Riksmöten som är inlästa för motioner <SourceMarker sourceId="motions" /> och{" "}
+        betänkanden <SourceMarker sourceId="betankanden" />. Äldre riksmöten läses in av en operatör,
+        ett riksmöte i taget; det som inte står här är inte inläst än.
+      </p>
+      {riksmoten.length === 0 ? (
+        <p data-testid="motion-coverage-empty" style={{ fontSize: 13 }}>Inga äldre riksmöten är inlästa än.</p>
+      ) : (
+        <table style={{ fontSize: 12, borderCollapse: "collapse", width: "100%" }}>
+          <thead>
+            <tr style={{ textAlign: "left", color: "var(--color-fg-muted)" }}>
+              <th>Riksmöte</th>
+              <th>Motioner</th>
+              <th>Betänkanden</th>
+            </tr>
+          </thead>
+          <tbody>
+            {riksmoten.map((rm) => (
+              <tr key={rm} data-testid="motion-coverage-row">
+                <td>{rm}</td>
+                <td>{cell(rm, "motioner")}</td>
+                <td>{cell(rm, "betankanden")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+}
 
 export function DataIndexPage() {
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -147,6 +199,7 @@ export function DataIndexPage() {
           </Link>
         ))}
       </div>
+      <MotionCoverage isMobile={isMobile} />
     </div>
   );
 }

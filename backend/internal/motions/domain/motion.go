@@ -118,3 +118,37 @@ type Coverage struct {
 // SourceRiksdagenDokumentlista is the coverage source key for motions listed
 // by data.riksdagen.se/dokumentlista (doktyp=mot).
 const SourceRiksdagenDokumentlista = "riksdagen-dokumentlista"
+
+// Sources of the backfill progress rows.
+const (
+	BackfillMotions     = "motioner"
+	BackfillBetankanden = "betankanden"
+)
+
+// BackfillProgress is how far the operator's backfill has come for one
+// riksmöte and source. Expected is what Riksdagen reports (motions) or what
+// the riksmöte's motions point at (betänkanden); Held is what we hold.
+type BackfillProgress struct {
+	Riksmote    string
+	Source      string
+	Expected    int
+	Held        int
+	CompletedAt *time.Time
+	UpdatedAt   time.Time
+}
+
+// Fields of DecisionValue.
+const (
+	FieldKammaren   = "kammaren"    // motion_yrkanden.kammaren: the chamber's decision on a yrkande
+	FieldBeslutstyp = "beslutstyp"  // forslagspunkter.beslutstyp: how the chamber decided a punkt
+	FieldVinnare    = "vinnare"     // forslagspunkter.vinnare: which alternative won
+	FieldPunkt      = "punktbeslut" // yrkande_forslagspunkt.decision: the decision read from the punkt
+)
+
+// DecisionValue is one distinct value the chamber's decisions carry and how
+// many rows carry it.
+type DecisionValue struct {
+	Field string
+	Value string
+	Count int
+}

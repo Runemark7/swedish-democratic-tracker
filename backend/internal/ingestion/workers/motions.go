@@ -8,7 +8,6 @@ import (
 
 	ingPorts "riksdagskollen/internal/ingestion/ports"
 	"riksdagskollen/internal/motions"
-	motionDomain "riksdagskollen/internal/motions/domain"
 )
 
 // MotionsDetailBudget caps the motions read in full per run. A riksmöte holds
@@ -75,6 +74,9 @@ func motionRiksmoten(periods []ingPorts.MandatePeriod, now time.Time) []string {
 	return out
 }
 
+// Run ingests the CURRENT riksmöte only, incrementally and within the detail
+// budget. Older riksmöten are the operator's backfill (cmd/backfill-motions):
+// nothing in the daily chain walks the history.
 func (w *MotionsWorker) Run(ctx context.Context) error {
 	periods, err := w.periods.ListMandatePeriods(ctx)
 	if err != nil {
@@ -82,40 +84,31 @@ func (w *MotionsWorker) Run(ctx context.Context) error {
 	}
 	now := w.at().UTC()
 	current := CurrentRiksmote(now)
-	rms := motionRiksmoten(periods, now)
-
-	// A closed riksmöte whose record already matches the listing's count is
-	// not listed again: its motions no longer change.
-	complete := map[string]bool{}
-	if cov, err := w.svc.Coverage(ctx); err == nil {
-		for _, c := range cov {
-			if c.Source == motionDomain.SourceRiksdagenDokumentlista && c.Expected > 0 && c.Held >= c.Expected {
-				complete[c.Riksmote] = true
-			}
+	found := false
+	for _, rm := range motionRiksmoten(periods, now) {
+		if rm == current {
+			found = true
 		}
 	}
-
+	if !found {
+		slog.Info("motions: current riksmöte is in no mandate period, nothing to do", "rm", current)
+		return nil
+	}
 	budget := w.budget
 	if budget <= 0 {
 		budget = MotionsDetailBudget
 	}
-	for _, rm := range rms {
-		if budget <= 0 {
-			slog.Info("motions: detail budget spent, resuming next run")
-			break
-		}
-		if rm != current && complete[rm] {
-			continue
-		}
-		n, err := w.syncRiksmote(ctx, rm, budget)
-		budget -= n
-		if err != nil {
-			// One riksmöte failing must not stop the others. Coverage keeps
-			// its previous expected count.
-			slog.Warn("motions: riksmöte sync failed", "rm", rm, "error", err)
-		}
+	if _, err := w.syncRiksmote(ctx, current, budget); err != nil {
+		slog.Warn("motions: riksmöte sync failed", "rm", current, "error", err)
 	}
 	return nil
+}
+
+// SyncRiksmote lists one riksmöte, records the listing's total and reads in
+// full each motion that is new or changed, up to budget. It returns the number
+// read. The backfill uses it with a budget large enough for the whole riksmöte.
+func (w *MotionsWorker) SyncRiksmote(ctx context.Context, rm string, budget int) (int, error) {
+	return w.syncRiksmote(ctx, rm, budget)
 }
 
 // syncRiksmote lists the riksmöte, records the listing's total, and reads in
