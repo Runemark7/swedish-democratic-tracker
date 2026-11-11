@@ -218,7 +218,6 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		speechHandler.Routes(api)
 		loftenHandler.Routes(api)
 		curationHandler.PublicRoutes(api)
-		retiredRoutes(api)
 		budgetHandler.Routes(api)
 		contextHandler.Routes(api)
 		regionsHandler.Routes(api)

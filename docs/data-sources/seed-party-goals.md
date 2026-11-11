@@ -11,7 +11,7 @@ verification_notes: ~
 used_by:
   - /parties/:party?tab=loften (2022 års mål som arkiverade Löften)
   - /loften och /loften/:id (arkivet, samma id som målet)
-  - /parties/:party/goals och /goals/:goalId/votes (webbläsar-omdirigering till ovan; API-ändpunkterna svarar 410)
+  - /parties/:party/goals och /goals/:goalId/votes (webbläsar-omdirigering till ovan)
 ---
 
 ## Vad det är

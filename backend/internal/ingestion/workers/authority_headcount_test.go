@@ -53,7 +53,7 @@ func (m *mockEnrichRepo) Stats(_ context.Context) (*ports.AuthorityStats, error)
 
 func TestAuthorityHeadcountWorker_MapsAndUpdates(t *testing.T) {
 	client := &mockHeadcountClient{entries: []ports.HeadcountEntry{
-		{OrgNumber: "202100-2114", Name: "Arbetsförmedlingen", Department: "Arbetsmarknadsdepartementet", Year: 2024, Headcount: 9400, History: []ports.YearlyHeadcountSCB{{2023, 9300}, {2024, 9400}}},
+		{OrgNumber: "202100-2114", Name: "Arbetsförmedlingen", Department: "Arbetsmarknadsdepartementet", Year: 2024, Headcount: 9400, History: []ports.YearlyHeadcountSCB{{Year: 2023, HeadcountInt: 9300}, {Year: 2024, HeadcountInt: 9400}}},
 	}}
 	repo := &mockEnrichRepo{matched: 1}
 	w := workers.NewAuthorityHeadcountWorker(client, repo)

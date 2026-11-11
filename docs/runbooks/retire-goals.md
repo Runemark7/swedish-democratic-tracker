@@ -62,7 +62,7 @@ previous image as well.
 
 `GET /api/parties`, `/api/parties/{party}/goals`,
 `/api/parties/{party}/goals/{goalId}/votes`, `/api/committees/{code}/goals` and
-`/api/politicians/{id}/promises` answer `410 Gone` with
-`{"loften": "/api/loften", ...}` for one release (`backend/internal/api/retired.go`).
-Delete that file and the five routes in the following release. The daily chain
-no longer runs `keyword-matcher` or `refresh-scorecards`.
+`/api/politicians/{id}/promises` answered `410 Gone` with a pointer to
+`/api/loften` for one release. That shim (`backend/internal/api/retired.go`)
+has been removed; the routes now answer plain 404. The daily chain no longer
+runs `keyword-matcher` or `refresh-scorecards`.
