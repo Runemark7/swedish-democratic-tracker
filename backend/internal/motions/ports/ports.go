@@ -31,6 +31,9 @@ type RiksdagenClient interface {
 	// FindBetankande looks a betänkande up by riksmöte and beteckning
 	// ("2017/18", "SkU11"). found is false when Riksdagen lists none.
 	FindBetankande(ctx context.Context, rm, bet string) (ref BetankandeRef, found bool, err error)
+	// ListBetankanden returns one page (1-based) of the riksmöte's betänkanden
+	// as Riksdagen lists them, with the total Riksdagen reports.
+	ListBetankanden(ctx context.Context, rm string, page, size int) ([]BetankandeRef, int, error)
 	// FetchBetankande reads a betänkande with its förslagspunkter.
 	FetchBetankande(ctx context.Context, dokID string) (*domain.Betankande, error)
 	// FetchBetankandeHTML reads the betänkande document and parses its
@@ -42,6 +45,10 @@ type RiksdagenClient interface {
 // BetankandeRef is one row of Riksdagen's betänkande listing.
 type BetankandeRef struct {
 	DokID       string
+	Riksmote    string
+	Beteckning  string
+	Organ       string // "SkU"
+	Published   time.Time
 	SystemDatum time.Time
 	Title       string
 	// Status, DecisionDate (`beslutsdag`) and ChamberDecided (`beslutad`) are
@@ -136,6 +143,20 @@ type Repository interface {
 	// a votering's riksmöte). rm, when given, is taken as is if it exists;
 	// otherwise the most recent riksmöte holding it wins.
 	ResolveBetankande(ctx context.Context, bet, punkt, rm string) (string, bool, error)
+
+	// UpsertBeslutListing stores Riksdagen's listing rows, replacing the
+	// status, beslutsdag and beslutad of rows already held.
+	UpsertBeslutListing(ctx context.Context, rows []BetankandeRef) error
+	// BeslutListed counts the stored listing rows of a riksmöte.
+	BeslutListed(ctx context.Context, rm string) (int, error)
+	// ListBeslut reads at most limit listing rows matching f, upcoming first
+	// (soonest first) and then decided (newest first), strictly after the
+	// cursor. today is the date the decided rule compares beslutsdag with.
+	ListBeslut(ctx context.Context, f domain.BeslutFilter, today time.Time, after *domain.BeslutCursor, limit int) ([]domain.BeslutRow, error)
+	// BeslutDetails reads, for the given "riksmöte:beteckning" keys, the
+	// beslutstyp of each stored förslagspunkt and each party's ballots per
+	// votering.
+	BeslutDetails(ctx context.Context, keys []string) (map[string]domain.BeslutDetail, error)
 
 	BackfillWordingHashes(ctx context.Context, after YrkandeCursor, limit int) (written, scanned int, last YrkandeCursor, err error)
 

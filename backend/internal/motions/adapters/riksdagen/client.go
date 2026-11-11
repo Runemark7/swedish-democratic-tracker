@@ -266,6 +266,52 @@ func (c *Client) FindBetankande(ctx context.Context, rm, bet string) (ports.Beta
 	return ports.BetankandeRef{}, false, nil
 }
 
+// ListBetankanden lists /dokumentlista for doktyp=bet in one riksmöte, newest
+// first, one page at a time.
+func (c *Client) ListBetankanden(ctx context.Context, rm string, page, size int) ([]ports.BetankandeRef, int, error) {
+	q := url.Values{}
+	q.Set("doktyp", "bet")
+	q.Set("rm", rm)
+	q.Set("sz", strconv.Itoa(size))
+	q.Set("p", strconv.Itoa(page))
+	q.Set("sort", "datum")
+	q.Set("sortorder", "desc")
+	q.Set("utformat", "json")
+	var payload struct {
+		Dokumentlista struct {
+			Traffar  string `json:"@traffar"`
+			Dokument flexList[struct {
+				DokID       string          `json:"dok_id"`
+				Rm          string          `json:"rm"`
+				Beteckning  string          `json:"beteckning"`
+				Organ       string          `json:"organ"`
+				Datum       string          `json:"datum"`
+				Systemdatum string          `json:"systemdatum"`
+				Titel       string          `json:"titel"`
+				Status      string          `json:"status"`
+				Beslutsdag  string          `json:"beslutsdag"`
+				Beslutad    json.RawMessage `json:"beslutad"`
+			}] `json:"dokument"`
+		} `json:"dokumentlista"`
+	}
+	if err := c.getJSON(ctx, c.baseURL+"/dokumentlista/?"+q.Encode(), &payload); err != nil {
+		return nil, 0, fmt.Errorf("list betänkanden %s page %d: %w", rm, page, err)
+	}
+	total, _ := strconv.Atoi(payload.Dokumentlista.Traffar)
+	var out []ports.BetankandeRef
+	for _, d := range payload.Dokumentlista.Dokument {
+		if d.DokID == "" || d.Beteckning == "" || d.Rm != rm {
+			continue
+		}
+		out = append(out, ports.BetankandeRef{
+			DokID: d.DokID, Riksmote: d.Rm, Beteckning: d.Beteckning, Organ: d.Organ,
+			Published: parseTime(d.Datum), SystemDatum: parseTime(d.Systemdatum), Title: d.Titel, Status: d.Status,
+			DecisionDate: d.Beslutsdag, ChamberDecided: parseBeslutad(d.Beslutad),
+		})
+	}
+	return out, total, nil
+}
+
 // FetchBetankande reads /dokumentstatus/{dok_id}.json and its
 // dokutskottsforslag.
 func (c *Client) FetchBetankande(ctx context.Context, dokID string) (*domain.Betankande, error) {
