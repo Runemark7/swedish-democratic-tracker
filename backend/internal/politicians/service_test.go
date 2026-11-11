@@ -50,6 +50,9 @@ func (r *fakeRepo) Missing(_ context.Context, ids []string) ([]string, error) {
 	return out, nil
 }
 func (r *fakeRepo) GetByID(context.Context, string) (*domain.Politician, error) { return nil, nil }
+func (r *fakeRepo) GetMany(context.Context, []string) (map[string]*domain.Politician, error) {
+	return nil, nil
+}
 func (r *fakeRepo) List(context.Context, ports.ListFilter) (ports.ListResult, error) {
 	return ports.ListResult{}, nil
 }

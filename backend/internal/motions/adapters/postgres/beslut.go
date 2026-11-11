@@ -82,26 +82,29 @@ func (r *Repository) beslutQuery(ctx context.Context, f domain.BeslutFilter, tod
 	if len(f.Utskott) > 0 {
 		where = append(where, `upper(l.organ) = ANY(`+arg(upperAll(f.Utskott))+`)`)
 	}
+	// Each test is a scalar subquery with LIMIT 1 (not EXISTS): EXISTS under OR
+	// is planned as a hashed subplan, and the ballots one then reads all 5.5M
+	// ballots. A scalar subquery stays a correlated index probe per listing
+	// row, and the LATERAL ... LIMIT 1 below keeps the ballots probe on
+	// ballots_pkey (votering_ref, politician_id).
+	motionSide := func(p string) string {
+		return `(SELECT true FROM yrkande_forslagspunkt y JOIN motion_authors a ON a.dok_id = y.motion_dok_id
+				WHERE y.riksmote = l.riksmote AND y.beteckning = l.beteckning AND upper(a.party) = ANY(` + p + `) LIMIT 1) IS TRUE`
+	}
+	reservationSide := func(p string) string {
+		return `(SELECT true FROM betankande_statements s, unnest(s.parties) sp
+				WHERE s.riksmote = l.riksmote AND s.beteckning = l.beteckning AND s.kind = 'reservation' AND upper(sp) = ANY(` + p + `) LIMIT 1) IS TRUE`
+	}
 	if len(f.Parties) > 0 {
 		p := arg(upperAll(f.Parties))
-		where = append(where, `(EXISTS (
-				SELECT 1 FROM yrkande_forslagspunkt y JOIN motion_authors a ON a.dok_id = y.motion_dok_id
-				WHERE y.riksmote = l.riksmote AND y.beteckning = l.beteckning AND upper(a.party) = ANY(`+p+`))
-			OR EXISTS (
-				SELECT 1 FROM betankande_statements s, unnest(s.parties) sp
-				WHERE s.riksmote = l.riksmote AND s.beteckning = l.beteckning AND s.kind = 'reservation' AND upper(sp) = ANY(`+p+`)))`)
+		where = append(where, `(`+motionSide(p)+` OR `+reservationSide(p)+`)`)
 	}
 	if len(f.Involved) > 0 {
 		p := arg(upperAll(f.Involved))
-		where = append(where, `(EXISTS (
-				SELECT 1 FROM yrkande_forslagspunkt y JOIN motion_authors a ON a.dok_id = y.motion_dok_id
-				WHERE y.riksmote = l.riksmote AND y.beteckning = l.beteckning AND upper(a.party) = ANY(`+p+`))
-			OR EXISTS (
-				SELECT 1 FROM betankande_statements s, unnest(s.parties) sp
-				WHERE s.riksmote = l.riksmote AND s.beteckning = l.beteckning AND s.kind = 'reservation' AND upper(sp) = ANY(`+p+`))
-			OR EXISTS (
-				SELECT 1 FROM voteringar v JOIN ballots b ON b.votering_ref = v.id
-				WHERE v.session = l.riksmote AND v.beteckning = l.beteckning AND upper(b.party) = ANY(`+p+`)))`)
+		where = append(where, `(`+motionSide(p)+` OR `+reservationSide(p)+` OR
+			(SELECT true FROM voteringar v
+			 CROSS JOIN LATERAL (SELECT 1 FROM ballots b WHERE b.votering_ref = v.id AND upper(b.party) = ANY(`+p+`) LIMIT 1) vb
+			 WHERE v.session = l.riksmote AND v.beteckning = l.beteckning LIMIT 1) IS TRUE)`)
 	}
 	// Decided rows run newest first by their decision date (else publication
 	// date); upcoming rows run soonest planned day first, undated ones last.
@@ -143,9 +146,18 @@ func (r *Repository) BeslutDetails(ctx context.Context, keys []string) (map[stri
 	if len(keys) == 0 {
 		return out, nil
 	}
+	// The keys are "riksmote:beteckning"; a riksmöte has no colon. Joining
+	// against the unnest'ed pairs lets forslagspunkter_pkey and
+	// voteringar(session, beteckning) be used (a concatenated key cannot).
+	rms, bets := make([]string, len(keys)), make([]string, len(keys))
+	for i, k := range keys {
+		rms[i], bets[i], _ = strings.Cut(k, ":")
+	}
 	pr, err := r.db.Query(ctx, `
-		SELECT riksmote || ':' || beteckning, beslutstyp FROM forslagspunkter
-		WHERE riksmote || ':' || beteckning = ANY($1) ORDER BY 1, punkt`, keys)
+		SELECT f.riksmote || ':' || f.beteckning, f.beslutstyp
+		FROM unnest($1::text[], $2::text[]) AS k(riksmote, beteckning)
+		JOIN forslagspunkter f ON f.riksmote = k.riksmote AND f.beteckning = k.beteckning
+		ORDER BY 1, f.punkt`, rms, bets)
 	if err != nil {
 		return nil, err
 	}
@@ -165,9 +177,10 @@ func (r *Repository) BeslutDetails(ctx context.Context, keys []string) (map[stri
 	}
 	br, err := r.db.Query(ctx, `
 		SELECT v.session || ':' || v.beteckning, v.votering_id, b.party, b.vote_result, count(*)
-		FROM voteringar v JOIN ballots b ON b.votering_ref = v.id
-		WHERE v.session || ':' || v.beteckning = ANY($1)
-		GROUP BY 1, 2, 3, 4`, keys)
+		FROM unnest($1::text[], $2::text[]) AS k(riksmote, beteckning)
+		JOIN voteringar v ON v.session = k.riksmote AND v.beteckning = k.beteckning
+		JOIN ballots b ON b.votering_ref = v.id
+		GROUP BY 1, 2, 3, 4`, rms, bets)
 	if err != nil {
 		return nil, err
 	}

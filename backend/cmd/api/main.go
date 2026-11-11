@@ -125,7 +125,16 @@ func connectDB(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 	const maxAttempts = 10
 	backoff := 1 * time.Second
 	for attempt := 1; attempt <= maxAttempts; attempt++ {
-		db, err := pgxpool.New(ctx, dsn)
+		var db *pgxpool.Pool
+		cfg, err := pgxpool.ParseConfig(dsn)
+		if err == nil {
+			// JIT costs 300-650 ms of compile time on these short OLTP
+			// queries. A DSN's own ?jit=... (already in RuntimeParams) wins.
+			if _, set := cfg.ConnConfig.RuntimeParams["jit"]; !set {
+				cfg.ConnConfig.RuntimeParams["jit"] = "off"
+			}
+			db, err = pgxpool.NewWithConfig(ctx, cfg)
+		}
 		if err == nil {
 			if pingErr := db.Ping(ctx); pingErr == nil {
 				slog.Info("database connected", "attempt", attempt)
