@@ -3,15 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { committeesApi } from "./api";
 import { ApiError } from "@/shared/api-client";
-import { GoalCard } from "@/shared/GoalCard";
-import { PartyBadge } from "@/shared/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { formatBudgetAmount } from "@/shared/design";
 import { useRecordCoverage } from "@/hooks/useDemocracy";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import type { components } from "@/shared/api-contract";
 
-type GoalWithAlignment = components["schemas"]["GoalWithAlignment"];
 
 const PAGE_SIZE = 50;
 
@@ -71,13 +67,6 @@ export function CommitteePage() {
     staleTime: 5 * 60_000,
   });
 
-  const { data: goals, isLoading: loadingGoals, isError: goalsError } = useQuery({
-    queryKey: ["committee-goals", code],
-    queryFn: () => committeesApi.listGoals(code),
-    enabled: !!code,
-    staleTime: 60_000,
-  });
-
   const { data: votesPage, isLoading: loadingVotes, isError: votesError } = useQuery({
     queryKey: ["committee-votes", code, period, page],
     queryFn: () => committeesApi.listVotes(code, period!, PAGE_SIZE, page * PAGE_SIZE),
@@ -121,17 +110,6 @@ export function CommitteePage() {
   if (committeeError || !committee) {
     return <FailureNotice>Vi kunde inte hämta utskottet just nu. Försök igen.</FailureNotice>;
   }
-
-  // Alphabetical by party. Any other order would rank the parties, which is an
-  // editorial act the site does not perform.
-  const goalList: GoalWithAlignment[] = goals ?? [];
-  const byParty = new Map<string, GoalWithAlignment[]>();
-  for (const g of goalList) {
-    const bucket = byParty.get(g.party) ?? [];
-    bucket.push(g);
-    byParty.set(g.party, bucket);
-  }
-  const parties = [...byParty.keys()].sort();
 
   const votes = votesPage?.items ?? [];
   const total = votesPage?.total ?? 0;
@@ -184,52 +162,13 @@ export function CommitteePage() {
       </header>
 
       <main style={{ padding: pad, maxWidth: 920 }}>
-        {/* ── LOVAT ─────────────────────────────────────────────────── */}
+        {/* ── Löften ────────────────────────────────────────────────── */}
         <section className="mb-10">
-          <h2 className="font-display text-lg font-bold mb-1">
-            Partimål inom {committee.name}s område
-          </h2>
-          {/* Committee-level, not point-level: relevant_committees says the goal
-              touches this area, never that it addresses a particular decision. */}
-          <p className="text-xs text-on-surface-variant mb-4">
-            Mål som partierna själva formulerat och som rör utskottets område.
+          <p className="text-sm">
+            <Link to={`/loften?utskott=${encodeURIComponent(committee.code)}`} className="text-link hover:underline">
+              Partiernas löften inom {committee.name}s område →
+            </Link>
           </p>
-
-          {loadingGoals && (
-            <p className="text-sm text-on-surface-variant">Laddar partimål...</p>
-          )}
-
-          {/* A failed fetch is not an empty result. Without this the caption
-              below states we hold no goals for an area we may hold nine for,
-              on the strength of a dropped request. No source marker: nothing
-              here comes from a source. */}
-          {goalsError && (
-            <p className="text-sm text-on-surface-variant">
-              Vi kunde inte hämta partimålen just nu. Det säger inget om vad
-              partierna vill — försök igen.
-            </p>
-          )}
-
-          {!loadingGoals && !goalsError && goalList.length === 0 && (
-            /* Our seed reading is the gap, never the parties' silence. */
-            <p className="text-sm text-on-surface-variant">
-              Vi har inga inlästa partimål inom detta område.{" "}
-              <SourceMarker sourceId="seed-party-goals" />
-            </p>
-          )}
-
-          {parties.map((p) => (
-            <div key={p} className="mb-6">
-              <div className="flex items-center gap-2 mb-2">
-                <PartyBadge party={p} />
-              </div>
-              <div className="space-y-3">
-                {(byParty.get(p) ?? []).map((g) => (
-                  <GoalCard key={g.id} goal={g} party={p} />
-                ))}
-              </div>
-            </div>
-          ))}
         </section>
 
         {/* ── RÖSTAT ────────────────────────────────────────────────── */}

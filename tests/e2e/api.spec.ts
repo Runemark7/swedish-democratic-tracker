@@ -2,47 +2,15 @@ import { test, expect } from "@playwright/test";
 
 const API = process.env.API_URL ?? "http://localhost:8080";
 
-test.describe("Parties API", () => {
-  test("GET /api/parties returns party summaries", async ({ request }) => {
-    const res = await request.get(`${API}/api/parties`);
-    expect(res.status()).toBe(200);
-
-    const parties = await res.json();
-    expect(Array.isArray(parties)).toBe(true);
-    expect(parties.length).toBeGreaterThan(0);
-
-    const first = parties[0];
-    expect(first).toHaveProperty("party");
-    expect(first).toHaveProperty("totalGoals");
-    expect(first).toHaveProperty("avgAlignmentPct");
-    expect(typeof first.avgAlignmentPct).toBe("number");
-  });
-
-  test("GET /api/parties/S/goals returns S party goals", async ({ request }) => {
-    const res = await request.get(`${API}/api/parties/S/goals`);
-    expect(res.status()).toBe(200);
-
-    const goals = await res.json();
-    expect(Array.isArray(goals)).toBe(true);
-    expect(goals.length).toBeGreaterThan(0);
-
-    const g = goals[0];
-    expect(g).toHaveProperty("id");
-    expect(g).toHaveProperty("goalText");
-    expect(g.party).toBe("S");
-  });
-
-  test("GET /api/parties/M/goals returns M party goals", async ({ request }) => {
-    const res = await request.get(`${API}/api/parties/M/goals`);
-    expect(res.status()).toBe(200);
-
-    const goals = await res.json();
-    expect(Array.isArray(goals)).toBe(true);
-    expect(goals.length).toBeGreaterThan(0);
-    for (const g of goals) {
-      expect(g.party).toBe("M");
-    }
-  });
+test.describe("Retired goals API (#164)", () => {
+  for (const path of ["/api/parties", "/api/parties/S/goals", "/api/committees/FiU/goals"]) {
+    test(`GET ${path} answers 410 with a pointer to the Löften API`, async ({ request }) => {
+      const res = await request.get(`${API}${path}`);
+      expect(res.status()).toBe(410);
+      const body = await res.json();
+      expect(body.loften).toBe("/api/loften");
+    });
+  }
 });
 
 test.describe("Politicians API", () => {

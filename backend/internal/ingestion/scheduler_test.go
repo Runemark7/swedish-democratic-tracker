@@ -57,8 +57,8 @@ func TestRunDue_OrderAndSundayOnlyWeeklies(t *testing.T) {
 	}
 	for _, spec := range []struct{ spec, name string }{
 		{"@daily", "fetch-votes"},
-		{"@daily", "keyword-matcher"},
-		{"@weekly", "refresh-scorecards"},
+		{"@daily", "refresh-votes-extra"},
+		{"@weekly", "weekly-probe"},
 		{"@daily", "refresh-coverage"},
 	} {
 		if err := s.Register(spec.spec, record(spec.name)); err != nil {
@@ -67,7 +67,7 @@ func TestRunDue_OrderAndSundayOnlyWeeklies(t *testing.T) {
 	}
 
 	s.RunDue(context.Background())
-	want := []string{"fetch-votes", "keyword-matcher", "refresh-coverage"}
+	want := []string{"fetch-votes", "refresh-votes-extra", "refresh-coverage"}
 	if !sameStrings(order, want) {
 		t.Fatalf("Monday order = %v, want %v", order, want)
 	}
@@ -79,7 +79,7 @@ func TestRunDue_OrderAndSundayOnlyWeeklies(t *testing.T) {
 	}
 	s.now = func() time.Time { return sunday }
 	s.RunDue(context.Background())
-	want = []string{"fetch-votes", "keyword-matcher", "refresh-scorecards", "refresh-coverage"}
+	want = []string{"fetch-votes", "refresh-votes-extra", "weekly-probe", "refresh-coverage"}
 	if !sameStrings(order, want) {
 		t.Fatalf("Sunday order = %v, want %v", order, want)
 	}

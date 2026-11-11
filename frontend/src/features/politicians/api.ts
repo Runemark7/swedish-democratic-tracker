@@ -3,8 +3,6 @@ import type { components } from "@/shared/api-contract";
 
 type PoliticianListResponse = components["schemas"]["PoliticianListResponse"];
 type PoliticianSummary = components["schemas"]["PoliticianSummary"];
-type PromiseWithMatches = components["schemas"]["PromiseWithMatches"];
-type Topic = components["schemas"]["Topic"];
 type VoteListResponse = components["schemas"]["VoteListResponse"];
 
 export const politiciansApi = {
@@ -25,11 +23,5 @@ export const politiciansApi = {
     if (params.pageSize) q.set("pageSize", String(params.pageSize));
     const qs = q.toString();
     return api.get<VoteListResponse>(`/politicians/${id}/votes${qs ? `?${qs}` : ""}`);
-  },
-  listPromises: (id: string, params: { topic?: Topic } = {}) => {
-    const q = new URLSearchParams();
-    if (params.topic) q.set("topic", params.topic);
-    const qs = q.toString();
-    return api.get<PromiseWithMatches[]>(`/politicians/${id}/promises${qs ? `?${qs}` : ""}`);
   },
 };

@@ -20,7 +20,7 @@ skapar `SourceRegistry.generated.ts`.
 | [scb-befolkning](./scb-befolkning.md) | SCB BefolkningNy | api | befolkning per kommun |
 | [ted](./ted.md) | TED Tenders Electronic Daily | api | upphandling |
 | [statskontoret-arsutfall](./statskontoret-arsutfall.md) | Statskontoret årsutfall | csv | myndigheters driftkostnader |
-| [seed-party-goals](./seed-party-goals.md) | Partimål (seed) | seed | partimål och scorecards |
+| [seed-party-goals](./seed-party-goals.md) | Partimål (seed) | seed | partimål (arkiverade Löften) |
 | [party-manifestos](./party-manifestos.md) | Partiernas valmanifest (katalog) | seed | valmanifestkatalogen (/manifestos) |
 | [seed-budget-data](./seed-budget-data.md) | Statsbudget (seed) | seed | budget per UO |
 | [national-agenda](./national-agenda.md) | Regeringens dokument (katalog) | seed | regeringens dokument (/regeringen) |

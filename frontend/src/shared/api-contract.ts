@@ -200,23 +200,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/parties": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all parties with summary scorecard data */
-        get: operations["listParties"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/aendringslogg": {
         parameters: {
             query?: never;
@@ -630,40 +613,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/parties/{party}/goals": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all goals for a party with alignment percentages */
-        get: operations["listPartyGoals"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/parties/{party}/goals/{goalId}/votes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Detailed vote breakdown for a specific party goal */
-        get: operations["listGoalVotes"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/politicians": {
         parameters: {
             query?: never;
@@ -690,23 +639,6 @@ export interface paths {
         };
         /** Full politician profile */
         get: operations["getPolitician"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/politicians/{id}/promises": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Promises extracted from speeches with vote match results */
-        get: operations["listPoliticianPromises"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1723,26 +1655,6 @@ export interface paths {
         };
         /** One committee with the utgiftsområden it bereder */
         get: operations["getCommittee"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/committees/{code}/goals": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Party goals whose relevant_committees contains this committee
-         * @description The LOVAT row. Goals are the parties' own stated aims, alphabetical by party. An empty result means our seed data holds no goals for this area, which the caller must state as our gap and never as the parties' silence.
-         */
-        get: operations["listGoalsByCommittee"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2893,28 +2805,6 @@ export interface components {
             voteResult: components["schemas"]["VoteResult"];
             partilinje: components["schemas"]["Partilinje"];
         };
-        Goal: {
-            id: number;
-            party: components["schemas"]["PartyCode"];
-            goalText: string;
-            topic: components["schemas"]["Topic"];
-            specificity: components["schemas"]["Specificity"];
-            /** @example Valmanifest 2022 */
-            sourceDocument: string;
-            /**
-             * @description Live URL to the party's published source document for this goal.
-             * @example https://moderaterna.se/.../valmanifest_2022.pdf
-             */
-            sourceUrl?: string;
-            /** @description Verbatim excerpt from the source document the goal is derived from. */
-            sourceQuote?: string;
-            keywords?: string[];
-            relevantCommittees?: string[];
-        };
-        GoalWithAlignment: components["schemas"]["Goal"] & {
-            /** @description Vote points matched to this goal — a fact about our matching. The alignment percentage was retired: it systematically disadvantaged opposition parties, scoring a party that voted Nej to the rejection of its own motion as breaking its own promise. */
-            relevantVotes?: number;
-        };
         /** @description A party's Partilinje in one votering — the same definition as PartyVotePosition.partilinje. Stated as fact, never scored against a promise. Never carries the record's "-" placeholder for ballots with no party affiliation: this is a per-party list, and "-" is not a party. */
         PartyPosition: {
             party: components["schemas"]["PartyCode"];
@@ -2940,27 +2830,6 @@ export interface components {
             items: components["schemas"]["CommitteeVotering"][];
             /** @description Total voteringar for this committee, independent of paging */
             total: number;
-        };
-        GoalVoteBreakdown: {
-            goal: components["schemas"]["GoalWithAlignment"];
-            matches: components["schemas"]["GoalVoteMatch"][];
-        };
-        GoalVoteMatch: {
-            beteckning: string;
-            forslagspunkt: string;
-            /** Format: float */
-            relevanceScore: number;
-            alignedDirection: components["schemas"]["VoteResult"];
-            explanation?: string;
-            proposedByParty?: components["schemas"]["PartyCode"];
-            proposalType?: components["schemas"]["ProposalType"];
-            contextNote?: string;
-            documentTitle?: string;
-            /**
-             * Format: float
-             * @description What % of party members voted in the aligned direction
-             */
-            partyAlignmentPct?: number;
         };
         RecordCoverage: {
             mandate: components["schemas"]["MandatePeriod"];
@@ -2991,44 +2860,10 @@ export interface components {
             /** @description When this riksmöte's `expected` was last read from Riksdagen. */
             denominatorCheckedAt?: string | null;
         };
-        PartySummary: {
-            party: components["schemas"]["PartyCode"];
-            totalGoals: number;
-            topicBreakdown?: components["schemas"]["TopicAlignment"][];
-        };
         TopicAlignment: {
             topic: components["schemas"]["Topic"];
             /** @description All goals in this topic, including unscorable ones. */
             goalCount: number;
-        };
-        Promise: {
-            id: number;
-            politicianId: string;
-            speechId?: number;
-            /** Format: date */
-            speechDate?: string;
-            speechTopic?: string;
-            promiseText: string;
-            topic: components["schemas"]["Topic"];
-            specificity: components["schemas"]["Specificity"];
-            keywords?: string[];
-        };
-        PromiseWithMatches: components["schemas"]["Promise"] & {
-            voteMatches?: components["schemas"]["PromiseVoteMatch"][];
-        };
-        PromiseVoteMatch: {
-            voteId: number;
-            beteckning?: string;
-            forslagspunkt?: string;
-            documentTitle?: string;
-            voteResult?: components["schemas"]["VoteResult"];
-            /** Format: float */
-            relevanceScore: number;
-            /** @enum {string} */
-            alignment: "supports" | "contradicts" | "unclear";
-            explanation?: string;
-            proposedByParty?: components["schemas"]["PartyCode"];
-            proposalType?: components["schemas"]["ProposalType"];
         };
         ExpenditureArea: {
             /** @example UO6 */
@@ -4062,26 +3897,6 @@ export interface operations {
             };
         };
     };
-    listParties: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of parties with aggregate alignment scores */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PartySummary"][];
-                };
-            };
-        };
-    };
     listAendringslogg: {
         parameters: {
             query?: {
@@ -4804,55 +4619,6 @@ export interface operations {
             };
         };
     };
-    listPartyGoals: {
-        parameters: {
-            query?: {
-                topic?: components["schemas"]["Topic"];
-            };
-            header?: never;
-            path: {
-                party: components["parameters"]["PartyParam"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Party goals with vote alignment data */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GoalWithAlignment"][];
-                };
-            };
-            404: components["responses"]["NotFound"];
-        };
-    };
-    listGoalVotes: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                party: components["parameters"]["PartyParam"];
-                goalId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Votes relevant to this goal with context notes */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GoalVoteBreakdown"];
-                };
-            };
-            404: components["responses"]["NotFound"];
-        };
-    };
     listPoliticians: {
         parameters: {
             query?: {
@@ -4896,31 +4662,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PoliticianProfile"];
-                };
-            };
-            404: components["responses"]["NotFound"];
-        };
-    };
-    listPoliticianPromises: {
-        parameters: {
-            query?: {
-                topic?: components["schemas"]["Topic"];
-            };
-            header?: never;
-            path: {
-                id: components["parameters"]["PoliticianIdParam"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Promises with vote alignment */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PromiseWithMatches"][];
                 };
             };
             404: components["responses"]["NotFound"];
@@ -6120,28 +5861,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    listGoalsByCommittee: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                code: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Goals, alphabetical by party. relevantVotes is not computed on this endpoint and is always 0 here — it is not a claim that nothing matched. The matching service scores one party's scorecard at a time, and this endpoint spans every party; read relevantVotes from GET /parties/{party}/goals instead. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GoalWithAlignment"][];
                 };
             };
         };

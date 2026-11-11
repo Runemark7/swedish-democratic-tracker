@@ -35,19 +35,13 @@ import (
 	"riksdagskollen/internal/datacoverage"
 	datacoverageHTTP "riksdagskollen/internal/datacoverage/adapters/http"
 	datacoveragePG "riksdagskollen/internal/datacoverage/adapters/postgres"
-	"riksdagskollen/internal/goals"
-	"riksdagskollen/internal/loften"
-	loftenHTTP "riksdagskollen/internal/loften/adapters/http"
-	loftenPG "riksdagskollen/internal/loften/adapters/postgres"
-	goalsHTTP "riksdagskollen/internal/goals/adapters/http"
-	goalsPG "riksdagskollen/internal/goals/adapters/postgres"
 	"riksdagskollen/internal/ingestion"
 	ingestionHTTP "riksdagskollen/internal/ingestion/adapters/http"
 	ingestionPG "riksdagskollen/internal/ingestion/adapters/postgres"
 	"riksdagskollen/internal/ingestion/workers"
-	"riksdagskollen/internal/matching"
-	matchingPG "riksdagskollen/internal/matching/adapters/postgres"
-	matchingStub "riksdagskollen/internal/matching/adapters/stub"
+	"riksdagskollen/internal/loften"
+	loftenHTTP "riksdagskollen/internal/loften/adapters/http"
+	loftenPG "riksdagskollen/internal/loften/adapters/postgres"
 	"riksdagskollen/internal/ministers"
 	ministersHTTP "riksdagskollen/internal/ministers/adapters/http"
 	ministersPG "riksdagskollen/internal/ministers/adapters/postgres"
@@ -63,9 +57,6 @@ import (
 	politiciansHTTP "riksdagskollen/internal/politicians/adapters/http"
 	politiciansPG "riksdagskollen/internal/politicians/adapters/postgres"
 	politiciansRD "riksdagskollen/internal/politicians/adapters/riksdagen"
-	"riksdagskollen/internal/promises"
-	promisesHTTP "riksdagskollen/internal/promises/adapters/http"
-	promisesPG "riksdagskollen/internal/promises/adapters/postgres"
 	"riksdagskollen/internal/questions"
 	questionsHTTP "riksdagskollen/internal/questions/adapters/http"
 	questionsPG "riksdagskollen/internal/questions/adapters/postgres"
@@ -145,20 +136,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 
 	curationHandler := curationHTTP.NewHandler(curation.NewService(curationPG.NewRepository(db)), writeToken)
 
-	goalRepo := goalsPG.NewRepository(db)
-	goalSvc := goals.NewService(goalRepo)
-
 	loftenHandler := loftenHTTP.NewHandler(loftenSvc)
-
-	matchRepo := matchingPG.NewRepository(db)
-	aiStub := matchingStub.NewAIService()
-	matchSvc := matching.NewService(matchRepo, aiStub)
-
-	goalsHandler := goalsHTTP.NewHandler(goalSvc, matchSvc)
-
-	promiseRepo := promisesPG.NewRepository(db)
-	promiseSvc := promises.NewService(promiseRepo)
-	promisesHandler := promisesHTTP.NewHandler(promiseSvc, matchSvc)
 
 	budgetRepo := budgetPG.NewRepository(db)
 	budgetSvc := budget.NewService(budgetRepo)
@@ -238,10 +216,9 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		questionHandler.Routes(api)
 		dataCoverageHandler.Routes(api)
 		speechHandler.Routes(api)
-		goalsHandler.Routes(api)
 		loftenHandler.Routes(api)
 		curationHandler.PublicRoutes(api)
-		promisesHandler.Routes(api)
+		retiredRoutes(api)
 		budgetHandler.Routes(api)
 		contextHandler.Routes(api)
 		regionsHandler.Routes(api)
@@ -268,8 +245,6 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	voteWorker := workers.NewVotesWorker(voteSvc, cursorRepo)
 	voteWorker.SetNow(clk.Now)
 	titlesWorker := workers.NewVoteTitlesWorker(voteSvc)
-	keywordWorker := workers.NewKeywordMatcherWorker(goalSvc, voteSvc, matchSvc)
-	refreshWorker := workers.NewRefreshScorecardsWorker(matchSvc)
 	coverageWorker := workers.NewCoverageWorker(voteSvc, ingestionPG.NewCoverageRepo(db))
 
 	agencyIntelWorker := workers.NewAgencyIntelWorker(riksdagRD.NewAgencyClientWithBaseURL(riksdagenBaseURL), agencyIntelRepo, agencyInfoList())
@@ -281,7 +256,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	sched := ingestion.NewScheduler()
 	sched.SetRunRecorder(ingestionRunsRepo)
 	sched.SetFreshness(freshnessRepo)
-	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, titlesWorker, keywordWorker, refreshWorker, coverageWorker); err != nil {
+	if err := sched.RegisterDefaults(pollWorker, speechWorker, voteWorker, titlesWorker, coverageWorker); err != nil {
 		slog.Error("failed to register ingestion workers", "error", err)
 		return nil, err
 	}

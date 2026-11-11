@@ -4,12 +4,7 @@ import { partiesApi } from "./api";
 import { PartyBadge } from "@/shared/components";
 
 export function PartiesPage() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["parties"],
-    queryFn: partiesApi.listParties,
-  });
-
-  const { data: metaList } = useQuery({
+  const { data: metaList, isLoading, error } = useQuery({
     queryKey: ["party-meta"],
     queryFn: partiesApi.listPartyMeta,
   });
@@ -22,7 +17,7 @@ export function PartiesPage() {
     return <div className="text-contradiction py-16 text-center text-sm">Kunde inte ladda partier.</div>;
   }
 
-  const parties = data ?? [];
+  const parties = (metaList ?? []).map((m) => ({ party: m.code ?? "" })).filter((p) => p.party);
   // Alphabetical. The alignment percentage that previously ordered this list
   // was retired, and ordering parties by any derived figure is a ranking —
   // an editorial act the site does not perform.
@@ -32,11 +27,10 @@ export function PartiesPage() {
     <div>
       <div className="mb-8">
         <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">
-          Partimål & röstning
+          Partier
         </h2>
         <p className="text-sm text-on-surface-variant leading-relaxed max-w-lg">
-          Varje partis uttalade mål, bredvid hur partiet faktiskt röstade i
-          riksdagen. Välj ett parti för att se målen och omröstningarna.{" "}
+          Välj ett parti för att se dess omröstningar och löften.{" "}
           <Link to="/loften" className="text-link underline">Löften för alla partier</Link>
         </p>
       </div>
@@ -53,8 +47,6 @@ export function PartiesPage() {
       {/* Compact summary table */}
       <div className="bg-surface-lowest rounded-xl overflow-hidden">
         {sorted.map((p, i) => {
-          const topics = p.topicBreakdown ?? [];
-
           return (
             <Link
               key={p.party}
@@ -90,31 +82,6 @@ export function PartiesPage() {
                   )}
                 </div>
 
-                {/* Topic tags */}
-                {topics.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                    {topics.slice(0, 4).map((t) => (
-                      <span
-                        key={t.topic}
-                        style={{
-                          fontSize: 10,
-                          color: "var(--color-fg-muted)",
-                          textTransform: "capitalize",
-                          padding: "2px 6px",
-                          borderRadius: 3,
-                          background: "var(--color-surface-low)",
-                        }}
-                      >
-                        {t.topic}
-                      </span>
-                    ))}
-                    {topics.length > 4 && (
-                      <span style={{ fontSize: 10, color: "var(--color-fg-muted)", padding: "2px 6px" }}>
-                        +{topics.length - 4}
-                      </span>
-                    )}
-                  </div>
-                )}
               </div>
 
             </Link>

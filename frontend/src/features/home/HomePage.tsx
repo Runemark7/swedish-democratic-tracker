@@ -18,12 +18,13 @@ export function HomePage() {
   // Alphabetical, not by mandate size: an editorial ordering is exactly what
   // the party index exists to avoid (#100: "8 badges, alphabetical, no ranking").
   const { data: parties } = useQuery({
-    queryKey: ["parties"],
-    queryFn: partiesApi.listParties,
+    queryKey: ["party-meta"],
+    queryFn: partiesApi.listPartyMeta,
     staleTime: 5 * 60_000,
   });
   const partyCodes = [...(parties ?? [])]
-    .map((p) => p.party)
+    .map((p) => p.code ?? "")
+    .filter(Boolean)
     .sort((a, b) => a.localeCompare(b, "sv"));
 
   const partyGridStyle: React.CSSProperties = {

@@ -3,7 +3,6 @@ import type { components } from "@/shared/api-contract";
 
 type Committee = components["schemas"]["Committee"];
 type CommitteeVoteringPage = components["schemas"]["CommitteeVoteringPage"];
-type GoalWithAlignment = components["schemas"]["GoalWithAlignment"];
 
 /**
  * Committee fetchers.
@@ -23,11 +22,6 @@ export const committeesApi = {
     api.get<Committee>(
       `/committees/${encodeURIComponent(code)}?period=${encodeURIComponent(period)}`,
     ),
-
-  /** The LOVAT row. Not period-scoped: a party's stated goals are not a fact
-   *  about a mandate period's voting record. */
-  listGoals: (code: string) =>
-    api.get<GoalWithAlignment[]>(`/committees/${encodeURIComponent(code)}/goals`),
 
   listVotes: (code: string, period: string, limit = 50, offset = 0) =>
     api.get<CommitteeVoteringPage>(

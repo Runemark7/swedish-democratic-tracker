@@ -9,17 +9,16 @@ last_verified: 2026-06-21
 verification_status: frozen
 verification_notes: ~
 used_by:
-  - /parties (partiscorecards)
   - /parties/:party?tab=loften (2022 års mål som arkiverade Löften)
   - /loften och /loften/:id (arkivet, samma id som målet)
-  - /parties/:party/goals och /goals/:goalId/votes (omdirigerar till ovan)
+  - /parties/:party/goals och /goals/:goalId/votes (webbläsar-omdirigering till ovan; API-ändpunkterna svarar 410)
 ---
 
 ## Vad det är
 Sedan migration 000057 kopieras 2022 års mål (och mål utan valår) till tabellen
 `loften` med oförändrat id och synlighet `archived`; 2026-material kopieras
-inte. De visas som arkiv 2022–2026, utan Löftesstatus. Tabellen `party_goals`
-är orörd.
+inte. De visas som arkiv 2022–2026, utan Löftesstatus. Tabellen `party_goals` har tagits bort (migration 000064, #164); arkivet i
+`loften` är den enda kvarvarande kopian.
 
 Hand-kuraterade mål från partiernas publicerade dokument — valmanifest 2022,
 valplattform 2026, Tidöavtalet och partiprogram. Varje mål har en `source_url`
@@ -51,8 +50,7 @@ Primärkällor:
 - `source_document` — källetikett (t.ex. "Valmanifest 2022").
 - `source_url` — länk till partiets publicerade källdokument.
 - `source_quote` — ordagrant citat ur källdokumentet som målet bygger på.
-- `keywords` — sökord för att matcha relevanta riksdagsomröstningar.
-- `relevant_committees` — utskott vars omröstningar är relevanta.
+- `keywords`, `relevant_committees` — fanns i `party_goals`; utskotten lever vidare som `loften.utskott`.
 
 ## Begränsningar och kända problem
 - Manifest formuleras ofta vagt. Klassificeringen `concrete` vs

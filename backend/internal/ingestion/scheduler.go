@@ -93,17 +93,14 @@ func (s *Scheduler) Catalog() []ScheduledJob {
 // RegisterDefaults wires the vote pipeline in dependency order.
 //
 // One daily cron runs the chain. Weekly workers run on Sunday, in their
-// place in that order, so refresh-scorecards follows keyword-matcher and
-// refresh-coverage follows the vote fetch. Independent @daily registrations
-// all fire at 00:00 and finish in parallel, which is how coverage and
-// scorecards kept publishing yesterday's inputs.
+// place in that order, so refresh-coverage follows the vote fetch.
+// Independent @daily registrations all fire at 00:00 and finish in parallel,
+// which is how coverage kept publishing yesterday's inputs.
 func (s *Scheduler) RegisterDefaults(
 	pw workers.PoliticiansWorker,
 	sw workers.SpeechesWorker,
 	vw workers.VotesWorker,
 	tw workers.VoteTitlesWorker,
-	kw workers.KeywordMatcherWorker,
-	rw workers.RefreshScorecardsWorker,
 	cw workers.CoverageWorker,
 ) error {
 	ordered := []struct {
@@ -114,8 +111,6 @@ func (s *Scheduler) RegisterDefaults(
 		{"@daily", &sw},
 		{"@daily", &vw},
 		{"@daily", &tw},
-		{"@daily", &kw},
-		{"@weekly", &rw},
 		{"@daily", &cw},
 	}
 	for _, e := range ordered {
