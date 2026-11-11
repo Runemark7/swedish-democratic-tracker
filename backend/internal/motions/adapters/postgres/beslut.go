@@ -59,7 +59,7 @@ func (r *Repository) ListBeslut(ctx context.Context, f domain.BeslutFilter, toda
 	var out []domain.BeslutRow
 	ballotsProbe := true
 	if len(f.Involved) > 0 {
-		known, err := r.partyKnown(ctx, upperAll(f.Involved))
+		known, err := r.partyHasBallots(ctx, upperAll(f.Involved))
 		if err != nil {
 			return nil, err
 		}
@@ -83,19 +83,52 @@ func (r *Repository) ListBeslut(ctx context.Context, f domain.BeslutFilter, toda
 	return out, nil
 }
 
-// partyKnown says whether any of the parties is on record as a member's party,
-// a motion author or a reservation. Each probe is small (politicians, 218k
-// authors, 2.9k statements), unlike ballots, which has no party index. An
-// unknown code (/api/parties/ZZ/record) would otherwise make the ballots probe
-// read every ballot of every listing; with nothing known it is skipped, as it
-// could only ever match a party that has ballots but is none of the above.
-func (r *Repository) partyKnown(ctx context.Context, parties []string) (bool, error) {
-	var known bool
-	err := r.db.QueryRow(ctx, `
-		SELECT EXISTS (SELECT 1 FROM politicians WHERE upper(party) = ANY($1))
-		    OR EXISTS (SELECT 1 FROM motion_authors WHERE upper(party) = ANY($1))
-		    OR EXISTS (SELECT 1 FROM betankande_statements s, unnest(s.parties) sp WHERE upper(sp) = ANY($1))`, parties).Scan(&known)
-	return known, err
+// ballotPartiesMaxAge bounds how long a miss in the cached ballot party set is
+// trusted before the set is read again.
+const ballotPartiesMaxAge = time.Minute
+
+// partyHasBallots says whether any of the parties has at least one ballot. The
+// ballots probe of the Involved filter is a cheap index walk for a party that
+// votes, but for a party with no ballots at all (an unknown code such as
+// /api/parties/ZZ/record, or a historical one like NYD) it reads every ballot of
+// every listing (~18 s on prod), and it can never match. ballots has no party
+// index, so the distinct set (a ~1 s scan) is cached on the repository: a hit is
+// trusted, a miss re-reads the set at most once per ballotPartiesMaxAge.
+func (r *Repository) partyHasBallots(ctx context.Context, parties []string) (bool, error) {
+	r.ballotPartiesMu.Lock()
+	defer r.ballotPartiesMu.Unlock()
+	hit := func() bool {
+		for _, p := range parties {
+			if r.ballotParties[p] {
+				return true
+			}
+		}
+		return false
+	}
+	if hit() {
+		return true, nil
+	}
+	if r.ballotParties != nil && time.Since(r.ballotPartiesAt) < ballotPartiesMaxAge {
+		return false, nil
+	}
+	rows, err := r.db.Query(ctx, `SELECT DISTINCT upper(party) FROM ballots`)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	set := map[string]bool{}
+	for rows.Next() {
+		var p string
+		if err := rows.Scan(&p); err != nil {
+			return false, err
+		}
+		set[p] = true
+	}
+	if err := rows.Err(); err != nil {
+		return false, err
+	}
+	r.ballotParties, r.ballotPartiesAt = set, time.Now()
+	return hit(), nil
 }
 
 func (r *Repository) beslutQuery(ctx context.Context, f domain.BeslutFilter, today time.Time, decided bool, after *domain.BeslutCursor, limit int, ballotsProbe bool) ([]domain.BeslutRow, error) {
