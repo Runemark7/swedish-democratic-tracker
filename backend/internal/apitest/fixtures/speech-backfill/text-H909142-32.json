@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-32.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-32.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "32",
+   "anforandetext": "<p>Herr talman! Jag vill rikta ett stort tack till Staffan Eklöf för alla de debatter som vi har haft; det har varit intressant.</p><p>När det gäller det politiska ansvaret för hur man som politiker måste agera menar jag att Staffan Eklöf har ett mycket stort problem nu. Faktum är att man inför att politiska beslut fattas ska opinionsbilda, driva på, säga sin mening, trycka till och vara med och fatta beslut. Men om man inte får som man vill måste man faktiskt ta ansvar och respektera de redan fattade besluten.</p><p>När nu besluten om klimatlagen, Green Deal och andra områden i EU är fattade, ska man då inte utgå från dem i stället för att, som Staffan Eklöf gör, utgå från sitt eget önsketänkande?</p><p>Staffan Eklöf och alla andra ledamöter i Sveriges riksdag som tillträder på måndag har ju all frihet att titta på konsekvensanalyser och ha synpunkter inför att lagstiftningen nu ska formas i förhandlingar mellan medlemsländerna. Här har man en möjlighet att påverka innehållet om man tycker att det går åt ena eller andra hållet. Jag är övertygad om att Miljöpartiet kommer att driva på för en stark miljölagstiftning och för att vi ska ha ett hållbart växtskydd och en hållbar användning av bekämpningsmedel i Europa.</p>"
+  }
+ }
+}

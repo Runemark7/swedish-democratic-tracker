@@ -1,0 +1,25 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "0117203219614",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=0117203219614&utformat=json",
+ "note": "Recorded 2026-11-11; the person object (Riksdagen returns an object, not a list, for one hit) reduced to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "@hits": "1",
+   "person": {
+    "intressent_id": "0117203219614",
+    "tilltalsnamn": "Jörgen",
+    "efternamn": "Warborn",
+    "parti": "M",
+    "valkrets": "Hallands län",
+    "status": "Europaparlamentariker",
+    "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/15ab245f-6634-4e11-88eb-3d9533e87d18_192.jpg"
+   }
+  }
+ }
+}

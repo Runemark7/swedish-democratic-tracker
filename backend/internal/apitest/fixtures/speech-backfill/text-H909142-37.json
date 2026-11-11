@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-37.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-37.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "37",
+   "anforandetext": "<p>Fru talman! Maria Gardfjell beskriver en socialdemokratisk position som är helt felaktig. Jag lyfte väldigt tydligt fram att vi tycker att det är rimligt att det här beslutas på EU-nivå och att vi har gemensam lagstiftning. Vi tycker däremot inte att vi ska bygga nya regelverk, och detta har varit Sveriges ståndpunkt vid varje tillfälle. Det vore inte förenligt med vår syn på medlemskapet. Det är fråga om nya regelverk som dessutom skapar ny byråkrati, när vi redan har befintliga regelverk som vi faktiskt kan använda. Vi får med all säkerhet fortsätta att diskutera de här frågorna, för de är viktiga. Det är vårt ställningstagande. Vi kommer att driva det för att minska användningen av växtskyddsmedel. Tro ingenting annat. Men både regelverk och resurser ska användas så effektivt som möjligt.</p>"
+  }
+ }
+}

@@ -1,4 +1,7 @@
 import { api } from "@/shared/api-client";
+import type { components } from "@/shared/api-contract";
+
+export type SpeechBackfill = components["schemas"]["SpeechBackfill"];
 
 export interface Speech {
   id: number;
@@ -16,6 +19,7 @@ export interface Speech {
 }
 
 export const speechesApi = {
+  backfill: () => api.get<{ data: SpeechBackfill[] }>("/speeches/backfill"),
   listRecent: (limit = 100) =>
     api.get<Speech[]>(`/speeches/recent?limit=${limit}`),
   getById: (id: number) =>

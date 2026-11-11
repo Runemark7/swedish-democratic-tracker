@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-36.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-36.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "36",
+   "anforandetext": "<p>Fru talman! Om bara tre månader ska Sverige vara ordförandeland i EU. Linjen från både regeringen och riksdagen har varit att man vill vara återhållsam med synpunkter inför ordförandeskapet. Men här bidrar ju Socialdemokraterna till att Sverige gör ett hårt slag i luften med det här motiverade yttrandet och ställer sig på samma sida som Ungern och kanske Polen.</p><p>När det gäller Socialdemokraternas agerande i den här frågan måste jag säga att jag är förvånad. Socialdemokraterna har under lång tid arbetat i miljöns tjänst, men nu har man backat. Kanske var det bara något slags nyck inför valrörelsen. Jag hoppas att man får tillbaka ett socialdemokratiskt parti som tar miljöfrågorna på allvar.</p><p>I det här fallet borde Socialdemokraterna ha arbetat hårt för att få utskottet att stå bakom den linje som Miljöpartiet och regeringen har om att det här ärendet bör vara i enlighet med subsidiaritetsprincipen. I stället har man skapat något slags linje två, som egentligen bara är ett förtäckt sätt för Sverigedemokraterna, Moderaterna och Kristdemokraterna att få igenom en helt orimlig linje här i Sveriges riksdag.</p><p>(Applåder)</p>"
+  }
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "025877594729",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=025877594729&utformat=json",
+ "note": "Recorded 2026-11-11; the person object (Riksdagen returns an object, not a list, for one hit) reduced to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "@hits": "1",
+   "person": {
+    "intressent_id": "025877594729",
+    "tilltalsnamn": "John",
+    "efternamn": "Widegren",
+    "parti": "M",
+    "valkrets": "Östergötlands län",
+    "status": "Tidigare riksdagsledamot",
+    "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/5d1ac61d-4464-41a4-bae0-42ea3782cba8_192.jpg"
+   }
+  }
+ }
+}

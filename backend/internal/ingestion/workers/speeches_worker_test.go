@@ -70,7 +70,20 @@ func (r *fakeSpeechRepo) ListByParty(context.Context, string, int) ([]*speechdom
 func (r *fakeSpeechRepo) DebateCandidates(context.Context) ([]speechdomain.DebateCandidate, error) {
 	return nil, nil
 }
-func (r *fakeSpeechRepo) ListForLinking(context.Context, int, int) ([]speechports.LinkRow, error) {
+func (r *fakeSpeechRepo) ListForLinking(context.Context, string, int, int) ([]speechports.LinkRow, error) {
+	return nil, nil
+}
+func (r *fakeSpeechRepo) MissingTextIn(context.Context, string, int) ([]*speechdomain.Speech, error) {
+	return nil, nil
+}
+func (r *fakeSpeechRepo) RiksmoteCounts(context.Context, string) (speechdomain.RiksmoteCounts, error) {
+	return speechdomain.RiksmoteCounts{}, nil
+}
+func (r *fakeSpeechRepo) StorageSizes(context.Context) (int64, int64, error) { return 0, 0, nil }
+func (r *fakeSpeechRepo) SaveBackfill(context.Context, speechdomain.BackfillRun) error {
+	return nil
+}
+func (r *fakeSpeechRepo) ListBackfill(context.Context) ([]speechdomain.Backfill, error) {
 	return nil, nil
 }
 func (r *fakeSpeechRepo) SetLinks(context.Context, []speechports.LinkUpdate) error { return nil }

@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-38.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-38.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "38",
+   "anforandetext": "<p>Fru talman! Det är uppenbart att Sverige ligger långt fram när det gäller en hållbar användning av växtskydd. Mer än 50 procent av det utsäde som används i Sverige är behandlat med ånga i stället för med kemikalier. Det här skulle ge en enorm boost åt svenska företag och vara en stark möjlighet för dessa att exportera miljövänlig teknik till hela EU. Ändå hävdar Socialdemokraterna att den här typen av lagstiftning är felaktig.</p><p>Varför släpper Isak From helt den socialdemokratiska traditionen att faktiskt hålla miljön högt? Kan vi med nya riksdagsledamöter i Socialdemokraterna - jag tänker främst på Jytte Guteland - möjligtvis få se Socialdemokraterna återta en linje i miljöns tjänst?</p>"
+  }
+ }
+}

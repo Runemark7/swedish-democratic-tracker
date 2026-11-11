@@ -12,6 +12,8 @@ type Speech struct {
 	TopicHeading    string    `json:"topicHeading"`
 	SpeechText      string    `json:"speechText"`
 	RelatedDokID    string    `json:"relatedDokId,omitempty"`
-	AIProcessed     bool      `json:"aiProcessed"`
-	CreatedAt       time.Time `json:"createdAt"`
+	// Riksmote is the riksmöte the protocol belongs to (dok_rm), "2017/18".
+	Riksmote    string    `json:"-"`
+	AIProcessed bool      `json:"aiProcessed"`
+	CreatedAt   time.Time `json:"createdAt"`
 }

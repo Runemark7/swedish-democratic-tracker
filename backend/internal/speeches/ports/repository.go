@@ -30,8 +30,21 @@ type SpeechRepository interface {
 	// DebateCandidates lists the stored betänkanden with a known debate date.
 	DebateCandidates(ctx context.Context) ([]domain.DebateCandidate, error)
 	// ListForLinking reads at most limit speeches with id > afterID, in id
-	// order, with the link they currently carry.
-	ListForLinking(ctx context.Context, afterID, limit int) ([]LinkRow, error)
+	// order, with the link they currently carry. A riksmote limits it to that
+	// riksmöte; empty reads them all.
+	ListForLinking(ctx context.Context, riksmote string, afterID, limit int) ([]LinkRow, error)
+
+	// MissingTextIn lists up to limit speeches of the riksmöte with no text.
+	MissingTextIn(ctx context.Context, riksmote string, limit int) ([]*domain.Speech, error)
+	// RiksmoteCounts counts what is stored for one riksmöte.
+	RiksmoteCounts(ctx context.Context, riksmote string) (domain.RiksmoteCounts, error)
+	// StorageSizes is the speeches table's size (heap and TOAST) and its indexes'.
+	StorageSizes(ctx context.Context) (table, index int64, err error)
+	// SaveBackfill records one run's work on a riksmöte (see domain.BackfillRun).
+	SaveBackfill(ctx context.Context, run domain.BackfillRun) error
+	// ListBackfill returns the riksmöten the backfill has worked on, newest
+	// first, with the counts read live from the speeches.
+	ListBackfill(ctx context.Context) ([]domain.Backfill, error)
 	// SetLinks writes links; an empty DokID clears a link.
 	SetLinks(ctx context.Context, links []LinkUpdate) error
 }

@@ -22,4 +22,6 @@ type PoliticianRepository interface {
 	GetByID(ctx context.Context, id string) (*domain.Politician, error)
 	List(ctx context.Context, f ListFilter) (ListResult, error)
 	UpsertMany(ctx context.Context, pp []*domain.Politician) error
+	// Missing returns the ids of ids that have no row.
+	Missing(ctx context.Context, ids []string) ([]string, error)
 }

@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H50989-157.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H50989-157.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H50989",
+   "anforande_nummer": "157",
+   "anforandetext": "<p>Fru talman! Det finns inte någon som helst splittring mellan regeringspartierna i denna fråga. Jag har inte på något sätt uteslutit att det skulle kunna göras förändringar marginellt i detta, men det beror på hur helheten ser ut.</p><p>Med den kombination av åtgärder som Moderaterna har i sin budget kommer de människor som har lägst inkomster, till exempel de som står utanför arbetsmarknaden och sjuka, att få såväl högre matpriser - alla måste ju äta - som mindre pengar. </p><p>Skulle man däremot kombinera det med åtgärder som förbättrar för låginkomsttagare skulle varken jag eller någon annan utesluta att det görs marginella förändringar.</p><p>Det jag ville poängtera var att Moderaterna alltid undviker att tala om de skattehöjningar som de faktiskt föreslår, och här handlar det om 15 gånger mer än den biomoms som Jörgen Warborn ägnade en stor del av sitt anförande i talarstolen åt. Därför var det bra att han kom ned på banan för att berätta att detta är ett förslag som Moderaterna vill gå till val på.</p>"
+  }
+ }
+}

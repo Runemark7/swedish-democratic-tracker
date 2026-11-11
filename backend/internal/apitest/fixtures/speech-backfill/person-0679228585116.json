@@ -1,0 +1,25 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "0679228585116",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=0679228585116&utformat=json",
+ "note": "Recorded 2026-11-11; the person object (Riksdagen returns an object, not a list, for one hit) reduced to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "@hits": "1",
+   "person": {
+    "intressent_id": "0679228585116",
+    "tilltalsnamn": "Per",
+    "efternamn": "Åsling",
+    "parti": "C",
+    "valkrets": "Jämtlands län",
+    "status": "Tidigare riksdagsledamot",
+    "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/74c39a37-e184-44f6-9a7e-36cdb06c9dcc_192.jpg"
+   }
+  }
+ }
+}

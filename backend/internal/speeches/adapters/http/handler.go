@@ -33,6 +33,7 @@ func NewHandler(svc *speeches.Service, pol PoliticianLookup) *Handler {
 
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/speeches/recent", h.listRecent)
+	r.Get("/speeches/backfill", h.backfill)
 	r.Get("/speeches/{id}", h.getByID)
 	r.Get("/speeches/by-document/{dokId}", h.listByDocument)
 	r.Get("/speeches/by-politician/{intressentId}", h.listByPolitician)
@@ -215,4 +216,46 @@ func jsonError(w http.ResponseWriter, msg string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(map[string]string{"error": msg})
+}
+
+type backfillResponse struct {
+	Riksmote           string  `json:"riksmote"`
+	Expected           int     `json:"expected"`
+	Stored             int     `json:"stored"`
+	Linked             int     `json:"linked"`
+	Unlinked           int     `json:"unlinked"`
+	TextBytes          int64   `json:"textBytes"`
+	RowsAdded          int     `json:"rowsAdded"`
+	TableBytesAdded    int64   `json:"tableBytesAdded"`
+	IndexBytesAdded    int64   `json:"indexBytesAdded"`
+	PoliticiansCreated int     `json:"politiciansCreated"`
+	UnresolvedSpeakers int     `json:"unresolvedSpeakers"`
+	Complete           bool    `json:"complete"`
+	CompletedAt        *string `json:"completedAt"`
+}
+
+// backfill serves the coverage of the operator's speech backfill per riksmöte,
+// so the Data section can show what is read in: speeches the lists report,
+// stored, linked to a betänkande, and not linked.
+func (h *Handler) backfill(w http.ResponseWriter, r *http.Request) {
+	rows, err := h.svc.ListBackfill(r.Context())
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	out := make([]backfillResponse, 0, len(rows))
+	for _, b := range rows {
+		resp := backfillResponse{
+			Riksmote: b.Riksmote, Expected: b.Expected, Stored: b.Stored, Linked: b.Linked, Unlinked: b.Unlinked,
+			TextBytes: b.TextBytes, RowsAdded: b.RowsAdded, TableBytesAdded: b.TableBytesAdded,
+			IndexBytesAdded: b.IndexBytesAdded, PoliticiansCreated: b.PoliticiansCreated, UnresolvedSpeakers: b.Unresolved,
+		}
+		if b.CompletedAt != nil {
+			resp.Complete = true
+			t := b.CompletedAt.UTC().Format(time.RFC3339)
+			resp.CompletedAt = &t
+		}
+		out = append(out, resp)
+	}
+	jsonOK(w, map[string]any{"data": out})
 }

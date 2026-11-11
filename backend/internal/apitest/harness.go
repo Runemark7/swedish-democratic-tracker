@@ -20,6 +20,12 @@ import (
 	"riksdagskollen/internal/motions"
 	motionsPG "riksdagskollen/internal/motions/adapters/postgres"
 	motionsRD "riksdagskollen/internal/motions/adapters/riksdagen"
+	"riksdagskollen/internal/politicians"
+	politiciansPG "riksdagskollen/internal/politicians/adapters/postgres"
+	politiciansRD "riksdagskollen/internal/politicians/adapters/riksdagen"
+	"riksdagskollen/internal/speeches"
+	speechesPG "riksdagskollen/internal/speeches/adapters/postgres"
+	speechesRD "riksdagskollen/internal/speeches/adapters/riksdagen"
 )
 
 // Harness is one test's API: its own database, a replay server, and the
@@ -108,6 +114,24 @@ func (h *Harness) Backfill(ctx context.Context, opts workers.BackfillOptions) *w
 	rep, err := b.Run(ctx, opts)
 	if err != nil {
 		h.t.Fatalf("backfill: %v", err)
+	}
+	return rep
+}
+
+// SpeechBackfill runs the operator's speech backfill (cmd/backfill-speeches)
+// against the replay server and returns its report.
+func (h *Harness) SpeechBackfill(ctx context.Context, opts workers.SpeechBackfillOptions) *workers.SpeechReport {
+	h.t.Helper()
+	workers.FetchDelay = 0
+	sp := speeches.NewService(speechesPG.NewRepository(h.DB), speechesRD.NewClientWithBaseURL(h.replay.URL))
+	pol := politicians.NewService(politiciansPG.NewRepository(h.DB), politiciansRD.NewClientWithBaseURL(h.replay.URL))
+	b := workers.NewSpeechesBackfill(sp, pol)
+	if h.now != nil {
+		b.SetNow(h.now)
+	}
+	rep, err := b.Run(ctx, opts)
+	if err != nil {
+		h.t.Fatalf("speech backfill: %v", err)
 	}
 	return rep
 }

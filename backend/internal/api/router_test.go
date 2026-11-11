@@ -93,6 +93,7 @@ var routesBeforeExtraction = []string{
 	"GET /api/speeches/by-document/{dokId}",
 	"GET /api/speeches/by-party/{party}",
 	"GET /api/speeches/by-politician/{intressentId}",
+	"GET /api/speeches/backfill",
 	"GET /api/speeches/recent",
 	"GET /api/speeches/{id}",
 	"GET /api/summary",

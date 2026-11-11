@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H50989-156.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H50989-156.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H50989",
+   "anforande_nummer": "156",
+   "anforandetext": "<p>Fru talman! Rasmus Ling nämnde matmomsen, och det är riktigt att det finns ett sådant förslag. </p><p>Låt mig påpeka att när skatteutskottet arrangerade ett seminarium om en framtida eventuell skattereform den 1 februari var det den socialdemokratiske statssekreteraren Leif Jakobsson som lyfte fram den nedsatta livsmedelsmomsen som ett område där politikerna borde fundera. Han visade en Powerpoint, och där stod det: Dags att ompröva vissa skatter och skatteutgifter, exempelvis livsmedelsmomsen?</p><p>Precis som du gjorde, Rasmus Ling, hänvisade han till den skrivelse som regeringen gjorde om skatteutgifterna 2017. Där analyserade man också fördelningseffekterna av ett sådant förslag. I denna skrivelse hänvisar regeringen i sin tur till OECD, som 2014 gjorde en studie i 15 medlemsländer. De menar om reducerad matmoms, som vi har i dag, att åtgärden är ett påtagligt icke träffsäkert sätt att stödja fattigare hushåll och att rikare hushåll beloppsmässigt får minst lika mycket av stödet, om inte avsevärt mer.</p><p>Jag tror att Rasmus Ling ska ta upp matmomsen med sin egen regeringspartner Socialdemokraternas statssekreterare snarare än med mig och Moderaterna. Det verkar ju mer vara ni som inte är överens än vi.</p><p>I och med att vi också sänker inkomstskatten blir effekten av vårt matmomsförslag inte lika stor för väljarna.</p>"
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-34.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-34.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "34",
+   "anforandetext": "<p>Fru talman! Frågan är vem som har en sund syn på EU-samarbetet. Dagens Nyheters ledarsida varnar i dag för att ge Sverigedemokraterna inflytande i EU-arbetet över huvud taget. Jag hoppas att det är någonting som Moderaterna, Kristdemokraterna och för all del Liberalerna tar på allvar.</p><p>Moderaterna, Sverigedemokraterna och KD har ett eget yrkande i det här ärendet. Man menar att bindande mål om ekologiskt lantbruk finns på nationell nivå och att det därför inte behövs sådana på europeisk nivå. Jag vill bara påpeka för Staffan Eklöf och de övriga ledamöterna i M, SD och KD att vi inte längre har riksdagsbundna mål för ekologiskt lantbruk. Målen finns i stället i handlingsplanen för livsmedelsstrategin. Jag hoppas verkligen att Sveriges riksdag beslutar om mål för ekologiskt lantbruk. Men om man inte ens har lust att kolla upp fakta innan man skriver sina förslag till riksdagen blir det väldigt svårt både för allmänheten och för riksdagen själv att förstå vad det beslutas om.</p><p>Jag tycker att det är sorgligt, fru talman, att Sverigedemokraterna har en sådan bakvänd syn på EU och använder subsidiaritetsprövningen som ett sätt att visa sitt EU-motstånd.</p>"
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H50989-154.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H50989-154.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H50989",
+   "anforande_nummer": "154",
+   "anforandetext": "<p>Fru talman! Måla in sig i ett hörn - så kan man väl alltid säga.</p><p>Jag konstaterar att det dras långtgående slutsatser om effekterna av det som har gjorts.</p><p>Jag välkomnar naturligtvis att man över tid tittar på dessa frågor, men jag tror absolut inte att så små förändringar som det faktiskt handlar om, några kronor per biobesök, 5-6 kronor, snittet är 1,7 biobesök per år, är så mycket pengar i den personliga budgeten. Jag tror inte att detta minskar antalet besök i någon större utsträckning, så det är nog förhastat att dra den slutsatsen. </p><p>Men givetvis vill vi i regeringspartierna att hela Sverige ska leva, och i det är biograferna en del. Därför finns det all anledning att se över biografdöden och hur man hanterar den. Men jag tror inte att momssatsen på biobesök är förklaringen till biografdöden, och jag tror inte heller att momssatsen kommer att vara lösningen som räddar biograferna.</p>"
+  }
+ }
+}

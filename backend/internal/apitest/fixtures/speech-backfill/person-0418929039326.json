@@ -1,0 +1,25 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "0418929039326",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=0418929039326&utformat=json",
+ "note": "Recorded 2026-11-11; the person object (Riksdagen returns an object, not a list, for one hit) reduced to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "@hits": "1",
+   "person": {
+    "intressent_id": "0418929039326",
+    "tilltalsnamn": "Patrik",
+    "efternamn": "Lundqvist",
+    "parti": "S",
+    "valkrets": "Gävleborgs län",
+    "status": "Tjänstledig riksdagsledamot",
+    "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/41f3a07f-57ba-4d0c-b737-e05aa04ec023_192.jpg"
+   }
+  }
+ }
+}

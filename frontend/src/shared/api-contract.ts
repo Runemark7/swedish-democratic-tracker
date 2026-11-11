@@ -1081,6 +1081,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/speeches/backfill": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Which riksmöten the operator's speech backfill has read in
+         * @description One row per riksmöte the backfill command has worked on, newest first. `stored`, `linked` and `unlinked` are counted from the stored speeches when read; `linked` means linked to a betänkande by a stated rule. `complete` is true when every speech the lists report is stored with its text and no speaker is missing. The `*Added` fields are the storage the backfill added for the riksmöte, summed over its runs.
+         */
+        get: operations["getSpeechBackfill"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/speeches/{id}": {
         parameters: {
             query?: never;
@@ -1388,6 +1408,42 @@ export interface components {
             held: number;
             /** Format: date-time */
             lastEnumeratedAt: string;
+        };
+        SpeechBackfill: {
+            /** @example 2017/18 */
+            riksmote: string;
+            /** @description Speeches the lists report for the riksmöte */
+            expected: number;
+            /** @description Speeches of the riksmöte we hold */
+            stored: number;
+            /** @description Stored speeches linked to a betänkande */
+            linked: number;
+            /** @description Stored speeches no betänkande could be named for */
+            unlinked: number;
+            /**
+             * Format: int64
+             * @description Bytes of speech text stored for the riksmöte
+             */
+            textBytes: number;
+            /** @description Speech rows the backfill added */
+            rowsAdded: number;
+            /**
+             * Format: int64
+             * @description Growth of the speeches table (heap and TOAST) while the riksmöte was read in
+             */
+            tableBytesAdded: number;
+            /**
+             * Format: int64
+             * @description Growth of the speeches indexes while the riksmöte was read in
+             */
+            indexBytesAdded: number;
+            /** @description Speakers created from Riksdagen's person data */
+            politiciansCreated: number;
+            /** @description Speakers Riksdagen has no person for; their speeches are not stored */
+            unresolvedSpeakers: number;
+            complete: boolean;
+            /** Format: date-time */
+            completedAt: string | null;
         };
         MotionBackfill: {
             /** @example 2017/18 */
@@ -4330,6 +4386,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getSpeechBackfill: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One row per riksmöte, newest first */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpeechBackfill"][];
+                    };
+                };
             };
         };
     };

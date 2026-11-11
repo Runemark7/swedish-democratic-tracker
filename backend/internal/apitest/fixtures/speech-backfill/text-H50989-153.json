@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H50989-153.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H50989-153.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H50989",
+   "anforande_nummer": "153",
+   "anforandetext": "<p>Fru talman! Det är alldeles riktigt som Patrik Lundqvist säger, nämligen att det var ett helhetstag runt filmpolitiken. Problemet är kanske att staten skulle ta ett större ansvar för filmpolitiken i stället för att låta branschen ha det ansvaret. Det var i grund och botten en felaktig väg att gå.</p><p>Branschen är kritisk just nu. När Anna Serner uttalar sig som hon gör - hon är alltså vd för Svenska Filminstitutet - borde regeringspartierna bli lite nervösa.</p><p>Det är inte säkert att biljettpriserna korrelerar. Det är möjligt att de inte gör det. Å ena sidan finns en mängd biografägare som säger saker. Vi har sett nedläggningar. Å andra sidan finns Patrik Lundqvists uppgift om korrelerade biljettpriser. Jag menar att det vore bra, eftersom det finns lite dubbla uppgifter, att det finns en utredning som tar reda på hur det verkligen är, så att vi inte enbart går på känsla eller medieuppgifter.</p><p>Här tycker jag att regeringspartierna är tondöva. När vi ser att biografägare klappar igen verksamheter - och det tror jag ingen av oss i grund och botten vill - är det nu dags att reagera och agera. En sådan utredning tar en stund innan det finns ett bra beslutsunderlag.</p><p>Jag förstår att regeringspartierna har målat in sig i ett hörn och vill försvara sig till punkt och pricka på olika sätt, men det allvarsamma är om det går ut över kulturen i framför allt landsbygden.</p>"
+  }
+ }
+}

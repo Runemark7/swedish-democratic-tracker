@@ -63,3 +63,33 @@ func (s *Service) List(ctx context.Context, f ports.ListFilter) (ports.ListResul
 	}
 	return s.repo.List(ctx, f)
 }
+
+// CreateMissing makes sure every id has a politicians row. The ones without
+// one are read from Riksdagen's person data (former members included) and
+// created. created counts the rows made; unresolved lists the ids Riksdagen
+// has no person for, or whose read failed, which the caller must not treat as
+// stored. Existing rows are left as they are.
+func (s *Service) CreateMissing(ctx context.Context, ids []string) (created int, unresolved []string, err error) {
+	missing, err := s.repo.Missing(ctx, ids)
+	if err != nil {
+		return 0, nil, err
+	}
+	var found []*domain.Politician
+	for _, id := range missing {
+		if ctx.Err() != nil {
+			return 0, nil, ctx.Err()
+		}
+		p, ferr := s.riksdagen.FetchPerson(ctx, id)
+		if ferr != nil || p == nil || p.Party == "" && p.LastName == "" {
+			unresolved = append(unresolved, id)
+			continue
+		}
+		found = append(found, p)
+	}
+	if len(found) > 0 {
+		if err := s.repo.UpsertMany(ctx, found); err != nil {
+			return 0, nil, err
+		}
+	}
+	return len(found), unresolved, nil
+}

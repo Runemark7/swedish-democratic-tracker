@@ -104,7 +104,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "kind": "api",
     "upstream": "https://data.riksdagen.se",
     "license": "Public domain — Sveriges riksdag",
-    "freshness": "dagligen (cron: politicians @daily, speeches @daily, votes @daily)",
+    "freshness": "dagligen (cron: politicians @daily, speeches @daily, votes @daily); äldre anföranden via backfill-speeches",
     "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Riksdagens öppna data är portalen som Sveriges riksdag publicerar för all kammaraktivitet: ledamöter, anföranden, omröstningar, betänkanden, motioner och utskottsärenden. Det är primärkällan för all \"vad har politikerna gjort\"-data på sidan.",
     "verificationStatus": "verified",
@@ -228,6 +228,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "lastVerified": "Sun Jun 21 2026 02:00:00 GMT+0200 (Central European Summer Time)",
     "blurb": "Hand-kuraterade mål från partiernas publicerade dokument — valmanifest 2022, valplattform 2026, Tidöavtalet och partiprogram. Varje mål har en `source_url` till källdokumentet och ett ordagrant `source_quote` ur det. På så sätt kan du för varje mål gå tillbaka och verifiera exakt vad partiet skrev.",
     "verificationStatus": "frozen",
+    "verificationNotes": null
+  },
+  "speeches-backfill": {
+    "id": "speeches-backfill",
+    "name": "Anföranden, äldre riksmöten (Riksdagen)",
+    "kind": "api",
+    "upstream": "https://data.riksdagen.se/anforandelista/",
+    "license": "Public domain — Sveriges riksdag",
+    "freshness": "engångskörning av en operatör, ett riksmöte i taget (kommandot backfill-speeches); löpande riksmöte via fetch-speeches @daily",
+    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "blurb": "Riksdagen publicerar varje anförande i kammaren, med talare, parti, protokolldatum, rubrik och, för de flesta debatter, vilket betänkande det gäller. Sajten läste länge bara in de senaste riksmötena. Den här källan är inläsningen av äldre riksmöten, ett i taget och de nyaste först, så att man kan följa en fråga genom debatten i kammaren tillbaka i tiden. Första omgången är de två senaste mandatperioderna och 2014–2018.",
+    "verificationStatus": "verified",
     "verificationNotes": null
   },
   "statskontoret-arsutfall": {

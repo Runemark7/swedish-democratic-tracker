@@ -1,0 +1,25 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "0744139167426",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=0744139167426&utformat=json",
+ "note": "Recorded 2026-11-11; the person object (Riksdagen returns an object, not a list, for one hit) reduced to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "@hits": "1",
+   "person": {
+    "intressent_id": "0744139167426",
+    "tilltalsnamn": "Rasmus",
+    "efternamn": "Ling",
+    "parti": "MP",
+    "valkrets": "Malmö kommun",
+    "status": "Tidigare riksdagsledamot",
+    "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/8af2f4df-6c44-4844-89af-c0fd142e4eed_192.jpg"
+   }
+  }
+ }
+}

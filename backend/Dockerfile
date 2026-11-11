@@ -28,6 +28,13 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     -trimpath \
     -o /backfill-motions ./cmd/backfill-motions
 
+# Opt-in operator command for the speech history (#147). Never started by the
+# API container or the scheduler.
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -ldflags="-s -w -extldflags=-static" \
+    -trimpath \
+    -o /backfill-speeches ./cmd/backfill-speeches
+
 # ── Development stage ──────────────────────────────────────────────────────
 # Alpine-based: includes wget for docker-compose healthchecks.
 # Used by docker-compose.yml via `target: dev`.
@@ -39,6 +46,7 @@ RUN addgroup -g 1000 appgroup \
 COPY --from=builder /app /app
 COPY --from=builder /backfill /backfill
 COPY --from=builder /backfill-motions /backfill-motions
+COPY --from=builder /backfill-speeches /backfill-speeches
 COPY --chown=appuser:appgroup migrations /migrations
 
 USER appuser:appgroup
@@ -58,6 +66,7 @@ FROM gcr.io/distroless/static-debian12:nonroot AS production
 COPY --from=builder /app /app
 COPY --from=builder /backfill /backfill
 COPY --from=builder /backfill-motions /backfill-motions
+COPY --from=builder /backfill-speeches /backfill-speeches
 COPY --chown=nonroot:nonroot migrations /migrations
 
 USER nonroot:nonroot

@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-35.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-35.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "35",
+   "anforandetext": "<p>Fru talman! Vi debatterar nu betänkandet <em>Subsidiaritetsprövning av kommissionens förslag till förordning om hållbar användning av växt</em><em></em><em>skyddsmedel</em>. För oss socialdemokrater är det här självklarheter. Vi ska minska användningen av växtskyddsmedel. Det är viktigt för den biologiska mångfalden. Det är viktigt för pollinatörerna - bina och humlorna - och för vår framtid.</p><p>Vi tycker också att det är rimligt att detta beslutas på EU-nivå genom en förordning och gemensam lagstiftning. Därför är det tråkigt, tycker vi, att man i det här förslaget bygger ny kostnadsdrivande administration och skapar nya regelverk som är parallella med de regelverk som redan finns. Alla de här regelverken finns i dag, inte minst genom den gemensamma jordbrukspolitik som vi kommit överens om. Vi har i dag också en gemensam lagstiftning om växtskyddsmedel. Det var också detta som regeringen särskilt lyfte fram. Regeringen ifrågasatte starkt detaljeringsgraden och särskilt att det kommer nya parallella regelverk.</p><p>Fru talman! Vi har i Sverige och EU en lång gemensam tradition av budgetrestriktivitet - vi ska använda pengarna på ett resurseffektivt sätt. Det är i den kontexten som vi socialdemokrater gör vårt ställningstagande i den här frågan. Vi tycker att växtskyddslagstiftningen ska beslutas på EU-nivå och att vi ska ha ett gemensamt regelverk. Men i det här förslaget har man \"svängt ut\" - man bygger nya regelverk som inte är förenliga med vad vi anser vara resurseffektivt och som tyvärr motverkar sitt syfte.</p><p>Både Sverigedemokraterna och Kristdemokraterna har nu i talarstolen anfört att detta i princip ska vara nationell lagstiftning och någonting som varje EU-land ska besluta om självt. Vi tycker inte det. I sin reservation lyfter man även in ekologiskt jordbruk. Men detta har över huvud taget inget med frågan att göra, vilket man behöver ha med sig.</p><p>Vi socialdemokrater har i utskottet en majoritet med C och L. Det är nog tyvärr en falsk majoritet. Vår position är i grund och botten att det här är viktiga frågor som ska beslutas på EU-nivå men att vi inte ska bygga nya parallella kostnadsdrivande regelverk.</p><p>(Applåder)</p><p>I detta anförande instämde Anders Frimert (S).</p>"
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-39.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-39.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "39",
+   "anforandetext": "<p>Fru talman! Vi socialdemokrater är kända för att göra allt för att försöka komma överens. Det är klart att vi hade fått en bredare majoritet om Miljöpartiet och Vänsterpartiet hade kunnat ställa sig bakom förslaget från S, C och L om att det här är viktig lagstiftning som ska beslutas på EU-nivå men att vi ska använda resurserna rätt och inte bygga nya regelverk.</p><p>Fru talman! Vem är det egentligen som ställer sig på sidan? Det är tyvärr Miljöpartiet.</p><p>(Applåder)</p>"
+  }
+ }
+}

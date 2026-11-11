@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H50989-151.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H50989-151.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H50989",
+   "anforande_nummer": "151",
+   "anforandetext": "<p>Fru talman! Jag skulle vilja ställa någon fråga om biomomsen. Jag tog upp i mitt anförande att Anna Serner, vd på Svenska Filminstitutet, uttalade sig i en artikel i GP. Hon varnade för att varannan svensk biograf kan komma att läggas ned - detta mot bakgrund av att regeringen har höjt momsen från 6 till 25 procent. Hon poängterade att hela filmbranschen i princip är ense om att momshöjningen är fel.</p><p>Vi moderater anser att det vore bra att utvärdera frågan redan nu. Det har gått ett år, och det är rimligt kort tid. Men om vi får så många allvarsamma reaktioner via medierna känns det viktigt att reagera och fundera. Samtidigt kan vi inte styras av enbart medieuppgifter. Därför tycker vi att det vore bra att ha en ordentlig utredning nu.</p><p>Varför kan inte Patrik Lundqvist, kulturministern och hela regeringen ställa sig bakom en sådan utvärdering, så att vi åtminstone hanterar frågan vidare? Det är många biografägare som är oroliga.</p>"
+  }
+ }
+}

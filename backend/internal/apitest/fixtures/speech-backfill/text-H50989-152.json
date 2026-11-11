@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H50989-152.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H50989-152.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H50989",
+   "anforande_nummer": "152",
+   "anforandetext": "<p>Fru talman! Momshöjningen på biografer ingick i ett helt paket som syftade till att få en omställning i filmbranschen i Sverige. Filmavtalet avskaffades, och biografavgiften på 10 procent slopades samtidigt. Det är inte bara negativa delar, och det är inte fråga om en enskild momshöjning.</p><p>Regeringen har som uppgift att utvärdera och se över alla dessa ansvarsområden, så också det här. Jag är övertygad att man kommer att göra det om man finner att det blir nödvändigt. </p><p>Men vi kan också säga att besökssiffrorna på biografer inte korrelerar så säkert med priserna som det låter på Jörgen Warborn. Mellan 1994 och 2014 ökade biopriserna med 57 procent, i jämförelse med konsumentprisindex som under samma period ökade med 26 procent. Man kunde inte se några sådana dippar i besök på grund av den ökningen. Besöksantalen gick upp och ned från år till år och fluktuerade ganska kraftigt. Med den bakgrunden kan jag inte se att en prishöjning på 5-6 kronor per biljett kan utvärderas inom ett år och få de resultat som Jörgen Warborn är ute efter.</p><p>Jag är övertygad om att om det går att få ett sådant underlag kommer regeringen att ta tag i frågan.</p>"
+  }
+ }
+}

@@ -59,6 +59,7 @@ func (c *Client) FetchSpeeches(ctx context.Context, f ports.FetchSpeechesFilter)
 		Anforandelista struct {
 			Anforande []struct {
 				DokID           string `json:"dok_id"`
+				DokRm           string `json:"dok_rm"`
 				AnforandeNummer string `json:"anforande_nummer"`
 				IntressentID    string `json:"intressent_id"`
 				Parti           string `json:"parti"`
@@ -88,6 +89,7 @@ func (c *Client) FetchSpeeches(ctx context.Context, f ports.FetchSpeechesFilter)
 			TopicHeading:    a.Avsnittsrubrik,
 			SpeechText:      a.Anforandetext,
 			RelatedDokID:    a.RelDokID,
+			Riksmote:        riksmoteOf(a.DokRm, f.Session),
 		})
 	}
 	return speeches, nil
@@ -122,4 +124,13 @@ func (c *Client) FetchSpeechText(ctx context.Context, dokID, anforandeNummer str
 		return "", fmt.Errorf("decode speech text: %w", err)
 	}
 	return payload.Anforande.Anforandetext, nil
+}
+
+// riksmoteOf is the riksmöte the protocol names, or the one asked for when the
+// row does not name it.
+func riksmoteOf(dokRm, asked string) string {
+	if rm := strings.TrimSpace(dokRm); rm != "" {
+		return rm
+	}
+	return asked
 }

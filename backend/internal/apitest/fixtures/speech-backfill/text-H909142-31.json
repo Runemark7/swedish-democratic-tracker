@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/H909142-31.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/H909142-31.json",
+ "note": "Recorded 2026-11-11, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "H909142",
+   "anforande_nummer": "31",
+   "anforandetext": "<p>Herr talman! Jag tackar Maria Gardfjell för anförandet. Hon har varit en av de flitigaste debattörerna i kammaren. Jag måste återgälda detta med en replik här på slutet och på så vis tacka för den här tiden.</p><p>Jag tror att ledamoten Gardfjell sa att vi har beslutat om den gröna given och att vi därför ska köra på med det förslag som ligger. Detta är min egen tolkning.</p><p>Jag vill påminna om att åtminstone Moderaterna, Kristdemokraterna och Sverigedemokraterna hela vägen har varit kritiska till de här procentmålen. Något som Sverigedemokraterna krävde på första mötet var konsekvensanalyser. Även många andra partier har gjort detta. Vi villkorade det och sa alltså nej till procentmålen. Det sas i ett senare skede att konsekvensanalyser skulle göras när förslag till lagtexter kom, för så plägar det vara. Andra partier kanske hoppades på att de här konsekvensanalyserna skulle betyda någonting.</p><p>Nu sitter vi dock med facit i hand. Konsekvensanalyserna har gjorts. De är ganska dåliga, men de pekar ändå på att priserna höjs för konsumenten, på att det blir svårare för jordbruket och att kostnaderna för jordbruket höjs samt på att livsmedelsproduktionen minskar, precis som USDA varnade för. De varnade också för att världssvälten kommer att öka till följd av dessa procentmål.</p><p>I detta läge reflekterar kommissionen över huvud taget inte över om målen är rätt satta. Är det då inte rätt att ifrågasätta en sådan förordning?</p>"
+  }
+ }
+}
