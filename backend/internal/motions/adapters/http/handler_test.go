@@ -36,3 +36,14 @@ func TestToDecisionShowsRiksdagensOwnWordForUnknownBeslutstyp(t *testing.T) {
 		t.Errorf("%+v", d)
 	}
 }
+
+func TestToDecisionLinksTheVoteringAtRiksdagen(t *testing.T) {
+	d := toDecision(domain.YrkandeDecision{Punkt: domain.Forslagspunkt{Beslutstyp: "röstning", VoteringID: "ABC-123"}}, "Avslagen")
+	if d.VoteringID != "ABC-123" || d.VoteringURL != "https://data.riksdagen.se/votering/ABC-123" {
+		t.Errorf("%+v", d)
+	}
+	d = toDecision(domain.YrkandeDecision{Punkt: domain.Forslagspunkt{Beslutstyp: "acklamation"}}, "Avslagen")
+	if d.VoteringID != "" || d.VoteringURL != "" {
+		t.Errorf("acklamation has no votering: %+v", d)
+	}
+}

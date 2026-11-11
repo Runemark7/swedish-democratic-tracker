@@ -22,6 +22,10 @@ export function motionPath(riksmote: string, beteckning: string): string {
   return `/motioner/${encodeURIComponent(riksmote)}/${encodeURIComponent(beteckning)}`;
 }
 
+export function betankandePath(d: Pick<Motion["yrkanden"][number]["decisions"][number], "betankandeRiksmote" | "betankandeBeteckning" | "punkt">): string {
+  return `/beslut/${d.betankandeRiksmote}/${encodeURIComponent(d.betankandeBeteckning)}#punkt-${encodeURIComponent(d.punkt)}`;
+}
+
 export const motionsApi = {
   list: (f: MotionFilters, cursor?: string) => {
     const p = new URLSearchParams();

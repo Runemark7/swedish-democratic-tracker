@@ -33,7 +33,7 @@ export function QuestionsSection({ path, queryKey, heading, empty, showRole, sho
   const items = data?.questions ?? [];
   return (
     <section className="mb-8" aria-label={heading} data-testid="questions-section">
-      <h2 className="text-lg font-semibold mb-2">
+      <h2 id="questions-heading" className="text-lg font-semibold mb-2">
         {heading}
         <SourceMarker sourceId="questions" />
       </h2>

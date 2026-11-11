@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
-import { motionsApi, type Motion } from "./api";
+import { motionsApi, betankandePath, type Motion } from "./api";
 import { ApiError } from "@/shared/api-client";
 import { PartyBadge } from "@/shared/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { VotedAlternative, Reasoning, Reservations } from "./DecisionParts";
 import { Debate } from "./Debate";
+import { Timeline } from "./Timeline";
+import { Explain } from "./Explain";
 import { QuestionsSection } from "@/features/questions/QuestionsSection";
 
 function Notice({ children }: { children: React.ReactNode }) {
@@ -39,6 +41,7 @@ function RecurringBlock({ r }: { r: Recurring }) {
   return (
     <div className="mt-3 rounded border p-3 text-sm" style={{ borderColor: "var(--color-border)" }} data-testid="recurring">
       <p className="font-semibold">Återkommande krav</p>
+      <Explain terms={["återkommande krav"]} />
       <p className="text-xs text-on-surface-variant mb-2">
         Samma ordalydelse (utan hänsyn till blanksteg, skiljetecken och versaler) har lämnats in {r.members.length}{" "}
         gånger.
@@ -72,7 +75,7 @@ function RecurringBlock({ r }: { r: Recurring }) {
 /** The decision chain of one yrkande: where it was decided, how, and by whom.
  *  Facts only: the chamber's decision, the votering's Partilinje per party,
  *  with a link to Riksdagen's betänkande. */
-function DecisionBlock({ d }: { d: Decision }) {
+function DecisionBlock({ d, explain }: { d: Decision; explain: boolean }) {
   return (
     <div className="mt-3 rounded border p-3 text-sm" style={{ borderColor: "var(--color-border)" }} data-testid="decision">
       <p>
@@ -84,9 +87,17 @@ function DecisionBlock({ d }: { d: Decision }) {
         {d.rubrik ? ` "${d.rubrik}"` : ""}
         <SourceMarker sourceId="betankanden" />
       </p>
+      {explain ? <Explain terms={["betänkande", "förslagspunkt"]} /> : null}
       <p className="mt-1" data-testid="decision-mode">
         <strong>{d.modeLabel}</strong>
         {d.alternativ ? <span> – {d.alternativ}</span> : null}
+      </p>
+      {explain ? <Explain terms={[d.mode === "votering" ? "votering" : "acklamation"]} /> : null}
+      <p className="mt-1 text-xs flex gap-3 flex-wrap" data-testid="decision-links">
+        <Link to={betankandePath(d)} className="text-link hover:underline">Betänkandet på Riksdagskollen →</Link>
+        {d.voteringUrl ? (
+          <a href={d.voteringUrl} className="text-link hover:underline" rel="noreferrer" target="_blank">Omröstningen hos Riksdagen ↗</a>
+        ) : null}
       </p>
       {d.mode === "votering" && d.voteringStored && d.parties.length > 0 ? (
         <table className="mt-2 text-xs" data-testid="party-table">
@@ -117,6 +128,7 @@ function DecisionBlock({ d }: { d: Decision }) {
       ) : null}
       <VotedAlternative d={d} />
       <Reasoning d={d} />
+      {explain && d.reservations.length > 0 ? <Explain terms={["reservation"]} /> : null}
       <Reservations d={d} />
       <Debate debate={d.debate} />
       {d.mode === "votering" && !d.voteringStored ? (
@@ -165,6 +177,8 @@ export function MotionPage() {
         <SourceMarker sourceId="betankanden" />
       </p>
 
+      <Timeline motion={motion} />
+
       <dl className="grid gap-3 my-6" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
         <Fact label="Inlämnad">{motion.date ? swedishDate(motion.date) : "Datum saknas"}</Fact>
         <Fact label="Utskott">
@@ -203,11 +217,12 @@ export function MotionPage() {
           Yrkanden
           <SourceMarker sourceId="motions" />
         </h2>
+        <Explain terms={["yrkande"]} />
         {motion.yrkanden.length === 0 ? (
           <p className="text-sm text-on-surface-variant">Riksdagen anger inga yrkanden för motionen.</p>
         ) : (
           <ol className="flex flex-col gap-4" aria-label="Yrkanden">
-            {motion.yrkanden.map((y) => (
+            {motion.yrkanden.map((y, yi) => (
               <li
                 key={y.number}
                 className="rounded border p-4"
@@ -221,7 +236,7 @@ export function MotionPage() {
                 </p>
                 {y.recurring ? <RecurringBlock r={y.recurring} /> : null}
                 {y.decisions.map((d) => (
-                  <DecisionBlock key={`${d.betankandeRiksmote}:${d.betankandeBeteckning}:${d.punkt}`} d={d} />
+                  <DecisionBlock key={`${d.betankandeRiksmote}:${d.betankandeBeteckning}:${d.punkt}`} d={d} explain={yi === 0} />
                 ))}
                 {y.decisions.length === 0 ? (
                   <p className="text-xs text-on-surface-variant mt-1">
