@@ -66,3 +66,13 @@ previous image as well.
 `/api/loften` for one release. That shim (`backend/internal/api/retired.go`)
 has been removed; the routes now answer plain 404. The daily chain no longer
 runs `keyword-matcher` or `refresh-scorecards`.
+
+## The seven 2026 goals (migration 000066)
+
+`000066_restore_2026_goals` re-creates the seven 2026 goals (ids 45–51, party S,
+"Valplattform 2026") as **proposed** Löften: `visibility = 'proposed'`,
+`approved_at` NULL, `mandate_period = '2026-2030'`, linked to the S 2026
+Valmanifest. They are invisible publicly until the editor approves each one.
+Keywords are not carried over. One ändringslogg entry per row is written
+(actor `migration`). Down deletes only these ids, and only while still proposed,
+unapproved, unchanged and without kopplingar; log entries remain (append-only).
