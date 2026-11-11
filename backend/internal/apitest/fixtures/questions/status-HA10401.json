@@ -1,0 +1,178 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HA10401.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HA10401.json",
+ "note": "Recorded 2026-11-11 from data.riksdagen.se, verbatim.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5180395",
+    "dok_id": "HA10401",
+    "rm": "2022/23",
+    "beteckning": "401",
+    "typ": "ip",
+    "subtyp": "",
+    "doktyp": "ip",
+    "typrubrik": "Interpellation 2022/23:401 av Åsa Eriksson (S)",
+    "dokumentnamn": "Interpellation",
+    "debattnamn": "Interpellationsdebatt",
+    "tempbeteckning": "S",
+    "organ": "S",
+    "mottagare": "Statsrådet Anna Tenje (M)",
+    "nummer": "401",
+    "slutnummer": "0",
+    "datum": "2023-06-14 00:00:00",
+    "systemdatum": "2023-10-03 15:32:56",
+    "publicerad": "2023-06-16 00:00:00",
+    "titel": "Vab för diabetesföräldrar",
+    "subtitel": "Åsa Eriksson (S)",
+    "status": "Besvarad",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Frips",
+    "sourceid": "42e7543c-d813-4ca4-9e1d-017a397b30a8",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/HA10401/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/HA10401",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/HA10401",
+    "html": "<h2>Interpellation 2022/23:401 Vab för diabetesföräldrar</h2>\r\n<p class=\"Av\">av <i>Åsa Eriksson (S)</i></p>\r\n<p class=\"Till\">till Statsrådet Anna Tenje (M)</p>\r\n<p>&nbsp;</p>\r\n<p>En av fem vårdnadshavare till barn med diabetes uppger att de fått vikariera som resurs i skolan –&#160;en del i flera månader – utan ersättning från Försäkringskassan. Det skapar en ekonomisk press på en redan utsatt grupp föräldrar.</p>\r\n\r\n<p>Drygt 8 000 barn har typ 1-diabetes och ytterligare cirka 900 barn drabbas varje år. Sjukdomen är kronisk och förutsätter egenvård varje dag, året om. Föräldrar till barn med diabetes har ett mycket omfattande ansvar att se till att barnet håller en&#160;så jämn&#160;blodsockernivå som möjligt genom att tillföra insulin.</p>\r\n\r\n<p>Många barn med diabetes har en resursperson i skolan som hjälper till att hålla blodsockret på en lagom nivå. När resurspersonen är sjuk eller av andra anledningar inte finns tillgänglig måste ibland föräldrar rycka in och göra resurspersonens jobb i skolan. Eftersom barnet inte är sjukare än vanligt kan de inte få vab-ersättning utan tvingas vara lediga från sina arbeten utan lön. Det anser vi socialdemokrater är fel, och vi tillsatte därför en utredning för att lösa problemet&#160;när vi hade regeringsmakten.</p>\r\n<p>På den högerkonservativa regeringens bord ligger ett färdigt förslag från utredningen. Det innebär att föräldrar som ställer upp som resurser i skolan inte ska behöva betala för det ur egen ficka&#160;utan i stället få rätt till ersättning från Försäkringskassan i form av vab-ersättning.</p>\r\n<p>Jag vill därför fråga statsrådet Anna Tenje&#58;</p><p>&#160;</p>\r\n<p>När kommer statsrådet och regeringen att ta initiativ så att föräldrar som behöver hjälpa barn med diabetes i skola och förskola ska kunna begära vab-ersättning?</p>"
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "FD",
+      "namn": "Fördröjd",
+      "datum": "1899-01-01 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2023-06-13 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Överlämnad",
+      "namn": "Överlämnad",
+      "datum": "2023-06-14 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "ANM",
+      "namn": "Anmäld",
+      "datum": "2023-06-15 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "SISVA",
+      "namn": "Sista svarsdatum",
+      "datum": "2023-08-22 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "BESV",
+      "namn": "Svarsdatum",
+      "datum": "2023-08-31 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "BESV",
+      "namn": "Besvarad",
+      "datum": "2023-08-31 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0296384583518",
+      "namn": "Åsa Eriksson",
+      "partibet": "S",
+      "ordning": "1",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0476336341120",
+      "namn": "Statsrådet Anna Tenje",
+      "partibet": "M",
+      "ordning": "1",
+      "roll": "besvaradav"
+     },
+     {
+      "intressent_id": "0476336341120",
+      "namn": "Statsrådet Anna Tenje",
+      "partibet": "M",
+      "ordning": "1",
+      "roll": "stalldtill"
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": {
+     "kod": "statustext",
+     "namn": "statustext",
+     "text": "Interpellationen är besvarad",
+     "dok_id": "HA10401",
+     "systemdatum": "2023-09-01 00:49:45"
+    }
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "HA10401",
+      "subtitel": "Åsa Eriksson (S)",
+      "filnamn": "ip_202223__401.pdf",
+      "filstorlek": "88122",
+      "filtyp": "pdf",
+      "titel": "Vab för diabetesföräldrar",
+      "fil_url": "https://data.riksdagen.se/fil/14FE87A0-6C2D-4348-9183-496BB002628A"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "föredragningslista",
+      "uppgift": "föredragningslista 2022/23:135 Torsdag den 31 augusti 2023",
+      "ref_dok_id": "HA0I135",
+      "ref_dok_typ": "f-lista",
+      "ref_dok_rm": "2022/23",
+      "ref_dok_bet": "135",
+      "ref_dok_titel": "Torsdag den 31 augusti 2023",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Kammarens föredragningslista"
+     },
+     {
+      "referenstyp": "ipsvarid",
+      "uppgift": "{4ed31d46-f161-ee11-87cc-6805cad9744d}",
+      "ref_dok_id": "HA09135",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2022/23",
+      "ref_dok_bet": "135",
+      "ref_dok_titel": "Protokoll 2022/23:135 Torsdagen den 31 augusti",
+      "ref_dok_subtitel": "Svar på interpellation 2022/23:401 om vab för diabetesföräldrar",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     }
+    ]
+   }
+  }
+ }
+}

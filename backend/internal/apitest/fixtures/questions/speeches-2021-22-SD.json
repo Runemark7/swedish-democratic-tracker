@@ -1,0 +1,21 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2021/22",
+  "parti": "SD",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "none",
+ "note": "NOT A RECORDING: an empty list. The speeches worker also asks for the previous riksm\u00f6te; this test reads nothing from it.",
+ "body": {
+  "anforandelista": {
+   "@antal": "0",
+   "anforande": []
+  }
+ }
+}

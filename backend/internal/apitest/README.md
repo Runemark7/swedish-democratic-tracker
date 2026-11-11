@@ -97,7 +97,7 @@ Worker names include `fetch-politicians`, `fetch-votes`, `fetch-speeches`,
 `enrich-speech-text`, `link-speeches`, `keyword-matcher`,
 `refresh-scorecards`, `refresh-coverage`, `agency-intel`, `authorities`,
 `authority-headcount`, `authority-expenditure`, `national-kpis`,
-`region-budget`, `municipality-budget`, and `sync-proposals`.
+`region-budget`, `municipality-budget`, `sync-proposals`, and `fetch-questions`.
 Run only the workers whose requests you have recorded.
 
 `fixtures/one-votering` is the worked example: one recorded votering

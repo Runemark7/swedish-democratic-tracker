@@ -1,0 +1,187 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H5023293.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H5023293.json",
+ "note": "Recorded 2026-11-10. The html body of dokument is dropped; every other field is as served.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "4773115",
+    "dok_id": "H5023293",
+    "rm": "2017/18",
+    "beteckning": "3293",
+    "typ": "mot",
+    "subtyp": "Kommittémotion",
+    "doktyp": "mot",
+    "typrubrik": "Motion 2017/18:3293 av Maria Malmer Stenergard m.fl. (M)",
+    "dokumentnamn": "Motion",
+    "debattnamn": "Motion",
+    "tempbeteckning": "M",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "3293",
+    "slutnummer": "0",
+    "datum": "2017-10-05 00:00:00",
+    "systemdatum": "2018-11-15 14:57:36",
+    "publicerad": "2017-10-05 00:00:00",
+    "titel": "Skattemässig hantering av virtuella varor",
+    "subtitel": "av Maria Malmer Stenergard m.fl. (M)",
+    "status": "Klar",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Filur",
+    "sourceid": "8a826bd5-3386-43e0-af89-217a2c96a1d1",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H5023293/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H5023293",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H5023293"
+   },
+   "dokforslag": {
+    "forslag": {
+     "nummer": "1",
+     "beteckning": "",
+     "lydelse": "Riksdagen ställer sig bakom det som anförs i motionen om att tillsätta en utredning för att se över den skatterättsliga bedömningen av handel med virtuella varor och tillkännager detta för regeringen.",
+     "lydelse2": "",
+     "utskottet": "Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2017/18:SkU11",
+     "behandlas_i_punkt": "",
+     "kammarbeslutstyp": "",
+     "intressent": "SkU",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    }
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2017-10-05 12:03:44",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Granskad",
+      "namn": "Granskad",
+      "datum": "2017-10-05 13:10:58",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "HÄN",
+      "namn": "Hänvisad",
+      "datum": "2017-10-13 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0572788110724",
+      "namn": "Maria Malmer Stenergard",
+      "partibet": "M",
+      "ordning": "1",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0729710260118",
+      "namn": "Helena Bouveng",
+      "partibet": "M",
+      "ordning": "2",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "010343930918",
+      "namn": "Cecilie Tenfjord Toftby",
+      "partibet": "M",
+      "ordning": "3",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0750518623913",
+      "namn": "Lotta Finstorp",
+      "partibet": "M",
+      "ordning": "4",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0117203219614",
+      "namn": "Jörgen Warborn",
+      "partibet": "M",
+      "ordning": "5",
+      "roll": "undertecknare"
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "motkat",
+      "namn": "Motionskategori",
+      "text": "Fristående motion",
+      "dok_id": "H5023293",
+      "systemdatum": "2018-11-15 08:46:59"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är avslutat",
+      "dok_id": "H5023293",
+      "systemdatum": "2018-03-29 12:03:29"
+     },
+     {
+      "kod": "tilldelat",
+      "namn": "Tilldelat",
+      "text": "Skatteutskottet",
+      "dok_id": "H5023293",
+      "systemdatum": "2018-11-15 08:46:59"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "H5023293",
+      "subtitel": "av Maria Malmer Stenergard m.fl. (M)",
+      "filnamn": "mot_201718__3293.pdf",
+      "filstorlek": "85877",
+      "filtyp": "pdf",
+      "titel": "Skattemässig hantering av virtuella varor",
+      "fil_url": "https://data.riksdagen.se/fil/87CD6CE7-2EF8-4545-8887-5D56222499FA"
+     },
+     {
+      "dok_id": "H5023293",
+      "subtitel": "av Maria Malmer Stenergard m.fl. (M)",
+      "filnamn": "mot_201718__3293.docx",
+      "filstorlek": "59657",
+      "filtyp": "docx",
+      "titel": "Skattemässig hantering av virtuella varor",
+      "fil_url": "https://data.riksdagen.se/fil/877B8DEC-1DF4-4464-9A09-04D16A67344E"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": {
+     "referenstyp": "behandlas_i",
+     "uppgift": "2017/18:SkU11",
+     "ref_dok_id": "H501SkU11",
+     "ref_dok_typ": "bet",
+     "ref_dok_rm": "2017/18",
+     "ref_dok_bet": "SkU11",
+     "ref_dok_titel": "Mervärdesskatt",
+     "ref_dok_subtitel": "",
+     "ref_dok_subtyp": "bet",
+     "ref_dok_dokumentnamn": "Betänkande"
+    }
+   }
+  }
+ }
+}

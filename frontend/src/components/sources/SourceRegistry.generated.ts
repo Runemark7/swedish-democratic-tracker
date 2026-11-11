@@ -74,6 +74,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "verificationStatus": "verified",
     "verificationNotes": null
   },
+  "questions": {
+    "id": "questions",
+    "name": "Skriftliga frågor, svar och interpellationer (Riksdagen)",
+    "kind": "api",
+    "upstream": "https://data.riksdagen.se/dokumentlista/?doktyp=fr",
+    "license": "Public domain — Sveriges riksdag",
+    "freshness": "dagligen för pågående riksmöte (cron: fetch-questions @daily); äldre riksmöten via cmd/backfill-questions",
+    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "blurb": "En skriftlig fråga (`doktyp=fr`) är en ledamots fråga till ett statsråd som besvaras skriftligt; svaret är ett eget dokument (`frs`). En interpellation (`ip`) besvaras och debatteras i kammaren. Riksdagen publicerar båda med frågeställare, statsråd och datum.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
   "region-budget-plan": {
     "id": "region-budget-plan",
     "name": "Regioners mål och budget (seed)",

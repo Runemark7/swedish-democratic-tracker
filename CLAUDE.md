@@ -176,6 +176,7 @@ graph TD
         BK["Riksdagen betänkanden\ndata.riksdagen.se dokumentlista + dokumentstatus (doktyp=bet) — förslagspunkter"]
         MO["Riksdagen motioner\ndata.riksdagen.se dokumentlista + dokumentstatus (doktyp=mot)"]
         RO["Riksdagsordningen 2014:801\nBilaga tb 7.5.1 — utskott→utgiftsområde"]
+        FQ["Riksdagen frågor och interpellationer\ndata.riksdagen.se dokumentlista + dokumentstatus (doktyp=fr, frs, ip)"]
         VM["Valmyndigheten\nval.se — riksdagsmandat (seed)"]
     end
 
@@ -188,6 +189,8 @@ graph TD
     W1 & W2 & W3 -->|HTTP| RD
     W5 & W6 & W9 & W10 --> DB
 
+    W11["⑪ fetch-questions @daily\ncurrent riksmöte, ≤500 per kind/run"] -->|HTTP| FQ
+    W11 --> DB
     W7 -->|HTTP| MO
     W8 -->|HTTP| BK
     W9 -->|HTTP dokumentlista doktyp=bet| BK
