@@ -136,7 +136,8 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 
 	motionSvc := motions.NewService(motionsPG.NewRepository(db), motionsRD.NewClientWithBaseURL(riksdagenBaseURL))
 	motionSvc.SetNow(clk.Now)
-	motionHandler := motionsHTTP.NewHandler(motionSvc)
+	loftenSvc := loften.NewService(loftenPG.NewRepository(db))
+	motionHandler := motionsHTTP.NewHandler(motionSvc).WithLoften(loftenSvc)
 
 	questionSvc := questions.NewService(questionsPG.NewRepository(db), questionsRD.NewClientWithBaseURL(riksdagenBaseURL))
 	questionHandler := questionsHTTP.NewHandler(questionSvc)
@@ -147,7 +148,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	goalRepo := goalsPG.NewRepository(db)
 	goalSvc := goals.NewService(goalRepo)
 
-	loftenHandler := loftenHTTP.NewHandler(loften.NewService(loftenPG.NewRepository(db)))
+	loftenHandler := loftenHTTP.NewHandler(loftenSvc)
 
 	matchRepo := matchingPG.NewRepository(db)
 	aiStub := matchingStub.NewAIService()

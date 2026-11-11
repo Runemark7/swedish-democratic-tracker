@@ -8,6 +8,7 @@ import { PARTIES } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { useMyParty, MY_PARTY_RING } from "@/contexts/myParty";
+import { BerorLoften, PartyLoefteTiles } from "@/features/loften/OnDecision";
 import { MyPartyPicker } from "@/components/MyPartyPicker";
 
 type Beslut = FrontPage["decided"][number];
@@ -63,6 +64,7 @@ function BeslutRow({ r }: { r: Beslut }) {
         <Link to={href} className="text-xs font-bold text-on-surface" data-testid="row-outcome">
           {r.outcome}
         </Link>
+        <BerorLoften riksmote={r.riksmote} beteckning={r.beteckning} count={r.loefteCount} />
       </div>
       <PartyMarks row={r} />
     </li>
@@ -152,6 +154,8 @@ export function FrontPageFeed() {
           <ul className="space-y-2">{data.motions.map((m) => <MotionRow key={m.dokId} m={m} />)}</ul>
         )}
       </section>
+
+      <PartyLoefteTiles tiles={data.partyTiles} />
 
       <section aria-label="Kommande beslut">
         <Heading to="/beslut?state=upcoming" linkText="Alla kommande beslut">Kommande beslut</Heading>

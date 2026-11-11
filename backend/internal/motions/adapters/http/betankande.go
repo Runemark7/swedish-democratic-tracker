@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	loften "riksdagskollen/internal/loften/domain"
 	"riksdagskollen/internal/motions"
 	"riksdagskollen/internal/motions/domain"
 )
@@ -33,6 +34,9 @@ type betankandeResponse struct {
 	Punkter      []punktResponse `json:"punkter"`
 	// Debate is the chamber debate: the anföranden linked to this betänkande.
 	Debate *debateResponse `json:"debate"`
+	// Loften are the Löften with a Bekräftad koppling to a votering here.
+	LoefteCount int                `json:"loefteCount"`
+	Loften      []loften.LoefteRef `json:"loften"`
 }
 
 type avvikareResponse struct {
@@ -106,6 +110,13 @@ func (h *Handler) getBetankande(w http.ResponseWriter, r *http.Request) {
 	for _, v := range p.Punkter {
 		out.Punkter = append(out.Punkter, toPunkt(p, v))
 	}
+	lf, err := h.loefteByKey(r.Context(), []string{p.Riksmote + ":" + p.Beteckning})
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	out.Loften = orEmpty(lf[p.Riksmote+":"+p.Beteckning])
+	out.LoefteCount = len(out.Loften)
 	deb := &debates{read: h.svc.Debate, cache: map[string]*debateResponse{}}
 	if out.Debate, err = deb.get(r.Context(), p.DokID); err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)

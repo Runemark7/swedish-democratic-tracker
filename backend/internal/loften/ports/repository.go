@@ -19,5 +19,9 @@ type Repository interface {
 	ConfirmedKopplingByID(ctx context.Context, id int) (*domain.ConfirmedKoppling, error)
 	// Windows maps mandate period code to its riksmöten.
 	Windows(ctx context.Context) (map[string][]string, error)
+	// LoefteForBetankanden maps "riksmöte:beteckning" to the public Löften with
+	// a Bekräftad koppling to a votering of that betänkande. Other kopplingar
+	// and non-public Löften never appear.
+	LoefteForBetankanden(ctx context.Context, keys []string) (map[string][]domain.LoefteRef, error)
 	ListValmanifest(ctx context.Context, party string) ([]*domain.Valmanifest, error)
 }

@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	loften "riksdagskollen/internal/loften/domain"
 	"riksdagskollen/internal/motions"
 )
 
@@ -25,6 +26,9 @@ type frontPageResponse struct {
 	Motions  []frontPageMotion   `json:"motions"`
 	Upcoming []beslutRowResponse `json:"upcoming"`
 	Coverage frontPageCoverage   `json:"coverage"`
+	// PartyTiles are the eight parties in alphabetical order of party code,
+	// whatever the counts, with Löftesstatus counts from Bekräftade kopplingar.
+	PartyTiles []loften.PartySummary `json:"partyTiles"`
 }
 
 // frontPage serves GET /frontpage.
@@ -47,6 +51,18 @@ func (h *Handler) frontPage(w http.ResponseWriter, r *http.Request) {
 	rows := toListResponse(&motions.ListResult{Items: fp.Motions}).Data
 	for i, row := range rows {
 		out.Motions = append(out.Motions, frontPageMotion{listRowResponse: row, DecidedAt: fp.Motions[i].Cursor.Key.Format("2006-01-02")})
+	}
+	if !h.addLoefteCounts(r.Context(), w, out.Decided, out.Upcoming) {
+		return
+	}
+	out.PartyTiles = []loften.PartySummary{}
+	if h.loften != nil {
+		tiles, err := h.loften.PartyTiles(r.Context())
+		if err != nil {
+			jsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		out.PartyTiles = tiles
 	}
 	jsonOK(w, out)
 }

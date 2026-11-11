@@ -77,3 +77,15 @@ func ToView(ev EvaluatedVote, c ConfirmedKoppling) KopplingView {
 	}
 	return v
 }
+
+// LoefteRef is a Löfte a decision touches: one with a Bekräftad koppling to a
+// votering in the decision. Nothing about the Löfte's status is implied.
+type LoefteRef struct {
+	ID    int    `json:"id"`
+	Party string `json:"party"`
+	Text  string `json:"text"`
+}
+
+// Parties are the eight Riksdag parties in alphabetical order of their code.
+// The front-page tiles always use this order, whatever the counts.
+var Parties = []string{"C", "KD", "L", "M", "MP", "S", "SD", "V"}

@@ -11,13 +11,17 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	loften "riksdagskollen/internal/loften/domain"
 	"riksdagskollen/internal/motions"
 	"riksdagskollen/internal/motions/domain"
 	"riksdagskollen/internal/motions/ports"
 	votes "riksdagskollen/internal/votes/domain"
 )
 
-type Handler struct{ svc *motions.Service }
+type Handler struct {
+	svc    *motions.Service
+	loften LoefteSource
+}
 
 func NewHandler(svc *motions.Service) *Handler { return &Handler{svc: svc} }
 
@@ -60,6 +64,8 @@ type motionResponse struct {
 	Authors         []authorResponse  `json:"authors"`
 	Yrkanden        []yrkandeResponse `json:"yrkanden"`
 	Outcome         outcomeResponse   `json:"outcome"`
+	// Loften are the Löften touched by the betänkanden that decided its yrkanden.
+	Loften []loften.LoefteRef `json:"loften"`
 }
 
 // outcomeResponse is a motion's outcome with the counts behind it.
@@ -86,12 +92,16 @@ type decisionResponse struct {
 	Alternativ string `json:"alternativ"`
 	Outcome    string `json:"outcome"`
 	// VoteringStored is true when we hold the ballots of the votering.
-	VoteringStored bool            `json:"voteringStored"`
+	VoteringStored bool `json:"voteringStored"`
+	// LoefteCount and Loften are the Löften with a Bekräftad koppling to a
+	// votering of this betänkande ("berör N löften").
+	LoefteCount int                `json:"loefteCount"`
+	Loften      []loften.LoefteRef `json:"loften"`
 	// VoteringID and VoteringURL name the votering at Riksdagen; empty when
 	// the punkt was decided without one.
-	VoteringID  string `json:"voteringId"`
-	VoteringURL string `json:"voteringUrl"`
-	Parties        []partyResponse `json:"parties"`
+	VoteringID  string          `json:"voteringId"`
+	VoteringURL string          `json:"voteringUrl"`
+	Parties     []partyResponse `json:"parties"`
 	// Debate is the chamber debate on the betänkande that decided this
 	// yrkande (the speeches linked to it); null when the betänkande is not
 	// known.
@@ -209,6 +219,10 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp := toResponse(m, decisions)
+	if err := h.addMotionLoefte(r.Context(), &resp); err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	deb := &debates{read: h.svc.Debate, cache: map[string]*debateResponse{}}
 	for i := range resp.Yrkanden {
 		for j := range resp.Yrkanden[i].Decisions {

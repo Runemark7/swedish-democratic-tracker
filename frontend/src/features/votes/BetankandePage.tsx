@@ -7,6 +7,7 @@ import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { motionPath } from "@/features/motions/api";
 import { Reasoning, Reservations, VotedAlternative } from "@/features/motions/DecisionParts";
+import { LoefteRefList } from "@/features/loften/OnDecision";
 import { Debate } from "@/features/motions/Debate";
 
 function Notice({ children }: { children: React.ReactNode }) {
@@ -183,6 +184,7 @@ export function BetankandePage() {
         )}
       </div>
 
+      <LoefteRefList items={data.loften} heading={`Berör ${data.loefteCount} ${data.loefteCount === 1 ? "löfte" : "löften"}`} />
       <div className="mt-8"><Debate debate={data.debate} /></div>
     </div>
   );

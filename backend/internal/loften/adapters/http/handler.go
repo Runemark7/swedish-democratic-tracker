@@ -14,6 +14,7 @@ import (
 )
 
 var utskottPattern = regexp.MustCompile(`^[A-Za-zÅÄÖåäö]{2,5}$`)
+var betankandePattern = regexp.MustCompile(`^\d{4}/\d{2}:[0-9A-Za-z]{1,12}$`)
 
 var partyPattern = regexp.MustCompile(`^[A-Z]{1,4}$`)
 
@@ -58,7 +59,12 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "invalid utskott", http.StatusBadRequest)
 		return
 	}
-	out, err := h.svc.ListWithStatus(r.Context(), loften.Filter{Party: party, Utskott: utskott, Status: q.Get("status")})
+	bet := q.Get("betankande")
+	if bet != "" && !betankandePattern.MatchString(bet) {
+		jsonError(w, "invalid betankande; write it 2026/27:SkU2", http.StatusBadRequest)
+		return
+	}
+	out, err := h.svc.ListWithStatus(r.Context(), loften.Filter{Party: party, Utskott: utskott, Status: q.Get("status"), Betankande: bet})
 	if errors.Is(err, loften.ErrBadStatus) {
 		jsonError(w, "invalid status", http.StatusBadRequest)
 		return
