@@ -39,6 +39,18 @@ func startLoften(t *testing.T) *Harness {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// 000059 (kopplingar) refers to loften, so it goes down first and up again last.
+	down59, err := os.ReadFile(filepath.Join(dir, "000059_kopplingar.down.sql"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	up59, err := os.ReadFile(filepath.Join(dir, "000059_kopplingar.up.sql"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := h.DB.Exec(ctx, string(down59)); err != nil {
+		t.Fatalf("down 59: %v", err)
+	}
 	if _, err := h.DB.Exec(ctx, string(down)); err != nil {
 		t.Fatalf("down: %v", err)
 	}
@@ -56,6 +68,9 @@ func startLoften(t *testing.T) *Harness {
 	}
 	if _, err := h.DB.Exec(ctx, string(up)); err != nil {
 		t.Fatalf("up: %v", err)
+	}
+	if _, err := h.DB.Exec(ctx, string(up59)); err != nil {
+		t.Fatalf("up 59: %v", err)
 	}
 	// A proposed and an approved Löfte, created by the test the way a later
 	// write API would. Nothing in the migration approves anything.

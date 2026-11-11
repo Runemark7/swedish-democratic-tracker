@@ -277,6 +277,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/write/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Candidate voteringar new since the last Veckobatch, with the approved Löften they might test
+         * @description Behind the write token. Decided voteringar ingested after the last closed Veckobatch (all of them when none is closed), inside the mandate period of an approved Löfte whose utskott matches the votering's (the letters of its beteckning). Pairs already suggested, in any state, are left out. Each votering carries its betänkande, förslagspunkt and the motions and yrkanden decided there. Page by passing the response's `next` as `after`.
+         */
+        get: operations["getKopplingCandidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/kopplingar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Föreslagna kopplingar (Löfte, votering, direction, confidence, reasoning)
+         * @description Suggestions at or above `threshold` (default 0.6) are stored as foreslagen; below it as bortsorterad, which is kept only so the pair is not suggested again. Neither is ever returned by a public endpoint or shown in the public Ändringslogg. All-or-nothing: an unknown votering, a Löfte that is not approved, or a votering outside the Löfte's mandate period (for a 2026 Löfte, 2026–2030) is 422 and stores nothing. A pair that already has a koppling is reported as `existing` and left unchanged.
+         */
+        post: operations["submitKopplingSuggestions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/write/loften": {
         parameters: {
             query?: never;
@@ -1590,6 +1630,89 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        KopplingSuggestionsWrite: {
+            /** @default 0.6 */
+            threshold: number;
+            suggestions: {
+                /** Format: int64 */
+                loefteId: number;
+                /** @description Riksdagen's votering_id */
+                voteringId: string;
+                /**
+                 * @description The ballot that is in the Löfte's direction
+                 * @enum {string}
+                 */
+                direction: "Ja" | "Nej";
+                confidence: number;
+                reasoning: string;
+            }[];
+            chatRef: string;
+            onBehalfOf: string;
+        };
+        KopplingSuggestionsResult: {
+            replayed: boolean;
+            results: {
+                /** Format: int64 */
+                kopplingId: number;
+                /** Format: int64 */
+                loefteId: number;
+                voteringId: string;
+                /** @enum {string} */
+                state: "foreslagen" | "bortsorterad" | "bekraftad" | "avvisad";
+                /** @enum {string} */
+                status: "created" | "existing";
+            }[];
+        };
+        KopplingCandidates: {
+            /**
+             * Format: date-time
+             * @description closed_at of the last closed Veckobatch
+             */
+            since: string | null;
+            /**
+             * Format: int64
+             * @description Pass as `after` for the next page; null on the last page
+             */
+            next: number | null;
+            voteringar: {
+                voteringId: string;
+                beteckning: string;
+                forslagspunkt: string;
+                session: string;
+                /** Format: date-time */
+                datum?: string | null;
+                utskott: string;
+                /** @description Empty strings when the betänkande is not ingested yet */
+                betankande: {
+                    riksmote?: string;
+                    beteckning?: string;
+                    title?: string;
+                    punkt?: string;
+                    rubrik?: string;
+                    forslagText?: string;
+                    alternativ?: string;
+                };
+                motions: {
+                    riksmote?: string;
+                    beteckning?: string;
+                    title?: string;
+                    party?: string;
+                    yrkande?: number;
+                    wording?: string;
+                }[];
+                loften: {
+                    /** Format: int64 */
+                    id?: number;
+                    party?: string;
+                    text?: string;
+                    quote?: string;
+                    locator?: string;
+                    sourceUrl?: string;
+                    topic?: string;
+                    utskott?: string[];
+                }[];
+            }[];
+        };
         WriteError: {
             error: string;
             /** @enum {string} */
@@ -3713,6 +3836,70 @@ export interface operations {
                 };
                 content?: never;
             };
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
+    getKopplingCandidates: {
+        parameters: {
+            query?: {
+                limit?: number;
+                /** @description Cursor from the previous page's `next` */
+                after?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Candidates */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KopplingCandidates"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    submitKopplingSuggestions: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KopplingSuggestionsWrite"];
+            };
+        };
+        responses: {
+            /** @description One result per suggestion */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KopplingSuggestionsResult"];
+                };
+            };
+            /** @description Malformed JSON or unknown field */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WriteError"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
             409: components["responses"]["WriteConflict"];
             422: components["responses"]["ValidationFailed"];
         };

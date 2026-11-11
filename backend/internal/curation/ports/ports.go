@@ -35,10 +35,20 @@ type Store interface {
 	UpdateLoefte(ctx context.Context, l domain.Loefte) error
 	// DeleteLoefte removes a row (undo of a propose); ErrConflict when referenced.
 	DeleteLoefte(ctx context.Context, id int64) error
+
+	// VoteringForLoefte resolves a votering by Riksdagen's votering_id and
+	// says whether it lies inside the mandate period of Löfte l. nil: no such votering.
+	VoteringForLoefte(ctx context.Context, voteringID string, l *domain.Loefte) (*domain.Votering, error)
+	// KopplingByPair locks the row; nil when absent.
+	KopplingByPair(ctx context.Context, loefteID, voteringRef int64) (*domain.Koppling, error)
+	InsertKoppling(ctx context.Context, loefteID, voteringRef int64, k domain.Koppling) (*domain.Koppling, error)
 }
 
 type Repository interface {
 	// InTx runs fn in one transaction: committed if fn returns nil.
 	InTx(ctx context.Context, fn func(Store) error) error
+	// Candidates lists decided voteringar new since the last closed Veckobatch,
+	// inside a mandate period, each with the approved Löften it might test.
+	Candidates(ctx context.Context, limit int, afterRef int64) (*domain.Candidates, error)
 	ListEntries(ctx context.Context, limit int, beforeID int64) ([]*domain.Entry, error)
 }

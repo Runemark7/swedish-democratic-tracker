@@ -387,6 +387,61 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationFailed"
 
+  /write/candidates:
+    get:
+      operationId: getKopplingCandidates
+      tags: [write]
+      summary: Candidate voteringar new since the last Veckobatch, with the approved Löften they might test
+      description: >
+        Behind the write token. Decided voteringar ingested after the last closed Veckobatch (all of them when none is closed), inside the mandate period of an approved Löfte whose utskott matches the votering's (the letters of its beteckning). Pairs already suggested, in any state, are left out. Each votering carries its betänkande, förslagspunkt and the motions and yrkanden decided there. Page by passing the response's `next` as `after`.
+      security:
+        - writeToken: []
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: after, in: query, description: Cursor from the previous page's `next`, schema: { type: integer, format: int64 } }
+      responses:
+        "200":
+          description: Candidates
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/KopplingCandidates" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /write/kopplingar:
+    post:
+      operationId: submitKopplingSuggestions
+      tags: [write]
+      summary: Submit Föreslagna kopplingar (Löfte, votering, direction, confidence, reasoning)
+      description: >
+        Suggestions at or above `threshold` (default 0.6) are stored as foreslagen; below it as bortsorterad, which is kept only so the pair is not suggested again. Neither is ever returned by a public endpoint or shown in the public Ändringslogg. All-or-nothing: an unknown votering, a Löfte that is not approved, or a votering outside the Löfte's mandate period (for a 2026 Löfte, 2026–2030) is 422 and stores nothing. A pair that already has a koppling is reported as `existing` and left unchanged.
+      security:
+        - writeToken: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/KopplingSuggestionsWrite" }
+      responses:
+        "200":
+          description: One result per suggestion
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/KopplingSuggestionsResult" }
+        "400":
+          description: Malformed JSON or unknown field
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WriteError" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/WriteConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+
   /write/loften:
     post:
       operationId: proposeLoefte
@@ -2198,6 +2253,97 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
 
   schemas:
+    KopplingSuggestionsWrite:
+      type: object
+      required: [suggestions, chatRef, onBehalfOf]
+      additionalProperties: false
+      properties:
+        threshold: { type: number, minimum: 0, maximum: 1, default: 0.6 }
+        suggestions:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            type: object
+            required: [loefteId, voteringId, direction, confidence, reasoning]
+            additionalProperties: false
+            properties:
+              loefteId: { type: integer, format: int64 }
+              voteringId: { type: string, description: "Riksdagen's votering_id" }
+              direction: { type: string, enum: [Ja, Nej], description: The ballot that is in the Löfte's direction }
+              confidence: { type: number, minimum: 0, maximum: 1 }
+              reasoning: { type: string, maxLength: 4000 }
+        chatRef: { type: string }
+        onBehalfOf: { type: string }
+    KopplingSuggestionsResult:
+      type: object
+      required: [replayed, results]
+      properties:
+        replayed: { type: boolean }
+        results:
+          type: array
+          items:
+            type: object
+            required: [kopplingId, loefteId, voteringId, state, status]
+            properties:
+              kopplingId: { type: integer, format: int64 }
+              loefteId: { type: integer, format: int64 }
+              voteringId: { type: string }
+              state: { type: string, enum: [foreslagen, bortsorterad, bekraftad, avvisad] }
+              status: { type: string, enum: [created, existing] }
+    KopplingCandidates:
+      type: object
+      required: [since, voteringar, next]
+      properties:
+        since: { type: string, format: date-time, nullable: true, description: closed_at of the last closed Veckobatch }
+        next: { type: integer, format: int64, nullable: true, description: Pass as `after` for the next page; null on the last page }
+        voteringar:
+          type: array
+          items:
+            type: object
+            required: [voteringId, beteckning, forslagspunkt, session, utskott, betankande, motions, loften]
+            properties:
+              voteringId: { type: string }
+              beteckning: { type: string }
+              forslagspunkt: { type: string }
+              session: { type: string }
+              datum: { type: string, format: date-time, nullable: true }
+              utskott: { type: string }
+              betankande:
+                type: object
+                description: Empty strings when the betänkande is not ingested yet
+                properties:
+                  riksmote: { type: string }
+                  beteckning: { type: string }
+                  title: { type: string }
+                  punkt: { type: string }
+                  rubrik: { type: string }
+                  forslagText: { type: string }
+                  alternativ: { type: string }
+              motions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    riksmote: { type: string }
+                    beteckning: { type: string }
+                    title: { type: string }
+                    party: { type: string }
+                    yrkande: { type: integer }
+                    wording: { type: string }
+              loften:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer, format: int64 }
+                    party: { type: string }
+                    text: { type: string }
+                    quote: { type: string }
+                    locator: { type: string }
+                    sourceUrl: { type: string }
+                    topic: { type: string }
+                    utskott: { type: array, items: { type: string } }
     WriteError:
       type: object
       required: [error, code]
