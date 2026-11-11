@@ -44,18 +44,20 @@ func (r *Repository) ListByPolitician(ctx context.Context, politicianID string) 
 
 func (r *Repository) UpsertMany(ctx context.Context, ss []*domain.Speech) error {
 	const q = `
-		INSERT INTO speeches (dok_id, anforande_nummer, politician_id, party, date, topic_heading, speech_text, related_dok_id)
-		SELECT $1, $2, $3, $4, $5, $6, $7, $8
+		INSERT INTO speeches (dok_id, anforande_nummer, politician_id, party, date, topic_heading, speech_text, related_dok_id, riksmote)
+		SELECT $1, $2, $3, $4, $5, $6, $7, $8, NULLIF($9, '')
 		WHERE EXISTS (SELECT 1 FROM politicians WHERE intressent_id = $3)
 		ON CONFLICT (dok_id, anforande_nummer) DO UPDATE SET
 			topic_heading  = EXCLUDED.topic_heading,
-			speech_text    = EXCLUDED.speech_text,
-			related_dok_id = COALESCE(NULLIF(EXCLUDED.related_dok_id, ''), speeches.related_dok_id)`
+			-- The list carries no text; a re-listed speech keeps the text it was given.
+			speech_text    = COALESCE(NULLIF(EXCLUDED.speech_text, ''), speeches.speech_text),
+			related_dok_id = COALESCE(NULLIF(EXCLUDED.related_dok_id, ''), speeches.related_dok_id),
+			riksmote       = COALESCE(EXCLUDED.riksmote, speeches.riksmote)`
 
 	batch := &pgx.Batch{}
 	for _, s := range ss {
 		batch.Queue(q, s.DokID, s.AnforandeNummer, s.PoliticianID, s.Party,
-			s.Date, s.TopicHeading, s.SpeechText, s.RelatedDokID)
+			s.Date, s.TopicHeading, s.SpeechText, s.RelatedDokID, s.Riksmote)
 	}
 	br := r.db.SendBatch(ctx, batch)
 	defer br.Close()
@@ -207,11 +209,12 @@ func (r *Repository) DebateCandidates(ctx context.Context) ([]domain.DebateCandi
 }
 
 // ListForLinking reads at most limit speeches with id > afterID, in id order.
-func (r *Repository) ListForLinking(ctx context.Context, afterID, limit int) ([]ports.LinkRow, error) {
+// A riksmote restricts it to that riksmöte's speeches.
+func (r *Repository) ListForLinking(ctx context.Context, riksmote string, afterID, limit int) ([]ports.LinkRow, error) {
 	rows, err := r.db.Query(ctx, `
 		SELECT id, coalesce(related_dok_id, ''), coalesce(topic_heading, ''), date,
 		       coalesce(betankande_dok_id, ''), coalesce(betankande_link_rule, '')
-		FROM speeches WHERE id > $1 ORDER BY id LIMIT $2`, afterID, limit)
+		FROM speeches WHERE id > $1 AND ($3 = '' OR riksmote = $3) ORDER BY id LIMIT $2`, afterID, limit, riksmote)
 	if err != nil {
 		return nil, err
 	}
@@ -244,4 +247,82 @@ func (r *Repository) SetLinks(ctx context.Context, links []ports.LinkUpdate) err
 		}
 	}
 	return br.Close()
+}
+
+// MissingTextIn lists up to limit speeches of the riksmöte with no text, oldest id first.
+func (r *Repository) MissingTextIn(ctx context.Context, riksmote string, limit int) ([]*domain.Speech, error) {
+	q := "SELECT " + selectCols + " FROM speeches " +
+		"WHERE riksmote = $1 AND (speech_text IS NULL OR speech_text = '') ORDER BY id LIMIT $2"
+	rows, err := r.db.Query(ctx, q, riksmote, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanSpeeches(rows)
+}
+
+func (r *Repository) RiksmoteCounts(ctx context.Context, riksmote string) (domain.RiksmoteCounts, error) {
+	var c domain.RiksmoteCounts
+	err := r.db.QueryRow(ctx, `
+		SELECT count(*),
+		       count(betankande_dok_id),
+		       count(*) FILTER (WHERE speech_text IS NULL OR speech_text = ''),
+		       coalesce(sum(octet_length(speech_text)), 0)
+		FROM speeches WHERE riksmote = $1`, riksmote).
+		Scan(&c.Stored, &c.Linked, &c.MissingText, &c.TextBytes)
+	return c, err
+}
+
+func (r *Repository) StorageSizes(ctx context.Context) (table, index int64, err error) {
+	err = r.db.QueryRow(ctx, `SELECT pg_table_size('speeches'), pg_indexes_size('speeches')`).Scan(&table, &index)
+	return table, index, err
+}
+
+func (r *Repository) SaveBackfill(ctx context.Context, run domain.BackfillRun) error {
+	_, err := r.db.Exec(ctx, `
+		INSERT INTO speech_backfill
+			(riksmote, expected, text_bytes, rows_added, table_bytes_added, index_bytes_added,
+			 politicians_created, unresolved_speakers, completed_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CASE WHEN $9 THEN now() END, now())
+		ON CONFLICT (riksmote) DO UPDATE SET
+			expected            = EXCLUDED.expected,
+			text_bytes          = EXCLUDED.text_bytes,
+			rows_added          = speech_backfill.rows_added + EXCLUDED.rows_added,
+			table_bytes_added   = speech_backfill.table_bytes_added + EXCLUDED.table_bytes_added,
+			index_bytes_added   = speech_backfill.index_bytes_added + EXCLUDED.index_bytes_added,
+			politicians_created = speech_backfill.politicians_created + EXCLUDED.politicians_created,
+			unresolved_speakers = EXCLUDED.unresolved_speakers,
+			completed_at        = CASE WHEN $9 THEN coalesce(speech_backfill.completed_at, now()) END,
+			updated_at          = now()`,
+		run.Riksmote, run.Expected, run.TextBytes, run.RowsAdded, run.TableBytesAdded, run.IndexBytesAdded,
+		run.PoliticiansCreated, run.Unresolved, run.Complete)
+	return err
+}
+
+func (r *Repository) ListBackfill(ctx context.Context) ([]domain.Backfill, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT b.riksmote, b.expected, coalesce(c.stored, 0), coalesce(c.linked, 0),
+		       b.text_bytes, b.rows_added, b.table_bytes_added, b.index_bytes_added,
+		       b.politicians_created, b.unresolved_speakers, b.completed_at
+		FROM speech_backfill b
+		LEFT JOIN (
+			SELECT riksmote, count(*) AS stored, count(betankande_dok_id) AS linked
+			FROM speeches WHERE riksmote IS NOT NULL GROUP BY riksmote
+		) c ON c.riksmote = b.riksmote
+		ORDER BY b.riksmote DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []domain.Backfill
+	for rows.Next() {
+		var b domain.Backfill
+		if err := rows.Scan(&b.Riksmote, &b.Expected, &b.Stored, &b.Linked, &b.TextBytes, &b.RowsAdded,
+			&b.TableBytesAdded, &b.IndexBytesAdded, &b.PoliticiansCreated, &b.Unresolved, &b.CompletedAt); err != nil {
+			return nil, err
+		}
+		b.Unlinked = b.Stored - b.Linked
+		out = append(out, b)
+	}
+	return out, rows.Err()
 }

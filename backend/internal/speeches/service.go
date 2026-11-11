@@ -63,23 +63,27 @@ func (s *Service) EnrichMissingText(ctx context.Context, limit int) (enriched, s
 		if ctx.Err() != nil {
 			return enriched, skipped, ctx.Err()
 		}
-		text, err := s.riksdagen.FetchSpeechText(ctx, sp.DokID, sp.AnforandeNummer)
-		if err != nil {
-			skipped++
-			continue
-		}
-		if text == "" {
-			// Mark with a single space so we stop retrying. The handler
-			// trims this when serving, so users never see it.
-			text = " "
-		}
-		if err := s.repo.UpdateText(ctx, sp.ID, text); err != nil {
+		if err := s.enrichOne(ctx, sp); err != nil {
 			skipped++
 			continue
 		}
 		enriched++
 	}
 	return enriched, skipped, nil
+}
+
+// enrichOne fetches and stores the text of one speech.
+func (s *Service) enrichOne(ctx context.Context, sp *domain.Speech) error {
+	text, err := s.riksdagen.FetchSpeechText(ctx, sp.DokID, sp.AnforandeNummer)
+	if err != nil {
+		return err
+	}
+	if text == "" {
+		// Mark with a single space so we stop retrying. The handler
+		// trims this when serving, so users never see it.
+		text = " "
+	}
+	return s.repo.UpdateText(ctx, sp.ID, text)
 }
 
 func (s *Service) ListByDocument(ctx context.Context, dokID string) ([]*domain.Speech, error) {
@@ -112,6 +116,12 @@ type LinkStats struct {
 // again over unchanged data writes nothing, and an interrupted run is simply
 // run again.
 func (s *Service) RelinkDebates(ctx context.Context) (LinkStats, error) {
+	return s.RelinkDebatesIn(ctx, "")
+}
+
+// RelinkDebatesIn is RelinkDebates limited to one riksmöte's speeches; an
+// empty riksmöte takes them all.
+func (s *Service) RelinkDebatesIn(ctx context.Context, riksmote string) (LinkStats, error) {
 	var st LinkStats
 	cands, err := s.repo.DebateCandidates(ctx)
 	if err != nil {
@@ -127,7 +137,7 @@ func (s *Service) RelinkDebates(ctx context.Context) (LinkStats, error) {
 		if err := ctx.Err(); err != nil {
 			return st, err
 		}
-		rows, err := s.repo.ListForLinking(ctx, after, RelinkBatch)
+		rows, err := s.repo.ListForLinking(ctx, riksmote, after, RelinkBatch)
 		if err != nil {
 			return st, err
 		}
