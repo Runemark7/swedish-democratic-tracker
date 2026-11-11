@@ -156,6 +156,8 @@ func (s *Service) Undo(ctx context.Context, key string, id int64, p domain.Prove
 			cur, restore, err = undoLoefte(ctx, st, target)
 		case domain.EntityKoppling:
 			cur, restore, err = undoKoppling(ctx, st, target)
+		case domain.EntityMotionKoppling:
+			cur, restore, err = undoMotionKoppling(ctx, st, target)
 		default:
 			return &domain.ValidationError{Msg: fmt.Sprintf("undo of %q entries is not supported", target.Entity)}
 		}

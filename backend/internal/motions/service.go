@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"sort"
 	"strings"
 	"time"
 
@@ -266,6 +267,27 @@ func (s *Service) Recurring(ctx context.Context, motionDokID string, y domain.Yr
 	if err != nil {
 		return nil, err
 	}
+	// Filings the Redaktör confirmed to be the same demand in other words.
+	others, err := s.repo.ConfirmedKravHashes(ctx, hash)
+	if err != nil {
+		return nil, err
+	}
+	for i := range members {
+		members[i].Rule = domain.RuleIdenticalWording
+	}
+	for _, h := range others {
+		more, err := s.repo.RecurringMembers(ctx, h)
+		if err != nil {
+			return nil, err
+		}
+		for i := range more {
+			more[i].Rule = domain.RuleConfirmed
+		}
+		members = append(members, more...)
+	}
+	if len(others) > 0 {
+		sortRecurring(members)
+	}
 	riksmoten := map[string]bool{}
 	for _, m := range members {
 		riksmoten[m.Riksmote] = true
@@ -276,7 +298,6 @@ func (s *Service) Recurring(ctx context.Context, motionDokID string, y domain.Yr
 	decisions := map[string][]domain.YrkandeDecision{}
 	for i := range members {
 		m := &members[i]
-		m.Rule = domain.RuleIdenticalWording
 		ds, ok := decisions[m.DokID]
 		if !ok {
 			if ds, err = s.repo.Decisions(ctx, m.DokID); err != nil {
@@ -352,4 +373,31 @@ func (s *Service) RelinkAll(ctx context.Context) (int, error) {
 		n++
 	}
 	return n, nil
+}
+
+// sortRecurring orders filings earliest riksmöte first, then by beteckning
+// number and yrkande, as the repository does for a single group.
+func sortRecurring(ms []domain.RecurringMember) {
+	num := func(b string) int {
+		n := 0
+		for _, r := range b {
+			if r >= '0' && r <= '9' {
+				n = n*10 + int(r-'0')
+			}
+		}
+		return n
+	}
+	sort.SliceStable(ms, func(i, j int) bool {
+		a, b := ms[i], ms[j]
+		if a.Riksmote != b.Riksmote {
+			return a.Riksmote < b.Riksmote
+		}
+		if na, nb := num(a.Beteckning), num(b.Beteckning); na != nb {
+			return na < nb
+		}
+		if a.Beteckning != b.Beteckning {
+			return a.Beteckning < b.Beteckning
+		}
+		return a.Number < b.Number
+	})
 }

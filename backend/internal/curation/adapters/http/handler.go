@@ -39,6 +39,7 @@ func (h *Handler) WriteRoutes(r chi.Router) {
 	r.Post("/aendringslogg/{id}/undo", h.undo)
 	r.Get("/candidates", h.candidates)
 	r.Post("/kopplingar", h.submitSuggestions)
+	r.Post("/motion-kopplingar", h.submitMotionSuggestions)
 	r.Post("/veckobatch", h.createBatch)
 	r.Get("/veckobatch/latest", h.latestBatch)
 	r.Get("/veckobatch/{id}", h.getBatch)
@@ -92,6 +93,23 @@ func (h *Handler) submitSuggestions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res, err := h.svc.SubmitSuggestions(r.Context(), r.Header.Get("Idempotency-Key"), in)
+	if err != nil {
+		h.respond(w, nil, err)
+		return
+	}
+	if res.Replayed {
+		w.Header().Set("Idempotent-Replayed", "true")
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(res)
+}
+
+func (h *Handler) submitMotionSuggestions(w http.ResponseWriter, r *http.Request) {
+	var in domain.MotionSuggestionBatch
+	if !readJSON(w, r, &in) {
+		return
+	}
+	res, err := h.svc.SubmitMotionSuggestions(r.Context(), r.Header.Get("Idempotency-Key"), in)
 	if err != nil {
 		h.respond(w, nil, err)
 		return

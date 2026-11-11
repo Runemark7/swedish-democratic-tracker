@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"sort"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -24,11 +25,15 @@ func (s *store) LockBatches(ctx context.Context) error {
 // first so the weekly cap cannot starve them; then strongest first.
 func (s *store) OpenSuggestions(ctx context.Context, max int) ([]domain.OpenSuggestion, error) {
 	rows, err := s.tx.Query(ctx, `
-		SELECT k.id, k.veckobatch_id IS NOT NULL
-		  FROM kopplingar k
-		 WHERE k.state = 'foreslagen'
-		 ORDER BY (k.veckobatch_id IS NOT NULL) DESC, k.veckobatch_id ASC NULLS LAST, k.confidence DESC, k.id ASC
-		 LIMIT $1`, max)
+		SELECT kid, mkid, rolled FROM (
+		  SELECT k.id AS kid, 0 AS mkid, k.veckobatch_id IS NOT NULL AS rolled, k.veckobatch_id AS vb, k.confidence AS conf, k.id AS ord, 0 AS src
+		    FROM kopplingar k WHERE k.state = 'foreslagen'
+		  UNION ALL
+		  SELECT 0, k.id, k.veckobatch_id IS NOT NULL, k.veckobatch_id, k.confidence, k.id, 1
+		    FROM motion_kopplingar k WHERE k.state = 'foreslagen'
+		) u
+		ORDER BY rolled DESC, vb ASC NULLS LAST, conf DESC, src ASC, ord ASC
+		LIMIT $1`, max)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +41,7 @@ func (s *store) OpenSuggestions(ctx context.Context, max int) ([]domain.OpenSugg
 	var out []domain.OpenSuggestion
 	for rows.Next() {
 		var o domain.OpenSuggestion
-		if err := rows.Scan(&o.KopplingID, &o.RolledOver); err != nil {
+		if err := rows.Scan(&o.KopplingID, &o.MotionKopplingID, &o.RolledOver); err != nil {
 			return nil, err
 		}
 		out = append(out, o)
@@ -55,12 +60,20 @@ func (s *store) InsertBatch(ctx context.Context) (int64, error) {
 	return id, err
 }
 
-func (s *store) InsertBatchItem(ctx context.Context, batchID int64, nr int, kopplingID int64) error {
-	if _, err := s.tx.Exec(ctx, `INSERT INTO veckobatch_items (veckobatch_id, nr, koppling_id) VALUES ($1,$2,$3)`,
-		batchID, nr, kopplingID); err != nil {
+func (s *store) InsertBatchItem(ctx context.Context, batchID int64, nr int, o domain.OpenSuggestion) error {
+	if o.MotionKopplingID != 0 {
+		if _, err := s.tx.Exec(ctx, `INSERT INTO veckobatch_items (veckobatch_id, nr, motion_koppling_id) VALUES ($1,$2,$3)`,
+			batchID, nr, o.MotionKopplingID); err != nil {
+			return err
+		}
+		_, err := s.tx.Exec(ctx, `UPDATE motion_kopplingar SET veckobatch_id = $1 WHERE id = $2`, batchID, o.MotionKopplingID)
 		return err
 	}
-	_, err := s.tx.Exec(ctx, `UPDATE kopplingar SET veckobatch_id = $1 WHERE id = $2`, batchID, kopplingID)
+	if _, err := s.tx.Exec(ctx, `INSERT INTO veckobatch_items (veckobatch_id, nr, koppling_id) VALUES ($1,$2,$3)`,
+		batchID, nr, o.KopplingID); err != nil {
+		return err
+	}
+	_, err := s.tx.Exec(ctx, `UPDATE kopplingar SET veckobatch_id = $1 WHERE id = $2`, batchID, o.KopplingID)
 	return err
 }
 
@@ -127,9 +140,20 @@ func loadBatch(ctx context.Context, q querier, id int64, lock bool) (*domain.Bat
 			ds := d.UTC().Format(time.RFC3339)
 			it.Datum = &ds
 		}
+		it.Kind = domain.ItemLoefte
 		b.Items = append(b.Items, it)
 	}
-	return &b, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	rows.Close()
+	mitems, err := loadMotionItems(ctx, q, id, lockK)
+	if err != nil {
+		return nil, err
+	}
+	b.Items = append(b.Items, mitems...)
+	sort.Slice(b.Items, func(i, j int) bool { return b.Items[i].Nr < b.Items[j].Nr })
+	return &b, nil
 }
 
 func (s *store) DecideItem(ctx context.Context, batchID int64, nr int, kopplingID int64, state, direction, answer string) error {

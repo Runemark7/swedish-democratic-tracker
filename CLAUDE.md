@@ -323,7 +323,7 @@ postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable
   `DATABASE_URL` secret named by the chart's `dbSecretName` — there is no
   bitnami subchart and the database is not Neon. Local dev compose still uses
   `postgres:17-alpine`.
-- Migrations in `backend/migrations/` are numbered `000001`–`000052`, `000057`–`000060` (no `000045`); `000058` is the append-only `aendringslogg`, `000059` holds `kopplingar` and `veckobatch`, `000060` the numbered `veckobatch_items`.
+- Migrations in `backend/migrations/` are numbered `000001`–`000052`, `000057`–`000060`, `000062` (no `000045`, `000061`); `000058` is the append-only `aendringslogg`, `000059` holds `kopplingar` and `veckobatch`, `000060` the numbered `veckobatch_items`, `000062` `motion_kopplingar` (curated fråga→motion and krav↔krav links, public only once `bekraftad`).
 - The voting record lives in two tables, not one: `voteringar` (one row per
   decided förslagspunkt) and `ballots` (one row per member per votering).
   `votering_id` is the identity — two voteringar can share a beteckning and

@@ -44,7 +44,7 @@ func scanEntry(row pgx.Row) (*domain.Entry, error) {
 func (r *Repository) ListEntries(ctx context.Context, limit int, beforeID int64) ([]*domain.Entry, error) {
 	rows, err := r.db.Query(ctx,
 		`SELECT `+entryCols+` FROM aendringslogg WHERE ($2::bigint = 0 OR id < $2)
-		   AND entity NOT IN ('koppling', 'veckobatch')
+		   AND entity NOT IN ('koppling', 'motionkoppling', 'veckobatch')
 		   AND NOT (entity = 'loefte'
 		            AND coalesce(old_value->>'visibility','') NOT IN ('approved','archived')
 		            AND coalesce(new_value->>'visibility','') NOT IN ('approved','archived'))

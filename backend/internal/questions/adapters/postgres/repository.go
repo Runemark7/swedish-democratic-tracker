@@ -176,10 +176,20 @@ func (r *Repository) ByMember(ctx context.Context, id string, limit int) ([]doma
 	return out, rows.Err()
 }
 
+// publicLinks is every link that may be shown: the rule-made ones, and the
+// prose citations the Redaktör confirmed in a Veckobatch (issue #163). A
+// suggested, rejected or undone one is not in it.
+const publicLinks = `(
+	SELECT question_dok_id, motion_dok_id, rule FROM question_motion_links
+	UNION ALL
+	SELECT question_dok_id, motion_dok_id, 'redaktor-confirmed' FROM motion_kopplingar
+	 WHERE kind = 'fraga' AND state = 'bekraftad'
+)`
+
 func (r *Repository) ByMotion(ctx context.Context, rm, bet string, limit int) ([]domain.Item, error) {
 	rows, err := r.db.Query(ctx, `
 		SELECT `+itemCols+`, l.rule
-		FROM question_motion_links l
+		FROM `+publicLinks+` l
 		JOIN questions q ON q.dok_id = l.question_dok_id
 		JOIN motions m ON m.dok_id = l.motion_dok_id
 		WHERE m.riksmote = $1 AND m.beteckning = $2
@@ -215,7 +225,7 @@ func (r *Repository) Get(ctx context.Context, kind, rm, bet string) (*domain.Det
 	d := &domain.Detail{Item: it, Text: text, Debate: []domain.DebateSpeech{}, Motions: []domain.LinkedMotion{}}
 	rows, err := r.db.Query(ctx, `
 		SELECT m.dok_id, m.riksmote, m.beteckning, m.title, l.rule
-		FROM question_motion_links l JOIN motions m ON m.dok_id = l.motion_dok_id
+		FROM `+publicLinks+` l JOIN motions m ON m.dok_id = l.motion_dok_id
 		WHERE l.question_dok_id = $1 ORDER BY m.riksmote, m.beteckning`, it.DokID)
 	if err != nil {
 		return nil, err
