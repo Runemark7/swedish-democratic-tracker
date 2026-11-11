@@ -27,6 +27,7 @@ func TestMain(m *testing.M) {
 var routesBeforeExtraction = []string{
 	"GET /api/betankanden/resolve",
 	"GET /api/betankanden/{riksmote}/{beteckning}",
+	"GET /api/beslut",
 	"GET /api/budget/areas",
 	"GET /api/budget/areas/{code}",
 	"GET /api/budget/years",

@@ -336,6 +336,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/beslut": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Beslut list — betänkanden coming up and decided, with filters
+         * @description Upcoming betänkanden come first, the soonest planned beslutsdag first (undated ones last), then decided ones, newest decision first. Whether a row is decided is Riksdagen's own: `beslutad`, else status and `beslutsdag` (the same rule as the betänkande page). A planned betänkande is never listed as decided. `party` matches a betänkande that decides a motion signed by the party or has a reservation by it. Each of `utskott` and `party` takes several values, repeated or comma-separated. Paginate with `nextCursor`.
+         */
+        get: operations["listBeslut"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/motions": {
         parameters: {
             query?: never;
@@ -1427,6 +1447,36 @@ export interface components {
             handledIn: string[];
             sourceUrl: string;
             outcome: components["schemas"]["MotionOutcome"];
+        };
+        BeslutListResponse: {
+            data: components["schemas"]["BeslutListRow"][];
+            nextCursor: string | null;
+        };
+        BeslutListRow: {
+            /** @example 2026/27 */
+            riksmote: string;
+            /** @example SkU8 */
+            beteckning: string;
+            title: string;
+            utskott: string;
+            utskottName: string;
+            /** @description Decision date when decided; the planned beslutsdag when upcoming; null when Riksdagen gives none */
+            date: string | null;
+            decided: boolean;
+            /** @description Riksdagen's own status word */
+            status: string;
+            /** @description Ej avgjord än, or how the punkter were decided (with or without votering). It does not say which side won. */
+            outcome: string;
+            sourceUrl: string;
+            /** @description Empty for an upcoming row; otherwise the eight parties in a fixed order */
+            parties: components["schemas"]["BeslutPartyLine"][];
+        };
+        BeslutPartyLine: {
+            party: string;
+            /** @description Ja, Nej, Avstår or Delad when every votering of the betänkande gives the same; Varierar when they differ; empty when no member cast a ballot */
+            partilinje: string;
+            /** @description Voteringar of the betänkande in which the party cast a ballot */
+            voteringar: number;
         };
         MotionListResponse: {
             data: components["schemas"]["MotionListRow"][];
@@ -3009,6 +3059,36 @@ export interface operations {
                     "application/json": components["schemas"]["VoteSummaryListResponse"];
                 };
             };
+        };
+    };
+    listBeslut: {
+        parameters: {
+            query?: {
+                state?: "decided" | "upcoming";
+                /** @description Utskott code, e.g. `SkU` */
+                utskott?: string;
+                /** @description Party, e.g. `M` */
+                party?: string;
+                limit?: number;
+                /** @description Opaque `nextCursor` of the previous page */
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of betänkanden */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BeslutListResponse"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
         };
     };
     listMotions: {

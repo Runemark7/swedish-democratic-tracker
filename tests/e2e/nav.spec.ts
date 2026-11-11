@@ -91,7 +91,7 @@ test.describe("routes the menu replaced", () => {
     await expect(page).toHaveURL(/\/beslut$/);
     await expect(page).toHaveTitle("Riksdagskollen – Beslut");
     await expect(beslut()).toHaveAttribute("aria-current", "page");
-    await expect(page.getByText(/Laddar omröstningar|Kunde inte ladda omröstningar/)).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Beslut" })).toBeVisible();
 
     await page.goto("/beslut");
     await expect(beslut()).toHaveAttribute("aria-current", "page");

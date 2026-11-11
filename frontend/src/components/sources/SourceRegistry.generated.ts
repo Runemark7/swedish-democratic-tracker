@@ -8,7 +8,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "kind": "api",
     "upstream": "https://data.riksdagen.se/dokumentlista/?doktyp=bet",
     "license": "Public domain — Sveriges riksdag",
-    "freshness": "dagligen (cron: fetch-betankanden @daily, högst 25 betänkanden per körning)",
+    "freshness": "dagligen (cron: fetch-betankanden @daily, högst 25 betänkanden per körning; sync-beslut-list @daily för listan)",
     "lastVerified": "Tue Nov 10 2026 01:00:00 GMT+0100 (Central European Standard Time)",
     "blurb": "Ett betänkande är utskottets förslag till riksdagen. Det delas in i förslagspunkter, och varje motions yrkanden avgörs i en förslagspunkt. Kammaren beslutar antingen genom acklamation (ingen omröstning) eller genom votering. Riksdagen publicerar betänkandet, varje punkts förslagstext, beslutstyp och, vid votering, votering-id.",
     "verificationStatus": "verified",

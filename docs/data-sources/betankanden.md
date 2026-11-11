@@ -4,12 +4,13 @@ name: Betänkanden och förslagspunkter (Riksdagen)
 kind: api
 upstream: https://data.riksdagen.se/dokumentlista/?doktyp=bet
 license: Public domain — Sveriges riksdag
-freshness: "dagligen (cron: fetch-betankanden @daily, högst 25 betänkanden per körning)"
+freshness: "dagligen (cron: fetch-betankanden @daily, högst 25 betänkanden per körning; sync-beslut-list @daily för listan)"
 last_verified: 2026-11-10
 verification_status: verified
 verification_notes: ""
 used_by:
   - /motioner/:riksmöte/:beteckning (betänkande, förslagspunkt, beslut och Partilinje per yrkande)
+  - /beslut (listan över betänkanden: kommande och fattade beslut, med filter)
 ---
 
 ## Vad det är
@@ -48,6 +49,7 @@ Reservationer, särskilda yttranden och "Utskottets ställningstagande" finns ba
   - `votering_sammanfattning_html` — raden som anger vad omröstningen gällde, t.ex. "Utskottets förslag mot reservation 12 (M)".
   - `vinnare` — vilket förslag som vann.
 - `dokumentlista.dokument` (`status`, `beslutsdag`, `beslutad`) — betänkandets beslutsstatus och beslutsdag. Läses vid varje visning av betänkandesidan, aldrig sparat, så att sidan inte hamnar efter när kammaren beslutar.
+- `dokumentlista` per riksmöte (`doktyp=bet&rm=2026/27&sz=200&sort=datum&sortorder=desc`) — en rad per betänkande med `organ`, `titel`, `status`, `beslutsdag`, `beslutad` och `datum`. Listan över beslut (`/beslut`) bygger på de här raderna. Till skillnad från betänkandesidan sparas de, i tabellen `beslut_listing`, och skrivs över vid varje körning; "avgjort" räknas ut från de sparade fälten med samma regel som betänkandesidan (`beslutad`, annars `status` och `beslutsdag`) och sparas aldrig som ett eget värde.
 - Motionens `dokforslag.forslag.behandlas_i` och `behandlas_i_punkt` (se källan Motioner).
 
 ## Begränsningar och kända problem
@@ -67,3 +69,6 @@ inlästa (eller är äldre än motionen som pekar på dem). Det går vidare näs
 För varje betänkande sparas förslagspunkterna och varje yrkande kopplas till den eller de
 punkter som avgjorde det. Att köra om jobbet ändrar inget. Vid votering visas Partilinje per
 parti enligt sajtens gemensamma definition; vid acklamation visas "Avgjord utan omröstning".
+
+## Listan över beslut
+Jobbet `sync-beslut-list` (dagligen) läser betänkandelistan för det pågående och det föregående riksmötet vid varje körning. Äldre riksmöten från mandatperioderna läses en gång, högst tre nya per körning, och hoppas sedan över. Att köra om jobbet ändrar inget; ett riksmöte skrivs först när alla dess sidor lästs. Listan visar kommande beslut först (närmast planerad beslutsdag först, utan dag sist) och därefter fattade beslut, senaste först. Partifiltret visar betänkanden som avgör en motion från partiet eller där partiet har en reservation; ett parti röstar i varje votering, så "har röstat" skulle inte avgränsa något. Partiets linje i listan är Partilinje per votering enligt den gemensamma definitionen; skiljer den sig mellan betänkandets voteringar visas "Varierar".
