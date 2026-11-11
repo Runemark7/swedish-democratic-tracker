@@ -47,7 +47,7 @@ export function PartyDetailPage() {
 
   const { data: loften, isLoading: loadingLoften, isError: loftenError } = useQuery({
     queryKey: ["loften", party],
-    queryFn: () => loftenApi.list(party),
+    queryFn: () => loftenApi.list({ party }),
     enabled: !!party && tab === "loften",
     staleTime: 60_000,
   });

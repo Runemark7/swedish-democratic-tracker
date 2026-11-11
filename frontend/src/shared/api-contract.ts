@@ -480,9 +480,60 @@ export interface paths {
         };
         /**
          * Public Löften (approved and archived), optionally for one party
-         * @description Proposed and struck Löften are never returned. Archived 2022 Löften carry no Löftesstatus; the schema has no such field.
+         * @description Proposed and struck Löften are never returned. Each carries its Löftesstatus, computed on read from Bekräftade kopplingar and the party's Partilinje (ADR-002). Archived Löften have status null.
          */
         get: operations["listLoften"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/loften/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Per party, how many public Löften have each Löftesstatus */
+        get: operations["getLoftenSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/loften/{id}/kopplingar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The Bekräftade kopplingar behind a Löfte's status */
+        get: operations["listLoefteKopplingar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/kopplingar/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One Bekräftad koppling at its stable id. Any other koppling is 404. */
+        get: operations["getKoppling"];
         put?: never;
         post?: never;
         delete?: never;
@@ -498,7 +549,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** One public Löfte. Archived 2022 Löften keep their old goal id. */
+        /** One public Löfte with Löftesstatus and its Bekräftade kopplingar. Archived 2022 Löften keep their old goal id. */
         get: operations["getLoefte"];
         put?: never;
         post?: never;
@@ -2462,6 +2513,64 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        LoefteMedStatus: components["schemas"]["Loefte"] & {
+            /**
+             * @description Löftesstatus. Null for archived Löften.
+             * @enum {string|null}
+             */
+            status: "Röstat för" | "Röstat emot" | "Blandat" | "Inte prövat än" | null;
+            /**
+             * Format: date-time
+             * @description When the confirmation that last changed the status was made; null if it never left Inte prövat än
+             */
+            statusChangedAt: string | null;
+            /** @description Which koppling changed it, and from what */
+            statusReason?: string;
+            /** @description Only on GET /loften/{id} */
+            kopplingar?: components["schemas"]["BekraftadKoppling"][];
+        };
+        BekraftadKoppling: {
+            id: number;
+            loefteId: number;
+            /**
+             * @description Stable site path
+             * @example /kopplingar/12
+             */
+            url: string;
+            voteringId: string;
+            beteckning: string;
+            forslagspunkt: string;
+            session: string;
+            betankande?: string;
+            voteDate?: string;
+            /**
+             * @description The ballot a person confirmed to be in the Löfte's direction
+             * @enum {string}
+             */
+            direction: "Ja" | "Nej";
+            /** @description The party's Partilinje; absent when no member cast a ballot */
+            partilinje?: string;
+            ja: number;
+            nej: number;
+            avstar: number;
+            /** @description Shown */
+            franvarande: number;
+            /** @enum {string} */
+            effect: "for" | "emot" | "ingen" | "utanfor";
+            /** @description Plain explanation of why the vote counts as it does */
+            explanation: string;
+            /** Format: date-time */
+            confirmedAt: string;
+        };
+        LoftePartySummary: {
+            party: string;
+            total: number;
+            for: number;
+            emot: number;
+            blandat: number;
+            inteProvat: number;
+            arkiv: number;
+        };
         Valmanifest: {
             id: number;
             party: string;
@@ -4334,6 +4443,10 @@ export interface operations {
         parameters: {
             query?: {
                 party?: string;
+                /** @description Utskott code, e.g. SkU */
+                utskott?: string;
+                /** @description Filter by Löftesstatus; "arkiv" selects archived Löften (no status) */
+                status?: "for" | "emot" | "blandat" | "inte-provat" | "arkiv";
             };
             header?: never;
             path?: never;
@@ -4347,16 +4460,82 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Loefte"][];
+                    "application/json": components["schemas"]["LoefteMedStatus"][];
                 };
             };
-            /** @description Invalid party */
+            /** @description Invalid party, utskott or status */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
+        };
+    };
+    getLoftenSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One row per party */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoftePartySummary"][];
+                };
+            };
+        };
+    };
+    listLoefteKopplingar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Bekräftade kopplingar, oldest confirmation first. Never föreslagna, avvisade or bortsorterade ones. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BekraftadKoppling"][];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getKoppling: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The koppling */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BekraftadKoppling"];
+                };
+            };
+            404: components["responses"]["NotFound"];
         };
     };
     getLoefte: {
@@ -4376,7 +4555,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Loefte"];
+                    "application/json": components["schemas"]["LoefteMedStatus"];
                 };
             };
             404: components["responses"]["NotFound"];
@@ -4399,7 +4578,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Loefte"][];
+                    "application/json": components["schemas"]["LoefteMedStatus"][];
                 };
             };
         };

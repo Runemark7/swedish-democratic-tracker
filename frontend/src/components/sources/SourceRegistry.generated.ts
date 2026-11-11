@@ -38,6 +38,18 @@ export const SOURCES: Record<string, SourceEntry> = {
     "verificationStatus": "verified",
     "verificationNotes": null
   },
+  "loften-valmanifest": {
+    "id": "loften-valmanifest",
+    "name": "Löften, kopplingar och Löftesstatus",
+    "kind": "synthesized",
+    "upstream": null,
+    "license": "Citat ur partiernas egna valmanifest, med källänk; röstdata ur Riksdagens öppna data",
+    "freshness": "löpande — Löften och kopplingar bekräftas av redaktören; Löftesstatus räknas om vid varje visning",
+    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "blurb": "Ett Löfte är ett konkret, prövbart uttalande i ett partis valmanifest. Varje Löfte har ett citat och en länk till originaldokumentet. En koppling knyter ett Löfte till en omröstning i riksdagen. Redaktören bekräftar varje koppling och anger vilken röst, Ja eller Nej, som går i Löftets riktning. Först då räknas kopplingen.",
+    "verificationStatus": "verified",
+    "verificationNotes": null
+  },
   "motions": {
     "id": "motions",
     "name": "Motioner (Riksdagen)",

@@ -714,13 +714,25 @@ paths:
       tags: [loften]
       summary: Public Löften (approved and archived), optionally for one party
       description: >
-        Proposed and struck Löften are never returned. Archived 2022 Löften
-        carry no Löftesstatus; the schema has no such field.
+        Proposed and struck Löften are never returned. Each carries its
+        Löftesstatus, computed on read from Bekräftade kopplingar and the
+        party's Partilinje (ADR-002). Archived Löften have status null.
       parameters:
         - name: party
           in: query
           schema:
             type: string
+        - name: utskott
+          in: query
+          description: Utskott code, e.g. SkU
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by Löftesstatus; "arkiv" selects archived Löften (no status)
+          schema:
+            type: string
+            enum: [for, emot, blandat, inte-provat, arkiv]
       responses:
         "200":
           description: Public Löften
@@ -729,15 +741,74 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Loefte"
+                  $ref: "#/components/schemas/LoefteMedStatus"
         "400":
-          description: Invalid party
+          description: Invalid party, utskott or status
+
+  /loften/summary:
+    get:
+      operationId: getLoftenSummary
+      tags: [loften]
+      summary: Per party, how many public Löften have each Löftesstatus
+      responses:
+        "200":
+          description: One row per party
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LoftePartySummary"
+
+  /loften/{id}/kopplingar:
+    get:
+      operationId: listLoefteKopplingar
+      tags: [loften]
+      summary: The Bekräftade kopplingar behind a Löfte's status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Bekräftade kopplingar, oldest confirmation first. Never föreslagna, avvisade or bortsorterade ones.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BekraftadKoppling"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /kopplingar/{id}:
+    get:
+      operationId: getKoppling
+      tags: [loften]
+      summary: One Bekräftad koppling at its stable id. Any other koppling is 404.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The koppling
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BekraftadKoppling"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /loften/{id}:
     get:
       operationId: getLoefte
       tags: [loften]
-      summary: One public Löfte. Archived 2022 Löften keep their old goal id.
+      summary: One public Löfte with Löftesstatus and its Bekräftade kopplingar. Archived 2022 Löften keep their old goal id.
       parameters:
         - name: id
           in: path
@@ -750,7 +821,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Loefte"
+                $ref: "#/components/schemas/LoefteMedStatus"
         "404":
           $ref: "#/components/responses/NotFound"
 
@@ -769,7 +840,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Loefte"
+                  $ref: "#/components/schemas/LoefteMedStatus"
 
   /valmanifest:
     get:
@@ -3197,6 +3268,60 @@ components:
         visibility: { type: string, enum: [approved, archived] }
         archived: { type: boolean }
         createdAt: { type: string, format: date-time }
+
+    LoefteMedStatus:
+      allOf:
+        - $ref: "#/components/schemas/Loefte"
+        - type: object
+          required: [status, statusChangedAt]
+          properties:
+            status:
+              type: string
+              nullable: true
+              enum: ["Röstat för", "Röstat emot", "Blandat", "Inte prövat än"]
+              description: Löftesstatus. Null for archived Löften.
+            statusChangedAt: { type: string, format: date-time, nullable: true, description: "When the confirmation that last changed the status was made; null if it never left Inte prövat än" }
+            statusReason: { type: string, description: "Which koppling changed it, and from what" }
+            kopplingar:
+              type: array
+              description: Only on GET /loften/{id}
+              items:
+                $ref: "#/components/schemas/BekraftadKoppling"
+
+    BekraftadKoppling:
+      type: object
+      required: [id, loefteId, url, voteringId, beteckning, forslagspunkt, session, direction, ja, nej, avstar, franvarande, effect, explanation, confirmedAt]
+      properties:
+        id: { type: integer }
+        loefteId: { type: integer }
+        url: { type: string, description: Stable site path, example: /kopplingar/12 }
+        voteringId: { type: string }
+        beteckning: { type: string }
+        forslagspunkt: { type: string }
+        session: { type: string }
+        betankande: { type: string }
+        voteDate: { type: string }
+        direction: { type: string, enum: [Ja, Nej], description: "The ballot a person confirmed to be in the Löfte's direction" }
+        partilinje: { type: string, description: "The party's Partilinje; absent when no member cast a ballot" }
+        ja: { type: integer }
+        nej: { type: integer }
+        avstar: { type: integer }
+        franvarande: { type: integer, description: Shown, never counted }
+        effect: { type: string, enum: [for, emot, ingen, utanfor] }
+        explanation: { type: string, description: Plain explanation of why the vote counts as it does }
+        confirmedAt: { type: string, format: date-time }
+
+    LoftePartySummary:
+      type: object
+      required: [party, total, for, emot, blandat, inteProvat, arkiv]
+      properties:
+        party: { type: string }
+        total: { type: integer }
+        for: { type: integer }
+        emot: { type: integer }
+        blandat: { type: integer }
+        inteProvat: { type: integer }
+        arkiv: { type: integer }
 
     Valmanifest:
       type: object
