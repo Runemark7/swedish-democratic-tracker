@@ -5,6 +5,7 @@ import { PartyBadge, TopicTag, SpecificityBadge } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useSpeechesByPolitician, useDocument } from "@/hooks/useDemocracy";
+import { QuestionsSection } from "@/features/questions/QuestionsSection";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import type { components } from "@/shared/api-contract";
 import type { Speech } from "@/features/speeches/api";
@@ -509,7 +510,16 @@ export function PoliticianPage() {
 
       {/* ── Debatter ────────────────────────────────────────────────── */}
       {activeTab === "debatter" && (
-        <DebatterPanel speeches={speeches ?? []} loading={loadingSpeeches} />
+        <>
+          <QuestionsSection
+            path={`/politicians/${encodeURIComponent(id)}/questions`}
+            queryKey={["politician-questions", id]}
+            heading="Frågor och interpellationer"
+            empty="Inga frågor eller interpellationer registrerade."
+            showRole
+          />
+          <DebatterPanel speeches={speeches ?? []} loading={loadingSpeeches} />
+        </>
       )}
 
       {/* ── Ämnen ───────────────────────────────────────────────────── */}

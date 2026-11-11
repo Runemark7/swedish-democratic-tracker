@@ -1,0 +1,21 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2022/23",
+  "parti": "MP",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "none",
+ "note": "Recorded 2026-11-11 per member (iid) because the full party response is too large to record from this machine; reduced to the rows of the interpellation 2022/23:401 debate. Parties with no recording here are empty. (empty: not recorded)",
+ "body": {
+  "anforandelista": {
+   "@antal": "0",
+   "anforande": []
+  }
+ }
+}

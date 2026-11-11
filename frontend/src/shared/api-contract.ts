@@ -396,6 +396,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/questions/coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What Riksdagen lists per riksmöte and kind of fråga, and how many we hold */
+        get: operations["getQuestionCoverage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/questions/{kind}/{riksmote}/{beteckning}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One skriftlig fråga (with its svar) or interpellation
+         * @description Includes the motions it is linked to with the rule behind each link, and for an interpellation the anföranden of its debate (found by avsnittsrubrik and the day it was answered).
+         */
+        get: operations["getQuestion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/politicians/{id}/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Frågor and interpellationer a member asked or, for a minister, answered */
+        get: operations["listMemberQuestions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/motions/{riksmote}/{beteckning}/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Frågor and interpellationer linked to a motion
+         * @description A link exists only when Riksdagen's reference points at the motion (`riksdagen-reference`) or the question text cites its beteckning (`cited-beteckning`). A motion named only in prose is not linked.
+         */
+        get: operations["listMotionQuestions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/motions": {
         parameters: {
             query?: never;
@@ -1248,6 +1322,61 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        QuestionPerson: {
+            id: string;
+            name: string;
+            party: string;
+        };
+        QuestionItem: {
+            dokId: string;
+            /** @enum {string} */
+            kind: "fraga" | "interpellation";
+            riksmote: string;
+            beteckning: string;
+            title: string;
+            /** Format: date-time */
+            askedDate?: string | null;
+            status: string;
+            asker: components["schemas"]["QuestionPerson"];
+            addressed: components["schemas"]["QuestionPerson"];
+            answerer: components["schemas"]["QuestionPerson"];
+            /** Format: date-time */
+            answerDate?: string | null;
+            answerDokId: string;
+            /** @enum {string} */
+            role?: "asker" | "answerer";
+            /** @enum {string} */
+            rule?: "riksdagen-reference" | "cited-beteckning";
+            sourceUrl: string;
+        };
+        QuestionDetail: components["schemas"]["QuestionItem"] & {
+            text?: string;
+            motions?: {
+                dokId?: string;
+                riksmote?: string;
+                beteckning?: string;
+                title?: string;
+                rule?: string;
+            }[];
+            debate?: {
+                speechId?: number;
+                dokId?: string;
+                politicianId?: string;
+                name?: string;
+                party?: string;
+                /** Format: date-time */
+                date?: string;
+                excerpt?: string;
+            }[];
+        };
+        QuestionCoverage: {
+            riksmote?: string;
+            kind?: string;
+            expected?: number;
+            held?: number;
+            /** Format: date-time */
+            lastEnumeratedAt?: string;
+        };
         MotionCoverage: {
             /** @example 2017/18 */
             riksmote: string;
@@ -3242,6 +3371,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FrontPageResponse"];
+                };
+            };
+        };
+    };
+    getQuestionCoverage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Coverage rows */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        coverage?: components["schemas"]["QuestionCoverage"][];
+                    };
+                };
+            };
+        };
+    };
+    getQuestion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: "fraga" | "interpellation";
+                /** @description URL-encoded, e.g. `2022%2F23` */
+                riksmote: string;
+                beteckning: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The question */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionDetail"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    listMemberQuestions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Questions, newest first; `role` is `asker` or `answerer` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        questions?: components["schemas"]["QuestionItem"][];
+                    };
+                };
+            };
+        };
+    };
+    listMotionQuestions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                riksmote: string;
+                beteckning: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Linked questions, each with its `rule` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        questions?: components["schemas"]["QuestionItem"][];
+                    };
                 };
             };
         };

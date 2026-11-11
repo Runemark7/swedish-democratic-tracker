@@ -1,0 +1,142 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "fr",
+  "rm": "2022/23",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=fr&rm=2022/23&utformat=json&sz=200&p=4&sort=datum&sortorder=desc",
+ "note": "Recorded 2026-11-11 from data.riksdagen.se. Live listing @traffar=979. Only HA11339 is kept, verbatim, and moved to page 1 (it was on live page 4).",
+ "body": {
+  "dokumentlista": {
+   "@version": "3.9.0",
+   "@sida": "1",
+   "@traffar": "979",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "dokument": [
+    {
+     "traff": "641",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2023-02-14",
+     "id": "ha11339",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2023-02-14",
+     "systemdatum": "2023-02-22 09:58:45",
+     "undertitel": "Rickard Nordin (C)",
+     "kalla": "Frips",
+     "kall_id": "0e76c4ac-fc83-4bca-88e9-b706f9deb725",
+     "dok_id": "HA11339",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/HA11339.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/HA11339.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Virtuella varors beskattning",
+     "rm": "2022/23",
+     "organ": "C",
+     "relaterat_id": "",
+     "doktyp": "fr",
+     "typ": "fr",
+     "subtyp": "",
+     "beteckning": "339",
+     "tempbeteckning": "C",
+     "nummer": "339",
+     "status": "Besvarad",
+     "score": "276",
+     "sokdata": {
+      "titel": "Virtuella varors beskattning",
+      "undertitel": "Skriftlig fråga 2022/23:339 av Rickard Nordin (C)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t\n\t\t\t\t\t\t\t\t<dt>Inlämnad</dt> <dd>2023-02-10</dd><dt>Besvarare</dt>  <dd>Finansminister Elisabeth Svantesson (M)</dd>\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Fråga 2022/23:339 Virtuella varors beskattning\n av  Rickard Nordin (C)\n till Finansminister Elisabeth Svantesson (M)\n Den som i dag, som företag, köper fysiska produkter, exempelvis en bil, från en privatperson kan dra av momsen från denna vid inköp, precis som moms sedan betalas när produkten säljs vidare. Det handlar",
+     "notisrubrik": "Virtuella varors beskattning",
+     "notis": "Fråga 2022/23:339 Virtuella varors beskattning\n av  Rickard Nordin (C)\n till Finansminister Elisabeth Svantesson (M)\n Den som i dag, som företag, köper fysiska produkter, exempelvis en bil, från en privatperson kan dra av momsen från denna vid inköp, precis som moms sedan betalas när produkten säljs vidare. Det handlar",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Rickard Nordin",
+        "partibet": "C",
+        "intressent_id": "0132818093422"
+       },
+       {
+        "roll": "besvaradav",
+        "namn": "Finansminister Elisabeth Svantesson",
+        "partibet": "M",
+        "intressent_id": "0899112324519"
+       },
+       {
+        "roll": "stalldtill",
+        "namn": "Finansminister Elisabeth Svantesson",
+        "partibet": "M",
+        "intressent_id": "0899112324519"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "pdf",
+        "namn": "fr_202223__339.pdf",
+        "storlek": "89773",
+        "url": "https://data.riksdagen.se/fil/3587419D-F76D-4886-82CA-B1F7986673B8"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Skriftlig fråga",
+     "dokumentnamn": "Skriftlig fråga"
+    }
+   ]
+  }
+ }
+}

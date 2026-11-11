@@ -51,6 +51,10 @@ import (
 	partiesHTTP "riksdagskollen/internal/parties/adapters/http"
 	partiesPG "riksdagskollen/internal/parties/adapters/postgres"
 	"riksdagskollen/internal/politicians"
+	"riksdagskollen/internal/questions"
+	questionsHTTP "riksdagskollen/internal/questions/adapters/http"
+	questionsPG "riksdagskollen/internal/questions/adapters/postgres"
+	questionsRD "riksdagskollen/internal/questions/adapters/riksdagen"
 	politiciansHTTP "riksdagskollen/internal/politicians/adapters/http"
 	politiciansPG "riksdagskollen/internal/politicians/adapters/postgres"
 	politiciansRD "riksdagskollen/internal/politicians/adapters/riksdagen"
@@ -122,6 +126,9 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	motionSvc := motions.NewService(motionsPG.NewRepository(db), motionsRD.NewClientWithBaseURL(riksdagenBaseURL))
 	motionSvc.SetNow(clk.Now)
 	motionHandler := motionsHTTP.NewHandler(motionSvc)
+
+	questionSvc := questions.NewService(questionsPG.NewRepository(db), questionsRD.NewClientWithBaseURL(riksdagenBaseURL))
+	questionHandler := questionsHTTP.NewHandler(questionSvc)
 
 	goalRepo := goalsPG.NewRepository(db)
 	goalSvc := goals.NewService(goalRepo)
@@ -211,6 +218,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		polHandler.Routes(api)
 		voteHandler.Routes(api)
 		motionHandler.Routes(api)
+		questionHandler.Routes(api)
 		speechHandler.Routes(api)
 		goalsHandler.Routes(api)
 		promisesHandler.Routes(api)
@@ -267,6 +275,12 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	beslutListWorker.SetNow(clk.Now)
 	if err := sched.RegisterSync("@daily", &beslutListWorker); err != nil {
 		slog.Error("failed to register sync-beslut-list worker", "error", err)
+		return nil, err
+	}
+	questionsWorker := workers.NewQuestionsWorker(questionSvc, ingestionPG.NewMandateRepository(db))
+	questionsWorker.SetNow(clk.Now)
+	if err := sched.RegisterSync("@daily", &questionsWorker); err != nil {
+		slog.Error("failed to register fetch-questions worker", "error", err)
 		return nil, err
 	}
 	betankandenWorker := workers.NewBetankandenWorker(motionSvc)

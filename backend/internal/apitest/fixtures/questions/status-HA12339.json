@@ -1,0 +1,95 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HA12339.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HA12339.json",
+ "note": "Recorded 2026-11-11 from data.riksdagen.se, verbatim.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5167507",
+    "dok_id": "HA12339",
+    "rm": "2022/23",
+    "beteckning": "339",
+    "typ": "frs",
+    "subtyp": "",
+    "doktyp": "frs",
+    "typrubrik": "Svar på skriftlig fråga 2022/23:339 besvarad av Finansminister Elisabeth Svantesson (M)",
+    "dokumentnamn": "Svar på skriftlig fråga",
+    "debattnamn": "Svar på skriftlig fråga",
+    "tempbeteckning": "",
+    "organ": "",
+    "mottagare": "Finansminister Elisabeth Svantesson (M)",
+    "nummer": "339",
+    "slutnummer": "0",
+    "datum": "2023-02-22 00:00:00",
+    "systemdatum": "2023-02-22 09:58:50",
+    "publicerad": "2023-02-22 00:00:00",
+    "titel": "Virtuella varors beskattning",
+    "subtitel": "Finansminister Elisabeth Svantesson (M)",
+    "status": "Inkommen",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Frips",
+    "sourceid": "",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/HA12339/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/HA12339",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/HA12339",
+    "html": "  Fi2023/  00625  Finansdepartementet  Finansministern  Till riksdagen  <br />\r\n<div class=\"dok\"><style>\r\ndiv.dok {max-width: 520px;}\r\ntable {max-width:520px;}\r\ntable.border {\r\n\tcolor:#333333;\r\n\tborder-width: 1px;\r\n\tborder-color: #666666;\r\n\tborder-collapse: collapse;\r\n}\r\ntable.border th {\r\n\tborder-width: 1px;\r\n\tpadding: 1px;\r\n\tborder-style: solid;\r\n\tborder-color: #666666;\r\n\tbackground-color: #999999;\r\n}\r\ntable.border td {\r\n\tborder-width: 1px;\r\n\tpadding: 1px;\r\n\tborder-style: solid;\r\n\tborder-color: #666666;\r\n\tbackground-color: #ffffff;\r\n}\r\n\t\r\n\t.webbtabell { \r\n\t\tmargin-top:10px;\r\n\t}\r\n\t\r\n\tth, td { \r\n\t\tborder-collapse:collapse;\r\n\t}\r\n\t\r\n\tli.wdlist, p  { \r\n\t\tfont-family:verdana;\r\n\t\tzfont-size:90%;\r\n\t}\r\n\t\r\n\th1 {font-size:105%;}\r\n\th2 {font-size:100%;}\r\n\th3 {font-size:95%;}\r\n\t\r\n\t.bildtext { font-family: monospace; }\r\n\t\r\n\t.bold {font-weight:bold;}\r\n\t.italic {font-style:italic;}\r\n\t.underline {text-decoration:underline;}\r\n\t.superscript  {vertical-align: super;font-size:70%;}\r\n\t.subscript {vertical-align: sub;font-size:70%;}\r\n\t.strike {text-decoration:line-through;}\r\n\t.level0 {text-indent:5px;}\r\n\t.level1 {text-indent:20px;}\r\n\t.level2 {text-indent:35px;}\r\n\t.level3 {text-indent:50px;}\r\n\t\r\n </style><div class=\"body\"><p>Svar på fråga 2022/23:339 av Rickard Nordin (C)<br />Virtuella varors beskattning</p>\r\n\r\n\t\t\t<p>Rickard Nordin har frågat mig om regeringen kommer att tillsätta en utredning för att se över virtuella varors beskattning i enlighet med en motion från 2017.</p>\r\n\r\n\t\t\t<p>Skatteverket har bedömt att försäljning av virtuella varor är en omsättning av en elektronisk tjänst och därmed att reglerna för vinstmarginalbeskattning inte är tillämpliga. Skatteverket anser vidare, i ett ställningstagande den 30 januari 2017, att deltagare i onlinespel som omsätter elektroniska tjänster till andra deltagare i allmänhet inte bedriver en ekonomisk verksamhet. I sådana fall föreligger ingen momsplikt. Det gäller oavsett om försäljningen sker i eller utanför onlinespelet. Det kan enligt Skatteverket dock i vissa enstaka fall finnas deltagare som har en avsikt att sälja elektroniska tjänster med en kontinuitet och frekvens som är jämförbar med hur en motsvarande ekonomisk verksamhet vanligtvis bedrivs. Mervärdesskatt ska då redovisas om omsättningen är gjord inom landet. Det innebär också i allmänhet att rätt till avdrag finns för sådan mervärdesskatt som tagits ut på deltagarnas inköp.</p>\r\n\r\n\t\t\t<p>Reglerna om mervärdesskatt är i hög grad harmoniserade inom EU. Av mervärdesskattedirektivet framgår bland annat definitionerna av vad som är en vara respektive en tjänst i mervärdesskattehänseende. Vad som är att bedöma som en ekonomisk verksamhet följer också av mervärdesskattedirektivet och av omfattande praxis från EU-domstolen. </p>\r\n\r\n\t\t\t<p>Det finns inget beslut om att tillsätta en utredning för att se över virtuella varors beskattning.</p>\r\n\r\n\t\t\t<p>Stockholm den 22 februari 2023</p>\r\n\r\n\t\t\t<p>Elisabeth Svantesson</p>\r\n\r\n\t\t\t</div></div>"
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0132818093422",
+      "namn": "Rickard Nordin",
+      "partibet": "C",
+      "ordning": "1",
+      "roll": "fragestallare"
+     },
+     {
+      "intressent_id": "0899112324519",
+      "namn": "Finansminister Elisabeth Svantesson",
+      "partibet": "M",
+      "ordning": "1",
+      "roll": "besvaradav"
+     },
+     {
+      "intressent_id": "0899112324519",
+      "namn": "Finansminister Elisabeth Svantesson",
+      "partibet": "M",
+      "ordning": "1",
+      "roll": "stalldtill"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "HA12339",
+      "subtitel": "Finansminister Elisabeth Svantesson (M)",
+      "filnamn": "frs_202223__339.docx",
+      "filstorlek": "68743",
+      "filtyp": "docx",
+      "titel": "Virtuella varors beskattning",
+      "fil_url": "https://data.riksdagen.se/fil/D5E5AFC8-2889-4FB3-8704-0A636F19E163"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": {
+     "referenstyp": "fråga",
+     "uppgift": "skriftlig fråga 2022/23:339 Virtuella varors beskattning",
+     "ref_dok_id": "HA11339",
+     "ref_dok_typ": "fr",
+     "ref_dok_rm": "2022/23",
+     "ref_dok_bet": "339",
+     "ref_dok_titel": "Virtuella varors beskattning",
+     "ref_dok_subtitel": "Finansminister Elisabeth Svantesson (M)",
+     "ref_dok_subtyp": "",
+     "ref_dok_dokumentnamn": "Skriftlig fråga"
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,156 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HA11339.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HA11339.json",
+ "note": "Recorded 2026-11-11 from data.riksdagen.se, verbatim.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5166509",
+    "dok_id": "HA11339",
+    "rm": "2022/23",
+    "beteckning": "339",
+    "typ": "fr",
+    "subtyp": "",
+    "doktyp": "fr",
+    "typrubrik": "Skriftlig fråga 2022/23:339 av Rickard Nordin (C)",
+    "dokumentnamn": "Skriftlig fråga",
+    "debattnamn": "Skriftlig fråga",
+    "tempbeteckning": "C",
+    "organ": "C",
+    "mottagare": "Finansminister Elisabeth Svantesson (M)",
+    "nummer": "339",
+    "slutnummer": "0",
+    "datum": "2023-02-14 00:00:00",
+    "systemdatum": "2023-02-22 09:58:45",
+    "publicerad": "2023-02-14 00:00:00",
+    "titel": "Virtuella varors beskattning",
+    "subtitel": "Rickard Nordin (C)",
+    "status": "Besvarad",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "Frips",
+    "sourceid": "0e76c4ac-fc83-4bca-88e9-b706f9deb725",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/HA11339/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/HA11339",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/HA11339",
+    "html": "<h2>Fråga 2022/23:339 Virtuella varors beskattning</h2>\r\n<p class=\"Av\">av <i>Rickard Nordin (C)</i></p>\r\n<p class=\"Till\">till Finansminister Elisabeth Svantesson (M)</p>\r\n<p>&nbsp;</p>\r\n<p>Den som i&#160;dag, som företag, köper fysiska produkter, exempelvis en bil, från en privatperson&#160;kan dra av momsen från denna vid inköp, precis som moms sedan betalas när produkten säljs vidare. Det handlar helt enkelt om att inte bli beskattad dubbelt och är en grundläggande princip i momsbeskattningen.</p>\r\n<p>Detta gäller dock inte digitala tjänster och produkter. Då krävs det att inköpet görs av ett bolag för att momsen ska få dras av. Detta skapar stora problem för den som exempelvis handlar med digitala produkter i ett spel, exempelvis så kallade skins. Detta är i dag en stor marknad där olika skins kan kosta alltifrån några kronor till flera tusenlappar. Att behöva betala full moms för en sådan transaktion blir ekonomiskt ogörligt och leder till en omfattande svarthandel eftersom prisskillnaden blir alltför stor att göra det lagligt.</p>\r\n<p>Problemet är inte nytt utan uppmärksammades i en kommittémotion från Moderaterna redan 2017. Där yrkas att riksdagen ställer sig bakom det som anförs i motionen om att tillsätta en utredning för att se över den skatterättsliga bedömningen av handel med virtuella varor och tillkännager detta för regeringen.</p>\r\n<p>En del av motiveringen lyder&#58; Försäljning av virtuella varor är ett exempel på hur skattelagstiftningen behöver ses över för att tillvarata den digitala ekonomins potential för att skapa tillväxt och jobb. Ungdomar som växt upp i en digitaliserad värld och med en vilja att starta ett företag möter i dag alltför stora hinder då vår skattelagstiftning inte hänger med i utvecklingen. Regeringen bör därför tillsätta en utredning för att se över den skatterättsliga aspekten av handel med både nya och begagnade virtuella varor för att kartlägga hur vissa av dessa hinder skulle kunna tas bort.</p>\r\n<p>Med tanke på att situationen inte förbättrats och att Moderaterna nu ansvarar för frågorna, motionens huvudförfattare Maria Malmer Stenergard sitter till och med i regeringen, så ökar ju helt klart förväntningarna på att regeringen faktiskt ska tillsätta ovan nämnda utredning.</p>\r\n<p>Min fråga till finansminister Elisabeth Svantesson blir därför&#58;</p><p>&#160;</p>\r\n<p>Kommer regeringen att tillsätta en utredning för att se över virtuella varors beskattning i enlighet med&#160;motionen från 2017?</p>"
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "INL",
+      "namn": "Inlämnad",
+      "datum": "2023-02-10 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "Överlämnad",
+      "namn": "Överlämnad",
+      "datum": "2023-02-14 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "ANM",
+      "namn": "Anmäld",
+      "datum": "2023-02-15 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "BESV",
+      "namn": "Svarsdatum",
+      "datum": "2023-02-22 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "BESV",
+      "namn": "Besvarad",
+      "datum": "2023-02-22 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     },
+     {
+      "kod": "SISVA",
+      "namn": "Sista svarsdatum",
+      "datum": "2023-02-22 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": "behandling"
+     }
+    ]
+   },
+   "dokintressent": {
+    "intressent": [
+     {
+      "intressent_id": "0132818093422",
+      "namn": "Rickard Nordin",
+      "partibet": "C",
+      "ordning": "1",
+      "roll": "undertecknare"
+     },
+     {
+      "intressent_id": "0899112324519",
+      "namn": "Finansminister Elisabeth Svantesson",
+      "partibet": "M",
+      "ordning": "1",
+      "roll": "besvaradav"
+     },
+     {
+      "intressent_id": "0899112324519",
+      "namn": "Finansminister Elisabeth Svantesson",
+      "partibet": "M",
+      "ordning": "1",
+      "roll": "stalldtill"
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": {
+     "kod": "statustext",
+     "namn": "statustext",
+     "text": "Frågan är besvarad",
+     "dok_id": "HA11339",
+     "systemdatum": "2023-02-23 00:05:02"
+    }
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "HA11339",
+      "subtitel": "Rickard Nordin (C)",
+      "filnamn": "fr_202223__339.pdf",
+      "filstorlek": "89773",
+      "filtyp": "pdf",
+      "titel": "Virtuella varors beskattning",
+      "fil_url": "https://data.riksdagen.se/fil/3587419D-F76D-4886-82CA-B1F7986673B8"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": {
+     "referenstyp": "frågesvar",
+     "uppgift": "Svar på skriftlig fråga 2022/23:339 Virtuella varors beskattning",
+     "ref_dok_id": "HA12339",
+     "ref_dok_typ": "frs",
+     "ref_dok_rm": "2022/23",
+     "ref_dok_bet": "339",
+     "ref_dok_titel": "Virtuella varors beskattning",
+     "ref_dok_subtitel": "Finansminister Elisabeth Svantesson (M)",
+     "ref_dok_subtyp": "",
+     "ref_dok_dokumentnamn": "Svar på skriftlig fråga"
+    }
+   }
+  }
+ }
+}

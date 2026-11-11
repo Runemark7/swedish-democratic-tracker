@@ -1,0 +1,258 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "ip",
+  "rm": "2022/23",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=ip&rm=2022/23&utformat=json&sz=200&p=1&sort=datum&sortorder=desc",
+ "note": "Recorded 2026-11-11 from data.riksdagen.se. Live listing @traffar=432. Only HA10401 is kept, verbatim, moved to page 1 (live page 1).",
+ "body": {
+  "dokumentlista": {
+   "@version": "3.9.0",
+   "@sida": "1",
+   "@traffar": "432",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "dokument": [
+    {
+     "traff": "32",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2023-06-14",
+     "id": "ha10401",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2023-06-16",
+     "systemdatum": "2023-10-03 15:32:56",
+     "undertitel": "Åsa Eriksson (S)",
+     "kalla": "Frips",
+     "kall_id": "42e7543c-d813-4ca4-9e1d-017a397b30a8",
+     "dok_id": "HA10401",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/HA10401.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/HA10401.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "sv",
+     "url": "",
+     "relurl": "",
+     "titel": "Vab för diabetesföräldrar",
+     "rm": "2022/23",
+     "organ": "S",
+     "relaterat_id": "",
+     "doktyp": "ip",
+     "typ": "ip",
+     "subtyp": "",
+     "beteckning": "401",
+     "tempbeteckning": "S",
+     "nummer": "401",
+     "status": "Besvarad",
+     "score": "304",
+     "sokdata": {
+      "titel": "Vab för diabetesföräldrar",
+      "undertitel": "Interpellation 2022/23:401 av Åsa Eriksson (S)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t\n\t\t\t\t\t\t\t\t<dt>Inlämnad</dt> <dd>2023-06-13</dd><dt>Besvarare</dt>  <dd>Statsrådet Anna Tenje (M)</dd>\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Interpellation 2022/23:401 Vab för diabetesföräldrar\n av  Åsa Eriksson (S)\n till Statsrådet Anna Tenje (M)\n En av fem vårdnadshavare till barn med diabetes uppger att de fått vikariera som resurs i skolan en del i flera månader utan ersättning från Försäkringskassan. Det skapar en ekonomisk press på en redan utsatt grupp",
+     "notisrubrik": "Vab för diabetesföräldrar",
+     "notis": "Interpellation 2022/23:401 Vab för diabetesföräldrar\n av  Åsa Eriksson (S)\n till Statsrådet Anna Tenje (M)\n En av fem vårdnadshavare till barn med diabetes uppger att de fått vikariera som resurs i skolan en del i flera månader utan ersättning från Försäkringskassan. Det skapar en ekonomisk press på en redan utsatt grupp",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Åsa Eriksson",
+        "partibet": "S",
+        "intressent_id": "0296384583518"
+       },
+       {
+        "roll": "besvaradav",
+        "namn": "Statsrådet Anna Tenje",
+        "partibet": "M",
+        "intressent_id": "0476336341120"
+       },
+       {
+        "roll": "stalldtill",
+        "namn": "Statsrådet Anna Tenje",
+        "partibet": "M",
+        "intressent_id": "0476336341120"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "pdf",
+        "namn": "ip_202223__401.pdf",
+        "storlek": "88122",
+        "url": "https://data.riksdagen.se/fil/14FE87A0-6C2D-4348-9183-496BB002628A"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument",
+       "webbtv"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "2023-08-31",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "1274",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": {
+      "anforande": [
+       {
+        "parti": "M",
+        "parent_ardome_id": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2",
+        "tumnagel": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "tumnagel_stor": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "ardome_id": "D8CCA176-54D4-4F63-A966-061225F4CDD2",
+        "thumbnail_url": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "anf_nummer": "1",
+        "anf_datumtid": "2023-08-31 12:02:34",
+        "anf_klockslag": "12:02:34",
+        "anf_sekunder": "138",
+        "talare": "Statsrådet Anna Tenje (M)",
+        "video_url": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2#30",
+        "intressent_id": "0449bb63-ccd3-422c-acb0-6e08570b9ce9",
+        "anf_text": ""
+       },
+       {
+        "parti": "S",
+        "parent_ardome_id": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2",
+        "tumnagel": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "tumnagel_stor": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "ardome_id": "0CFFBC7C-20FB-49AF-AE23-47FC160F70A4",
+        "thumbnail_url": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "anf_nummer": "2",
+        "anf_datumtid": "2023-08-31 12:05:00",
+        "anf_klockslag": "12:05:00",
+        "anf_sekunder": "220",
+        "talare": "Åsa Eriksson (S)",
+        "video_url": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2#176",
+        "intressent_id": "473cc883-b475-42fe-8553-4f1a6bd17a54",
+        "anf_text": ""
+       },
+       {
+        "parti": "M",
+        "parent_ardome_id": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2",
+        "tumnagel": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "tumnagel_stor": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "ardome_id": "3C5F8AD0-E667-4FFF-B677-E78DAC6B479D",
+        "thumbnail_url": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "anf_nummer": "3",
+        "anf_datumtid": "2023-08-31 12:08:40",
+        "anf_klockslag": "12:08:40",
+        "anf_sekunder": "205",
+        "talare": "Statsrådet Anna Tenje (M)",
+        "video_url": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2#396",
+        "intressent_id": "0449bb63-ccd3-422c-acb0-6e08570b9ce9",
+        "anf_text": ""
+       },
+       {
+        "parti": "S",
+        "parent_ardome_id": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2",
+        "tumnagel": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "tumnagel_stor": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "ardome_id": "E2DAD642-C337-4459-8BB5-938BBF71F0F8",
+        "thumbnail_url": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "anf_nummer": "4",
+        "anf_datumtid": "2023-08-31 12:12:05",
+        "anf_klockslag": "12:12:05",
+        "anf_sekunder": "234",
+        "talare": "Åsa Eriksson (S)",
+        "video_url": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2#601",
+        "intressent_id": "473cc883-b475-42fe-8553-4f1a6bd17a54",
+        "anf_text": ""
+       },
+       {
+        "parti": "M",
+        "parent_ardome_id": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2",
+        "tumnagel": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "tumnagel_stor": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "ardome_id": "D4E7E1C4-FE30-4309-96F4-A1C4659C7255",
+        "thumbnail_url": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "anf_nummer": "5",
+        "anf_datumtid": "2023-08-31 12:15:59",
+        "anf_klockslag": "12:15:59",
+        "anf_sekunder": "182",
+        "talare": "Statsrådet Anna Tenje (M)",
+        "video_url": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2#835",
+        "intressent_id": "0449bb63-ccd3-422c-acb0-6e08570b9ce9",
+        "anf_text": ""
+       },
+       {
+        "parti": "S",
+        "parent_ardome_id": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2",
+        "tumnagel": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "tumnagel_stor": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "ardome_id": "234BB815-4A36-466B-BFE8-9E4CB72D8E45",
+        "thumbnail_url": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "anf_nummer": "6",
+        "anf_datumtid": "2023-08-31 12:19:01",
+        "anf_klockslag": "12:19:01",
+        "anf_sekunder": "130",
+        "talare": "Åsa Eriksson (S)",
+        "video_url": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2#1017",
+        "intressent_id": "473cc883-b475-42fe-8553-4f1a6bd17a54",
+        "anf_text": ""
+       },
+       {
+        "parti": "M",
+        "parent_ardome_id": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2",
+        "tumnagel": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "tumnagel_stor": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "ardome_id": "803E20D3-B02F-475C-B680-00BE3E30C2F6",
+        "thumbnail_url": "https://mhdownload.riksdagen.se/posterframe/2442308310035690521.jpg",
+        "anf_nummer": "7",
+        "anf_datumtid": "2023-08-31 12:21:11",
+        "anf_klockslag": "12:21:11",
+        "anf_sekunder": "118",
+        "talare": "Statsrådet Anna Tenje (M)",
+        "video_url": "AFB10E38-4BA0-4A43-A4EA-EE33E24C1AE2#1147",
+        "intressent_id": "0449bb63-ccd3-422c-acb0-6e08570b9ce9",
+        "anf_text": ""
+       }
+      ]
+     },
+     "debattnamn": "Interpellationsdebatt",
+     "dokumentnamn": "Interpellation"
+    }
+   ]
+  }
+ }
+}

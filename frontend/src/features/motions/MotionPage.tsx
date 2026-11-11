@@ -7,6 +7,7 @@ import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { VotedAlternative, Reasoning, Reservations } from "./DecisionParts";
 import { Debate } from "./Debate";
+import { QuestionsSection } from "@/features/questions/QuestionsSection";
 
 function Notice({ children }: { children: React.ReactNode }) {
   return (
@@ -243,6 +244,13 @@ export function MotionPage() {
           Läs motionen hos Riksdagen ↗
         </a>
       </p>
+      <QuestionsSection
+        path={`/motions/${encodeURIComponent(riksmote)}/${encodeURIComponent(beteckning)}/questions`}
+        queryKey={["motion-questions", riksmote, beteckning]}
+        heading="Frågor och interpellationer"
+        empty="Inga frågor eller interpellationer är kopplade till motionen. En koppling görs bara när Riksdagen pekar ut motionen eller frågan anger dess beteckning."
+        showRule
+      />
     </article>
   );
 }

@@ -536,6 +536,88 @@ paths:
               schema:
                 $ref: "#/components/schemas/FrontPageResponse"
 
+  /questions/coverage:
+    get:
+      operationId: getQuestionCoverage
+      tags: [motions]
+      summary: What Riksdagen lists per riksmöte and kind of fråga, and how many we hold
+      responses:
+        "200":
+          description: Coverage rows
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  coverage:
+                    type: array
+                    items: { $ref: "#/components/schemas/QuestionCoverage" }
+
+  /questions/{kind}/{riksmote}/{beteckning}:
+    get:
+      operationId: getQuestion
+      tags: [motions]
+      summary: One skriftlig fråga (with its svar) or interpellation
+      description: >-
+        Includes the motions it is linked to with the rule behind each link,
+        and for an interpellation the anföranden of its debate (found by
+        avsnittsrubrik and the day it was answered).
+      parameters:
+        - { name: kind, in: path, required: true, schema: { type: string, enum: [fraga, interpellation] } }
+        - { name: riksmote, in: path, required: true, description: "URL-encoded, e.g. `2022%2F23`", schema: { type: string } }
+        - { name: beteckning, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: The question
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/QuestionDetail" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /politicians/{id}/questions:
+    get:
+      operationId: listMemberQuestions
+      tags: [motions]
+      summary: Frågor and interpellationer a member asked or, for a minister, answered
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Questions, newest first; `role` is `asker` or `answerer`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questions:
+                    type: array
+                    items: { $ref: "#/components/schemas/QuestionItem" }
+
+  /motions/{riksmote}/{beteckning}/questions:
+    get:
+      operationId: listMotionQuestions
+      tags: [motions]
+      summary: Frågor and interpellationer linked to a motion
+      description: >-
+        A link exists only when Riksdagen's reference points at the motion
+        (`riksdagen-reference`) or the question text cites its beteckning
+        (`cited-beteckning`). A motion named only in prose is not linked.
+      parameters:
+        - { name: riksmote, in: path, required: true, schema: { type: string } }
+        - { name: beteckning, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Linked questions, each with its `rule`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questions:
+                    type: array
+                    items: { $ref: "#/components/schemas/QuestionItem" }
+
   /motions:
     get:
       operationId: listMotions
@@ -1666,6 +1748,68 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
 
   schemas:
+    QuestionPerson:
+      type: object
+      required: [id, name, party]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        party: { type: string }
+    QuestionItem:
+      type: object
+      required: [dokId, kind, riksmote, beteckning, title, status, asker, addressed, answerer, answerDokId, sourceUrl]
+      properties:
+        dokId: { type: string }
+        kind: { type: string, enum: [fraga, interpellation] }
+        riksmote: { type: string }
+        beteckning: { type: string }
+        title: { type: string }
+        askedDate: { type: string, format: date-time, nullable: true }
+        status: { type: string }
+        asker: { $ref: "#/components/schemas/QuestionPerson" }
+        addressed: { $ref: "#/components/schemas/QuestionPerson" }
+        answerer: { $ref: "#/components/schemas/QuestionPerson" }
+        answerDate: { type: string, format: date-time, nullable: true }
+        answerDokId: { type: string }
+        role: { type: string, enum: [asker, answerer] }
+        rule: { type: string, enum: [riksdagen-reference, cited-beteckning] }
+        sourceUrl: { type: string }
+    QuestionDetail:
+      allOf:
+        - $ref: "#/components/schemas/QuestionItem"
+        - type: object
+          properties:
+            text: { type: string }
+            motions:
+              type: array
+              items:
+                type: object
+                properties:
+                  dokId: { type: string }
+                  riksmote: { type: string }
+                  beteckning: { type: string }
+                  title: { type: string }
+                  rule: { type: string }
+            debate:
+              type: array
+              items:
+                type: object
+                properties:
+                  speechId: { type: integer }
+                  dokId: { type: string }
+                  politicianId: { type: string }
+                  name: { type: string }
+                  party: { type: string }
+                  date: { type: string, format: date-time }
+                  excerpt: { type: string }
+    QuestionCoverage:
+      type: object
+      properties:
+        riksmote: { type: string }
+        kind: { type: string }
+        expected: { type: integer }
+        held: { type: integer }
+        lastEnumeratedAt: { type: string, format: date-time }
     MotionCoverage:
       type: object
       required: [riksmote, source, expected, held, lastEnumeratedAt]
