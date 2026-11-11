@@ -58,7 +58,8 @@ func (r *Repository) Upsert(ctx context.Context, m *domain.Motion) error {
 	for _, y := range m.Yrkanden {
 		if _, err := tx.Exec(ctx, `
 			INSERT INTO motion_yrkanden (dok_id, nummer, wording, utskottet, kammaren, behandlas_i, behandlas_i_punkt, wording_hash)
-			VALUES ($1,$2,$3,$4,$5,$6,$7, NULLIF($8,''))`,
+			VALUES ($1,$2,$3,$4,$5,$6,$7, NULLIF($8,''))
+			ON CONFLICT (dok_id, nummer) DO NOTHING`,
 			m.DokID, y.Number, y.Wording, y.UtskottProposal, y.ChamberDecision, y.BehandlasI, y.BehandlasIPunkt,
 			domain.WordingHash(y.Wording)); err != nil {
 			return err

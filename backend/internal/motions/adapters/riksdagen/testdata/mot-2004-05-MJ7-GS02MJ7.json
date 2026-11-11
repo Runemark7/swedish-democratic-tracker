@@ -1,0 +1,308 @@
+{
+ "dokumentstatus": {
+  "dokument": {
+   "hangar_id": "2236268",
+   "dok_id": "GS02MJ7",
+   "rm": "2004/05",
+   "beteckning": "MJ7",
+   "typ": "mot",
+   "subtyp": "Partimotion",
+   "doktyp": "mot",
+   "typrubrik": "Motion 2004/05:MJ7 av Fredrik Reinfeldt m.fl. (m)",
+   "dokumentnamn": "Motion",
+   "debattnamn": "Motion",
+   "tempbeteckning": "m009",
+   "organ": "MJU",
+   "mottagare": "",
+   "nummer": "7",
+   "slutnummer": "0",
+   "datum": "2005-01-24 00:00:00",
+   "systemdatum": "2005-01-24 00:00:00",
+   "publicerad": "2005-01-25 14:40:04",
+   "titel": "Stormen över södra Sverige (väckt enligt 3 kap. 13 § riksdagsordningen med anledning av händelse av större vikt)",
+   "subtitel": "av Fredrik Reinfeldt m.fl. (m)",
+   "status": "Trycklov",
+   "htmlformat": "",
+   "relaterat_id": "",
+   "source": "",
+   "sourceid": "",
+   "dokument_url_text": "https://data.riksdagen.se/dokument/GS02MJ7/text",
+   "dokument_url_html": "https://data.riksdagen.se/dokument/GS02MJ7",
+   "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/GS02MJ7"
+  },
+  "dokforslag": {
+   "forslag": [
+    {
+     "nummer": "1",
+     "beteckning": "1",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om behov av översyn av reglerna för leveranssäkerhet av elström och telefoni.",
+     "lydelse2": "",
+     "utskottet": " Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:NU14",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Acklamation",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "2",
+     "beteckning": "2",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om lagring av stormfällt timmer.",
+     "lydelse2": "",
+     "utskottet": " Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:BoU8",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Röstning",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "3",
+     "beteckning": "3",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om bekämpning av skadegörare på timmer och i skog.",
+     "lydelse2": "",
+     "utskottet": " Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:MJU9",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Acklamation",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "4",
+     "beteckning": "4",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om dispenser från gällande regler vad gäller lagring av timmer och skogsvårdsåtgärder.",
+     "lydelse2": "",
+     "utskottet": " Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:MJU9",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Röstning",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "5",
+     "beteckning": "5",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om åtgärder för att minska skadeverkningarna av stormen den 8 och 9 januari 2005.",
+     "lydelse2": "",
+     "utskottet": " Avslag,  Avslag,  Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:TU17",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Acklamation",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "6",
+     "beteckning": "6",
+     "lydelse": "Riksdagen begär att regeringen snarast återkommer med förslag om ändrade regler för skogsskadekonto och taxeringsvärden i enlighet med vad i motionen anförs.",
+     "lydelse2": "",
+     "utskottet": " Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2005/06:SkU17",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Acklamation",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "5",
+     "beteckning": "5.1",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om åtgärder för att minska skadeverkningarna av stormen den 8 och 9 januari 2005.",
+     "lydelse2": "",
+     "utskottet": " Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:AU6",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Röstning",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "5",
+     "beteckning": "5.2",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om åtgärder för att minska skadeverkningarna av stormen den 8 och 9 januari 2005.",
+     "lydelse2": "",
+     "utskottet": " Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:SfU10",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Acklamation",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "5",
+     "beteckning": "5.3",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om åtgärder för att minska skadeverkningarna av stormen den 8 och 9 januari 2005.",
+     "lydelse2": "",
+     "utskottet": " Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:FiU21",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Acklamation",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    },
+    {
+     "nummer": "5",
+     "beteckning": "5.4",
+     "lydelse": "Riksdagen tillkännager för regeringen som sin mening vad i motionen anförs om åtgärder för att minska skadeverkningarna av stormen den 8 och 9 januari 2005.",
+     "lydelse2": "",
+     "utskottet": " Avslag,  Avslag,  Avslag",
+     "kammaren": "Avslag",
+     "behandlas_i": "2004/05:MJU9",
+     "behandlas_i_punkt": "?",
+     "kammarbeslutstyp": "Acklamation",
+     "intressent": "",
+     "avsnitt": "",
+     "grundforfattning": "",
+     "andringsforfattning": ""
+    }
+   ]
+  },
+  "dokintressent": {
+   "intressent": [
+    {
+     "intressent_id": "0938901612810",
+     "namn": "Fredrik Reinfeldt",
+     "partibet": "M",
+     "ordning": "1",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0483316376813",
+     "namn": "Mikael Odenberg",
+     "partibet": "M",
+     "ordning": "2",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0262017901513",
+     "namn": "Beatrice Ask",
+     "partibet": "M",
+     "ordning": "3",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "031005479013",
+     "namn": "Per Westerberg",
+     "partibet": "M",
+     "ordning": "4",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0658668232410",
+     "namn": "Per Bill",
+     "partibet": "M",
+     "ordning": "5",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0977860675311",
+     "namn": "Gunilla Carlsson i Tyresö",
+     "partibet": "M",
+     "ordning": "6",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "064601872511",
+     "namn": "Catharina Elmsäter-Svärd",
+     "partibet": "M",
+     "ordning": "7",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0475092656901",
+     "namn": "Lennart Hedquist",
+     "partibet": "M",
+     "ordning": "8",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0652944607906",
+     "namn": "Cristina Husmark Pehrsson",
+     "partibet": "M",
+     "ordning": "9",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0739152363302",
+     "namn": "Göran Lennmarker",
+     "partibet": "M",
+     "ordning": "10",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0125165702713",
+     "namn": "Marietta de Pourbaix-Lundin",
+     "partibet": "M",
+     "ordning": "11",
+     "roll": "undertecknare"
+    },
+    {
+     "intressent_id": "0864542495614",
+     "namn": "Sten Tolgfors",
+     "partibet": "M",
+     "ordning": "12",
+     "roll": "undertecknare"
+    }
+   ]
+  },
+  "dokuppgift": {
+   "uppgift": [
+    {
+     "kod": "motgrund",
+     "namn": "Motionsgrund",
+     "text": "",
+     "dok_id": "",
+     "systemdatum": "2014-11-22 21:54:14"
+    },
+    {
+     "kod": "motkat",
+     "namn": "Motionskategori",
+     "text": "Händelse",
+     "dok_id": "",
+     "systemdatum": "2014-11-22 21:54:14"
+    },
+    {
+     "kod": "statustext",
+     "namn": "statustext",
+     "text": "Ärendet är avslutat",
+     "dok_id": "GS02MJ7",
+     "systemdatum": "2017-10-20 09:12:53"
+    },
+    {
+     "kod": "tilldelat",
+     "namn": "Tilldelat",
+     "text": "Miljö- och jordbruksutskottet",
+     "dok_id": "",
+     "systemdatum": "2014-11-22 21:54:14"
+    }
+   ]
+  }
+ }
+}
