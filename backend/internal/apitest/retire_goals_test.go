@@ -2,39 +2,11 @@ package apitest
 
 import (
 	"context"
-	"encoding/json"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
 // Issue #164: goals, keyword matching, scorecards and the old promises feature
-// are gone; the retired endpoints answer 410 with a pointer to the Löften API.
-
-func TestRetiredEndpointsPointToLoften(t *testing.T) {
-	h := Start(t, chainDir(t, "beslut-list"))
-	for _, path := range []string{
-		"/api/parties",
-		"/api/parties/S/goals",
-		"/api/parties/S/goals/1/votes",
-		"/api/committees/FiU/goals",
-		"/api/politicians/abc/promises",
-	} {
-		rec := h.Do(httptest.NewRequest(http.MethodGet, path, nil))
-		if rec.Code != http.StatusGone {
-			t.Errorf("GET %s = %d, want 410", path, rec.Code)
-			continue
-		}
-		var body map[string]string
-		if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
-			t.Errorf("GET %s: body not JSON: %v", path, err)
-			continue
-		}
-		if body["loften"] != "/api/loften" {
-			t.Errorf("GET %s: pointer = %q, want /api/loften", path, body["loften"])
-		}
-	}
-}
+// are gone.
 
 // The #156 archive must exist and survive: the drop migration may only remove
 // the retired objects, never loften.

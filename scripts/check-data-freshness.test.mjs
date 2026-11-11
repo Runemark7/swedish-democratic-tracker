@@ -56,7 +56,7 @@ function report(overrides = {}) {
         lastSuccessAt: "2026-10-27T00:10:00Z",
       },
       {
-        name: "refresh-scorecards",
+        name: "refresh-coverage",
         schedule: "weekly",
         lastSuccessAt: "2026-10-25T00:10:00Z",
       },

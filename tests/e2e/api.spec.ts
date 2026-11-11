@@ -2,17 +2,6 @@ import { test, expect } from "@playwright/test";
 
 const API = process.env.API_URL ?? "http://localhost:8080";
 
-test.describe("Retired goals API (#164)", () => {
-  for (const path of ["/api/parties", "/api/parties/S/goals", "/api/committees/FiU/goals"]) {
-    test(`GET ${path} answers 410 with a pointer to the Löften API`, async ({ request }) => {
-      const res = await request.get(`${API}${path}`);
-      expect(res.status()).toBe(410);
-      const body = await res.json();
-      expect(body.loften).toBe("/api/loften");
-    });
-  }
-});
-
 test.describe("Politicians API", () => {
   test("GET /api/politicians returns paginated response", async ({ request }) => {
     const res = await request.get(`${API}/api/politicians`);

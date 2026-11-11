@@ -49,8 +49,6 @@ type AgencyClient struct {
 	listURL string
 }
 
-func NewAgencyClient() *AgencyClient { return NewAgencyClientWithBaseURL("") }
-
 // NewAgencyClientWithBaseURL points document-list fetches at baseURL. An empty
 // base URL uses the production data.riksdagen.se origin. Stored document links
 // stay on that public origin either way.
