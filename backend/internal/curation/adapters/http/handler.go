@@ -37,6 +37,8 @@ func (h *Handler) WriteRoutes(r chi.Router) {
 	r.Use(h.auth)
 	r.Post("/valmanifest", h.upsertValmanifest)
 	r.Post("/aendringslogg/{id}/undo", h.undo)
+	r.Get("/candidates", h.candidates)
+	r.Post("/kopplingar", h.submitSuggestions)
 	r.Post("/loften", h.proposeLoefte)
 	r.Post("/loften/{id}", h.editLoefte)
 	r.Post("/loften/{id}/approve", h.approveLoefte)
@@ -63,6 +65,38 @@ func (h *Handler) upsertValmanifest(w http.ResponseWriter, r *http.Request) {
 	}
 	res, err := h.svc.UpsertValmanifest(r.Context(), r.Header.Get("Idempotency-Key"), in)
 	h.respond(w, res, err)
+}
+
+// candidates is a read, but it exposes approved Löften next to voteringar the
+// bot has not judged yet, so it sits behind the write token.
+func (h *Handler) candidates(w http.ResponseWriter, r *http.Request) {
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	after, _ := strconv.ParseInt(r.URL.Query().Get("after"), 10, 64)
+	c, err := h.svc.Candidates(r.Context(), limit, after)
+	if err != nil {
+		slog.Error("candidates", "error", err)
+		fail(w, http.StatusInternalServerError, "internal", "internal error")
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(c)
+}
+
+func (h *Handler) submitSuggestions(w http.ResponseWriter, r *http.Request) {
+	var in domain.SuggestionBatch
+	if !readJSON(w, r, &in) {
+		return
+	}
+	res, err := h.svc.SubmitSuggestions(r.Context(), r.Header.Get("Idempotency-Key"), in)
+	if err != nil {
+		h.respond(w, nil, err)
+		return
+	}
+	if res.Replayed {
+		w.Header().Set("Idempotent-Replayed", "true")
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 func (h *Handler) proposeLoefte(w http.ResponseWriter, r *http.Request) {
