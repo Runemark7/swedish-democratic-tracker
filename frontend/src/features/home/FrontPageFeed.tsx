@@ -7,6 +7,8 @@ import { PartyBadge } from "@/shared/components";
 import { PARTIES } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
+import { useMyParty, MY_PARTY_RING } from "@/contexts/myParty";
+import { MyPartyPicker } from "@/components/MyPartyPicker";
 
 type Beslut = FrontPage["decided"][number];
 type Motion = FrontPage["motions"][number];
@@ -14,6 +16,7 @@ type Motion = FrontPage["motions"][number];
 const tag = "text-xs text-on-surface-variant hover:text-link underline-offset-2 hover:underline";
 
 function PartyMarks({ row }: { row: Beslut }) {
+  const { myParty } = useMyParty();
   if (row.parties.length === 0) return null;
   return (
     <ul className="flex flex-wrap gap-x-3 gap-y-1.5" aria-label="Partilinje per parti">
@@ -23,7 +26,9 @@ function PartyMarks({ row }: { row: Beslut }) {
             to={`/parties/${p}`}
             data-testid="party-mark"
             data-party={p}
-            className="inline-flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-link"
+            data-my-party={p === myParty ? "true" : undefined}
+            className="inline-flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-link rounded px-1"
+            style={p === myParty ? { boxShadow: MY_PARTY_RING } : undefined}
             title={`Partilinje för ${p}`}
           >
             <PartyBadge party={p} />
@@ -65,9 +70,16 @@ function BeslutRow({ r }: { r: Beslut }) {
 }
 
 function MotionRow({ m }: { m: Motion }) {
+  const { myParty } = useMyParty();
   const outcomeQ = encodeURIComponent(m.outcome.word);
+  const mine = myParty !== null && m.parties.includes(myParty);
   return (
-    <li data-testid="front-motion" className="flex flex-col gap-1.5 py-3.5 px-4 rounded-lg" style={{ background: "var(--color-surface-lowest)" }}>
+    <li
+      data-testid="front-motion"
+      data-my-party={mine ? "true" : undefined}
+      className="flex flex-col gap-1.5 py-3.5 px-4 rounded-lg"
+      style={{ background: "var(--color-surface-lowest)", boxShadow: mine ? MY_PARTY_RING : undefined }}
+    >
       <Link to={motionPath(m.riksmote, m.beteckning)} className="text-sm font-semibold text-on-surface hover:text-link transition-colors">
         {m.title || `Motion ${m.riksmote}:${m.beteckning}`}
         <SourceMarker sourceId="motions" />
@@ -118,6 +130,7 @@ export function FrontPageFeed() {
   const { coverage } = data;
   return (
     <div className="px-4 sm:px-8 py-4 space-y-8">
+      <MyPartyPicker />
       <section aria-label="Senaste besluten">
         <Heading to="/beslut?state=decided" linkText="Alla beslut">Senaste besluten</Heading>
         {coverage.stale && (

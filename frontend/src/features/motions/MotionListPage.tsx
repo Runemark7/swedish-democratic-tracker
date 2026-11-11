@@ -6,6 +6,8 @@ import { PartyBadge } from "@/shared/components";
 import { PARTIES } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
+import { useMyParty, MY_PARTY_RING } from "@/contexts/myParty";
+import { MyPartyPicker } from "@/components/MyPartyPicker";
 
 const UTSKOTT: [string, string][] = [
   ["AU", "Arbetsmarknadsutskottet"],
@@ -71,13 +73,15 @@ function outcomeLabel(o: MotionListRow["outcome"]): string {
 }
 
 function Row({ m }: { m: MotionListRow }) {
+  const { myParty } = useMyParty();
+  const mine = myParty !== null && m.parties.includes(myParty);
   return (
-    <li>
+    <li data-my-party={mine ? "true" : undefined}>
       <Link
         to={motionPath(m.riksmote, m.beteckning)}
         data-testid="motion-row"
         className="flex flex-col gap-1.5 py-3.5 px-4 rounded-lg transition-all hover:shadow-ambient group"
-        style={{ background: "var(--color-surface-lowest)" }}
+        style={{ background: "var(--color-surface-lowest)", boxShadow: mine ? MY_PARTY_RING : undefined }}
       >
         <p className="text-sm font-semibold text-on-surface group-hover:text-link transition-colors">
           {m.title || `Motion ${m.riksmote}:${m.beteckning}`}
@@ -135,6 +139,8 @@ export function MotionListPage() {
           Förslag från riksdagsledamöter och partier, med vad riksdagen beslutade. Senast avgjorda först.
         </p>
       </div>
+
+      <div className="mb-4"><MyPartyPicker /></div>
 
       <form
         role="search"

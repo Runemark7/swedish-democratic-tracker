@@ -89,6 +89,14 @@ export function OmSajtenPage() {
       </header>
 
       <main style={{ padding: pad }}>
+        <Section eyebrow="Mitt parti" title="Ditt val stannar i din webbläsare">
+          <p style={{ margin: 0 }} data-testid="my-party-note">
+            Om du väljer Mitt parti sparas valet bara i din webbläsare (localStorage).
+            Det skickas aldrig till vår server och används bara för att markera partiets
+            rader. Det filtrerar eller sorterar ingenting, och sajten fungerar likadant
+            utan det. Du kan byta eller rensa valet när du vill.
+          </p>
+        </Section>
         <Section eyebrow="Varför" title="Varför sajten finns">
           <p style={{ margin: "0 0 10px" }}>
             Demokrati kräver att du vet vad dina folkvalda gör. Den informationen
