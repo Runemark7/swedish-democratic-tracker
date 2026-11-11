@@ -1968,6 +1968,10 @@ export interface components {
              * @description Our insert time. Not a decision date — see the schema note.
              */
             createdAt: string;
+            /** @description Only on a member's own vote list. True when this ballot differs from the party's Ja or Nej Partilinje in the same votering (the shared Avvikare definition). */
+            avvikare?: boolean;
+            /** @description The member's party's Partilinje in this votering (Ja, Nej, Avstår, Delad, Saknas). */
+            partilinje?: string;
         };
         VoteListResponse: {
             data: components["schemas"]["Vote"][];
@@ -3365,6 +3369,8 @@ export interface operations {
         parameters: {
             query?: {
                 state?: "decided" | "upcoming";
+                /** @description Signer politician id (intressent_id); several allowed */
+                author?: string;
                 /** @description Utskott code, e.g. `SkU` */
                 utskott?: string;
                 /** @description Party, e.g. `M` */

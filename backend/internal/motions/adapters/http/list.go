@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -77,6 +78,8 @@ func decodeCursor(s string) (*domain.ListCursor, bool) {
 	return &domain.ListCursor{Decided: parts[0] == "1", Key: t, DokID: parts[2]}, true
 }
 
+var authorPattern = regexp.MustCompile(`^[0-9]{6,20}$`)
+
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	f := domain.ListFilter{
@@ -84,6 +87,7 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 		Utskott:  csv(q["utskott"]),
 		Kinds:    csv(q["kind"]),
 		Outcomes: csv(q["outcome"]),
+		Authors:  csv(q["author"]),
 		Query:    strings.TrimSpace(q.Get("q")),
 	}
 	f.Riksmoten = csv(q["riksmote"])
@@ -108,6 +112,12 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	for _, p := range append(slices.Clone(f.Parties), f.Utskott...) {
 		if !beteckningPattern.MatchString(p) {
 			jsonError(w, "invalid party or utskott", http.StatusBadRequest)
+			return
+		}
+	}
+	for _, a := range f.Authors {
+		if !authorPattern.MatchString(a) {
+			jsonError(w, "invalid author", http.StatusBadRequest)
 			return
 		}
 	}

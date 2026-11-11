@@ -88,7 +88,39 @@ func (s *Service) ListByPolitician(ctx context.Context, f ports.ListVotesFilter)
 	if f.PageSize == 0 {
 		f.PageSize = 50
 	}
-	return s.repo.ListByPolitician(ctx, f)
+	res, err := s.repo.ListByPolitician(ctx, f)
+	if err != nil || len(res.Votes) == 0 {
+		return res, err
+	}
+	ids := make([]string, 0, len(res.Votes))
+	for _, v := range res.Votes {
+		ids = append(ids, v.VoteringID)
+	}
+	all, err := s.repo.BallotsOfVoteringar(ctx, ids)
+	if err != nil {
+		return res, err
+	}
+	dev := map[string]bool{}
+	lines := map[string]domain.Partilinje{}
+	byVot := map[string][]*domain.Vote{}
+	for _, b := range all {
+		byVot[b.VoteringID] = append(byVot[b.VoteringID], b)
+	}
+	for id, bs := range byVot {
+		for p, t := range domain.TallyByParty(bs) {
+			lines[id+"|"+p] = domain.PartilinjeFor(p, t)
+		}
+		for _, a := range domain.Avvikare(bs) {
+			if a.PoliticianID == f.PoliticianID {
+				dev[id] = true
+			}
+		}
+	}
+	for _, v := range res.Votes {
+		v.Partilinje = lines[v.VoteringID+"|"+v.Party]
+		v.Avvikare = dev[v.VoteringID]
+	}
+	return res, nil
 }
 
 func (s *Service) ListDistinctByCommitteePrefix(ctx context.Context, prefix string) ([]ports.VoteSummary, error) {

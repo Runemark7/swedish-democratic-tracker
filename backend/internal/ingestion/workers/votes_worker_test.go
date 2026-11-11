@@ -70,6 +70,10 @@ func (r *fakeVoteRepo) UpsertMany(_ context.Context, vv []*votedomain.Vote) erro
 	return nil
 }
 
+func (r *fakeVoteRepo) BallotsOfVoteringar(context.Context, []string) ([]*votedomain.Vote, error) {
+	return nil, nil
+}
+
 func (r *fakeVoteRepo) ListByPolitician(context.Context, voteports.ListVotesFilter) (voteports.ListVotesResult, error) {
 	return voteports.ListVotesResult{}, nil
 }

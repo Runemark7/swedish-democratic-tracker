@@ -45,6 +45,10 @@ func (r *fakeCommitteeRepo) ListByCommitteeWithPositions(_ context.Context, peri
 	return r.page, r.total, nil
 }
 
+func (r *fakeCommitteeRepo) BallotsOfVoteringar(context.Context, []string) ([]*domain.Vote, error) {
+	return nil, nil
+}
+
 func (r *fakeCommitteeRepo) ListByPolitician(context.Context, ports.ListVotesFilter) (ports.ListVotesResult, error) {
 	return ports.ListVotesResult{}, nil
 }

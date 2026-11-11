@@ -46,6 +46,9 @@ func (r *Repository) ListPage(ctx context.Context, f domain.ListFilter, after *d
 	if len(f.Parties) > 0 {
 		where = append(where, `EXISTS (SELECT 1 FROM motion_authors a WHERE a.dok_id = m.dok_id AND upper(a.party) = ANY(`+arg(upperAll(f.Parties))+`))`)
 	}
+	if len(f.Authors) > 0 {
+		where = append(where, `EXISTS (SELECT 1 FROM motion_authors a WHERE a.dok_id = m.dok_id AND a.intressent_id = ANY(`+arg(f.Authors)+`))`)
+	}
 	if len(f.Utskott) > 0 {
 		// The utskott a motion is filed to, or the one whose betänkande decided
 		// one of its yrkanden (2018/19:2900 is filed to FiU and decided in SkU11).

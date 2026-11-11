@@ -1,64 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { politiciansApi } from "./api";
-import { PartyBadge, TopicTag, SpecificityBadge } from "@/shared/components";
+import { PartyBadge } from "@/shared/components";
 import { PARTY_COLORS } from "@/shared/design";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useSpeechesByPolitician, useDocument } from "@/hooks/useDemocracy";
+import { MemberMotions } from "./MemberMotions";
 import { QuestionsSection } from "@/features/questions/QuestionsSection";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import type { components } from "@/shared/api-contract";
 import type { Speech } from "@/features/speeches/api";
 
 type Vote = components["schemas"]["Vote"];
-type PromiseWithMatches = components["schemas"]["PromiseWithMatches"];
-
-const ALIGNMENT_STYLES: Record<string, { color: string; bg: string; label: string }> = {
-  supports:    { color: "var(--color-chip-ja-fg)", bg: "var(--color-chip-ja-bg)", label: "Stödjer" },
-  contradicts: { color: "var(--color-chip-nej-fg)", bg: "var(--color-chip-nej-bg)", label: "Motsäger" },
-  unclear:     { color: "var(--color-chip-neutral-fg)", bg: "var(--color-chip-neutral-bg)", label: "Oklart" },
-};
-
-function PromiseCard({ promise }: { promise: PromiseWithMatches }) {
-  return (
-    <div className="bg-surface-lowest rounded-xl p-5">
-      <div className="flex flex-wrap items-center gap-2 mb-2">
-        <TopicTag topic={promise.topic} />
-        <SpecificityBadge specificity={promise.specificity} />
-        {promise.speechDate && (
-          <span className="text-[11px] text-on-surface-variant">{promise.speechDate}</span>
-        )}
-      </div>
-      <p className="text-sm text-on-surface leading-relaxed mb-3">&ldquo;{promise.promiseText}&rdquo;</p>
-      {promise.speechTopic && (
-        <p className="text-xs text-on-surface-variant italic mb-3">Ämne: {promise.speechTopic}</p>
-      )}
-      {(promise.voteMatches ?? []).length > 0 && (
-        <div className="space-y-2 pt-3" style={{ borderTop: "1px solid var(--color-surface-high)" }}>
-          {promise.voteMatches!.map((m) => {
-            const s = ALIGNMENT_STYLES[m.alignment] ?? ALIGNMENT_STYLES.unclear;
-            return (
-              <div key={m.voteId} className="flex items-start justify-between gap-3">
-                <Link
-                  to={`/votes/${m.beteckning}/${m.forslagspunkt}`}
-                  className="text-xs text-on-surface-variant hover:text-link transition-colors truncate flex-1"
-                >
-                  {m.documentTitle || `${m.beteckning} punkt ${m.forslagspunkt}`}
-                </Link>
-                <span
-                  className="text-[10px] font-extrabold px-2 py-0.5 rounded shrink-0"
-                  style={{ background: s.bg, color: s.color }}
-                >
-                  {s.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
 
 type ActivityEvent =
   | { kind: "vote"; date: string; vote: Vote }
@@ -123,7 +76,8 @@ function ActivityVoteRow({ vote }: { vote: Vote }) {
   const fallbackTitle = `${vote.beteckning} punkt ${vote.forslagspunkt}`;
   return (
     <Link
-      to={`/votes/${vote.beteckning}/${vote.forslagspunkt}`}
+      to={`/votes/${vote.beteckning}/${vote.forslagspunkt}?session=${encodeURIComponent(vote.session)}`}
+      data-testid="member-vote-row"
       style={{
         display: "flex",
         gap: 12,
@@ -166,7 +120,16 @@ function ActivityVoteRow({ vote }: { vote: Vote }) {
         {/* No date: a vote row carries only system_datum, which is when
             Riksdagen last touched the record, not when the chamber decided. */}
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
-          {vote.beteckning} · {vote.voteResult}
+          {vote.beteckning} punkt {vote.forslagspunkt} · {vote.voteResult}
+          {vote.avvikare && (
+            <span
+              data-testid="avvikare-mark"
+              title={`Röstade ${vote.voteResult}; partilinjen var ${vote.partilinje}`}
+              style={{ marginLeft: 8, fontWeight: 700, color: "var(--color-fg)" }}
+            >
+              ◆ Avvikare från partilinjen ({vote.partilinje})
+            </span>
+          )}
         </div>
       </div>
     </Link>
@@ -355,8 +318,8 @@ function AmnenPanel({ speeches, loading }: { speeches: Speech[]; loading: boolea
   );
 }
 
-type Tab = "aktivitet" | "debatter" | "amnen" | "loften";
-const ALL_TABS: Tab[] = ["aktivitet", "debatter", "amnen", "loften"];
+type Tab = "aktivitet" | "motioner" | "debatter" | "amnen";
+const ALL_TABS: Tab[] = ["aktivitet", "motioner", "debatter", "amnen"];
 
 export function PoliticianPage() {
   const { id = "" } = useParams();
@@ -380,12 +343,6 @@ export function PoliticianPage() {
     queryKey: ["politician-votes", id],
     queryFn: () => politiciansApi.listVotes(id, { pageSize: 100 }),
     enabled: !!id,
-  });
-
-  const { data: promises, isLoading: loadingPromises } = useQuery({
-    queryKey: ["politician-promises", id],
-    queryFn: () => politiciansApi.listPromises(id),
-    enabled: !!id && activeTab === "loften",
   });
 
   const { data: speeches, isLoading: loadingSpeeches } = useSpeechesByPolitician(
@@ -481,9 +438,9 @@ export function PoliticianPage() {
         {ALL_TABS.map((tab) => {
           const label =
             tab === "aktivitet" ? "Aktivitet"
-            : tab === "debatter" ? "Debatter"
-            : tab === "amnen" ? "Ämnen"
-            : "Löften";
+            : tab === "motioner" ? "Motioner"
+            : tab === "debatter" ? "Frågor och debatter"
+            : "Ämnen";
           const active = activeTab === tab;
           return (
             <button
@@ -508,6 +465,8 @@ export function PoliticianPage() {
         <ActivityFeed votes={votes} speeches={speeches ?? []} loading={loadingVotes || loadingSpeeches} />
       )}
 
+      {activeTab === "motioner" && <MemberMotions politicianId={id} />}
+
       {/* ── Debatter ────────────────────────────────────────────────── */}
       {activeTab === "debatter" && (
         <>
@@ -525,26 +484,6 @@ export function PoliticianPage() {
       {/* ── Ämnen ───────────────────────────────────────────────────── */}
       {activeTab === "amnen" && (
         <AmnenPanel speeches={speeches ?? []} loading={loadingSpeeches} />
-      )}
-
-      {/* ── Löften ──────────────────────────────────────────────────── */}
-      {activeTab === "loften" && (
-        loadingPromises ? (
-          <div className="text-on-surface-variant text-center py-12 text-sm">Laddar löften...</div>
-        ) : (
-          <>
-            <div className="space-y-3">
-              {(promises ?? []).map((p) => (
-                <PromiseCard key={p.id} promise={p} />
-              ))}
-            </div>
-            {(promises ?? []).length === 0 && (
-              <p className="text-on-surface-variant text-center py-16 text-sm">
-                Inga löften extraherade ännu.
-              </p>
-            )}
-          </>
-        )
       )}
     </div>
   );

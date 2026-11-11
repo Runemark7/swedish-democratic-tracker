@@ -95,6 +95,9 @@ type VoteRepository interface {
 	// non-empty, limits them to that riksmöte — beteckning numbering restarts
 	// each year, so an unscoped read mixes two betänkanden into one tally.
 	ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error)
+	// BallotsOfVoteringar returns every ballot of the given votering ids
+	// (the votering_id, not the row id).
+	BallotsOfVoteringar(ctx context.Context, voteringIDs []string) ([]*domain.Vote, error)
 	ListDistinctVotes(ctx context.Context, f ListDistinctVotesFilter) (ListDistinctVotesResult, error)
 	UpsertMany(ctx context.Context, vv []*domain.Vote) error
 	// ListUntitledBetankanden returns up to limit riksmöte + beteckning pairs

@@ -39,6 +39,11 @@ type Vote struct {
 	DokID          string         `json:"dokId,omitempty"`
 	ProposalOrigin ProposalOrigin `json:"proposalOrigin"`
 	CreatedAt      time.Time      `json:"createdAt"`
+	// Avvikare and Partilinje are set only on a member's own ballot list
+	// (GET /politicians/{id}/votes): Avvikare uses the shared definition in
+	// partyline.go, computed from all ballots of the same votering.
+	Avvikare   bool       `json:"avvikare,omitempty"`
+	Partilinje Partilinje `json:"partilinje,omitempty"`
 	// SystemDatum is Riksdagen's own timestamp for the record. It is the only
 	// safe basis for the ingestion cursor; CreatedAt is our insert time and
 	// says nothing about how current the upstream data is.
