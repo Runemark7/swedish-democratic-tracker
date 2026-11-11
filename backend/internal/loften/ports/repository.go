@@ -11,5 +11,13 @@ import (
 type Repository interface {
 	ListPublic(ctx context.Context, party string) ([]*domain.Loefte, error)
 	GetPublic(ctx context.Context, id int) (*domain.Loefte, error)
+	// ConfirmedKopplingar returns only Bekräftade kopplingar (never föreslagen,
+	// avvisad or bortsorterad) of the given Löften, with the Löfte's own
+	// party's ballots in each votering.
+	ConfirmedKopplingar(ctx context.Context, loefteIDs []int) (map[int][]domain.ConfirmedKoppling, error)
+	// ConfirmedKopplingByID is nil when the koppling is not Bekräftad or its Löfte is not public.
+	ConfirmedKopplingByID(ctx context.Context, id int) (*domain.ConfirmedKoppling, error)
+	// Windows maps mandate period code to its riksmöten.
+	Windows(ctx context.Context) (map[string][]string, error)
 	ListValmanifest(ctx context.Context, party string) ([]*domain.Valmanifest, error)
 }

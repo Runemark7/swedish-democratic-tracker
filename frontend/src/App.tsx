@@ -3,6 +3,8 @@ import { Routes, Route, useLocation, Link, Navigate, useParams, useSearchParams 
 import { PartiesPage } from "./features/parties/PartiesPage";
 import { PartyDetailPage } from "./features/parties/PartyDetailPage";
 import { LoftenOverviewPage } from "./features/loften/LoftenOverviewPage";
+import { MetodPage } from "./features/loften/MetodPage";
+import { KopplingPage } from "./features/loften/KopplingPage";
 import { LoefteDetailPage } from "./features/loften/LoefteDetailPage";
 import { CommitteePage } from "./features/committees/CommitteePage";
 import { PoliticiansPage } from "./features/politicians/PoliticiansPage";
@@ -315,6 +317,8 @@ export default function App() {
           <Route path="/manifestos"                            element={<ManifestosRedirect />} />
           <Route path="/loften"                                element={<LoftenOverviewPage />} />
           <Route path="/loften/:id"                            element={<LoefteDetailPage />} />
+          <Route path="/kopplingar/:id"                        element={<KopplingPage />} />
+          <Route path="/metod"                                 element={<MetodPage />} />
           <Route path="/lokalt"                               element={<LokaltPage />} />
           <Route path="/region"                                element={<RegionLandingPage />} />
           <Route path="/region/:code/budget/:areaName"         element={<RegionBudgetAreaPage />} />

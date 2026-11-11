@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { MANDATE_LABEL } from "./labels";
-import type { Loefte, Valmanifest } from "./api";
+import type { LoefteMedStatus, Valmanifest } from "./api";
 
 /**
  * A party's Valmanifest, listed as sources: title, link, year and the party's
@@ -43,13 +43,14 @@ export function ArchiveNote() {
   );
 }
 
-export function LoefteCard({ l, showParty }: { l: Loefte; showParty?: boolean }) {
+export function LoefteCard({ l, showParty }: { l: LoefteMedStatus; showParty?: boolean }) {
   return (
     <article data-testid="loefte-card" className="bg-surface-lowest rounded-xl p-5">
       <Link to={`/loften/${l.id}`} className="text-sm font-semibold text-on-surface hover:underline">
         {showParty ? `${l.party}: ` : ""}
         {l.text}
       </Link>
+      <div className="mt-2"><StatusBadge status={l.status} /></div>
       <div className="text-xs text-on-surface-variant mt-2">
         {l.archived ? "Arkiv " : ""}
         {MANDATE_LABEL[l.mandatePeriod] ?? l.mandatePeriod}
@@ -58,5 +59,17 @@ export function LoefteCard({ l, showParty }: { l: Loefte; showParty?: boolean })
         <SourceMarker sourceId="seed-party-goals" />
       </div>
     </article>
+  );
+}
+
+/** Löftesstatus as a plain label. Archived Löften have none and show a note instead. */
+export function StatusBadge({ status }: { status: string | null | undefined }) {
+  if (!status) {
+    return <span data-testid="loefte-status" className="text-xs text-on-surface-variant">Arkiv: ingen Löftesstatus</span>;
+  }
+  return (
+    <span data-testid="loefte-status" className="text-xs font-semibold px-2 py-0.5 rounded-full border border-outline">
+      {status}
+    </span>
   );
 }

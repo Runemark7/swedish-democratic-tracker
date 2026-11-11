@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -12,6 +13,8 @@ import (
 	"riksdagskollen/internal/loften"
 )
 
+var utskottPattern = regexp.MustCompile(`^[A-Za-zÅÄÖåäö]{2,5}$`)
+
 var partyPattern = regexp.MustCompile(`^[A-Z]{1,4}$`)
 
 type Handler struct{ svc *loften.Service }
@@ -20,7 +23,10 @@ func NewHandler(svc *loften.Service) *Handler { return &Handler{svc: svc} }
 
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/loften", h.list)
+	r.Get("/loften/summary", h.summary)
 	r.Get("/loften/{id}", h.get)
+	r.Get("/loften/{id}/kopplingar", h.loefteKopplingar)
+	r.Get("/kopplingar/{id}", h.koppling)
 	r.Get("/valmanifest", h.valmanifest)
 	r.Get("/parties/{party}/loften", h.list)
 	r.Get("/parties/{party}/valmanifest", h.valmanifest)
@@ -46,12 +52,67 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	out, err := h.svc.List(r.Context(), party)
+	q := r.URL.Query()
+	utskott := q.Get("utskott")
+	if utskott != "" && !utskottPattern.MatchString(utskott) {
+		jsonError(w, "invalid utskott", http.StatusBadRequest)
+		return
+	}
+	out, err := h.svc.ListWithStatus(r.Context(), loften.Filter{Party: party, Utskott: utskott, Status: q.Get("status")})
+	if errors.Is(err, loften.ErrBadStatus) {
+		jsonError(w, "invalid status", http.StatusBadRequest)
+		return
+	}
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	jsonOK(w, out)
+}
+
+func (h *Handler) summary(w http.ResponseWriter, r *http.Request) {
+	out, err := h.svc.Summary(r.Context())
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, out)
+}
+
+func (h *Handler) loefteKopplingar(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		jsonError(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	l, err := h.svc.GetWithStatus(r.Context(), id)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if l == nil {
+		jsonError(w, "not found", http.StatusNotFound)
+		return
+	}
+	jsonOK(w, l.Kopplingar)
+}
+
+func (h *Handler) koppling(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		jsonError(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	k, err := h.svc.Koppling(r.Context(), id)
+	if err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if k == nil {
+		jsonError(w, "not found", http.StatusNotFound)
+		return
+	}
+	jsonOK(w, k)
 }
 
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +121,7 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "invalid id", http.StatusBadRequest)
 		return
 	}
-	l, err := h.svc.Get(r.Context(), id)
+	l, err := h.svc.GetWithStatus(r.Context(), id)
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return

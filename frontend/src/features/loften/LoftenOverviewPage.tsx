@@ -1,28 +1,90 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { loftenApi } from "./api";
 import { ArchiveNote, LoefteCard, ValmanifestList } from "./components";
+import { STATUS_FILTERS } from "./labels";
+import { SourceMarker } from "@/components/sources/SourceMarker";
 
 const PARTIES = ["C", "KD", "L", "M", "MP", "S", "SD", "V"];
+const UTSKOTT = ["AU", "CU", "FiU", "FöU", "JuU", "KU", "KrU", "MJU", "NU", "SfU", "SkU", "SoU", "TU", "UbU", "UU"];
 
-/** Löften across parties. Reached from Partier, not from the top menu. */
+/** Löften across parties, with Löftesstatus. Reached from Partier, not from the top menu. */
 export function LoftenOverviewPage() {
-  const loften = useQuery({ queryKey: ["loften"], queryFn: () => loftenApi.list(), staleTime: 60_000 });
+  const [sp, setSp] = useSearchParams();
+  const party = sp.get("party") ?? "";
+  const utskott = sp.get("utskott") ?? "";
+  const status = sp.get("status") ?? "";
+  const set = (k: string, v: string) => {
+    const n = new URLSearchParams(sp);
+    if (v) n.set(k, v);
+    else n.delete(k);
+    setSp(n, { replace: true });
+  };
+
+  const loften = useQuery({
+    queryKey: ["loften", party, utskott, status],
+    queryFn: () => loftenApi.list({ party, utskott, status }),
+    staleTime: 60_000,
+  });
+  const summary = useQuery({ queryKey: ["loften-summary"], queryFn: () => loftenApi.summary(), staleTime: 60_000 });
   const manifest = useQuery({ queryKey: ["valmanifest"], queryFn: () => loftenApi.valmanifest(), staleTime: 60_000 });
 
   return (
     <div className="sdt-page" style={{ padding: "24px 32px 64px", maxWidth: 920 }}>
       <Link to="/parties" className="text-xs text-link">← Partier</Link>
       <h1 className="font-display text-3xl mt-2 mb-2">Löften</h1>
-      <p className="text-sm text-on-surface-variant mb-6">
-        Löften är konkreta uttalanden i partiernas valmanifest. Vi visar vad som
-        står och var, och låter dig dra slutsatserna.
+      <p className="text-sm text-on-surface-variant mb-2">
+        Löften är konkreta uttalanden i partiernas valmanifest. Löftesstatus
+        visar bara hur partiet röstade i de omröstningar redaktören kopplat till
+        Löftet, aldrig om löftet infriats. Vi låter dig dra slutsatserna.{" "}
+        <Link to="/metod" className="text-link underline">Så räknar vi</Link>
       </p>
+
+      <section data-testid="loften-summary" className="my-4 overflow-x-auto">
+        <table className="text-xs w-full">
+          <thead>
+            <tr className="text-left text-on-surface-variant">
+              <th>Parti</th><th>Röstat för</th><th>Röstat emot</th><th>Blandat</th><th>Inte prövat än</th><th>Arkiv</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(summary.data ?? []).map((r) => (
+              <tr key={r.party} data-testid={`summary-${r.party}`}>
+                <td><Link to={`/loften?party=${r.party}`} className="underline">{r.party}</Link></td>
+                <td>{r.for}</td><td>{r.emot}</td><td>{r.blandat}</td><td>{r.inteProvat}</td><td>{r.arkiv}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <SourceMarker sourceId="loften-valmanifest" />
+      </section>
+
+      <div className="flex gap-3 flex-wrap text-sm mb-4" data-testid="loften-filters">
+        <label>Parti{" "}
+          <select value={party} onChange={(e) => set("party", e.target.value)}>
+            <option value="">Alla</option>
+            {PARTIES.map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </label>
+        <label>Utskott{" "}
+          <select value={utskott} onChange={(e) => set("utskott", e.target.value)}>
+            <option value="">Alla</option>
+            {UTSKOTT.map((u) => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </label>
+        <label>Löftesstatus{" "}
+          <select value={status} onChange={(e) => set("status", e.target.value)}>
+            <option value="">Alla</option>
+            {STATUS_FILTERS.map((s) => <option key={s.slug} value={s.slug}>{s.label}</option>)}
+          </select>
+        </label>
+      </div>
 
       <ArchiveNote />
 
       {loften.isLoading && <p className="text-sm">Laddar...</p>}
       {loften.isError && <p className="text-sm text-on-surface-variant">Kunde inte ladda löften. Försök igen.</p>}
+      {loften.data?.length === 0 && <p className="text-sm text-on-surface-variant">Inga löften matchar filtret.</p>}
       {PARTIES.map((p) => {
         const rows = (loften.data ?? []).filter((l) => l.party === p);
         if (rows.length === 0) return null;

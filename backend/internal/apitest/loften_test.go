@@ -151,8 +151,18 @@ func TestArchivedLoftenKeepTheirOldIdsAndShowNoLoftesstatus(t *testing.T) {
 	if one["text"] != "Fler poliser" {
 		t.Errorf("detail = %v", one)
 	}
+	// Archived Löften carry a null status (#161): never a Löftesstatus label.
+	var listed []map[string]any
+	if code := loftenGet(t, h, "/api/loften", &listed); code != 200 {
+		t.Fatalf("list status %d", code)
+	}
+	for _, l := range listed {
+		if l["status"] != nil {
+			t.Errorf("archived Löfte %v has status %v", l["id"], l["status"])
+		}
+	}
 	raw := h.Do(httptest.NewRequest(http.MethodGet, "/api/loften", nil)).Body.String()
-	for _, banned := range []string{"status", "Status", "Röstat", "Inte prövat"} {
+	for _, banned := range []string{"Röstat", "Inte prövat"} {
 		if strings.Contains(raw, banned) {
 			t.Errorf("response mentions %q: archived Löften must not show a Löftesstatus", banned)
 		}
