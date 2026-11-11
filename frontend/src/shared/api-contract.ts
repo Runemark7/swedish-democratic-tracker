@@ -286,7 +286,7 @@ export interface paths {
         };
         /**
          * Candidate voteringar new since the last Veckobatch, with the approved Löften they might test
-         * @description Behind the write token. Decided voteringar ingested after the last closed Veckobatch (all of them when none is closed), inside the mandate period of an approved Löfte whose utskott matches the votering's (the letters of its beteckning). Pairs already suggested, in any state, are left out. Each votering carries its betänkande, förslagspunkt and the motions and yrkanden decided there. Page by passing the response's `next` as `after`.
+         * @description Behind the write token. Decided voteringar ingested after the creation of the last closed Veckobatch (all of them when none is closed), inside the mandate period of an approved Löfte whose utskott matches the votering's (the letters of its beteckning). Pairs already suggested, in any state, are left out. Each votering carries its betänkande, förslagspunkt and the motions and yrkanden decided there. Page by passing the response's `next` as `after`.
          */
         get: operations["getKopplingCandidates"];
         put?: never;
@@ -311,6 +311,80 @@ export interface paths {
          * @description Suggestions at or above `threshold` (default 0.6) are stored as foreslagen; below it as bortsorterad, which is kept only so the pair is not suggested again. Neither is ever returned by a public endpoint or shown in the public Ändringslogg. All-or-nothing: an unknown votering, a Löfte that is not approved, or a votering outside the Löfte's mandate period (for a 2026 Löfte, 2026–2030) is 422 and stores nothing. A pair that already has a koppling is reported as `existing` and left unchanged.
          */
         post: operations["submitKopplingSuggestions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/veckobatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create the week's Veckobatch from the strongest open suggestions (at most 20)
+         * @description Takes foreslagen kopplingar, those left unanswered by earlier batches first, then strongest first, and numbers them 1..N. The numbers never change afterwards. Creating a batch closes the previous one (which moves the `since` cutoff of /write/candidates). Decides nothing. 422 when there are no open suggestions. Idempotent on the Idempotency-Key. Logged in the Ändringslogg; never public.
+         */
+        post: operations["createVeckobatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/veckobatch/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The newest Veckobatch with its items and answers */
+        get: operations["getLatestVeckobatch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/veckobatch/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A Veckobatch with its items and answers */
+        get: operations["getVeckobatch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/veckobatch/{id}/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit the Redaktör's short-form answer to a Veckobatch, atomically
+         * @description Give `text` (the chat sentence, parsed strictly: "1,3,7 ja, resten nej", "4 ja men omvänt"; anything unrecognised is 422) or `answers` (+ optional `rest`). ja confirms the koppling (Bekräftad koppling) with the suggested direction, ja-omvaent confirms it with the direction reversed, nej rejects it. All named items are decided in one transaction or none is (422 for an unknown item, 409 for an already answered item or a closed batch). Items neither named nor covered by `rest` stay open and roll into the next batch. One Ändringslogg entry per decision, each undoable through POST /write/aendringslogg/{id}/undo. Idempotent on the Idempotency-Key.
+         */
+        post: operations["answerVeckobatch"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1630,6 +1704,40 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Veckobatch: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            closedAt: string | null;
+            replayed?: boolean;
+            items: {
+                nr: number;
+                /** Format: int64 */
+                kopplingId: number;
+                state: string;
+                rolledOver: boolean;
+                /** Format: int64 */
+                loefteId: number;
+                party: string;
+                loefteText: string;
+                quote: string;
+                locator: string;
+                sourceUrl: string;
+                voteringId: string;
+                beteckning: string;
+                forslagspunkt: string;
+                betankande: string;
+                datum: string | null;
+                /** @enum {string} */
+                direction: "Ja" | "Nej";
+                confidence: number;
+                reasoning: string;
+                /** @enum {string|null} */
+                answer: "ja" | "nej" | "ja-omvaent" | null;
+            }[];
+        };
         KopplingSuggestionsWrite: {
             /** @default 0.6 */
             threshold: number;
@@ -1666,7 +1774,7 @@ export interface components {
         KopplingCandidates: {
             /**
              * Format: date-time
-             * @description closed_at of the last closed Veckobatch
+             * @description created_at of the last closed Veckobatch
              */
             since: string | null;
             /**
@@ -3900,6 +4008,166 @@ export interface operations {
                 };
             };
             401: components["responses"]["Unauthorized"];
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
+    createVeckobatch: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @default 20 */
+                    max?: number;
+                    chatRef: string;
+                    onBehalfOf: string;
+                };
+            };
+        };
+        responses: {
+            /** @description The batch with its numbered items */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Veckobatch"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
+    getLatestVeckobatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The batch */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Veckobatch"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description No Veckobatch exists yet */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getVeckobatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The batch */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Veckobatch"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Unknown batch */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    answerVeckobatch: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    text?: string;
+                    answers?: {
+                        nr: number;
+                        /** @enum {string} */
+                        answer: "ja" | "nej" | "ja-omvaent";
+                    }[];
+                    /** @enum {string} */
+                    rest?: "ja" | "nej" | "ja-omvaent";
+                    chatRef: string;
+                    onBehalfOf: string;
+                };
+            };
+        };
+        responses: {
+            /** @description What was decided and what is still open */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        replayed: boolean;
+                        decided: {
+                            nr: number;
+                            /** Format: int64 */
+                            kopplingId: number;
+                            /** @enum {string} */
+                            answer: "ja" | "nej" | "ja-omvaent";
+                            /** @enum {string} */
+                            state: "bekraftad" | "avvisad";
+                            /** @enum {string} */
+                            direction: "Ja" | "Nej";
+                            /** Format: int64 */
+                            entryId: number;
+                        }[];
+                        unanswered: number[];
+                        closed: boolean;
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Unknown batch */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             409: components["responses"]["WriteConflict"];
             422: components["responses"]["ValidationFailed"];
         };

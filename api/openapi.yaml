@@ -393,7 +393,7 @@ paths:
       tags: [write]
       summary: Candidate voteringar new since the last Veckobatch, with the approved Löften they might test
       description: >
-        Behind the write token. Decided voteringar ingested after the last closed Veckobatch (all of them when none is closed), inside the mandate period of an approved Löfte whose utskott matches the votering's (the letters of its beteckning). Pairs already suggested, in any state, are left out. Each votering carries its betänkande, förslagspunkt and the motions and yrkanden decided there. Page by passing the response's `next` as `after`.
+        Behind the write token. Decided voteringar ingested after the creation of the last closed Veckobatch (all of them when none is closed), inside the mandate period of an approved Löfte whose utskott matches the votering's (the letters of its beteckning). Pairs already suggested, in any state, are left out. Each votering carries its betänkande, förslagspunkt and the motions and yrkanden decided there. Page by passing the response's `next` as `after`.
       security:
         - writeToken: []
       parameters:
@@ -441,6 +441,124 @@ paths:
           $ref: "#/components/responses/WriteConflict"
         "422":
           $ref: "#/components/responses/ValidationFailed"
+
+  /write/veckobatch:
+    post:
+      operationId: createVeckobatch
+      tags: [write]
+      summary: Create the week's Veckobatch from the strongest open suggestions (at most 20)
+      description: >
+        Takes foreslagen kopplingar, those left unanswered by earlier batches first, then strongest first, and numbers them 1..N. The numbers never change afterwards. Creating a batch closes the previous one (which moves the `since` cutoff of /write/candidates). Decides nothing. 422 when there are no open suggestions. Idempotent on the Idempotency-Key. Logged in the Ändringslogg; never public.
+      security:
+        - writeToken: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [chatRef, onBehalfOf]
+              additionalProperties: false
+              properties:
+                max: { type: integer, minimum: 1, maximum: 20, default: 20 }
+                chatRef: { type: string }
+                onBehalfOf: { type: string }
+      responses:
+        "200": { description: The batch with its numbered items, content: { application/json: { schema: { $ref: "#/components/schemas/Veckobatch" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/WriteConflict" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /write/veckobatch/latest:
+    get:
+      operationId: getLatestVeckobatch
+      tags: [write]
+      summary: The newest Veckobatch with its items and answers
+      security:
+        - writeToken: []
+      responses:
+        "200": { description: The batch, content: { application/json: { schema: { $ref: "#/components/schemas/Veckobatch" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { description: No Veckobatch exists yet }
+
+  /write/veckobatch/{id}:
+    get:
+      operationId: getVeckobatch
+      tags: [write]
+      summary: A Veckobatch with its items and answers
+      security:
+        - writeToken: []
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer, format: int64 } }
+      responses:
+        "200": { description: The batch, content: { application/json: { schema: { $ref: "#/components/schemas/Veckobatch" } } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { description: Unknown batch }
+
+  /write/veckobatch/{id}/answers:
+    post:
+      operationId: answerVeckobatch
+      tags: [write]
+      summary: Submit the Redaktör's short-form answer to a Veckobatch, atomically
+      description: >
+        Give `text` (the chat sentence, parsed strictly: "1,3,7 ja, resten nej", "4 ja men omvänt"; anything unrecognised is 422) or `answers` (+ optional `rest`). ja confirms the koppling (Bekräftad koppling) with the suggested direction, ja-omvaent confirms it with the direction reversed, nej rejects it. All named items are decided in one transaction or none is (422 for an unknown item, 409 for an already answered item or a closed batch). Items neither named nor covered by `rest` stay open and roll into the next batch. One Ändringslogg entry per decision, each undoable through POST /write/aendringslogg/{id}/undo. Idempotent on the Idempotency-Key.
+      security:
+        - writeToken: []
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer, format: int64 } }
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [chatRef, onBehalfOf]
+              additionalProperties: false
+              properties:
+                text: { type: string }
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    required: [nr, answer]
+                    additionalProperties: false
+                    properties:
+                      nr: { type: integer, minimum: 1 }
+                      answer: { type: string, enum: [ja, nej, ja-omvaent] }
+                rest: { type: string, enum: [ja, nej, ja-omvaent] }
+                chatRef: { type: string }
+                onBehalfOf: { type: string }
+      responses:
+        "200":
+          description: What was decided and what is still open
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [replayed, decided, unanswered, closed]
+                properties:
+                  replayed: { type: boolean }
+                  decided:
+                    type: array
+                    items:
+                      type: object
+                      required: [nr, kopplingId, answer, state, direction, entryId]
+                      properties:
+                        nr: { type: integer }
+                        kopplingId: { type: integer, format: int64 }
+                        answer: { type: string, enum: [ja, nej, ja-omvaent] }
+                        state: { type: string, enum: [bekraftad, avvisad] }
+                        direction: { type: string, enum: [Ja, Nej] }
+                        entryId: { type: integer, format: int64 }
+                  unanswered: { type: array, items: { type: integer } }
+                  closed: { type: boolean }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { description: Unknown batch }
+        "409": { $ref: "#/components/responses/WriteConflict" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
 
   /write/loften:
     post:
@@ -2253,6 +2371,39 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
 
   schemas:
+    Veckobatch:
+      type: object
+      required: [id, createdAt, closedAt, items]
+      properties:
+        id: { type: integer, format: int64 }
+        createdAt: { type: string, format: date-time }
+        closedAt: { type: string, format: date-time, nullable: true }
+        replayed: { type: boolean }
+        items:
+          type: array
+          items:
+            type: object
+            required: [nr, kopplingId, state, rolledOver, loefteId, party, loefteText, quote, locator, sourceUrl, voteringId, beteckning, forslagspunkt, betankande, datum, direction, confidence, reasoning, answer]
+            properties:
+              nr: { type: integer }
+              kopplingId: { type: integer, format: int64 }
+              state: { type: string }
+              rolledOver: { type: boolean }
+              loefteId: { type: integer, format: int64 }
+              party: { type: string }
+              loefteText: { type: string }
+              quote: { type: string }
+              locator: { type: string }
+              sourceUrl: { type: string }
+              voteringId: { type: string }
+              beteckning: { type: string }
+              forslagspunkt: { type: string }
+              betankande: { type: string }
+              datum: { type: string, nullable: true }
+              direction: { type: string, enum: [Ja, Nej] }
+              confidence: { type: number }
+              reasoning: { type: string }
+              answer: { type: string, nullable: true, enum: [ja, nej, ja-omvaent] }
     KopplingSuggestionsWrite:
       type: object
       required: [suggestions, chatRef, onBehalfOf]
@@ -2295,7 +2446,7 @@ components:
       type: object
       required: [since, voteringar, next]
       properties:
-        since: { type: string, format: date-time, nullable: true, description: closed_at of the last closed Veckobatch }
+        since: { type: string, format: date-time, nullable: true, description: created_at of the last closed Veckobatch }
         next: { type: integer, format: int64, nullable: true, description: Pass as `after` for the next page; null on the last page }
         voteringar:
           type: array
