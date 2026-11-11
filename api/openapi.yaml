@@ -21,6 +21,10 @@ tags:
     description: Motions (motioner) with authors and yrkanden
   - name: votes
     description: Vote details with proposal origin context
+  - name: aendringslogg
+    description: The append-only change log (public read)
+  - name: write
+    description: Token-protected write API for the bot (ADR-003). Absent (404) when no token is configured.
   - name: budget
     description: National budget (statsbudgeten) tracking and comparison
   - name: context
@@ -274,6 +278,114 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PartySummary"
+
+  /aendringslogg:
+    get:
+      operationId: listAendringslogg
+      tags: [aendringslogg]
+      summary: What changed and when (Ändringslogg), newest first
+      description: >
+        Public and read-only. Request keys and tokens are never served.
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: before
+          in: query
+          description: Return only entries with an id lower than this (paging)
+          schema: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: Entries
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [entries]
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AendringsloggEntry"
+
+  /write/valmanifest:
+    post:
+      operationId: upsertValmanifest
+      tags: [write]
+      summary: Create or update a Valmanifest (key - party, electionYear, title)
+      description: >
+        Idempotent by Idempotency-Key. The change and its Ändringslogg entry
+        are written in one transaction. Repeating the request returns the
+        original entry (header Idempotent-Replayed - true) and changes nothing.
+        A request that matches the stored value changes nothing and is not
+        logged (changed - false). When no write token is configured the route
+        does not exist and answers 404.
+      security:
+        - writeToken: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValmanifestWrite"
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "400":
+          description: Malformed JSON or unknown field
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WriteError" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Write API not configured
+        "409":
+          $ref: "#/components/responses/WriteConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+
+  /write/aendringslogg/{id}/undo:
+    post:
+      operationId: undoAendringslogg
+      tags: [write]
+      summary: Undo an Ändringslogg entry; the undo is logged as a new entry
+      description: >
+        Restores the entry's old value, provided the entity still holds the
+        value the entry wrote. If it changed since, nothing happens and the
+        answer is 409. Idempotent by Idempotency-Key.
+      security:
+        - writeToken: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Provenance"
+      responses:
+        "200":
+          $ref: "#/components/responses/WriteResult"
+        "400":
+          description: Malformed JSON, unknown field or invalid id
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WriteError" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Write API not configured, or no such entry
+        "409":
+          $ref: "#/components/responses/WriteConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
 
   /loften:
     get:
@@ -1864,7 +1976,18 @@ paths:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
 
 components:
+  securitySchemes:
+    writeToken:
+      type: http
+      scheme: bearer
+      description: Token from a Kubernetes Secret; held only by the bot.
   parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Unique per intended change (max 200 characters). Reusing it for a different request answers 409.
+      schema: { type: string, maxLength: 200 }
     PartyParam:
       name: party
       in: path
@@ -1887,6 +2010,32 @@ components:
         example: 2025
 
   responses:
+    WriteResult:
+      description: Applied, replayed, or unchanged
+      headers:
+        Idempotent-Replayed:
+          description: "true when this is the stored answer to an earlier request with the same key"
+          schema: { type: string }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/WriteResult" }
+    Unauthorized:
+      description: Missing or wrong bearer token
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/WriteError" }
+    ValidationFailed:
+      description: The request is well-formed JSON but fails validation (including a missing Idempotency-Key)
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/WriteError" }
+    WriteConflict:
+      description: >
+        code "conflict" - an undo of a since-changed value, or a collision with other data;
+        code "idempotency_key_reused" - the key belongs to a different request.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/WriteError" }
     NotFound:
       description: Resource not found
       content:
@@ -1901,6 +2050,60 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
 
   schemas:
+    WriteError:
+      type: object
+      required: [error, code]
+      properties:
+        error: { type: string }
+        code:
+          type: string
+          enum: [bad_request, unauthorized, validation, not_found, conflict, idempotency_key_reused, internal]
+    Provenance:
+      type: object
+      required: [onBehalfOf, chatRef]
+      additionalProperties: false
+      properties:
+        onBehalfOf: { type: string, description: The Redaktör the bot acts for }
+        chatRef: { type: string, description: Reference to the chat answer the change came from }
+    ValmanifestWrite:
+      type: object
+      required: [party, electionYear, title, url, state, onBehalfOf, chatRef]
+      additionalProperties: false
+      properties:
+        party: { type: string, example: M }
+        electionYear: { type: integer }
+        title: { type: string }
+        publishedOn: { type: string, format: date }
+        url: { type: string }
+        pdfUrl: { type: string }
+        state: { type: string, enum: [draft, final] }
+        onBehalfOf: { type: string }
+        chatRef: { type: string }
+    AendringsloggEntry:
+      type: object
+      required: [id, createdAt, actor, onBehalfOf, chatRef, action, entity, entityId, oldValue, newValue, undoes]
+      properties:
+        id: { type: integer, format: int64 }
+        createdAt: { type: string, format: date-time }
+        actor: { type: string }
+        onBehalfOf: { type: string }
+        chatRef: { type: string }
+        action: { type: string, enum: [upsert, undo] }
+        entity: { type: string, example: valmanifest }
+        entityId: { type: integer, format: int64 }
+        oldValue: { type: object, nullable: true, additionalProperties: true, description: null when the entity did not exist before }
+        newValue: { type: object, nullable: true, additionalProperties: true, description: null when the entity does not exist after }
+        undoes: { type: integer, format: int64, nullable: true }
+    WriteResult:
+      type: object
+      required: [changed, replayed, entry]
+      properties:
+        changed: { type: boolean }
+        replayed: { type: boolean }
+        entry:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/AendringsloggEntry"
     QuestionPerson:
       type: object
       required: [id, name, party]

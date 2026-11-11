@@ -3,7 +3,7 @@
 These tests build the real HTTP router against a real Postgres database and
 recorded responses from data.riksdagen.se. They do not call the live API.
 
-`api.NewRouter` is the constructor `cmd/api` uses. A test passes it a database
+`api.NewRouter` is the constructor `cmd/api` uses (`StartWithWriteToken` registers the write API; `Start` leaves it off). A test passes it a database
 pool, an empty write token, and the replay server's URL. Ingestion is then run
 by worker name, and the result is read back through the public API.
 

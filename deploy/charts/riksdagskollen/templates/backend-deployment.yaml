@@ -42,6 +42,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.dbSecretName }}
                   key: DATABASE_URL
+            # Write API token. The Secret may not exist yet: optional keeps the
+            # pod starting, and without a token the write routes answer 404.
+            - name: WRITE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.writeTokenSecretName }}
+                  key: WRITE_TOKEN
+                  optional: true
           securityContext:
             {{- toYaml .Values.backend.securityContext | nindent 12 }}
           resources:

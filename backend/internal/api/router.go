@@ -1,7 +1,7 @@
 // Package api builds the HTTP router the process serves.
 //
-// NewRouter is the seam tests use: a database pool, the Phase 2 write token
-// (empty until that API exists) and the Riksdagen base URL. cmd/api calls the
+// NewRouter is the seam tests use: a database pool, the write API token
+// and the Riksdagen base URL. cmd/api calls the
 // same constructor. Passing a replay server URL makes every Riksdagen client
 // read recorded responses instead of the live API.
 package api
@@ -29,6 +29,9 @@ import (
 	topiccontext "riksdagskollen/internal/context"
 	contextHTTP "riksdagskollen/internal/context/adapters/http"
 	contextPG "riksdagskollen/internal/context/adapters/postgres"
+	"riksdagskollen/internal/curation"
+	curationHTTP "riksdagskollen/internal/curation/adapters/http"
+	curationPG "riksdagskollen/internal/curation/adapters/postgres"
 	"riksdagskollen/internal/datacoverage"
 	datacoverageHTTP "riksdagskollen/internal/datacoverage/adapters/http"
 	datacoveragePG "riksdagskollen/internal/datacoverage/adapters/postgres"
@@ -100,13 +103,15 @@ const productionRiksdagenBaseURL = "https://data.riksdagen.se"
 // use RunWorker instead, so a test does not start the cron or the boot sync.
 type Router struct {
 	mux        *chi.Mux
+	api        chi.Router
+	curation   *curationHTTP.Handler
 	sched      *ingestion.Scheduler
 	clk        *clock
 	writeToken string
 }
 
-// NewRouter builds the production router. writeToken is empty until the
-// Phase 2 write API exists; a non-empty token does not register routes yet.
+// NewRouter builds the production router. writeToken protects the write API
+// (/api/write/*); when it is empty those routes are not registered at all.
 // riksdagenBaseURL is the origin for every data.riksdagen.se client. Empty
 // means the production origin.
 func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, error) {
@@ -136,6 +141,8 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	questionSvc := questions.NewService(questionsPG.NewRepository(db), questionsRD.NewClientWithBaseURL(riksdagenBaseURL))
 	questionHandler := questionsHTTP.NewHandler(questionSvc)
 	dataCoverageHandler := datacoverageHTTP.NewHandler(datacoverage.NewService(datacoveragePG.NewRepository(db)))
+
+	curationHandler := curationHTTP.NewHandler(curation.NewService(curationPG.NewRepository(db)), writeToken)
 
 	goalRepo := goalsPG.NewRepository(db)
 	goalSvc := goals.NewService(goalRepo)
@@ -232,6 +239,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		speechHandler.Routes(api)
 		goalsHandler.Routes(api)
 		loftenHandler.Routes(api)
+		curationHandler.PublicRoutes(api)
 		promisesHandler.Routes(api)
 		budgetHandler.Routes(api)
 		contextHandler.Routes(api)
@@ -342,19 +350,18 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	}
 	apiRouter.Get("/ingestion/freshness", ingestionHTTP.NewHandler(freshnessRepo, sched.Catalog()).ServeFreshness)
 
-	rt := &Router{mux: r, sched: sched, clk: clk, writeToken: writeToken}
-	// Phase 2 registers the write API here when writeToken is set. Until then
-	// the call adds no routes, which the route-list test locks.
+	rt := &Router{mux: r, api: apiRouter, curation: curationHandler, sched: sched, clk: clk, writeToken: writeToken}
 	rt.registerWriteRoutes()
 	return rt, nil
 }
 
-// registerWriteRoutes is the Phase 2 extension point. An empty token and a
-// configured token both leave the public route list unchanged.
+// registerWriteRoutes mounts /api/write/* only when a token is configured.
+// Without one the paths do not exist and answer 404 like any unknown route.
 func (r *Router) registerWriteRoutes() {
 	if r.writeToken == "" {
 		return
 	}
+	r.api.Route("/write", r.curation.WriteRoutes)
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
