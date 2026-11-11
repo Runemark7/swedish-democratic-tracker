@@ -87,6 +87,10 @@ type decisionResponse struct {
 	Outcome    string `json:"outcome"`
 	// VoteringStored is true when we hold the ballots of the votering.
 	VoteringStored bool            `json:"voteringStored"`
+	// VoteringID and VoteringURL name the votering at Riksdagen; empty when
+	// the punkt was decided without one.
+	VoteringID  string `json:"voteringId"`
+	VoteringURL string `json:"voteringUrl"`
 	Parties        []partyResponse `json:"parties"`
 	// Debate is the chamber debate on the betänkande that decided this
 	// yrkande (the speeches linked to it); null when the betänkande is not
@@ -366,6 +370,10 @@ func toDecision(d domain.YrkandeDecision, outcome string) decisionResponse {
 		Punkt: d.Punkt.Number, Rubrik: d.Punkt.Rubrik, LinkedBy: d.LinkedBy, Beslutstyp: d.Punkt.Beslutstyp,
 		Mode: string(mode), ModeLabel: label, Alternativ: d.Punkt.Alternativ, Outcome: outcome,
 		VoteringStored: d.VoteringStored, Parties: []partyResponse{},
+	}
+	if d.Punkt.VoteringID != "" {
+		out.VoteringID = d.Punkt.VoteringID
+		out.VoteringURL = "https://data.riksdagen.se/votering/" + d.Punkt.VoteringID
 	}
 	if d.BetDokID != "" {
 		out.BetankandeSourceURL = sourceURLBase + d.BetDokID + ".html"

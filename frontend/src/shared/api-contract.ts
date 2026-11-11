@@ -1555,6 +1555,10 @@ export interface components {
             outcome: string;
             /** @description True when the ballots of the votering are held */
             voteringStored: boolean;
+            /** @description Riksdagen's votering id; empty without a votering */
+            voteringId: string;
+            /** @description The votering at data.riksdagen.se; empty without a votering */
+            voteringUrl: string;
             /** @description Partilinje of every party in the votering (shared definition); empty for acklamation */
             parties: components["schemas"]["PartyPartilinje"][];
             /** @description The utskott's own text (Utskottets ställningstagande) for the punkt, from the betänkande HTML; empty when not read */

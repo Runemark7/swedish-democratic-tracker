@@ -113,7 +113,9 @@ test.describe("motion page 2017/18:3293", () => {
   test("shows the header and the yrkande list", async ({ page }) => {
     let requested = "";
     await page.route("**/api/motions/**", async (route) => {
-      requested = new URL(route.request().url()).pathname;
+      const path = new URL(route.request().url()).pathname;
+      if (path.endsWith("/questions")) return route.fulfill({ json: { questions: [] } });
+      requested = path;
       await route.fulfill({ json: MOTION_3293 });
     });
 
@@ -123,7 +125,7 @@ test.describe("motion page 2017/18:3293", () => {
     await expect(page.getByText("Motion 2017/18:3293")).toBeVisible();
     await expect(page.getByTestId("motion-kind")).toContainText("Kommittémotion");
     await expect(page.getByTestId("motion-kind")).toContainText("uttrycker oftast partiets linje");
-    await expect(page.getByText("5 oktober 2017")).toBeVisible();
+    await expect(page.getByText("5 oktober 2017").first()).toBeVisible();
     await expect(page.getByText("Skatteutskottet (SkU)")).toBeVisible();
     await expect(page.getByText("2017/18:SkU11").first()).toBeVisible();
     await expect(page.getByRole("link", { name: "Maria Malmer Stenergard" })).toBeVisible();
