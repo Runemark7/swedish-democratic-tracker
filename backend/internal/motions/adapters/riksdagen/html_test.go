@@ -1,9 +1,9 @@
 package riksdagen
 
 import (
-	"riksdagskollen/internal/motions/domain"
 	"os"
 	"path/filepath"
+	"riksdagskollen/internal/motions/domain"
 	"strings"
 	"testing"
 )
