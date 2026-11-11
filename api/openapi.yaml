@@ -763,6 +763,15 @@ paths:
           description: Utskott code, e.g. SkU
           schema:
             type: string
+        - name: betankande
+          in: query
+          description: >
+            Only Löften with a Bekräftad koppling to a votering of this
+            betänkande, written riksmöte:beteckning (2026/27:SkU2). This is
+            what "berör N löften" links to.
+          schema:
+            type: string
+            example: "2026/27:SkU2"
         - name: status
           in: query
           description: Filter by Löftesstatus; "arkiv" selects archived Löften (no status)
@@ -2970,12 +2979,14 @@ components:
 
     YrkandeDecision:
       type: object
-      required: [betankandeRiksmote, betankandeBeteckning, betankandeTitle, betankandeSourceUrl, debate, punkt, rubrik, linkedBy, beslutstyp, mode, modeLabel, alternativ, outcome, voteringStored, voteringId, voteringUrl, parties, reasoning, reasoningAvailable, reservationsAvailable, reservations, sarskildaYttranden, votedReservation]
+      required: [betankandeRiksmote, betankandeBeteckning, betankandeTitle, betankandeSourceUrl, loefteCount, loften, debate, punkt, rubrik, linkedBy, beslutstyp, mode, modeLabel, alternativ, outcome, voteringStored, voteringId, voteringUrl, parties, reasoning, reasoningAvailable, reservationsAvailable, reservations, sarskildaYttranden, votedReservation]
       properties:
         betankandeRiksmote: { type: string, example: "2017/18" }
         betankandeBeteckning: { type: string, example: "SkU11" }
         betankandeTitle: { type: string }
         betankandeSourceUrl: { type: string }
+        loefteCount: { type: integer, description: "Berör N löften: public Löften with a Bekräftad koppling to a votering of this betänkande" }
+        loften: { type: array, items: { $ref: "#/components/schemas/LoefteRef" } }
         debate:
           nullable: true
           description: "The chamber debate on the betänkande that decided the yrkande"
@@ -3017,13 +3028,15 @@ components:
 
     BetankandePage:
       type: object
-      required: [riksmote, beteckning, title, organ, dokId, sourceUrl, held, status, decided, decisionDate, decisionText, punkter, debate]
+      required: [riksmote, beteckning, title, organ, dokId, sourceUrl, held, status, decided, decisionDate, decisionText, punkter, debate, loefteCount, loften]
       properties:
         riksmote: { type: string, example: "2025/26" }
         beteckning: { type: string, example: "SkU16" }
         title: { type: string }
         organ: { type: string }
         dokId: { type: string }
+        loefteCount: { type: integer, description: "Berör N löften: public Löften with a Bekräftad koppling to a votering of this betänkande" }
+        loften: { type: array, items: { $ref: "#/components/schemas/LoefteRef" } }
         sourceUrl: { type: string }
         held: { type: boolean, description: "False when the punkter come from the voteringar alone (betänkande not ingested)" }
         status: { type: string, description: "Riksdagen's status word, verbatim" }
@@ -3166,11 +3179,17 @@ components:
         outcome: { $ref: "#/components/schemas/MotionOutcome" }
     FrontPageResponse:
       type: object
-      required: [decided, motions, upcoming, coverage]
+      required: [decided, motions, upcoming, coverage, partyTiles]
       properties:
         decided: { type: array, items: { $ref: "#/components/schemas/BeslutListRow" } }
         motions: { type: array, items: { $ref: "#/components/schemas/FrontPageMotion" } }
         upcoming: { type: array, items: { $ref: "#/components/schemas/BeslutListRow" } }
+        partyTiles:
+          type: array
+          description: >
+            The eight parties in alphabetical order of party code, never by
+            count. Counts come from Bekräftade kopplingar only.
+          items: { $ref: "#/components/schemas/LoftePartySummary" }
         coverage:
           type: object
           required: [oldest, newest, stale]
@@ -3193,8 +3212,9 @@ components:
         nextCursor: { type: [string, "null"] }
     BeslutListRow:
       type: object
-      required: [riksmote, beteckning, title, utskott, utskottName, date, decided, status, outcome, sourceUrl, parties]
+      required: [riksmote, beteckning, title, utskott, utskottName, date, decided, status, outcome, sourceUrl, parties, loefteCount]
       properties:
+        loefteCount: { type: integer, description: "Berör N löften: public Löften with a Bekräftad koppling to a votering of this betänkande" }
         riksmote: { type: string, example: "2026/27" }
         beteckning: { type: string, example: "SkU8" }
         title: { type: string }
@@ -3262,8 +3282,12 @@ components:
 
     Motion:
       type: object
-      required: [dokId, riksmote, beteckning, title, subtyp, kind, kindExplanation, date, utskott, utskottName, status, behandlasI, sourceUrl, authors, yrkanden, outcome]
+      required: [dokId, riksmote, beteckning, title, subtyp, kind, kindExplanation, date, utskott, utskottName, status, behandlasI, sourceUrl, authors, yrkanden, outcome, loften]
       properties:
+        loften:
+          type: array
+          description: Löften with a Bekräftad koppling to a votering of a betänkande that decided one of its yrkanden
+          items: { $ref: "#/components/schemas/LoefteRef" }
         outcome: { $ref: "#/components/schemas/MotionOutcome" }
         dokId: { type: string, example: "H5023293" }
         riksmote: { type: string, example: "2017/18" }
@@ -3441,6 +3465,14 @@ components:
         explanation: { type: string, description: Plain explanation of why the vote counts as it does }
         confirmedAt: { type: string, format: date-time }
 
+    LoefteRef:
+      type: object
+      description: A Löfte a decision touches. It implies nothing about the Löfte's status.
+      required: [id, party, text]
+      properties:
+        id: { type: integer }
+        party: { type: string }
+        text: { type: string }
     LoftePartySummary:
       type: object
       required: [party, total, for, emot, blandat, inteProvat, arkiv]

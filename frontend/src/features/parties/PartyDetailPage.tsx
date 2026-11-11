@@ -8,6 +8,7 @@ import { PARTY_COLORS, partyShortToName } from "@/shared/design";
 import { useSpeechesByParty } from "@/hooks/useDemocracy";
 import { SpeechRow } from "@/features/speeches/SpeechRow";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { PartyLoefteSummary } from "@/features/loften/OnDecision";
 import { loftenApi } from "@/features/loften/api";
 import { ArchiveNote, LoefteCard, ValmanifestList } from "@/features/loften/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
@@ -201,6 +202,8 @@ export function PartyDetailPage() {
           maxWidth: 920,
         }}
       >
+        <PartyLoefteSummary party={party} />
+
         {(tab === "beslut" || tab === "motioner") && (
           <section>
             {loadingRecord && (

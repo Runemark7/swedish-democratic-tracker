@@ -35,6 +35,9 @@ type beslutRowResponse struct {
 	SourceURL string  `json:"sourceUrl"`
 	// Parties is empty for an upcoming row.
 	Parties []beslutPartyResponse `json:"parties"`
+	// LoefteCount is "berör N löften": Löften with a Bekräftad koppling to a
+	// votering of this betänkande. Zero for an upcoming row.
+	LoefteCount int `json:"loefteCount"`
 }
 
 type beslutListResponse struct {
@@ -109,7 +112,11 @@ func (h *Handler) listBeslut(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	jsonOK(w, toBeslutResponse(res))
+	out := toBeslutResponse(res)
+	if !h.addLoefteCounts(r.Context(), w, out.Data) {
+		return
+	}
+	jsonOK(w, out)
 }
 
 func toBeslutResponse(res *motions.BeslutResult) beslutListResponse {

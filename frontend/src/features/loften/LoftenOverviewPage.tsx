@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { loftenApi } from "./api";
 import { ArchiveNote, LoefteCard, ValmanifestList } from "./components";
 import { STATUS_FILTERS } from "./labels";
+import { betankandePath } from "@/features/votes/betankandeApi";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 
 const PARTIES = ["C", "KD", "L", "M", "MP", "S", "SD", "V"];
@@ -14,6 +15,7 @@ export function LoftenOverviewPage() {
   const party = sp.get("party") ?? "";
   const utskott = sp.get("utskott") ?? "";
   const status = sp.get("status") ?? "";
+  const betankande = sp.get("betankande") ?? "";
   const set = (k: string, v: string) => {
     const n = new URLSearchParams(sp);
     if (v) n.set(k, v);
@@ -22,8 +24,8 @@ export function LoftenOverviewPage() {
   };
 
   const loften = useQuery({
-    queryKey: ["loften", party, utskott, status],
-    queryFn: () => loftenApi.list({ party, utskott, status }),
+    queryKey: ["loften", party, utskott, status, betankande],
+    queryFn: () => loftenApi.list({ party, utskott, status, betankande }),
     staleTime: 60_000,
   });
   const summary = useQuery({ queryKey: ["loften-summary"], queryFn: () => loftenApi.summary(), staleTime: 60_000 });
@@ -79,6 +81,14 @@ export function LoftenOverviewPage() {
           </select>
         </label>
       </div>
+
+      {betankande && (
+        <p data-testid="betankande-filter" className="text-sm mb-3">
+          Löften som berörs av betänkande{" "}
+          <Link to={betankandePath(betankande.split(":")[0], betankande.split(":")[1] ?? "")} className="text-link underline">{betankande}</Link>.{" "}
+          <button type="button" className="text-link underline" onClick={() => set("betankande", "")}>Visa alla</button>
+        </p>
+      )}
 
       <ArchiveNote />
 

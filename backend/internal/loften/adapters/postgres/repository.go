@@ -162,3 +162,33 @@ func (r *Repository) Windows(ctx context.Context) (map[string][]string, error) {
 	}
 	return out, rows.Err()
 }
+
+// LoefteForBetankanden: kopplingar are the small side, so start there and
+// reach the betänkande through the förslagspunkt that names the votering.
+func (r *Repository) LoefteForBetankanden(ctx context.Context, keys []string) (map[string][]domain.LoefteRef, error) {
+	out := map[string][]domain.LoefteRef{}
+	if len(keys) == 0 {
+		return out, nil
+	}
+	rows, err := r.db.Query(ctx, `
+SELECT DISTINCT f.riksmote || ':' || f.beteckning AS key, l.party, l.id, l.text
+  FROM kopplingar k
+  JOIN loften l ON l.id = k.loefte_id AND l.`+publicFilter+`
+  JOIN voteringar v ON v.id = k.votering_ref
+  JOIN forslagspunkter f ON f.votering_id <> '' AND upper(f.votering_id) = upper(v.votering_id)
+ WHERE k.state = 'bekraftad' AND f.riksmote || ':' || f.beteckning = ANY($1)
+ ORDER BY key, l.party, l.id`, keys)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var key string
+		var ref domain.LoefteRef
+		if err := rows.Scan(&key, &ref.Party, &ref.ID, &ref.Text); err != nil {
+			return nil, err
+		}
+		out[key] = append(out[key], ref)
+	}
+	return out, rows.Err()
+}

@@ -68,3 +68,13 @@ som "emot". Är Partilinjen Avstår eller Delad anger den ingen riktning och
 omröstningen räknas varken för eller emot, men visas ändå. Finns både "för"
 och "emot" blir statusen Blandat; finns ingendera, Inte prövat än. Ångras en
 bekräftelse försvinner kopplingen och statusen räknas om.
+
+## Löften on decisions and the front page (#162)
+
+The public read also answers "which Löften does this decision touch?" and
+fills the front-page party tiles. Both count **Bekräftade kopplingar on public
+Löften only**: a Löfte touches a betänkande when a Bekräftad koppling points at
+a votering named by one of its förslagspunkter. Föreslagna, avvisade and
+bortsorterade kopplingar, and Löften that are not public, never count. No new
+table and no new external source; `GET /api/loften?betankande=2026/27:SkU2`
+returns exactly the Löften behind a "berör N löften" link.

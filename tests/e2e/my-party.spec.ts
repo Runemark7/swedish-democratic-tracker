@@ -16,6 +16,7 @@ const FEED = {
   motions: [motion("1", ["S"]), motion("2", ["M"])],
   upcoming: [],
   coverage: { oldest: "2026-08-13", newest: "2026-08-13", stale: false },
+  partyTiles: PARTIES.slice().sort().map((party) => ({ party, total: 1, for: 0, emot: 0, blandat: 0, inteProvat: 1, arkiv: 0 })),
 };
 const LIST = { data: [motion("1", ["S"]), motion("2", ["M"])].map((m) => ({ ...m })), nextCursor: null };
 

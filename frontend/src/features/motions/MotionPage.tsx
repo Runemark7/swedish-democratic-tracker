@@ -7,6 +7,7 @@ import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { VotedAlternative, Reasoning, Reservations } from "./DecisionParts";
 import { Debate } from "./Debate";
+import { LoefteRefList } from "@/features/loften/OnDecision";
 import { Timeline } from "./Timeline";
 import { Explain } from "./Explain";
 import { QuestionsSection } from "@/features/questions/QuestionsSection";
@@ -182,6 +183,7 @@ export function MotionPage() {
       </p>
 
       <Timeline motion={motion} />
+      <LoefteRefList items={motion.loften} heading="Löften som beslutet berör" />
 
       <dl className="grid gap-3 my-6" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
         <Fact label="Inlämnad">{motion.date ? swedishDate(motion.date) : "Datum saknas"}</Fact>

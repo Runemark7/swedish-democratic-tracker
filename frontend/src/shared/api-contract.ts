@@ -2273,6 +2273,9 @@ export interface components {
             betankandeBeteckning: string;
             betankandeTitle: string;
             betankandeSourceUrl: string;
+            /** @description Berör N löften: public Löften with a Bekräftad koppling to a votering of this betänkande */
+            loefteCount: number;
+            loften: components["schemas"]["LoefteRef"][];
             /** @description The chamber debate on the betänkande that decided the yrkande */
             debate: components["schemas"]["Debate"] | null;
             /** @example 6 */
@@ -2327,6 +2330,9 @@ export interface components {
             title: string;
             organ: string;
             dokId: string;
+            /** @description Berör N löften: public Löften with a Bekräftad koppling to a votering of this betänkande */
+            loefteCount: number;
+            loften: components["schemas"]["LoefteRef"][];
             sourceUrl: string;
             /** @description False when the punkter come from the voteringar alone (betänkande not ingested) */
             held: boolean;
@@ -2451,6 +2457,8 @@ export interface components {
             decided: components["schemas"]["BeslutListRow"][];
             motions: components["schemas"]["FrontPageMotion"][];
             upcoming: components["schemas"]["BeslutListRow"][];
+            /** @description The eight parties in alphabetical order of party code, never by count. Counts come from Bekräftade kopplingar only. */
+            partyTiles: components["schemas"]["LoftePartySummary"][];
             coverage: {
                 /** Format: date */
                 oldest: string | null;
@@ -2472,6 +2480,8 @@ export interface components {
             nextCursor: string | null;
         };
         BeslutListRow: {
+            /** @description Berör N löften: public Löften with a Bekräftad koppling to a votering of this betänkande */
+            loefteCount: number;
             /** @example 2026/27 */
             riksmote: string;
             /** @example SkU8 */
@@ -2531,6 +2541,8 @@ export interface components {
             total: number;
         };
         Motion: {
+            /** @description Löften with a Bekräftad koppling to a votering of a betänkande that decided one of its yrkanden */
+            loften: components["schemas"]["LoefteRef"][];
             outcome: components["schemas"]["MotionOutcome"];
             /** @example H5023293 */
             dokId: string;
@@ -2672,6 +2684,12 @@ export interface components {
             explanation: string;
             /** Format: date-time */
             confirmedAt: string;
+        };
+        /** @description A Löfte a decision touches. It implies nothing about the Löfte's status. */
+        LoefteRef: {
+            id: number;
+            party: string;
+            text: string;
         };
         LoftePartySummary: {
             party: string;
@@ -4602,6 +4620,8 @@ export interface operations {
                 party?: string;
                 /** @description Utskott code, e.g. SkU */
                 utskott?: string;
+                /** @description Only Löften with a Bekräftad koppling to a votering of this betänkande, written riksmöte:beteckning (2026/27:SkU2). This is what "berör N löften" links to. */
+                betankande?: string;
                 /** @description Filter by Löftesstatus; "arkiv" selects archived Löften (no status) */
                 status?: "for" | "emot" | "blandat" | "inte-provat" | "arkiv";
             };

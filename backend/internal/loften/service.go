@@ -44,6 +44,9 @@ var ErrBadStatus = errors.New("unknown status filter")
 // Filter narrows a list of Löften. Zero fields mean "any".
 type Filter struct {
 	Party, Utskott, Status string
+	// Betankande is "riksmöte:beteckning": only Löften with a Bekräftad
+	// koppling to that betänkande.
+	Betankande string
 }
 
 func (s *Service) views(ctx context.Context, ls []*domain.Loefte, withKopplingar bool) ([]*domain.LoefteView, error) {
@@ -113,6 +116,23 @@ func (s *Service) ListWithStatus(ctx context.Context, f Filter) ([]*domain.Loeft
 		kept := ls[:0]
 		for _, l := range ls {
 			if slices.Contains(l.Utskott, f.Utskott) {
+				kept = append(kept, l)
+			}
+		}
+		ls = kept
+	}
+	if f.Betankande != "" {
+		refs, err := s.repo.LoefteForBetankanden(ctx, []string{f.Betankande})
+		if err != nil {
+			return nil, err
+		}
+		in := map[int]bool{}
+		for _, r := range refs[f.Betankande] {
+			in[r.ID] = true
+		}
+		kept := ls[:0]
+		for _, l := range ls {
+			if in[l.ID] {
 				kept = append(kept, l)
 			}
 		}
@@ -206,6 +226,41 @@ func (s *Service) Summary(ctx context.Context) ([]domain.PartySummary, error) {
 	out := make([]domain.PartySummary, 0, len(order))
 	for _, p := range order {
 		out = append(out, *idx[p])
+	}
+	return out, nil
+}
+
+// ForBetankanden returns, per "riksmöte:beteckning", the Löften a decision
+// touches. Every key is present, with an empty list when none.
+func (s *Service) ForBetankanden(ctx context.Context, keys []string) (map[string][]domain.LoefteRef, error) {
+	got, err := s.repo.LoefteForBetankanden(ctx, keys)
+	if err != nil {
+		return nil, err
+	}
+	for _, k := range keys {
+		if got[k] == nil {
+			got[k] = []domain.LoefteRef{}
+		}
+	}
+	return got, nil
+}
+
+// PartyTiles summarises Löftesstatus for all eight parties, always in
+// alphabetical order of party code and with zeros for a party without Löften.
+func (s *Service) PartyTiles(ctx context.Context) ([]domain.PartySummary, error) {
+	sum, err := s.Summary(ctx)
+	if err != nil {
+		return nil, err
+	}
+	by := map[string]domain.PartySummary{}
+	for _, p := range sum {
+		by[p.Party] = p
+	}
+	out := make([]domain.PartySummary, 0, len(domain.Parties))
+	for _, code := range domain.Parties {
+		p := by[code]
+		p.Party = code
+		out = append(out, p)
 	}
 	return out, nil
 }
