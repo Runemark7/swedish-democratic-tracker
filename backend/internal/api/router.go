@@ -33,6 +33,9 @@ import (
 	datacoverageHTTP "riksdagskollen/internal/datacoverage/adapters/http"
 	datacoveragePG "riksdagskollen/internal/datacoverage/adapters/postgres"
 	"riksdagskollen/internal/goals"
+	"riksdagskollen/internal/loften"
+	loftenHTTP "riksdagskollen/internal/loften/adapters/http"
+	loftenPG "riksdagskollen/internal/loften/adapters/postgres"
 	goalsHTTP "riksdagskollen/internal/goals/adapters/http"
 	goalsPG "riksdagskollen/internal/goals/adapters/postgres"
 	"riksdagskollen/internal/ingestion"
@@ -137,6 +140,8 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	goalRepo := goalsPG.NewRepository(db)
 	goalSvc := goals.NewService(goalRepo)
 
+	loftenHandler := loftenHTTP.NewHandler(loften.NewService(loftenPG.NewRepository(db)))
+
 	matchRepo := matchingPG.NewRepository(db)
 	aiStub := matchingStub.NewAIService()
 	matchSvc := matching.NewService(matchRepo, aiStub)
@@ -226,6 +231,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		dataCoverageHandler.Routes(api)
 		speechHandler.Routes(api)
 		goalsHandler.Routes(api)
+		loftenHandler.Routes(api)
 		promisesHandler.Routes(api)
 		budgetHandler.Routes(api)
 		contextHandler.Routes(api)
