@@ -14,3 +14,10 @@ export const partiesApi = {
     api.get<GoalVoteBreakdown>(`/parties/${party}/goals/${goalId}/votes`),
   listPartyMeta: () => api.get<PartyMeta[]>("/party-meta"),
 };
+
+export type PartyRecord = components["schemas"]["PartyRecord"];
+export type PartyDecision = components["schemas"]["PartyDecision"];
+
+export const partyRecordApi = {
+  get: (party: string) => api.get<PartyRecord>(`/parties/${encodeURIComponent(party)}/record`),
+};

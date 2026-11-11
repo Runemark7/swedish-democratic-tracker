@@ -82,7 +82,7 @@ function PillNav({ to, label, active }: PillNavProps) {
 // ── Main App ───────────────────────────────────────────────────────────────
 /**
  * /parties/:party/goals used to be a separate full record view. That view now
- * lives in the party page's Mål tab, so the old URL redirects rather than 404s —
+ * lives in the party page's Mål tab (?tab=mal), so the old URL redirects rather than 404s —
  * it has been linked and shared.
  *
  * The redirect is absolute on purpose. A relative <Navigate to=".." /> resolves
@@ -91,7 +91,7 @@ function PillNav({ to, label, active }: PillNavProps) {
  */
 function GoalsRedirect() {
   const { party = "" } = useParams<{ party: string }>();
-  return <Navigate to={`/parties/${party}`} replace />;
+  return <Navigate to={`/parties/${party}?tab=mal`} replace />;
 }
 
 /**

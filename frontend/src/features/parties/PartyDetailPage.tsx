@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { partiesApi } from "./api";
+import { partiesApi, partyRecordApi } from "./api";
+import { PartyDecisions, PartyMotions } from "./PartyRecordSections";
 import { committeesApi } from "@/features/committees/api";
 import { politiciansApi } from "@/features/politicians/api";
 import { regeringApi } from "@/features/regering/api";
@@ -15,9 +16,11 @@ import type { components } from "@/shared/api-contract";
 
 type Goal = components["schemas"]["Goal"];
 
-type Tab = "mal" | "anforanden" | "politiker";
+type Tab = "beslut" | "motioner" | "mal" | "anforanden" | "politiker";
 
 const TABS: { key: Tab; label: string }[] = [
+  { key: "beslut", label: "Beslut" },
+  { key: "motioner", label: "Kommittémotioner" },
   { key: "mal", label: "Mål" },
   { key: "anforanden", label: "Anföranden" },
   { key: "politiker", label: "Politiker" },
@@ -31,11 +34,11 @@ export function PartyDetailPage() {
   const tab: Tab =
     (searchParams.get("tab") as Tab | null) && TABS.some((t) => t.key === searchParams.get("tab"))
       ? (searchParams.get("tab") as Tab)
-      : "mal";
+      : "beslut";
 
   const setTab = (next: Tab) => {
     const params = new URLSearchParams(searchParams);
-    if (next === "mal") params.delete("tab");
+    if (next === "beslut") params.delete("tab");
     else params.set("tab", next);
     setSearchParams(params, { replace: true });
   };
@@ -46,6 +49,13 @@ export function PartyDetailPage() {
     staleTime: 5 * 60 * 1000,
   });
   const summary = parties?.find((p) => p.party === party);
+
+  const { data: record, isLoading: loadingRecord, isError: recordError } = useQuery({
+    queryKey: ["party-record", party],
+    queryFn: () => partyRecordApi.get(party),
+    enabled: !!party && (tab === "beslut" || tab === "motioner"),
+    staleTime: 60_000,
+  });
 
   const { data: goals, isLoading: loadingGoals } = useQuery({
     queryKey: ["party-goals", party],
@@ -237,6 +247,21 @@ export function PartyDetailPage() {
           maxWidth: 920,
         }}
       >
+        {(tab === "beslut" || tab === "motioner") && (
+          <section>
+            {loadingRecord && (
+              <div style={{ fontSize: 13, color: "var(--color-fg-muted)" }}>Laddar...</div>
+            )}
+            {recordError && (
+              <p className="text-sm text-on-surface-variant">
+                Kunde inte ladda {partyShortToName(party)}s {tab === "beslut" ? "beslut" : "kommittémotioner"}. Försök igen.
+              </p>
+            )}
+            {record && tab === "beslut" && <PartyDecisions party={party} record={record} />}
+            {record && tab === "motioner" && <PartyMotions party={party} record={record} />}
+          </section>
+        )}
+
         {tab === "mal" && (
           <section>
             {(loadingGoals || loadingCommittees || periodPending) && (
