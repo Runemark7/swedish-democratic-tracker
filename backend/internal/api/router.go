@@ -262,6 +262,12 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		slog.Error("failed to register fetch-motions worker", "error", err)
 		return nil, err
 	}
+	beslutListWorker := workers.NewBeslutListWorker(motionSvc, ingestionPG.NewMandateRepository(db))
+	beslutListWorker.SetNow(clk.Now)
+	if err := sched.RegisterSync("@daily", &beslutListWorker); err != nil {
+		slog.Error("failed to register sync-beslut-list worker", "error", err)
+		return nil, err
+	}
 	betankandenWorker := workers.NewBetankandenWorker(motionSvc)
 	betankandenWorker.SetNow(clk.Now)
 	if err := sched.RegisterSync("@daily", &betankandenWorker); err != nil {

@@ -153,6 +153,7 @@ graph TD
             W6["⑥ refresh-scorecards @weekly"]
             W7["⑦ fetch-motions @daily\ncurrent riksmöte only, ≤500/run"]
             W8["⑧ fetch-betankanden @daily\ncurrent riksmöte, ≤25 per run, resumable"]
+            W9["⑨ sync-beslut-list @daily\nbetänkande listing per riksmöte"]
         end
 
         subgraph seeder["Election seeder"]
@@ -188,6 +189,7 @@ graph TD
 
     W7 -->|HTTP| MO
     W8 -->|HTTP| BK
+    W9 -->|HTTP dokumentlista doktyp=bet| BK
     MS -->|motion per riksmöte + beteckning| MO
     MS -->|yrkande → förslagspunkt, beslut| BK
     VS -->|GET /dokumentlista betänkanden\nriksdags-feed endpoint| RD
@@ -304,7 +306,7 @@ postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable
   `DATABASE_URL` secret named by the chart's `dbSecretName` — there is no
   bitnami subchart and the database is not Neon. Local dev compose still uses
   `postgres:17-alpine`.
-- 47 migrations in `backend/migrations/` (numbered `000001`–`000048`, no `000045`).
+- 48 migrations in `backend/migrations/` (numbered `000001`–`000049`, no `000045`).
 - The voting record lives in two tables, not one: `voteringar` (one row per
   decided förslagspunkt) and `ballots` (one row per member per votering).
   `votering_id` is the identity — two voteringar can share a beteckning and

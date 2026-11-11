@@ -8,7 +8,7 @@ import { PoliticiansPage } from "./features/politicians/PoliticiansPage";
 import { PoliticianPage } from "./features/politicians/PoliticianPage";
 import { MotionPage } from "./features/motions/MotionPage";
 import { MotionListPage } from "./features/motions/MotionListPage";
-import { VotesPage } from "./features/votes/VotesPage";
+import { BeslutListPage } from "./features/beslut/BeslutListPage";
 import { BetankandePage } from "./features/votes/BetankandePage";
 import { VoteRedirect, BeslutRedirect } from "./features/votes/BetankandeRedirects";
 import { VoteSharePage } from "./features/votes/VoteSharePage";
@@ -286,7 +286,7 @@ export default function App() {
           {/* The list moved to /beslut. Detail and share URLs stay. */}
           <Route path="/votes"                                 element={<Navigate to="/beslut" replace />} />
           <Route path="/votes/:beteckning/:punkt"              element={<VoteRedirect />} />
-          <Route path="/beslut"                                element={<VotesPage />} />
+          <Route path="/beslut"                                element={<BeslutListPage />} />
           <Route path="/beslut/:beteckning"                    element={<BeslutRedirect />} />
           <Route path="/beslut/:y/:yy/:beteckning"             element={<BetankandePage />} />
           <Route path="/beslut/:riksmote/:beteckning"          element={<BetankandePage />} />
