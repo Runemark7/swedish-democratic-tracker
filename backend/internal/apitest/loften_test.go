@@ -23,8 +23,9 @@ type loftePublic struct {
 }
 
 // startLoften builds an API whose party_goals hold three 2022 goals and one
-// 2026 goal, then runs the real 000057 migration over them (down, then up), so
-// the archive step is exercised on existing rows rather than an empty table.
+// 2026 goal, then runs the real 000057 migration over them (down, then up) and
+// finally the 000064 drop, so the archive step is exercised on existing rows
+// rather than an empty table.
 func startLoften(t *testing.T) *Harness {
 	t.Helper()
 	// Löften read only Postgres; any recorded set satisfies the replay server.
@@ -64,6 +65,19 @@ func startLoften(t *testing.T) *Harness {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// 000064 (retire goals) dropped party_goals; bring the table back first so
+	// the archive step has rows to copy, then run the real drop at the end.
+	down64, err := os.ReadFile(filepath.Join(dir, "000064_retire_goals.down.sql"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	up64, err := os.ReadFile(filepath.Join(dir, "000064_retire_goals.up.sql"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := h.DB.Exec(ctx, string(down64)); err != nil {
+		t.Fatalf("down 64: %v", err)
+	}
 	if _, err := h.DB.Exec(ctx, string(down62)); err != nil {
 		t.Fatalf("down 62: %v", err)
 	}
@@ -99,6 +113,11 @@ func startLoften(t *testing.T) *Harness {
 	}
 	if _, err := h.DB.Exec(ctx, string(up62)); err != nil {
 		t.Fatalf("up 62: %v", err)
+	}
+	// The drop runs over real goal rows: its guard only passes because the
+	// 000057 archive holds every non-2026 goal.
+	if _, err := h.DB.Exec(ctx, string(up64)); err != nil {
+		t.Fatalf("up 64: %v", err)
 	}
 	// A proposed and an approved Löfte, created by the test the way a later
 	// write API would. Nothing in the migration approves anything.
@@ -181,10 +200,10 @@ func TestArchivedLoftenKeepTheirOldIdsAndShowNoLoftesstatus(t *testing.T) {
 			t.Errorf("response mentions %q: archived Löften must not show a Löftesstatus", banned)
 		}
 	}
-	// The old tables are untouched.
-	var n int
-	if err := h.DB.QueryRow(context.Background(), `SELECT count(*) FROM party_goals`).Scan(&n); err != nil || n != 4 {
-		t.Errorf("party_goals = %d, %v", n, err)
+	// 000064 retired the old table; the archive above is what remains.
+	var reg *string
+	if err := h.DB.QueryRow(context.Background(), `SELECT to_regclass('party_goals')::text`).Scan(&reg); err != nil || reg != nil {
+		t.Errorf("party_goals still exists: %v, %v", reg, err)
 	}
 }
 

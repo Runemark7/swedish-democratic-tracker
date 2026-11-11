@@ -31,8 +31,6 @@ graph TD
             W1["① politicians @daily"]
             W2["② speeches @daily"]
             W3["③ votes @daily"]
-            W5["⑤ keyword-matcher @daily"]
-            W6["⑥ refresh-scorecards @weekly"]
         end
 
         subgraph seeder["Election seeder"]
@@ -203,10 +201,6 @@ PostgreSQL 17. All migrations in `backend/migrations/` (numbered `000001`–`000
 | `speeches` | Debate contributions (anföranden) — raw text, date, politician | Riksdagen Open API | Daily cron |
 | `votes` | Individual votes per MP per proposal point — result, beteckning, enriched origin | Riksdagen Open API | Daily cron |
 | `ingestion_cursors` | Watermark per data type (last fetched date/id) | Internal | Each sync |
-| `party_goals` | Goals extracted from manifestos and Tidöavtalet — topic, specificity, keywords | SQL seed (migration 003) | Manual |
-| `promises` | Commitments extracted by AI from speeches — topic, keywords | AI worker | As speeches arrive |
-| `goal_vote_matches` | Relevance links between a party goal and a vote — score, aligned direction, context note | AI matching job | Weekly |
-| `promise_vote_matches` | Relevance links between a promise and a vote | AI matching job | Weekly |
 | `expenditure_areas` | The 27 fixed Swedish budget categories (UO1–UO27) | SQL seed (migration 004) | Static |
 | `budget_years` | One row per budget year + status (decided / proposed) | SQL seed (migrations 005–009) | Manual |
 | `budget_allocations` | Allocation per expenditure area per year, in KSEK | SQL seed (migrations 005–009) | Manual |
@@ -215,7 +209,6 @@ PostgreSQL 17. All migrations in `backend/migrations/` (numbered `000001`–`000
 | `municipalities` | 290 Swedish kommuner — population, governing parties, 2022 election results | SQL seed (migration 011) | Manual |
 | `regional_election_results` | Per-party mandates and vote share per region, 2022 | SQL seed (migration 011) | Manual |
 | `municipal_election_results` | Per-party mandates and vote share per municipality, 2022 | SQL seed (migration 011) | Manual |
-| `party_scorecards` | Materialized view — per-party alignment % per goal across all matching votes | Derived from above | Refreshed weekly |
 
 ### What lives outside the database
 

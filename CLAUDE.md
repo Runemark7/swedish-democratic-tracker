@@ -137,7 +137,6 @@ graph TD
         subgraph features["Feature services"]
             PS["politicians"]
             VS["votes"]
-            GS["goals / matching"]
             BS["budget"]
             RS["regions / municipalities"]
             RKS["riksdag / myndigheter"]
@@ -151,8 +150,6 @@ graph TD
             W1["① politicians @daily"]
             W2["② speeches @daily"]
             W3["③ votes @daily"]
-            W5["⑤ keyword-matcher @daily"]
-            W6["⑥ refresh-scorecards @weekly"]
             W7["⑦ fetch-motions @daily\ncurrent riksmöte only, ≤500/run"]
             W8["⑧ fetch-betankanden @daily\ncurrent riksmöte, ≤25 per run, resumable"]
             W9["⑨ sync-beslut-list @daily\nbetänkande listing per riksmöte"]
@@ -195,7 +192,7 @@ graph TD
     features --> DB
 
     W1 & W2 & W3 -->|HTTP| RD
-    W5 & W6 & W9 & W10 --> DB
+    W9 & W10 --> DB
 
     W11["⑪ fetch-questions @daily\ncurrent riksmöte, ≤500 per kind/run"] -->|HTTP| FQ
     W11 --> DB
@@ -249,11 +246,11 @@ internal/{feature}/
 - Never import an adapter package into domain.
 - `cmd/api/main.go` is the only wiring point — it instantiates all services and registers all HTTP routes.
 
-**Current features**: `politicians`, `speeches`, `votes`, `motions`, `goals`, `promises`, `matching`, `budget`, `context`, `regions`, `ingestion`, `riksdag`
+**Current features**: `politicians`, `speeches`, `votes`, `motions`, `budget`, `context`, `regions`, `ingestion`, `riksdag`
 
-The `ingestion` feature contains scheduled workers (`internal/ingestion/workers/`) that sync data from the Riksdagen open API on a cron schedule. Workers: `politicians`, `speeches`, `votes`, `scorecards`, `keyword_matcher`.
+The `ingestion` feature contains scheduled workers (`internal/ingestion/workers/`) that sync data from the Riksdagen open API on a cron schedule. Workers: `politicians`, `speeches`, `votes`, `coverage` and the fetch/sync workers in the diagram. The keyword matcher and scorecards workers were retired in #164.
 
-The `matching` feature has a stubbed AI service (`internal/matching/ports/ai.go` / `StubAIService`). Do not wire real API calls until explicitly asked.
+The goals, matching (stub AI), scorecards and old promises features were retired in #164 (migration `000064`); their API routes answer 410 pointing at `/api/loften` for one release (`internal/api/retired.go`).
 
 ---
 
@@ -323,7 +320,7 @@ postgres://riksdagskollen:localdev@localhost:5432/riksdagskollen?sslmode=disable
   `DATABASE_URL` secret named by the chart's `dbSecretName` — there is no
   bitnami subchart and the database is not Neon. Local dev compose still uses
   `postgres:17-alpine`.
-- Migrations in `backend/migrations/` are numbered `000001`–`000052`, `000057`–`000060`, `000062` (no `000045`, `000061`); `000058` is the append-only `aendringslogg`, `000059` holds `kopplingar` and `veckobatch`, `000060` the numbered `veckobatch_items`, `000062` `motion_kopplingar` (curated fråga→motion and krav↔krav links, public only once `bekraftad`).
+- Migrations in `backend/migrations/` are numbered `000001`–`000052`, `000057`–`000060`, `000062`, `000064` (no `000045`, `000061`, `000063`); `000058` is the append-only `aendringslogg`, `000059` holds `kopplingar` and `veckobatch`, `000060` the numbered `veckobatch_items`, `000062` `motion_kopplingar` (curated fråga→motion and krav↔krav links, public only once `bekraftad`); `000064` drops the retired goals/promises tables and `party_scorecards` (see `docs/runbooks/retire-goals.md`).
 - The voting record lives in two tables, not one: `voteringar` (one row per
   decided förslagspunkt) and `ballots` (one row per member per votering).
   `votering_id` is the identity — two voteringar can share a beteckning and

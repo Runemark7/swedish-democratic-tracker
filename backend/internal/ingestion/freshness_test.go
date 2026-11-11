@@ -8,7 +8,7 @@ import (
 
 func TestMergeCatalog_KeepsNeverRunWorkers(t *testing.T) {
 	got := MergeCatalog(
-		[]ScheduledJob{{Name: "fetch-speeches", Spec: "@daily"}, {Name: "refresh-scorecards", Spec: "@weekly"}},
+		[]ScheduledJob{{Name: "fetch-speeches", Spec: "@daily"}, {Name: "refresh-coverage", Spec: "@weekly"}},
 		[]JobFreshness{{Name: "fetch-speeches", LastStatus: "success"}},
 	)
 	if len(got) != 2 {
@@ -17,8 +17,8 @@ func TestMergeCatalog_KeepsNeverRunWorkers(t *testing.T) {
 	if got[0].Spec != "@daily" || got[0].LastStatus != "success" {
 		t.Errorf("speeches row = %+v", got[0])
 	}
-	if got[1].Name != "refresh-scorecards" || got[1].Spec != "@weekly" || got[1].LastSuccessAt != nil {
-		t.Errorf("scorecards row = %+v", got[1])
+	if got[1].Name != "refresh-coverage" || got[1].Spec != "@weekly" || got[1].LastSuccessAt != nil {
+		t.Errorf("coverage row = %+v", got[1])
 	}
 }
 
@@ -36,7 +36,7 @@ func TestAlerts_ContentAndJobs(t *testing.T) {
 		Jobs: []JobFreshness{
 			{Name: "fetch-speeches", Spec: "@daily", LastSuccessAt: &recent},
 			{Name: "fetch-votes", Spec: "@daily", LastSuccessAt: &staleDaily},
-			{Name: "refresh-scorecards", Spec: "@weekly", LastSuccessAt: &weekAgo},
+			{Name: "refresh-coverage", Spec: "@weekly", LastSuccessAt: &weekAgo},
 			{Name: "fetch-politicians", Spec: "@daily"},
 		},
 	}, now)

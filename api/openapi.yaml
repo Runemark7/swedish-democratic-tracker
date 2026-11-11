@@ -264,21 +264,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /parties:
-    get:
-      operationId: listParties
-      tags: [parties]
-      summary: List all parties with summary scorecard data
-      responses:
-        "200":
-          description: List of parties with aggregate alignment scores
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PartySummary"
-
   /aendringslogg:
     get:
       operationId: listAendringslogg
@@ -924,51 +909,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/Valmanifest"
 
-  /parties/{party}/goals:
-    get:
-      operationId: listPartyGoals
-      tags: [parties]
-      summary: List all goals for a party with alignment percentages
-      parameters:
-        - $ref: "#/components/parameters/PartyParam"
-        - name: topic
-          in: query
-          schema:
-            $ref: "#/components/schemas/Topic"
-      responses:
-        "200":
-          description: Party goals with vote alignment data
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/GoalWithAlignment"
-        "404":
-          $ref: "#/components/responses/NotFound"
-
-  /parties/{party}/goals/{goalId}/votes:
-    get:
-      operationId: listGoalVotes
-      tags: [parties]
-      summary: Detailed vote breakdown for a specific party goal
-      parameters:
-        - $ref: "#/components/parameters/PartyParam"
-        - name: goalId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Votes relevant to this goal with context notes
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GoalVoteBreakdown"
-        "404":
-          $ref: "#/components/responses/NotFound"
-
   /politicians:
     get:
       operationId: listPoliticians
@@ -1019,29 +959,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PoliticianProfile"
-        "404":
-          $ref: "#/components/responses/NotFound"
-
-  /politicians/{id}/promises:
-    get:
-      operationId: listPoliticianPromises
-      tags: [politicians]
-      summary: Promises extracted from speeches with vote match results
-      parameters:
-        - $ref: "#/components/parameters/PoliticianIdParam"
-        - name: topic
-          in: query
-          schema:
-            $ref: "#/components/schemas/Topic"
-      responses:
-        "200":
-          description: Promises with vote alignment
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PromiseWithMatches"
         "404":
           $ref: "#/components/responses/NotFound"
 
@@ -2319,34 +2236,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
-
-  /committees/{code}/goals:
-    get:
-      operationId: listGoalsByCommittee
-      summary: Party goals whose relevant_committees contains this committee
-      description: >-
-        The LOVAT row. Goals are the parties' own stated aims, alphabetical by
-        party. An empty result means our seed data holds no goals for this area,
-        which the caller must state as our gap and never as the parties' silence.
-      tags: [committees]
-      parameters:
-        - name: code
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        "200":
-          description: >-
-            Goals, alphabetical by party. relevantVotes is not computed on
-            this endpoint and is always 0 here — it is not a claim that
-            nothing matched. The matching service scores one party's
-            scorecard at a time, and this endpoint spans every party;
-            read relevantVotes from GET /parties/{party}/goals instead.
-          content:
-            application/json:
-              schema:
-                type: array
-                items: { $ref: "#/components/schemas/GoalWithAlignment" }
 
   /committees/{code}/votes:
     get:
@@ -3916,52 +3805,6 @@ components:
         partilinje:
           $ref: "#/components/schemas/Partilinje"
 
-    Goal:
-      type: object
-      required: [id, party, goalText, topic, specificity, sourceDocument]
-      properties:
-        id:
-          type: integer
-        party:
-          $ref: "#/components/schemas/PartyCode"
-        goalText:
-          type: string
-        topic:
-          $ref: "#/components/schemas/Topic"
-        specificity:
-          $ref: "#/components/schemas/Specificity"
-        sourceDocument:
-          type: string
-          example: "Valmanifest 2022"
-        sourceUrl:
-          type: string
-          description: Live URL to the party's published source document for this goal.
-          example: "https://moderaterna.se/.../valmanifest_2022.pdf"
-        sourceQuote:
-          type: string
-          description: Verbatim excerpt from the source document the goal is derived from.
-        keywords:
-          type: array
-          items:
-            type: string
-        relevantCommittees:
-          type: array
-          items:
-            type: string
-
-    GoalWithAlignment:
-      allOf:
-        - $ref: "#/components/schemas/Goal"
-        - type: object
-          properties:
-            relevantVotes:
-              type: integer
-              description: >-
-                Vote points matched to this goal — a fact about our matching.
-                The alignment percentage was retired: it systematically
-                disadvantaged opposition parties, scoring a party that voted Nej
-                to the rejection of its own motion as breaking its own promise.
-
     PartyPosition:
       type: object
       required: [party]
@@ -4031,47 +3874,6 @@ components:
         total:
           type: integer
           description: Total voteringar for this committee, independent of paging
-
-    GoalVoteBreakdown:
-      type: object
-      required: [goal, matches]
-      properties:
-        goal:
-          $ref: "#/components/schemas/GoalWithAlignment"
-        matches:
-          type: array
-          items:
-            $ref: "#/components/schemas/GoalVoteMatch"
-
-    GoalVoteMatch:
-      type: object
-      required: [beteckning, forslagspunkt, relevanceScore, alignedDirection]
-      properties:
-        beteckning:
-          type: string
-        forslagspunkt:
-          type: string
-        relevanceScore:
-          type: number
-          format: float
-          minimum: 0
-          maximum: 1
-        alignedDirection:
-          $ref: "#/components/schemas/VoteResult"
-        explanation:
-          type: string
-        proposedByParty:
-          $ref: "#/components/schemas/PartyCode"
-        proposalType:
-          $ref: "#/components/schemas/ProposalType"
-        contextNote:
-          type: string
-        documentTitle:
-          type: string
-        partyAlignmentPct:
-          type: number
-          format: float
-          description: What % of party members voted in the aligned direction
 
     RecordCoverage:
       type: object
@@ -4144,19 +3946,6 @@ components:
           nullable: true
           description: When this riksmöte's `expected` was last read from Riksdagen.
 
-    PartySummary:
-      type: object
-      required: [party, totalGoals]
-      properties:
-        party:
-          $ref: "#/components/schemas/PartyCode"
-        totalGoals:
-          type: integer
-        topicBreakdown:
-          type: array
-          items:
-            $ref: "#/components/schemas/TopicAlignment"
-
     TopicAlignment:
       type: object
       required: [topic, goalCount]
@@ -4166,69 +3955,6 @@ components:
         goalCount:
           type: integer
           description: All goals in this topic, including unscorable ones.
-
-    Promise:
-      type: object
-      required: [id, politicianId, promiseText, topic, specificity]
-      properties:
-        id:
-          type: integer
-        politicianId:
-          type: string
-        speechId:
-          type: integer
-        speechDate:
-          type: string
-          format: date
-        speechTopic:
-          type: string
-        promiseText:
-          type: string
-        topic:
-          $ref: "#/components/schemas/Topic"
-        specificity:
-          $ref: "#/components/schemas/Specificity"
-        keywords:
-          type: array
-          items:
-            type: string
-
-    PromiseWithMatches:
-      allOf:
-        - $ref: "#/components/schemas/Promise"
-        - type: object
-          properties:
-            voteMatches:
-              type: array
-              items:
-                $ref: "#/components/schemas/PromiseVoteMatch"
-
-    PromiseVoteMatch:
-      type: object
-      required: [voteId, relevanceScore, alignment]
-      properties:
-        voteId:
-          type: integer
-        beteckning:
-          type: string
-        forslagspunkt:
-          type: string
-        documentTitle:
-          type: string
-        voteResult:
-          $ref: "#/components/schemas/VoteResult"
-        relevanceScore:
-          type: number
-          format: float
-        alignment:
-          type: string
-          enum: [supports, contradicts, unclear]
-        explanation:
-          type: string
-        proposedByParty:
-          $ref: "#/components/schemas/PartyCode"
-        proposalType:
-          $ref: "#/components/schemas/ProposalType"
 
     ExpenditureArea:
       type: object
