@@ -186,6 +186,7 @@ func (r *Repository) PendingBetankanden(ctx context.Context, rm string, limit in
 		   OR (b.found AND b.fetched_at < r.motion_fetched)
 		   OR (b.found AND b.html_fetched_at IS NULL
 		       AND (b.html_attempted_at IS NULL OR b.html_attempted_at < now() - interval '1 day'))
+		   OR (b.found AND b.debate_checked_at IS NULL)
 		   OR (NOT b.found AND b.fetched_at < now() - interval '1 day')
 		ORDER BY r.rm DESC, r.bet
 		LIMIT $1`, limit, rm)
@@ -211,12 +212,13 @@ func (r *Repository) SaveBetankande(ctx context.Context, b *domain.Betankande) e
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	if _, err := tx.Exec(ctx, `
-		INSERT INTO betankanden (riksmote, beteckning, dok_id, found, title, organ, systemdatum, fetched_at)
-		VALUES ($1,$2,$3,true,$4,$5,$6, now())
+		INSERT INTO betankanden (riksmote, beteckning, dok_id, found, title, organ, systemdatum, fetched_at, debate_date, debate_checked_at)
+		VALUES ($1,$2,$3,true,$4,$5,$6, now(), $7, now())
 		ON CONFLICT (riksmote, beteckning) DO UPDATE SET
 			dok_id = EXCLUDED.dok_id, found = true, title = EXCLUDED.title,
-			organ = EXCLUDED.organ, systemdatum = EXCLUDED.systemdatum, fetched_at = now()`,
-		b.Riksmote, b.Beteckning, b.DokID, b.Title, b.Organ, nullTime(b.SystemDatum)); err != nil {
+			organ = EXCLUDED.organ, systemdatum = EXCLUDED.systemdatum, fetched_at = now(),
+			debate_date = EXCLUDED.debate_date, debate_checked_at = now()`,
+		b.Riksmote, b.Beteckning, b.DokID, b.Title, b.Organ, nullTime(b.SystemDatum), nullTime(b.DebateDate)); err != nil {
 		return err
 	}
 	nums := make([]string, 0, len(b.Punkter))
@@ -815,4 +817,44 @@ func (r *Repository) OriginCoverage(ctx context.Context) (int, int, error) {
 		             AND l.punkt = v.forslagspunkt))
 		FROM voteringar v`).Scan(&total, &with)
 	return total, with, err
+}
+
+// Debate reads the speeches linked to a betänkande (speeches.betankande_dok_id).
+func (r *Repository) Debate(ctx context.Context, betDokID string, limit int) (*domain.Debate, error) {
+	d := &domain.Debate{Speeches: []domain.DebateSpeech{}}
+	if betDokID == "" {
+		return d, nil
+	}
+	if err := r.db.QueryRow(ctx, `SELECT count(*) FROM speeches WHERE upper(betankande_dok_id) = upper($1)`, betDokID).Scan(&d.Total); err != nil {
+		return nil, err
+	}
+	if d.Total == 0 {
+		return d, nil
+	}
+	rows, err := r.db.Query(ctx, `
+		SELECT s.id, s.dok_id, coalesce(s.anforande_nummer, ''), s.politician_id,
+		       p.first_name || ' ' || p.last_name, s.party, s.date,
+		       left(coalesce(s.speech_text, ''), 1500), coalesce(s.betankande_link_rule, '')
+		FROM speeches s JOIN politicians p ON p.intressent_id = s.politician_id
+		WHERE upper(s.betankande_dok_id) = upper($1)
+		ORDER BY s.date, s.dok_id, nullif(regexp_replace(s.anforande_nummer, '\D', '', 'g'), '')::int, s.id
+		LIMIT $2`, betDokID, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var sp domain.DebateSpeech
+		if err := rows.Scan(&sp.SpeechID, &sp.DokID, &sp.AnforandeNummer, &sp.PoliticianID, &sp.Name, &sp.Party, &sp.Date, &sp.Excerpt, &sp.LinkRule); err != nil {
+			return nil, err
+		}
+		d.Speeches = append(d.Speeches, sp)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	if len(d.Speeches) > 0 {
+		d.Date = d.Speeches[0].Date
+	}
+	return d, nil
 }

@@ -1,0 +1,81 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "rdlstatus": "tjanstgorande",
+  "parti": "",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=<intressent_id>&utformat=json",
+ "note": "Recorded 2026-11-11 per member (iid) and combined: only the 7 speakers of the 2018-03-22 debate are kept, with the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "person": [
+    {
+     "intressent_id": "0418929039326",
+     "tilltalsnamn": "Patrik",
+     "efternamn": "Lundqvist",
+     "parti": "S",
+     "valkrets": "Gävleborgs län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/41f3a07f-57ba-4d0c-b737-e05aa04ec023_192.jpg",
+     "status": "Tjänstledig riksdagsledamot"
+    },
+    {
+     "intressent_id": "0117203219614",
+     "tilltalsnamn": "Jörgen",
+     "efternamn": "Warborn",
+     "parti": "M",
+     "valkrets": "Hallands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/15ab245f-6634-4e11-88eb-3d9533e87d18_192.jpg",
+     "status": "Europaparlamentariker"
+    },
+    {
+     "intressent_id": "0494054455310",
+     "tilltalsnamn": "David",
+     "efternamn": "Lång",
+     "parti": "SD",
+     "valkrets": "Västernorrlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/1b1880b5-b042-47b6-8669-8a51e1908365_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0679228585116",
+     "tilltalsnamn": "Per",
+     "efternamn": "Åsling",
+     "parti": "C",
+     "valkrets": "Jämtlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/74c39a37-e184-44f6-9a7e-36cdb06c9dcc_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0254695027922",
+     "tilltalsnamn": "Malcolm Momodou",
+     "efternamn": "Jallow",
+     "parti": "-",
+     "valkrets": "Malmö kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/f257311a-2900-4db5-a2e2-df250c764ad6_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    },
+    {
+     "intressent_id": "0992473266516",
+     "tilltalsnamn": "Larry",
+     "efternamn": "Söder",
+     "parti": "KD",
+     "valkrets": "Hallands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/e238e06a-acac-4fae-829c-1773ee851878_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot"
+    },
+    {
+     "intressent_id": "0744139167426",
+     "tilltalsnamn": "Rasmus",
+     "efternamn": "Ling",
+     "parti": "MP",
+     "valkrets": "Malmö kommun",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/8af2f4df-6c44-4844-89af-c0fd142e4eed_192.jpg",
+     "status": "Tidigare riksdagsledamot"
+    }
+   ]
+  }
+ }
+}

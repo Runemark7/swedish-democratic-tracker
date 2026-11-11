@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"riksdagskollen/internal/speeches/domain"
 )
@@ -25,4 +26,26 @@ type SpeechRepository interface {
 	// ListByParty returns speeches by all members of one party,
 	// newest first, capped at limit (default 50, max 200).
 	ListByParty(ctx context.Context, party string, limit int) ([]*domain.Speech, error)
+
+	// DebateCandidates lists the stored betänkanden with a known debate date.
+	DebateCandidates(ctx context.Context) ([]domain.DebateCandidate, error)
+	// ListForLinking reads at most limit speeches with id > afterID, in id
+	// order, with the link they currently carry.
+	ListForLinking(ctx context.Context, afterID, limit int) ([]LinkRow, error)
+	// SetLinks writes links; an empty DokID clears a link.
+	SetLinks(ctx context.Context, links []LinkUpdate) error
+}
+
+// LinkRow is a speech as the linking reads it.
+type LinkRow struct {
+	ID                         int
+	RelatedDokID, TopicHeading string
+	Date                       time.Time
+	CurrentDokID, CurrentRule  string
+}
+
+// LinkUpdate sets one speech's link; an empty DokID clears it.
+type LinkUpdate struct {
+	ID          int
+	DokID, Rule string
 }

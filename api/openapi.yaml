@@ -1719,12 +1719,17 @@ components:
 
     YrkandeDecision:
       type: object
-      required: [betankandeRiksmote, betankandeBeteckning, betankandeTitle, betankandeSourceUrl, punkt, rubrik, linkedBy, beslutstyp, mode, modeLabel, alternativ, outcome, voteringStored, parties, reasoning, reasoningAvailable, reservationsAvailable, reservations, sarskildaYttranden, votedReservation]
+      required: [betankandeRiksmote, betankandeBeteckning, betankandeTitle, betankandeSourceUrl, debate, punkt, rubrik, linkedBy, beslutstyp, mode, modeLabel, alternativ, outcome, voteringStored, parties, reasoning, reasoningAvailable, reservationsAvailable, reservations, sarskildaYttranden, votedReservation]
       properties:
         betankandeRiksmote: { type: string, example: "2017/18" }
         betankandeBeteckning: { type: string, example: "SkU11" }
         betankandeTitle: { type: string }
         betankandeSourceUrl: { type: string }
+        debate:
+          nullable: true
+          description: "The chamber debate on the betänkande that decided the yrkande"
+          allOf:
+            - $ref: "#/components/schemas/Debate"
         punkt: { type: string, example: "6" }
         rubrik: { type: string, example: "Övriga frågor" }
         linkedBy: { type: string, enum: [behandlas_i_punkt, forslag_text], description: "How the yrkande was tied to the punkt" }
@@ -1759,7 +1764,7 @@ components:
 
     BetankandePage:
       type: object
-      required: [riksmote, beteckning, title, organ, dokId, sourceUrl, held, status, decided, decisionDate, decisionText, punkter]
+      required: [riksmote, beteckning, title, organ, dokId, sourceUrl, held, status, decided, decisionDate, decisionText, punkter, debate]
       properties:
         riksmote: { type: string, example: "2025/26" }
         beteckning: { type: string, example: "SkU16" }
@@ -1778,6 +1783,41 @@ components:
         punkter:
           type: array
           items: { $ref: "#/components/schemas/BetankandePunkt" }
+        debate:
+          allOf:
+            - $ref: "#/components/schemas/Debate"
+          description: "The chamber debate on this betänkande: the anföranden linked to it. Empty (total 0) when none are linked."
+
+    Debate:
+      type: object
+      description: >-
+        The anföranden linked to a betänkande (by rel_dok_id, otherwise by
+        avsnittsrubrik and protocol date; a speech neither matches stays
+        unlinked), in speaking order. `total` can exceed the speeches listed.
+      required: [date, total, speeches]
+      properties:
+        date: { type: string, nullable: true, description: "Date of the first linked speech, YYYY-MM-DD; null without speeches" }
+        total: { type: integer }
+        speeches:
+          type: array
+          items: { $ref: "#/components/schemas/DebateSpeech" }
+
+    DebateSpeech:
+      type: object
+      required: [speechId, politicianId, name, party, date, excerpt, excerptAvailable, riksdagenUrl, linkRule]
+      properties:
+        speechId: { type: integer, description: "Our id; the full speech is at /anforanden/{speechId}" }
+        politicianId: { type: string }
+        name: { type: string }
+        party: { type: string }
+        date: { type: string, description: "Protocol date, YYYY-MM-DD" }
+        excerpt: { type: string, description: "Start of the speech as plain text (at most 240 characters); empty while the text has not been fetched" }
+        excerptAvailable: { type: boolean }
+        riksdagenUrl: { type: string, description: "The speech on data.riksdagen.se" }
+        linkRule:
+          type: string
+          enum: [rel_dok_id, avsnittsrubrik_datum]
+          description: "The rule that tied the speech to the betänkande"
 
     BetankandePunkt:
       type: object

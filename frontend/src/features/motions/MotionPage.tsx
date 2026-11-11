@@ -6,6 +6,7 @@ import { PartyBadge } from "@/shared/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { VotedAlternative, Reasoning, Reservations } from "./DecisionParts";
+import { Debate } from "./Debate";
 
 function Notice({ children }: { children: React.ReactNode }) {
   return (
@@ -116,6 +117,7 @@ function DecisionBlock({ d }: { d: Decision }) {
       <VotedAlternative d={d} />
       <Reasoning d={d} />
       <Reservations d={d} />
+      <Debate debate={d.debate} />
       {d.mode === "votering" && !d.voteringStored ? (
         <p className="mt-1 text-xs text-on-surface-variant">Omröstningen finns ännu inte inläst hos oss.</p>
       ) : null}

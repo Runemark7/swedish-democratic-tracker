@@ -97,3 +97,64 @@ func (s *Service) ListUnprocessed(ctx context.Context, limit int) ([]*domain.Spe
 func (s *Service) MarkProcessed(ctx context.Context, id int) error {
 	return s.repo.MarkProcessed(ctx, id)
 }
+
+// RelinkBatch is how many speeches one relink step reads.
+const RelinkBatch = 2000
+
+// LinkStats is the outcome of RelinkDebates.
+type LinkStats struct {
+	Seen, Linked, Unlinked, Changed int
+}
+
+// RelinkDebates links every stored speech to the betänkande it debates (see
+// domain.LinkSpeech) and stores the rule used. It walks the speeches in id
+// order in batches and writes only the rows whose link changed, so running it
+// again over unchanged data writes nothing, and an interrupted run is simply
+// run again.
+func (s *Service) RelinkDebates(ctx context.Context) (LinkStats, error) {
+	var st LinkStats
+	cands, err := s.repo.DebateCandidates(ctx)
+	if err != nil {
+		return st, err
+	}
+	byDay := map[string][]domain.DebateCandidate{}
+	for _, c := range cands {
+		k := c.DebateDate.Format("2006-01-02")
+		byDay[k] = append(byDay[k], c)
+	}
+	after := 0
+	for {
+		if err := ctx.Err(); err != nil {
+			return st, err
+		}
+		rows, err := s.repo.ListForLinking(ctx, after, RelinkBatch)
+		if err != nil {
+			return st, err
+		}
+		if len(rows) == 0 {
+			return st, nil
+		}
+		var updates []ports.LinkUpdate
+		for _, r := range rows {
+			after = r.ID
+			st.Seen++
+			l, ok := domain.LinkSpeech(domain.SpeechForLinking{
+				RelatedDokID: r.RelatedDokID, TopicHeading: r.TopicHeading, Date: r.Date,
+			}, byDay[r.Date.Format("2006-01-02")])
+			if ok {
+				st.Linked++
+			} else {
+				st.Unlinked++
+			}
+			if l.BetankandeDokID != r.CurrentDokID || l.Rule != r.CurrentRule {
+				updates = append(updates, ports.LinkUpdate{ID: r.ID, DokID: l.BetankandeDokID, Rule: l.Rule})
+			}
+		}
+		if len(updates) > 0 {
+			if err := s.repo.SetLinks(ctx, updates); err != nil {
+				return st, err
+			}
+			st.Changed += len(updates)
+		}
+	}
+}

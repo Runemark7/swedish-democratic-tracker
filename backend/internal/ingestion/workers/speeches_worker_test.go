@@ -67,6 +67,13 @@ func (r *fakeSpeechRepo) ListByDocument(context.Context, string) ([]*speechdomai
 func (r *fakeSpeechRepo) ListByParty(context.Context, string, int) ([]*speechdomain.Speech, error) {
 	return nil, nil
 }
+func (r *fakeSpeechRepo) DebateCandidates(context.Context) ([]speechdomain.DebateCandidate, error) {
+	return nil, nil
+}
+func (r *fakeSpeechRepo) ListForLinking(context.Context, int, int) ([]speechports.LinkRow, error) {
+	return nil, nil
+}
+func (r *fakeSpeechRepo) SetLinks(context.Context, []speechports.LinkUpdate) error { return nil }
 
 type fakeSpeechCursors struct{ cur *ingPorts.Cursor }
 

@@ -1,0 +1,46 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2017/18",
+  "parti": "V",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforandelista/?rm=2017/18&parti=V&iid=&sz=10000&anftyp=Akt&utformat=json",
+ "note": "Recorded 2026-11-11, reduced to the rows of the 2018-03-22 debate on 2017/18:SkU11 (rel_dok_id H501SkU11).",
+ "body": {
+  "anforandelista": {
+   "@antal": "1",
+   "anforande": [
+    {
+     "dok_hangar_id": "4983873",
+     "dok_id": "H50989",
+     "dok_titel": "Protokoll 2017/18:89 Torsdagen den 22 mars",
+     "dok_rm": "2017/18",
+     "dok_nummer": "89",
+     "dok_datum": "2018-03-22",
+     "avsnittsrubrik": "Mervärdesskatt",
+     "underrubrik": "",
+     "kammaraktivitet": "ärendedebatt",
+     "anforande_id": "06654bfe-6c3e-e811-9106-901b0e9b71a0",
+     "anforande_nummer": "160",
+     "talare": "Momodou Jallow (V)",
+     "parti": "V",
+     "anforandetext": "",
+     "intressent_id": "0254695027922",
+     "rel_dok_id": "H501SkU11",
+     "replik": "N",
+     "systemdatum": "2026-11-03 09:32:26",
+     "systemnyckel": "441353",
+     "anforande_url_xml": "https://data.riksdagen.se/anforande/H50989-160",
+     "anforande_url_html": "https://data.riksdagen.se/anforande/H50989-160/html",
+     "protokoll_url_www": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/protokoll/protokoll-20171889-torsdagen-den-22-mars_H50989/#anf160"
+    }
+   ]
+  }
+ }
+}

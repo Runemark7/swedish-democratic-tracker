@@ -17,6 +17,7 @@ used_by:
   - /politicians (alla)
   - /politicians/:id (profile, votes, speeches)
   - /anforanden/:id (speech detail)
+  - /beslut/:riksmöte/:beteckning och /motioner/:riksmöte/:beteckning (debatten: anföranden kopplade till betänkandet)
   - /parties/:party/goals/:goalId/votes (vote alignment)
 ---
 
@@ -76,3 +77,19 @@ politikerprofiler (`personlista`), ett för anföranden
 (`anforandelista`), och ett för voteringsresultat (`voteringlista`).
 Allt skrivs in i vår databas och blir tillgängligt via vårt API som
 sedan driver UI:t.
+
+## Anföranden kopplade till betänkandet
+Varje anförande kopplas till det betänkande det debatterar (jobbet `link-speeches`, dagligen; kan köras om utan risk):
+
+1. `rel_dok_id` i `/anforandelista/` anger ett betänkande (till exempel `H901MJU33` för debatten 2022-09-21). Interpellationer, motioner och propositioner har id som bara slutar på siffror och räknas inte.
+2. Annars: anförandets `avsnittsrubrik` är lika med betänkandets titel och protokollets datum (`dok_datum`) är lika med betänkandets debattdag (raden "Debatt" i `sokdata.statusrad` i betänkandelistan). Matchar fler än ett betänkande kopplas inget. Så ser 2002/03 ut: `rel_dok_id` saknas där helt.
+3. Annars förblir anförandet okopplat. Det syns kvar på ledamotens sida. Sajten gissar inte.
+
+Regeln som användes sparas med kopplingen (`rel_dok_id` eller `avsnittsrubrik_datum`) och visas på sidan.
+
+Reproducera (2022-09-21, betänkande 2021/22:MJU33):
+
+```bash
+curl -s --compressed --http1.1 'https://data.riksdagen.se/anforandelista/?rm=2021/22&parti=MP&iid=&sz=10000&anftyp=Akt&utformat=json' \
+  | python3 -c "import json,sys; print([a['anforande_nummer'] for a in json.load(sys.stdin)['anforandelista']['anforande'] if a['rel_dok_id']=='H901MJU33'])"
+```

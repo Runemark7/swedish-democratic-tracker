@@ -154,6 +154,7 @@ graph TD
             W7["⑦ fetch-motions @daily\ncurrent riksmöte only, ≤500/run"]
             W8["⑧ fetch-betankanden @daily\ncurrent riksmöte, ≤25 per run, resumable"]
             W9["⑨ sync-beslut-list @daily\nbetänkande listing per riksmöte"]
+            W10["⑩ link-speeches @daily\nanförande → betänkande, idempotent"]
         end
 
         subgraph seeder["Election seeder"]
@@ -185,7 +186,7 @@ graph TD
     features --> DB
 
     W1 & W2 & W3 -->|HTTP| RD
-    W5 & W6 --> DB
+    W5 & W6 & W9 & W10 --> DB
 
     W7 -->|HTTP| MO
     W8 -->|HTTP| BK

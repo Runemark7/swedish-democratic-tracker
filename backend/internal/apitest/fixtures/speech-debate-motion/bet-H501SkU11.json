@@ -1,0 +1,859 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/H501SkU11.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/H501SkU11.json",
+ "note": "Recorded 2026-11-10 from data.riksdagen.se. ",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "4784976",
+    "dok_id": "H501SkU11",
+    "rm": "2017/18",
+    "beteckning": "SkU11",
+    "typ": "bet",
+    "subtyp": "bet",
+    "doktyp": "bet",
+    "typrubrik": "Betänkande 2017/18:SkU11",
+    "dokumentnamn": "Betänkande",
+    "debattnamn": "Debatt om förslag",
+    "tempbeteckning": "",
+    "organ": "SkU",
+    "mottagare": "",
+    "nummer": "11",
+    "slutnummer": "0",
+    "datum": "2018-03-16 00:00:00",
+    "systemdatum": "2018-04-12 18:18:33",
+    "publicerad": "2017-12-14 15:46:00",
+    "titel": "Mervärdesskatt",
+    "subtitel": "",
+    "status": "Webbpublicering",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "RIM",
+    "sourceid": "a8c59754-7e4c-4a3e-a40b-a42fa014f2c1",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/H501SkU11/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/H501SkU11",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/H501SkU11",
+    "utskottsforslag_url_xml": "https://data.riksdagen.se/utskottsforslag/H501SkU11"
+   },
+   "dokutskottsforslag": {
+    "utskottsforslag": [
+     {
+      "punkt": "1",
+      "rubrik": "Skattesatser",
+      "forslag": "<BR/>Riksdagen avslår motionerna \n\n2017/18:57 av Lars-Axel Nordell (KD), \n\n2017/18:159 av Carina Ståhl Herrstedt (SD), \n\n2017/18:161 av Jeff Ahl (SD), \n\n2017/18:240 av Anders Åkesson och Staffan Danielsson (båda C), \n\n2017/18:362 av Nina Lundström (L), \n\n2017/18:856 av Hillevi Larsson (S), \n\n2017/18:916 av Johan Nissinen m.fl. (SD) yrkande 1, \n\n2017/18:1185 av Jesper Skalberg Karlsson (M), \n\n2017/18:1292 av Christian Holm Barenfeld och Åsa Coenraads (båda M), \n\n2017/18:1319 av Annicka Engblom (M), \n\n2017/18:1942 av Sara-Lena Bjälkö m.fl. (SD) yrkande 2, \n\n2017/18:2051 av Lena Asplund (M), \n\n2017/18:2284 av Markus Wiechel och Johan Nissinen (båda SD) yrkande 2, \n\n2017/18:2445 av Per Lodenius och Johanna Jönsson (båda C), \n\n2017/18:2503 av Ann-Britt Åsebol (M), \n\n2017/18:2856 av Fredrik Christensson och Rickard Nordin (båda C), \n\n2017/18:2889 av Boriana Åberg (M), \n\n2017/18:2979 av Sofia Fölster (M), \n\n2017/18:3070 av Olof Lavesson m.fl. (M) yrkande 9, \n\n2017/18:3076 av Cecilia Magnusson (M), \n\n2017/18:3364 av Sten Bergheden (M) yrkande 2, \n\n2017/18:3385 av Runar Filper (SD), \n\n2017/18:3600 av Roland Utbult m.fl. (KD) yrkande 4, \n\n2017/18:3676 av Camilla Waltersson Grönvall och Jenny Petersson (båda M), \n\n2017/18:3747 av Penilla Gunther m.fl. (KD) yrkande 12 och \n\n2017/18:3773 av Per Lodenius m.fl. (C) yrkande 2.<BR/><BR/>",
+      "beslutstyp": "röstning",
+      "motforslag_nummer": "1",
+      "motforslag_partier": "\"M\"",
+      "votering_id": "bbcf8006-3d21-4e30-abea-5046e4bf8f4e",
+      "votering_sammanfattning_html": {
+       "table": {
+        "tr": [
+         {
+          "td": {
+           "h4": "Omröstning i sakfrågan",
+           "p": "Utskottets förslag mot reservation 1 (M)"
+          }
+         },
+         {
+          "th": [
+           "Parti",
+           "Ja",
+           "Nej",
+           "Avstående",
+           "Frånvarande"
+          ]
+         },
+         {
+          "td": [
+           "S",
+           "102",
+           "0",
+           "0",
+           "11"
+          ]
+         },
+         {
+          "td": [
+           "M",
+           "0",
+           "77",
+           "0",
+           "6"
+          ]
+         },
+         {
+          "td": [
+           "SD",
+           "0",
+           "0",
+           "36",
+           "9"
+          ]
+         },
+         {
+          "td": [
+           "MP",
+           "22",
+           "0",
+           "0",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "C",
+           "0",
+           "0",
+           "18",
+           "4"
+          ]
+         },
+         {
+          "td": [
+           "V",
+           "20",
+           "0",
+           "0",
+           "1"
+          ]
+         },
+         {
+          "td": [
+           "L",
+           "15",
+           "0",
+           "0",
+           "4"
+          ]
+         },
+         {
+          "td": [
+           "KD",
+           "0",
+           "0",
+           "15",
+           "1"
+          ]
+         },
+         {
+          "td": [
+           "-",
+           "0",
+           "0",
+           "2",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "Totalt",
+           "159",
+           "77",
+           "71",
+           "42"
+          ]
+         },
+         {
+          "td": {
+           "h4": ""
+          }
+         }
+        ]
+       },
+       "br": null
+      },
+      "votering_url_xml": "http://data.riksdagen.se/votering/BBCF8006-3D21-4E30-ABEA-5046E4BF8F4E",
+      "rm": "2017/18",
+      "bet": "SkU11",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     },
+     {
+      "punkt": "2",
+      "rubrik": "Utvärdering av effekterna av höjningen av mervärdesskatten på bio",
+      "forslag": "<BR/>Riksdagen avslår motion \n\n2017/18:3724 av Per Åsling m.fl. (C, M, L, KD) yrkande 6.<BR/><BR/>",
+      "beslutstyp": "röstning",
+      "motforslag_nummer": "5",
+      "motforslag_partier": "\"M\",\"C\",\"L\",\"KD\"",
+      "votering_id": "56e5fb1b-1b68-4ca5-a0a0-b6b259e70fbf",
+      "votering_sammanfattning_html": {
+       "table": {
+        "tr": [
+         {
+          "td": {
+           "h4": "Omröstning i sakfrågan",
+           "p": "Utskottets förslag mot reservation 5 (M, C, L, KD)"
+          }
+         },
+         {
+          "th": [
+           "Parti",
+           "Ja",
+           "Nej",
+           "Avstående",
+           "Frånvarande"
+          ]
+         },
+         {
+          "td": [
+           "S",
+           "102",
+           "0",
+           "0",
+           "11"
+          ]
+         },
+         {
+          "td": [
+           "M",
+           "0",
+           "77",
+           "0",
+           "6"
+          ]
+         },
+         {
+          "td": [
+           "SD",
+           "36",
+           "0",
+           "0",
+           "9"
+          ]
+         },
+         {
+          "td": [
+           "MP",
+           "22",
+           "0",
+           "0",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "C",
+           "0",
+           "18",
+           "0",
+           "4"
+          ]
+         },
+         {
+          "td": [
+           "V",
+           "20",
+           "0",
+           "0",
+           "1"
+          ]
+         },
+         {
+          "td": [
+           "L",
+           "0",
+           "15",
+           "0",
+           "4"
+          ]
+         },
+         {
+          "td": [
+           "KD",
+           "0",
+           "15",
+           "0",
+           "1"
+          ]
+         },
+         {
+          "td": [
+           "-",
+           "2",
+           "0",
+           "0",
+           "3"
+          ]
+         },
+         {
+          "td": [
+           "Totalt",
+           "182",
+           "125",
+           "0",
+           "42"
+          ]
+         },
+         {
+          "td": {
+           "h4": ""
+          }
+         }
+        ]
+       },
+       "br": null
+      },
+      "votering_url_xml": "http://data.riksdagen.se/votering/56E5FB1B-1B68-4CA5-A0A0-B6B259E70FBF",
+      "rm": "2017/18",
+      "bet": "SkU11",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     },
+     {
+      "punkt": "3",
+      "rubrik": "Mervärdesskatt för ideella föreningar",
+      "forslag": "<BR/>Riksdagen avslår motionerna \n\n2017/18:2322 av Cecilia Widegren (M) yrkande 7 och \n\n2017/18:2493 av Ann-Britt Åsebol och Eva Lohman (båda M).<BR/><BR/>",
+      "beslutstyp": "acklamation",
+      "motforslag_nummer": "0",
+      "motforslag_partier": "",
+      "votering_id": "",
+      "votering_sammanfattning_html": "",
+      "votering_url_xml": "",
+      "rm": "2017/18",
+      "bet": "SkU11",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     },
+     {
+      "punkt": "4",
+      "rubrik": "Avdragsförbud för stadigvarande bostad",
+      "forslag": "<BR/>Riksdagen avslår motion \n\n2017/18:3721 av Per Åsling m.fl. (C, M, L, KD).<BR/><BR/>",
+      "beslutstyp": "acklamation",
+      "motforslag_nummer": "0",
+      "motforslag_partier": "",
+      "votering_id": "",
+      "votering_sammanfattning_html": "",
+      "votering_url_xml": "",
+      "rm": "2017/18",
+      "bet": "SkU11",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     },
+     {
+      "punkt": "5",
+      "rubrik": "Uppföljning av effekterna av den nya definitionen av begreppet fastighet i mervärdesskattelagen",
+      "forslag": "<BR/>Riksdagen avslår motion \n\n2017/18:3726 av Per Åsling m.fl. (C, M, L, KD) yrkande 3.<BR/><BR/>",
+      "beslutstyp": "acklamation",
+      "motforslag_nummer": "0",
+      "motforslag_partier": "",
+      "votering_id": "",
+      "votering_sammanfattning_html": "",
+      "votering_url_xml": "",
+      "rm": "2017/18",
+      "bet": "SkU11",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     },
+     {
+      "punkt": "6",
+      "rubrik": "Övriga frågor",
+      "forslag": "<BR/>Riksdagen avslår motionerna \n\n2017/18:1380 av Suzanne Svensson och Peter Jeppsson (båda S), \n\n2017/18:3002 av Jonas Jacobsson Gjörtler (M), \n\n2017/18:3293 av Maria Malmer Stenergard m.fl. (M) och \n\n2017/18:3748 av Penilla Gunther m.fl. (KD) yrkande 18.<BR/><BR/>",
+      "beslutstyp": "acklamation",
+      "motforslag_nummer": "0",
+      "motforslag_partier": "",
+      "votering_id": "",
+      "votering_sammanfattning_html": "",
+      "votering_url_xml": "",
+      "rm": "2017/18",
+      "bet": "SkU11",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:1185 Spelmomsen ",
+      "ref_dok_id": "H5021185",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "1185",
+      "ref_dok_titel": "Spelmomsen ",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:1292 Moms för digitala medier",
+      "ref_dok_id": "H5021292",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "1292",
+      "ref_dok_titel": "Moms för digitala medier",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:1319 Villkorsskillnader inom camping- och gästhamnsnäringen",
+      "ref_dok_id": "H5021319",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "1319",
+      "ref_dok_titel": "Villkorsskillnader inom camping- och gästhamnsnäringen",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:1380 Moms för båtklubbar",
+      "ref_dok_id": "H5021380",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "1380",
+      "ref_dok_titel": "Moms för båtklubbar",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:159 Dansbandsmomsen",
+      "ref_dok_id": "H502159",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "159",
+      "ref_dok_titel": "Dansbandsmomsen",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:161 Folkhälsoskatteväxling",
+      "ref_dok_id": "H502161",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "161",
+      "ref_dok_titel": "Folkhälsoskatteväxling",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:1942 Spel som kulturform",
+      "ref_dok_id": "H5021942",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "1942",
+      "ref_dok_titel": "Spel som kulturform",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2051 Enhetlig moms för simskolor",
+      "ref_dok_id": "H5022051",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2051",
+      "ref_dok_titel": "Enhetlig moms för simskolor",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2284 Utökad möjlighet till körkort",
+      "ref_dok_id": "H5022284",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2284",
+      "ref_dok_titel": "Utökad möjlighet till körkort",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2322 Hästens betydelse för Sverige",
+      "ref_dok_id": "H5022322",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2322",
+      "ref_dok_titel": "Hästens betydelse för Sverige",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:240 Dansbandsmomsen",
+      "ref_dok_id": "H502240",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "240",
+      "ref_dok_titel": "Dansbandsmomsen",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2445 Sänkt dansmoms",
+      "ref_dok_id": "H5022445",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2445",
+      "ref_dok_titel": "Sänkt dansmoms",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2493 ROT-avdrag för den ideella sektorn",
+      "ref_dok_id": "H5022493",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2493",
+      "ref_dok_titel": "ROT-avdrag för den ideella sektorn",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2503 Momssatser på scenkonst",
+      "ref_dok_id": "H5022503",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2503",
+      "ref_dok_titel": "Momssatser på scenkonst",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2856 Enhetlig moms",
+      "ref_dok_id": "H5022856",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2856",
+      "ref_dok_titel": "Enhetlig moms",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2889 Moms på musiklektioner",
+      "ref_dok_id": "H5022889",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2889",
+      "ref_dok_titel": "Moms på musiklektioner",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:2979 Kulturmoms på datorspel",
+      "ref_dok_id": "H5022979",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "2979",
+      "ref_dok_titel": "Kulturmoms på datorspel",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3002 Översyn av företagens mervärdesbeskattning",
+      "ref_dok_id": "H5023002",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3002",
+      "ref_dok_titel": "Översyn av företagens mervärdesbeskattning",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3070 Ny tid för kulturpolitiken",
+      "ref_dok_id": "H5023070",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3070",
+      "ref_dok_titel": "Ny tid för kulturpolitiken",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3076 En enhetlig kulturmoms",
+      "ref_dok_id": "H5023076",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3076",
+      "ref_dok_titel": "En enhetlig kulturmoms",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3293 Skattemässig hantering av virtuella varor",
+      "ref_dok_id": "H5023293",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3293",
+      "ref_dok_titel": "Skattemässig hantering av virtuella varor",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3364 Turistnäringen i Sverige",
+      "ref_dok_id": "H5023364",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3364",
+      "ref_dok_titel": "Turistnäringen i Sverige",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3385 Dansbandsmusik är kultur",
+      "ref_dok_id": "H5023385",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3385",
+      "ref_dok_titel": "Dansbandsmusik är kultur",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3600 Utgiftsområde 17 Kultur, medier, trossamfund och fritid",
+      "ref_dok_id": "H5023600",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3600",
+      "ref_dok_titel": "Utgiftsområde 17 Kultur, medier, trossamfund och fritid",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:362 Utveckla klimatsmarta styrmedel för livsmedel",
+      "ref_dok_id": "H502362",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "362",
+      "ref_dok_titel": "Utveckla klimatsmarta styrmedel för livsmedel",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3676 Dansbandsmoms",
+      "ref_dok_id": "H5023676",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3676",
+      "ref_dok_titel": "Dansbandsmoms",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3721 Stadigvarande bostad",
+      "ref_dok_id": "H5023721",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3721",
+      "ref_dok_titel": "Stadigvarande bostad",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3724 Effekter av regeringens skattepolitik",
+      "ref_dok_id": "H5023724",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3724",
+      "ref_dok_titel": "Effekter av regeringens skattepolitik",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3726 Uppföljning av lagstiftning",
+      "ref_dok_id": "H5023726",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3726",
+      "ref_dok_titel": "Uppföljning av lagstiftning",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3747 Utgiftsområde 24 Näringsliv",
+      "ref_dok_id": "H5023747",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3747",
+      "ref_dok_titel": "Utgiftsområde 24 Näringsliv",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3748 Utgiftsområde 21 Energi",
+      "ref_dok_id": "H5023748",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3748",
+      "ref_dok_titel": "Utgiftsområde 21 Energi",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:3773 Mångfald av medieperspektiv i hela landet",
+      "ref_dok_id": "H5023773",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "3773",
+      "ref_dok_titel": "Mångfald av medieperspektiv i hela landet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:57 Enhetlig kulturmoms",
+      "ref_dok_id": "H50257",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "57",
+      "ref_dok_titel": "Enhetlig kulturmoms",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:856 Enhetlig moms på simskolor för barn",
+      "ref_dok_id": "H502856",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "856",
+      "ref_dok_titel": "Enhetlig moms på simskolor för barn",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2017/18:916 Turism och besöksnäring",
+      "ref_dok_id": "H502916",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "916",
+      "ref_dok_titel": "Turism och besöksnäring",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "föredragningslista",
+      "uppgift": "föredragningslista 2017/18:89 Torsdag den 22 mars 2018",
+      "ref_dok_id": "H50I89",
+      "ref_dok_typ": "f-lista",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "89",
+      "ref_dok_titel": "Torsdag den 22 mars 2018",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Kammarens föredragningslista"
+     },
+     {
+      "referenstyp": "protokollbeslut",
+      "uppgift": "2018-03-28",
+      "ref_dok_id": "H50993",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "93",
+      "ref_dok_titel": "Protokoll 2017/18:93 Onsdagen den 28 mars",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "protokolldebatt",
+      "uppgift": "2018-03-22",
+      "ref_dok_id": "H50989",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "89",
+      "ref_dok_titel": "Protokoll 2017/18:89 Torsdagen den 22 mars",
+      "ref_dok_subtitel": "Mervärdesskatt",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "talarlista",
+      "uppgift": "talarlista 2017/18:20180322 Torsdag den 22 mars 2018",
+      "ref_dok_id": "H50J20180322",
+      "ref_dok_typ": "t-lista",
+      "ref_dok_rm": "2017/18",
+      "ref_dok_bet": "20180322",
+      "ref_dok_titel": "Torsdag den 22 mars 2018",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Talarlista"
+     }
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2002/03",
+  "parti": "SD",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforandelista/?rm=2002/03&parti=SD&iid=&sz=10000&anftyp=Akt&utformat=json",
+ "note": "Recorded 2026-11-11. Reduced to the rows of one debate (rel_dok_id H901MJU33 on 2022-09-21 for 2021/22; Fristående skolor on 2003-05-28, rel_dok_id empty, for 2002/03) plus one unrelated row for MP. L and SD 2002/03 are empty in the live response.",
+ "body": {
+  "anforandelista": {
+   "@antal": "0",
+   "anforande": []
+  }
+ }
+}
