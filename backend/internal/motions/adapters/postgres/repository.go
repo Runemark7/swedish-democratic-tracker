@@ -184,6 +184,8 @@ func (r *Repository) PendingBetankanden(ctx context.Context, limit int) ([]ports
 		LEFT JOIN betankanden b ON b.riksmote = r.rm AND b.beteckning = r.bet
 		WHERE b.riksmote IS NULL
 		   OR (b.found AND b.fetched_at < r.motion_fetched)
+		   OR (b.found AND b.html_fetched_at IS NULL
+		       AND (b.html_attempted_at IS NULL OR b.html_attempted_at < now() - interval '1 day'))
 		   OR (NOT b.found AND b.fetched_at < now() - interval '1 day')
 		ORDER BY r.rm DESC, r.bet
 		LIMIT $1`, limit)
@@ -234,6 +236,67 @@ func (r *Repository) SaveBetankande(ctx context.Context, b *domain.Betankande) e
 	if _, err := tx.Exec(ctx, `
 		DELETE FROM forslagspunkter WHERE riksmote = $1 AND beteckning = $2 AND punkt <> ALL($3)`,
 		b.Riksmote, b.Beteckning, nums); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
+}
+
+func (r *Repository) MarkHTMLAttempt(ctx context.Context, rm, bet string) error {
+	_, err := r.db.Exec(ctx, `UPDATE betankanden SET html_attempted_at = now() WHERE riksmote = $1 AND beteckning = $2`, rm, bet)
+	return err
+}
+
+func (r *Repository) SaveBetankandeHTML(ctx context.Context, rm, bet string, h *domain.BetankandeHTML) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	if _, err := tx.Exec(ctx, `DELETE FROM betankande_statements WHERE riksmote = $1 AND beteckning = $2`, rm, bet); err != nil {
+		return err
+	}
+	for _, s := range h.Statements {
+		parties, signers := s.Parties, s.Signers
+		if parties == nil {
+			parties = []string{}
+		}
+		if signers == nil {
+			signers = []string{}
+		}
+		if _, err := tx.Exec(ctx, `
+			INSERT INTO betankande_statements (riksmote, beteckning, kind, nummer, rubrik, punkt, parties, signers, proposal, body)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+			ON CONFLICT DO NOTHING`,
+			rm, bet, s.Kind, s.Number, s.Rubrik, s.Punkt, parties, signers, s.Proposal, s.Text); err != nil {
+			return err
+		}
+	}
+	rows, err := tx.Query(ctx, `SELECT punkt, rubrik FROM forslagspunkter WHERE riksmote = $1 AND beteckning = $2`, rm, bet)
+	if err != nil {
+		return err
+	}
+	reasoning := map[string]string{}
+	for rows.Next() {
+		var punkt, rubrik string
+		if err := rows.Scan(&punkt, &rubrik); err != nil {
+			rows.Close()
+			return err
+		}
+		reasoning[punkt] = h.ReasoningFor(rubrik)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	for punkt, text := range reasoning {
+		if _, err := tx.Exec(ctx, `UPDATE forslagspunkter SET reasoning = $4 WHERE riksmote = $1 AND beteckning = $2 AND punkt = $3`, rm, bet, punkt, text); err != nil {
+			return err
+		}
+	}
+	if _, err := tx.Exec(ctx, `
+		UPDATE betankanden SET html_fetched_at = now(), html_attempted_at = now(),
+		       html_has_reasoning = $3, html_has_reservations = $4
+		WHERE riksmote = $1 AND beteckning = $2`, rm, bet, h.HasReasoning, h.HasReservations); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)
@@ -323,6 +386,7 @@ func (r *Repository) Decisions(ctx context.Context, motionDokID string) ([]domai
 		SELECT l.yrkande_nummer, l.linked_by, l.decision, l.riksmote, l.beteckning,
 		       b.title, b.dok_id,
 		       p.punkt, p.rubrik, p.forslag_text, p.beslutstyp, p.votering_id, p.alternativ, p.vinnare,
+		       p.reasoning, b.html_fetched_at IS NOT NULL, b.html_has_reasoning, b.html_has_reservations,
 		       EXISTS (SELECT 1 FROM voteringar v WHERE p.votering_id <> '' AND upper(v.votering_id) = upper(p.votering_id))
 		FROM yrkande_forslagspunkt l
 		JOIN forslagspunkter p ON p.riksmote = l.riksmote AND p.beteckning = l.beteckning AND p.punkt = l.punkt
@@ -339,7 +403,8 @@ func (r *Repository) Decisions(ctx context.Context, motionDokID string) ([]domai
 		if err := rows.Scan(&d.YrkandeNumber, &d.LinkedBy, &d.Decision, &d.Riksmote, &d.Betankande,
 			&d.BetTitle, &d.BetDokID,
 			&d.Punkt.Number, &d.Punkt.Rubrik, &d.Punkt.Text, &d.Punkt.Beslutstyp, &d.Punkt.VoteringID,
-			&d.Punkt.Alternativ, &d.Punkt.Vinnare, &d.VoteringStored); err != nil {
+			&d.Punkt.Alternativ, &d.Punkt.Vinnare, &d.Punkt.Reasoning,
+			&d.HTMLRead, &d.HasReasoningSection, &d.HasReservationsSection, &d.VoteringStored); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -348,6 +413,27 @@ func (r *Repository) Decisions(ctx context.Context, motionDokID string) ([]domai
 	rows.Close()
 	if err := rows.Err(); err != nil {
 		return nil, err
+	}
+	stmts := map[[2]string][]domain.Statement{}
+	for i := range out {
+		key := [2]string{out[i].Riksmote, out[i].Betankande}
+		if _, ok := stmts[key]; !ok {
+			list, err := r.statements(ctx, key[0], key[1])
+			if err != nil {
+				return nil, err
+			}
+			stmts[key] = list
+		}
+		for _, s := range stmts[key] {
+			if s.Punkt != out[i].Punkt.Number {
+				continue
+			}
+			if s.Kind == domain.KindReservation {
+				out[i].Reservations = append(out[i].Reservations, s)
+			} else {
+				out[i].Yttranden = append(out[i].Yttranden, s)
+			}
+		}
 	}
 	for i := range out {
 		if !out[i].VoteringStored {
@@ -457,4 +543,24 @@ func (r *Repository) BackfillWordingHashes(ctx context.Context, after ports.Yrka
 		written++
 	}
 	return written, len(todo), last, nil
+}
+
+func (r *Repository) statements(ctx context.Context, rm, bet string) ([]domain.Statement, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT kind, nummer, rubrik, punkt, parties, signers, proposal, body
+		FROM betankande_statements WHERE riksmote = $1 AND beteckning = $2
+		ORDER BY kind, nummer`, rm, bet)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []domain.Statement
+	for rows.Next() {
+		var s domain.Statement
+		if err := rows.Scan(&s.Kind, &s.Number, &s.Rubrik, &s.Punkt, &s.Parties, &s.Signers, &s.Proposal, &s.Text); err != nil {
+			return nil, err
+		}
+		out = append(out, s)
+	}
+	return out, rows.Err()
 }

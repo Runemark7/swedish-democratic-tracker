@@ -1584,7 +1584,7 @@ components:
 
     YrkandeDecision:
       type: object
-      required: [betankandeRiksmote, betankandeBeteckning, betankandeTitle, betankandeSourceUrl, punkt, rubrik, linkedBy, beslutstyp, mode, modeLabel, alternativ, outcome, voteringStored, parties]
+      required: [betankandeRiksmote, betankandeBeteckning, betankandeTitle, betankandeSourceUrl, punkt, rubrik, linkedBy, beslutstyp, mode, modeLabel, alternativ, outcome, voteringStored, parties, reasoning, reasoningAvailable, reservationsAvailable, reservations, sarskildaYttranden, votedReservation]
       properties:
         betankandeRiksmote: { type: string, example: "2017/18" }
         betankandeBeteckning: { type: string, example: "SkU11" }
@@ -1603,6 +1603,35 @@ components:
           type: array
           description: Partilinje of every party in the votering (shared definition); empty for acklamation
           items: { $ref: "#/components/schemas/PartyPartilinje" }
+        reasoning: { type: string, description: "The utskott's own text (Utskottets ställningstagande) for the punkt, from the betänkande HTML; empty when not read" }
+        reasoningAvailable: { type: boolean, description: "False when the reasoning could not be read; show it as not available from Riksdagen with a link to the source" }
+        reservationsAvailable: { type: boolean, description: "False when the reservations could not be read, or the voted reservation is missing from what was read. True with an empty list means no reservation on the punkt" }
+        reservations:
+          type: array
+          items: { $ref: "#/components/schemas/BetankandeStatement" }
+        sarskildaYttranden:
+          type: array
+          items: { $ref: "#/components/schemas/BetankandeStatement" }
+        votedReservation:
+          nullable: true
+          description: The reservation the votering put against the utskott's proposal, when the alternative names one. It can be another party's reservation than the motion's own party's.
+          type: object
+          required: [number, party, parties]
+          properties:
+            number: { type: integer, example: 12 }
+            party: { type: string, description: "As in the alternative's wording, e.g. M in 'reservation 12 (M)'" }
+            parties: { type: array, items: { type: string }, description: "Parties on the reservation as printed in the betänkande; empty if it could not be read" }
+
+    BetankandeStatement:
+      type: object
+      description: A reservation or särskilt yttrande, as the betänkande prints it
+      required: [number, parties, signers, proposal, text]
+      properties:
+        number: { type: integer }
+        parties: { type: array, items: { type: string } }
+        signers: { type: array, items: { type: string }, description: "Names with party, as printed" }
+        proposal: { type: string, description: "Förslag till riksdagsbeslut (reservations only)" }
+        text: { type: string, description: "Ställningstagande, paragraphs separated by blank lines" }
 
     MotionListRow:
       type: object

@@ -9,6 +9,9 @@ import (
 	"riksdagskollen/internal/motions/domain"
 )
 
+// ErrHTMLUnavailable is returned when Riksdagen serves no HTML for a betänkande.
+var ErrHTMLUnavailable = errors.New("betänkande html not available")
+
 // ErrNotFound is returned when no motion has the given riksmöte and beteckning.
 var ErrNotFound = errors.New("motion not found")
 
@@ -30,6 +33,10 @@ type RiksdagenClient interface {
 	FindBetankande(ctx context.Context, rm, bet string) (ref BetankandeRef, found bool, err error)
 	// FetchBetankande reads a betänkande with its förslagspunkter.
 	FetchBetankande(ctx context.Context, dokID string) (*domain.Betankande, error)
+	// FetchBetankandeHTML reads the betänkande document and parses its
+	// reservations, särskilda yttranden and the utskott's reasoning. It
+	// returns ErrHTMLUnavailable when Riksdagen has no HTML for it.
+	FetchBetankandeHTML(ctx context.Context, dokID string) (*domain.BetankandeHTML, error)
 }
 
 // BetankandeRef is one row of Riksdagen's betänkande listing.
@@ -75,6 +82,12 @@ type Repository interface {
 	PendingBetankanden(ctx context.Context, limit int) ([]BetRef, error)
 	// SaveBetankande upserts the betänkande and its punkter.
 	SaveBetankande(ctx context.Context, b *domain.Betankande) error
+	// SaveBetankandeHTML replaces the stored statements of a betänkande and
+	// sets the reasoning of each punkt whose rubrik has exactly one section.
+	SaveBetankandeHTML(ctx context.Context, rm, bet string, h *domain.BetankandeHTML) error
+	// MarkHTMLAttempt records a failed HTML read so it is retried tomorrow,
+	// not on every run.
+	MarkHTMLAttempt(ctx context.Context, rm, bet string) error
 	// MarkBetankandeMissing records that Riksdagen lists no such betänkande.
 	MarkBetankandeMissing(ctx context.Context, rm, bet string) error
 	// YrkandenHandledIn lists the yrkanden whose betänkande is rm:bet.

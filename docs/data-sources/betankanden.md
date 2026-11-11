@@ -35,6 +35,8 @@ curl -s 'https://data.riksdagen.se/dokumentstatus/H501SkU11.json'
 
 Läs betänkandet på Riksdagens sida: <https://data.riksdagen.se/dokument/H501SkU11.html>.
 
+Reservationer, särskilda yttranden och "Utskottets ställningstagande" finns bara i HTML-dokumentet ovan. Sajten läser dem per avsnittsrubrik ("Utskottets överväganden", "Reservationer", "Särskilda yttranden"). Saknas eller går ett avsnitt inte att tolka visas det som "inte tillgänglig från Riksdagen" med länk till källan; inget fylls i.
+
 ## Schema/fält vi använder
 - `dokumentlista.dokument.dok_id` — betänkandets identitet, slås upp via riksmöte och beteckning.
 - `dokumentstatus.dokument` (`rm`, `beteckning`, `titel`, `organ`, `systemdatum`).
@@ -56,6 +58,8 @@ Läs betänkandet på Riksdagens sida: <https://data.riksdagen.se/dokument/H501S
 - Riksmötet skrivs `2017/18`, aldrig `2017-18`.
 
 ## Hur vi bearbetar
+Samma jobb läser även betänkandets HTML (en begäran till). Misslyckas den läsningen försöker jobbet igen efter ett dygn; redan inlästa betänkanden utan HTML läses om i jobbets vanliga takt (högst 25 per körning).
+
 Varje natt läser ett jobb högst 25 betänkanden som sparade motioner pekar på och som inte är
 inlästa (eller är äldre än motionen som pekar på dem). Det går vidare nästa natt där det slutade.
 För varje betänkande sparas förslagspunkterna och varje yrkande kopplas till den eller de
