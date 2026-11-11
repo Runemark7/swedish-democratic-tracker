@@ -119,3 +119,71 @@ func (s *Service) Link(ctx context.Context, rm, bet string) error {
 func (s *Service) Decisions(ctx context.Context, motionDokID string) ([]domain.YrkandeDecision, error) {
 	return s.repo.Decisions(ctx, motionDokID)
 }
+
+// ListItem is one row of the motion list with its computed outcome.
+type ListItem struct {
+	Motion  domain.Motion
+	Outcome domain.Aggregate
+	Cursor  domain.ListCursor
+	// HandledIn lists the betänkanden that decided its yrkanden.
+	HandledIn []string
+}
+
+// ListResult is one page. Next is nil when there is nothing after it.
+type ListResult struct {
+	Items []ListItem
+	Next  *domain.ListCursor
+}
+
+const (
+	listBatch = 200
+	// listMaxBatches bounds one request when an outcome filter is rare; the
+	// page then comes back short with a cursor to continue from.
+	listMaxBatches = 25
+)
+
+// List returns up to limit motions, most recently decided first. The outcome
+// is computed from yrkanden and decisions exactly as on the motion page, so an
+// outcome filter reads batches in order until the page is full.
+func (s *Service) List(ctx context.Context, f domain.ListFilter, after *domain.ListCursor, limit int) (*ListResult, error) {
+	want := map[string]bool{}
+	for _, o := range f.Outcomes {
+		want[o] = true
+	}
+	res := &ListResult{Items: []ListItem{}}
+	size := limit + 1
+	if len(want) > 0 {
+		size = listBatch
+	}
+	cur := after
+	for batch := 0; batch < listMaxBatches; batch++ {
+		rows, err := s.repo.ListPage(ctx, f, cur, size)
+		if err != nil {
+			return nil, err
+		}
+		for i, row := range rows {
+			agg := row.Outcome()
+			if len(want) > 0 && !want[agg.Word] {
+				cur = &rows[i].Cursor
+				continue
+			}
+			if len(res.Items) == limit {
+				// A further match exists: continue after the last returned row.
+				c := res.Items[len(res.Items)-1].Cursor
+				res.Next = &c
+				return res, nil
+			}
+			res.Items = append(res.Items, ListItem{Motion: row.Motion, Outcome: agg, Cursor: row.Cursor, HandledIn: row.HandledIn})
+			cur = &rows[i].Cursor
+		}
+		if len(rows) < size {
+			return res, nil
+		}
+	}
+	// Scan budget spent with the page not yet full: hand back where we stopped.
+	if cur != nil {
+		c := *cur
+		res.Next = &c
+	}
+	return res, nil
+}

@@ -336,6 +336,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/motions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Motions, most recently decided first, with filters and free-text search
+         * @description Undecided motions come after the decided ones, newest filing first. "Decided" is the date of the newest betänkande that decided one of the motion's yrkanden (Riksdagen's last-changed date for it). The `utskott` filter matches the utskott a motion is filed to and the utskott whose betänkande decided one of its yrkanden. `party` matches any signer. Each filter takes several values, repeated or comma-separated; values of one filter are alternatives, filters are combined with AND. Paginate with `nextCursor`; a page can be shorter than `limit` while `nextCursor` is set, when an `outcome` filter matches rarely.
+         */
+        get: operations["listMotions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/motions/coverage": {
         parameters: {
             query?: never;
@@ -1185,6 +1205,33 @@ export interface components {
             voteringStored: boolean;
             /** @description Partilinje of every party in the votering (shared definition); empty for acklamation */
             parties: components["schemas"]["PartyPartilinje"][];
+        };
+        MotionListRow: {
+            dokId: string;
+            /** @example 2017/18 */
+            riksmote: string;
+            /** @example 3293 */
+            beteckning: string;
+            title: string;
+            /** @description Riksdagen's own value */
+            subtyp: string;
+            /** @description Kommittémotion, Partimotion, Enskild motion or the derived Flerpartimotion */
+            kind: string;
+            /** @description Distinct signer parties */
+            parties: string[];
+            /** Format: date */
+            date: string | null;
+            /** @description Utskott the motion is filed to */
+            utskott: string;
+            utskottName: string;
+            /** @description Betänkanden that decided its yrkanden */
+            handledIn: string[];
+            sourceUrl: string;
+            outcome: components["schemas"]["MotionOutcome"];
+        };
+        MotionListResponse: {
+            data: components["schemas"]["MotionListRow"][];
+            nextCursor: string | null;
         };
         MotionOutcome: {
             /** @description Avslagen, Bifallen, Delvis bifallen, Besvarad, Blandat utfall or Ej avgjord än */
@@ -2763,6 +2810,41 @@ export interface operations {
                     "application/json": components["schemas"]["VoteSummaryListResponse"];
                 };
             };
+        };
+    };
+    listMotions: {
+        parameters: {
+            query?: {
+                /** @description Signer party, e.g. `M` */
+                party?: string;
+                /** @description Utskott code, e.g. `SkU` */
+                utskott?: string;
+                outcome?: string;
+                /** @description Riksmöte in slash form, `2017/18`; several allowed */
+                riksmote?: string;
+                kind?: string;
+                /** @description Free text over title and yrkande wording; every word must match */
+                q?: string;
+                limit?: number;
+                /** @description Opaque `nextCursor` of the previous page */
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of motions */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MotionListResponse"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
         };
     };
     getMotionCoverage: {

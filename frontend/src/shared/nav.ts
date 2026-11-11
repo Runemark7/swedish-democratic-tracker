@@ -4,8 +4,7 @@
  * Desktop (`App.tsx`) and mobile (`MobileNav.tsx`) both read this. A second
  * copy is how the same route ended up with two labels.
  *
- * Core menu: Beslut · Ledamöter · Partier · Regeringen. Motioner is inserted
- * between Beslut and Ledamöter by #143, once that list exists. Regeringen
+ * Core menu: Beslut · Motioner · Ledamöter · Partier · Regeringen. Regeringen
  * opens /regeringen, which holds the government, the budget, the Riksdag
  * overview and the agencies. /regering, /budget and /riksdag redirect there.
  *
@@ -22,6 +21,7 @@ export interface NavItem {
 
 export const PRIMARY_NAV: NavItem[] = [
   { to: "/beslut", label: "Beslut", match: ["/beslut", "/votes"] },
+  { to: "/motioner", label: "Motioner", match: ["/motioner"] },
   { to: "/politicians", label: "Ledamöter", match: ["/politicians"] },
   { to: "/parties", label: "Partier", match: ["/parties"] },
   { to: "/regeringen", label: "Regeringen", match: ["/regeringen", "/regering", "/budget", "/riksdag"] },
@@ -59,7 +59,6 @@ export function isLokaltSection(pathname: string): boolean {
 export function documentTitle(pathname: string): string {
   const primary = PRIMARY_NAV.find((item) => isActive(item, pathname));
   if (primary) return `Riksdagskollen – ${primary.label}`;
-  if (pathname === "/motioner" || pathname.startsWith("/motioner/")) return "Riksdagskollen – Motioner";
   if (isLokaltSection(pathname)) return "Riksdagskollen – Lokalt";
   const secondary = SECONDARY_NAV.find((item) => isActive(item, pathname));
   if (secondary) return `Riksdagskollen – ${secondary.label}`;

@@ -110,3 +110,21 @@ func (m DecisionMode) Label() string {
 	}
 	return ""
 }
+
+// YrkandeWord is the outcome of one yrkande given the chamber's decision as
+// Riksdagen gave it and the decision text of each förslagspunkt the yrkande is
+// linked to. Without a linked förslagspunkt there is no decision to show: the
+// yrkande is Ej avgjord än, whatever the listing's own columns say.
+func YrkandeWord(kammaren string, punktDecisions []string) string {
+	switch len(punktDecisions) {
+	case 0:
+		return OutcomeEjAvgjord
+	case 1:
+		return YrkandeOutcome(kammaren, punktDecisions[0])
+	}
+	words := make([]string, 0, len(punktDecisions))
+	for _, d := range punktDecisions {
+		words = append(words, YrkandeOutcome(kammaren, d))
+	}
+	return MotionOutcome(words).Word
+}

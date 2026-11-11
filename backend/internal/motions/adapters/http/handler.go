@@ -22,6 +22,7 @@ type Handler struct{ svc *motions.Service }
 func NewHandler(svc *motions.Service) *Handler { return &Handler{svc: svc} }
 
 func (h *Handler) Routes(r chi.Router) {
+	r.Get("/motions", h.list)
 	r.Get("/motions/coverage", h.coverage)
 	// The riksmöte sits in one path segment, so its slash is encoded: 2017%2F18.
 	r.Get("/motions/{riksmote}/{beteckning}", h.get)
@@ -164,20 +165,10 @@ func toResponse(m *domain.Motion, decisions []domain.YrkandeDecision) motionResp
 		}
 		var dws []string
 		for _, d := range byYrkande[y.Number] {
-			word := domain.YrkandeOutcome(y.ChamberDecision, d.Decision)
-			dws = append(dws, word)
-			yr.Decisions = append(yr.Decisions, toDecision(d, word))
+			dws = append(dws, d.Decision)
+			yr.Decisions = append(yr.Decisions, toDecision(d, domain.YrkandeOutcome(y.ChamberDecision, d.Decision)))
 		}
-		// Without a linked förslagspunkt there is no decision to show: the
-		// yrkande is Ej avgjord än, whatever the listing's own columns say.
-		switch len(dws) {
-		case 0:
-			yr.Outcome = domain.OutcomeEjAvgjord
-		case 1:
-			yr.Outcome = dws[0]
-		default:
-			yr.Outcome = domain.MotionOutcome(dws).Word
-		}
+		yr.Outcome = domain.YrkandeWord(y.ChamberDecision, dws)
 		words = append(words, yr.Outcome)
 		out.Yrkanden = append(out.Yrkanden, yr)
 	}

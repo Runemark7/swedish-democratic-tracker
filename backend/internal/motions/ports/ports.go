@@ -80,4 +80,8 @@ type Repository interface {
 	// Decisions reads the stored links of a motion with their punkt, betänkande
 	// and, for a votering we hold, the party tallies.
 	Decisions(ctx context.Context, motionDokID string) ([]domain.YrkandeDecision, error)
+	// ListPage reads at most limit motions matching the SQL-expressible part
+	// of the filter (everything but Outcomes), most recently decided first,
+	// strictly after the cursor. Rows carry what the outcome is computed from.
+	ListPage(ctx context.Context, f domain.ListFilter, after *domain.ListCursor, limit int) ([]domain.ListRow, error)
 }
