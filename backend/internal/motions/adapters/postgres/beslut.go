@@ -57,8 +57,16 @@ const decidedSQL = `(CASE
 
 func (r *Repository) ListBeslut(ctx context.Context, f domain.BeslutFilter, today time.Time, after *domain.BeslutCursor, limit int) ([]domain.BeslutRow, error) {
 	var out []domain.BeslutRow
+	ballotsProbe := true
+	if len(f.Involved) > 0 {
+		known, err := r.partyKnown(ctx, upperAll(f.Involved))
+		if err != nil {
+			return nil, err
+		}
+		ballotsProbe = known
+	}
 	if f.State != domain.BeslutDecided && (after == nil || !after.Decided) {
-		rows, err := r.beslutQuery(ctx, f, today, false, after, limit)
+		rows, err := r.beslutQuery(ctx, f, today, false, after, limit, ballotsProbe)
 		if err != nil {
 			return nil, err
 		}
@@ -66,7 +74,7 @@ func (r *Repository) ListBeslut(ctx context.Context, f domain.BeslutFilter, toda
 		after = nil
 	}
 	if f.State != domain.BeslutUpcoming && len(out) < limit {
-		rows, err := r.beslutQuery(ctx, f, today, true, after, limit-len(out))
+		rows, err := r.beslutQuery(ctx, f, today, true, after, limit-len(out), ballotsProbe)
 		if err != nil {
 			return nil, err
 		}
@@ -75,7 +83,22 @@ func (r *Repository) ListBeslut(ctx context.Context, f domain.BeslutFilter, toda
 	return out, nil
 }
 
-func (r *Repository) beslutQuery(ctx context.Context, f domain.BeslutFilter, today time.Time, decided bool, after *domain.BeslutCursor, limit int) ([]domain.BeslutRow, error) {
+// partyKnown says whether any of the parties is on record as a member's party,
+// a motion author or a reservation. Each probe is small (politicians, 218k
+// authors, 2.9k statements), unlike ballots, which has no party index. An
+// unknown code (/api/parties/ZZ/record) would otherwise make the ballots probe
+// read every ballot of every listing; with nothing known it is skipped, as it
+// could only ever match a party that has ballots but is none of the above.
+func (r *Repository) partyKnown(ctx context.Context, parties []string) (bool, error) {
+	var known bool
+	err := r.db.QueryRow(ctx, `
+		SELECT EXISTS (SELECT 1 FROM politicians WHERE upper(party) = ANY($1))
+		    OR EXISTS (SELECT 1 FROM motion_authors WHERE upper(party) = ANY($1))
+		    OR EXISTS (SELECT 1 FROM betankande_statements s, unnest(s.parties) sp WHERE upper(sp) = ANY($1))`, parties).Scan(&known)
+	return known, err
+}
+
+func (r *Repository) beslutQuery(ctx context.Context, f domain.BeslutFilter, today time.Time, decided bool, after *domain.BeslutCursor, limit int, ballotsProbe bool) ([]domain.BeslutRow, error) {
 	args := []any{today.UTC().Format("2006-01-02")}
 	arg := func(v any) string { args = append(args, v); return fmt.Sprintf("$%d", len(args)) }
 	where := []string{decidedSQL + " = " + arg(decided)}
@@ -101,10 +124,14 @@ func (r *Repository) beslutQuery(ctx context.Context, f domain.BeslutFilter, tod
 	}
 	if len(f.Involved) > 0 {
 		p := arg(upperAll(f.Involved))
-		where = append(where, `(`+motionSide(p)+` OR `+reservationSide(p)+` OR
+		ballotSide := ""
+		if ballotsProbe {
+			ballotSide = ` OR
 			(SELECT true FROM voteringar v
-			 CROSS JOIN LATERAL (SELECT 1 FROM ballots b WHERE b.votering_ref = v.id AND upper(b.party) = ANY(`+p+`) LIMIT 1) vb
-			 WHERE v.session = l.riksmote AND v.beteckning = l.beteckning LIMIT 1) IS TRUE)`)
+			 CROSS JOIN LATERAL (SELECT 1 FROM ballots b WHERE b.votering_ref = v.id AND upper(b.party) = ANY(` + p + `) LIMIT 1) vb
+			 WHERE v.session = l.riksmote AND v.beteckning = l.beteckning LIMIT 1) IS TRUE`
+		}
+		where = append(where, `(`+motionSide(p)+` OR `+reservationSide(p)+ballotSide+`)`)
 	}
 	// Decided rows run newest first by their decision date (else publication
 	// date); upcoming rows run soonest planned day first, undated ones last.
