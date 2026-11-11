@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,32 +18,66 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
+// ballotsFirstMax is the vote count up to which a member's page is built by
+// reading their own ballots first. The planner cannot tell a member with 7
+// ballots from one with 15,000 (it assumes ~3,800 for everyone), so for
+// "newest first, LIMIT 50" it walks every votering by date and probes
+// ballots_pkey once per votering hoping to find 50 of the member's ballots.
+// For a member with few ballots that is ~16k index probes over a 360 MB index:
+// 13-15 s when the pages are cold. Above this count the walk stops after a few
+// hundred probes and is cheaper than reading thousands of ballots, so both
+// strategies are kept and picked from the exact total we count anyway.
+var ballotsFirstMax = 2000
+
+const voteColumns = `vg.votering_id, b.politician_id, b.party, b.vote_result, vg.beteckning, vg.forslagspunkt,
+		vg.session, vg.dok_id, vg.document_title, vg.created_at`
+
 func (r *Repository) ListByPolitician(ctx context.Context, f ports.ListVotesFilter) (ports.ListVotesResult, error) {
 	// Columns are qualified because the ballot and the votering now come from
 	// different tables: politician_id is the member's, everything else describes
 	// the question they voted on.
-	args := []any{f.PoliticianID}
-	where := "WHERE b.politician_id = $1"
-	n := 2
-
-	if f.Session != "" {
-		where += fmt.Sprintf(" AND vg.session = $%d", n)
-		args = append(args, f.Session)
-		n++
-	}
-
-	const from = `FROM ballots b JOIN voteringar vg ON vg.id = b.votering_ref `
-
 	var total int
-	if err := r.db.QueryRow(ctx, "SELECT COUNT(*) "+from+where, args...).Scan(&total); err != nil {
+	var err error
+	if f.Session == "" {
+		// Every ballot has a votering (NOT NULL FK, ON DELETE CASCADE), so the
+		// join adds nothing to the count: an index-only scan answers it.
+		err = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM ballots WHERE politician_id = $1`, f.PoliticianID).Scan(&total)
+	} else {
+		err = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM ballots b JOIN voteringar vg ON vg.id = b.votering_ref
+			WHERE b.politician_id = $1 AND vg.session = $2`, f.PoliticianID, f.Session).Scan(&total)
+	}
+	if err != nil {
 		return ports.ListVotesResult{}, err
 	}
 
 	offset := (f.Page - 1) * f.PageSize
-	args = append(args, f.PageSize, offset)
-	q := fmt.Sprintf(`SELECT vg.votering_id, b.politician_id, b.party, b.vote_result, vg.beteckning, vg.forslagspunkt,
-		vg.session, vg.dok_id, vg.document_title, vg.created_at
-		%s%s ORDER BY vg.created_at DESC LIMIT $%d OFFSET $%d`, from, where, n, n+1)
+	if total == 0 || offset >= total {
+		return ports.ListVotesResult{Votes: nil, Total: total}, nil
+	}
+
+	args := []any{f.PoliticianID, f.PageSize, offset}
+	sessionCond := ""
+	if f.Session != "" {
+		args = append(args, f.Session)
+		sessionCond = " AND vg.session = $4"
+	}
+	var q string
+	if total <= ballotsFirstMax {
+		// MATERIALIZED fences the member's ballots off so the planner cannot
+		// turn this back into the date walk described above.
+		q = `WITH b AS MATERIALIZED (
+				SELECT votering_ref, politician_id, party, vote_result FROM ballots WHERE politician_id = $1
+			)
+			SELECT ` + voteColumns + `
+			FROM b JOIN voteringar vg ON vg.id = b.votering_ref
+			WHERE true` + sessionCond + `
+			ORDER BY vg.created_at DESC, vg.id DESC LIMIT $2 OFFSET $3`
+	} else {
+		q = `SELECT ` + voteColumns + `
+			FROM ballots b JOIN voteringar vg ON vg.id = b.votering_ref
+			WHERE b.politician_id = $1` + sessionCond + `
+			ORDER BY vg.created_at DESC, vg.id DESC LIMIT $2 OFFSET $3`
+	}
 
 	rows, err := r.db.Query(ctx, q, args...)
 	if err != nil {
