@@ -54,6 +54,9 @@ type Yrkande struct {
 	ChamberDecision string
 	BehandlasI      string
 	BehandlasIPunkt string
+	// WordingHash is the hash of the normalised wording; empty when it has
+	// not been computed yet or the wording has no letters or digits.
+	WordingHash string
 }
 
 // Kind labels. Kommittémotion, Partimotion and Enskild motion are Riksdagen's

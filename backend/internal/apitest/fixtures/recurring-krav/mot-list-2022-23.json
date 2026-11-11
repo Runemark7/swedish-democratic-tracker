@@ -1,0 +1,145 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "mot",
+  "rm": "2022/23",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=mot&rm=2022/23&bet=<beteckning>&utformat=json",
+ "note": "Recorded 2026-11-11 from data.riksdagen.se. Rows are the live rows for the motions kept; @traffar is the live total for the riksmöte.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "221.0",
+   "@version": "3.9.0",
+   "@q": "doktyp=mot&rm=2022%2f23&utformat=json&bet=1675",
+   "@datum": "2026-11-11 00:38:10",
+   "@sida": "1",
+   "@sidor": "1",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "@traffar": "1",
+   "@dPre": "46",
+   "@dSol": "15",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null,
+   "dokument": [
+    {
+     "traff": "1",
+     "domain": "rdwebb",
+     "database": "dokument",
+     "datum": "2022-11-23",
+     "id": "ha021675",
+     "rdrest": null,
+     "slutdatum": "",
+     "rddata": null,
+     "plats": "",
+     "klockslag": "",
+     "publicerad": "2022-11-23",
+     "systemdatum": "2023-09-22 12:52:39",
+     "undertitel": "av Rickard Nordin (C)",
+     "kalla": "Filur",
+     "kall_id": "6064a2a6-a813-4a10-abe1-5b66fffdde03",
+     "dok_id": "HA021675",
+     "dokumentformat": "",
+     "dokument_url_text": "//data.riksdagen.se/dokument/HA021675.text",
+     "dokument_url_html": "//data.riksdagen.se/dokument/HA021675.html",
+     "inlamnad": "",
+     "motionstid": "",
+     "tilldelat": "",
+     "lang": "",
+     "url": "",
+     "relurl": "",
+     "titel": "Vinstmarginalbeskattning på digitala tjänster och produkter",
+     "rm": "2022/23",
+     "organ": "SkU",
+     "relaterat_id": "",
+     "doktyp": "mot",
+     "typ": "mot",
+     "subtyp": "Enskild motion",
+     "beteckning": "1675",
+     "tempbeteckning": "C",
+     "nummer": "1675",
+     "status": "Klar",
+     "score": "221",
+     "sokdata": {
+      "titel": "Vinstmarginalbeskattning på digitala tjänster och produkter",
+      "undertitel": "Motion 2022/23:1675 av Rickard Nordin (C)",
+      "soktyp": "",
+      "statusrad": "\n\t\t\t\t<dl>\n\t\t\t\t <dt>Inlämnad</dt> <dd>2022-11-23</dd> <dt>Förslag</dt> <dd>1</dd> \n\t\t\t\t\t\t<dt>Datum</dt> <dd>2022-11-23</dd>\n\t\t\t\t\t\n\t\t\t\t\t<dt>Utskottsberedning</dt>  \n\t\t\t\t\t<dd>\n\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<a data-dokumentnamn=\"Betänkande\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumenttitel=\"Mervärdesskatt\"\n\t\t\t\t\t\t\t\t\t\tdata-dokumentid=\"HA01SkU15\">2022/23:SkU15</a>\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t\t<dt>Riksdagsbeslut</dt> \n\t\t\t\t<dd>\n\t\t\t\t\t(1 yrkande): \n\t\t\t\t\t \n\t\t\t\t\t\t1 avslag\n\t\t\t\t</dd>\n\t\t\t\t\n\t\t\t</dl>\n\t\t\t",
+      "brodsmula": "",
+      "parti_kod": "",
+      "parti_namn": "",
+      "parti_website_url": "",
+      "parti_website_namn": "",
+      "parti_epost": "",
+      "parti_telefon": "",
+      "parti_telefontider": "",
+      "parti_logotyp_img_id": "",
+      "parti_logotyp_img_url": "",
+      "parti_logotyp_img_alt": "",
+      "parti_mandat": "",
+      "kalenderprio": ""
+     },
+     "summary": "Motion till riksdagen\n 2022/23:1675\n av Rickard Nordin (C)\n Vinstmarginalbeskattning på digitala tjänster och produkter\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att införa vinstmarginalbeskattning på digitala tjänster och produkter och tillkännager detta för regeringen.\n Motivering\n",
+     "notisrubrik": "Vinstmarginalbeskattning på digitala tjänster och produkter",
+     "notis": "Motion till riksdagen\n 2022/23:1675\n av Rickard Nordin (C)\n Vinstmarginalbeskattning på digitala tjänster och produkter\n Förslag till riksdagsbeslut\n Riksdagen ställer sig bakom det som anförs i motionen om att införa vinstmarginalbeskattning på digitala tjänster och produkter och tillkännager detta för regeringen.\n Motivering\n",
+     "dokintressent": {
+      "intressent": [
+       {
+        "roll": "undertecknare",
+        "namn": "Rickard Nordin",
+        "partibet": "C",
+        "intressent_id": "0132818093422"
+       }
+      ]
+     },
+     "filbilaga": {
+      "fil": [
+       {
+        "typ": "docx",
+        "namn": "mot_202223__1675.docx",
+        "storlek": "72411",
+        "url": "https://data.riksdagen.se/fil/B35D4C39-E828-429D-BBD2-069F21484CE5"
+       },
+       {
+        "typ": "pdf",
+        "namn": "mot_202223__1675.pdf",
+        "storlek": "74397",
+        "url": "https://data.riksdagen.se/fil/05C72564-0F8F-47FD-AD1A-9466A859BC7A"
+       }
+      ]
+     },
+     "avdelning": "alla",
+     "avdelningar": {
+      "avdelning": [
+       "alla",
+       "dokument"
+      ]
+     },
+     "struktur": "",
+     "audio": "",
+     "video": "",
+     "debattgrupp": "",
+     "debattdag": "",
+     "beslutsdag": "",
+     "beredningsdag": "",
+     "justeringsdag": "",
+     "beslutad": "",
+     "debattsekunder": "",
+     "ardometyp": "",
+     "reservationer": "",
+     "debatt": null,
+     "debattnamn": "Motion",
+     "dokumentnamn": "Motion"
+    }
+   ]
+  }
+ }
+}

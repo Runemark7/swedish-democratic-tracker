@@ -50,6 +50,13 @@ type YrkandeKey struct {
 	BehandlasIPunkt string
 }
 
+// YrkandeCursor is a position in the (dok_id, nummer) order. The zero value
+// is the start.
+type YrkandeCursor struct {
+	DokID  string
+	Number int
+}
+
 // Repository stores motions.
 type Repository interface {
 	// Upsert writes the motion and replaces its authors and yrkanden in one
@@ -84,4 +91,15 @@ type Repository interface {
 	// of the filter (everything but Outcomes), most recently decided first,
 	// strictly after the cursor. Rows carry what the outcome is computed from.
 	ListPage(ctx context.Context, f domain.ListFilter, after *domain.ListCursor, limit int) ([]domain.ListRow, error)
+
+	// RecurringMembers lists every stored yrkande with the wording hash,
+	// earliest riksmöte first. The members carry no Outcome yet.
+	RecurringMembers(ctx context.Context, hash string) ([]domain.RecurringMember, error)
+	// SetWordingHash stores the hash of one yrkande.
+	SetWordingHash(ctx context.Context, dokID string, number int, hash string) error
+	// BackfillWordingHashes walks yrkanden without a hash in (dok_id, nummer)
+	// order after the cursor, at most limit of them, writes the hash of each
+	// and returns how many it wrote, how many it looked at, and the new
+	// cursor. Looking at none means the walk is done.
+	BackfillWordingHashes(ctx context.Context, after YrkandeCursor, limit int) (written, scanned int, last YrkandeCursor, err error)
 }

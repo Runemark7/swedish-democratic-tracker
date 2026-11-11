@@ -1166,6 +1166,41 @@ export interface components {
             outcome: string;
             /** @description The förslagspunkt(er) that decided the yrkande */
             decisions: components["schemas"]["YrkandeDecision"][];
+            /** @description The Återkommande krav the yrkande belongs to; null when its wording was filed in only one riksmöte. */
+            recurring: components["schemas"]["RecurringKrav"] | null;
+        };
+        RecurringKrav: {
+            /**
+             * @description Phase 1 groups only by identical normalised wording
+             * @enum {string}
+             */
+            rule: "identical_wording";
+            /** @example Identisk ordalydelse */
+            ruleLabel: string;
+            /** @description Every stored filing of the demand, earliest riksmöte first */
+            members: components["schemas"]["RecurringMember"][];
+        };
+        RecurringMember: {
+            /** @example 2018/19 */
+            riksmote: string;
+            /** @example 2900 */
+            beteckning: string;
+            /** @description Yrkande number within the motion */
+            number: number;
+            /** @description Filing date, YYYY-MM-DD */
+            date: string | null;
+            /** @description Distinct parties among the signers */
+            parties: string[];
+            /** @description Outcome word of this filing, as on the motion page */
+            outcome: string;
+            /**
+             * @description Why this filing is in the group
+             * @enum {string}
+             */
+            rule: "identical_wording";
+            /** @description True for the yrkande the request is about */
+            current: boolean;
+            sourceUrl: string;
         };
         PartyPartilinje: {
             party: string;

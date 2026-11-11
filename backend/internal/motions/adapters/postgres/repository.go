@@ -57,9 +57,10 @@ func (r *Repository) Upsert(ctx context.Context, m *domain.Motion) error {
 	}
 	for _, y := range m.Yrkanden {
 		if _, err := tx.Exec(ctx, `
-			INSERT INTO motion_yrkanden (dok_id, nummer, wording, utskottet, kammaren, behandlas_i, behandlas_i_punkt)
-			VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-			m.DokID, y.Number, y.Wording, y.UtskottProposal, y.ChamberDecision, y.BehandlasI, y.BehandlasIPunkt); err != nil {
+			INSERT INTO motion_yrkanden (dok_id, nummer, wording, utskottet, kammaren, behandlas_i, behandlas_i_punkt, wording_hash)
+			VALUES ($1,$2,$3,$4,$5,$6,$7, NULLIF($8,''))`,
+			m.DokID, y.Number, y.Wording, y.UtskottProposal, y.ChamberDecision, y.BehandlasI, y.BehandlasIPunkt,
+			domain.WordingHash(y.Wording)); err != nil {
 			return err
 		}
 	}
@@ -101,7 +102,7 @@ func (r *Repository) Get(ctx context.Context, riksmote, beteckning string) (*dom
 	}
 
 	yrows, err := r.db.Query(ctx, `
-		SELECT nummer, wording, utskottet, kammaren, behandlas_i, behandlas_i_punkt
+		SELECT nummer, wording, utskottet, kammaren, behandlas_i, behandlas_i_punkt, COALESCE(wording_hash, '')
 		FROM motion_yrkanden WHERE dok_id = $1 ORDER BY nummer`, m.DokID)
 	if err != nil {
 		return nil, err
@@ -110,7 +111,7 @@ func (r *Repository) Get(ctx context.Context, riksmote, beteckning string) (*dom
 	for yrows.Next() {
 		var y domain.Yrkande
 		if err := yrows.Scan(&y.Number, &y.Wording, &y.UtskottProposal, &y.ChamberDecision,
-			&y.BehandlasI, &y.BehandlasIPunkt); err != nil {
+			&y.BehandlasI, &y.BehandlasIPunkt, &y.WordingHash); err != nil {
 			return nil, err
 		}
 		m.Yrkanden = append(m.Yrkanden, y)
@@ -378,4 +379,82 @@ func (r *Repository) Decisions(ctx context.Context, motionDokID string) ([]domai
 		}
 	}
 	return out, nil
+}
+
+func (r *Repository) RecurringMembers(ctx context.Context, hash string) ([]domain.RecurringMember, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT m.dok_id, m.riksmote, m.beteckning, y.nummer, m.motion_date, y.kammaren,
+		       COALESCE((SELECT array_agg(s.party ORDER BY s.first)
+		                 FROM (SELECT a.party, min(a.ordning) AS first
+		                       FROM motion_authors a
+		                       WHERE a.dok_id = m.dok_id AND a.party NOT IN ('', '-')
+		                         AND lower(a.role) IN ('', 'undertecknare')
+		                       GROUP BY a.party) s), '{}')
+		FROM motion_yrkanden y JOIN motions m ON m.dok_id = y.dok_id
+		WHERE y.wording_hash = $1
+		ORDER BY m.riksmote, nullif(regexp_replace(m.beteckning, '\D', '', 'g'), '')::int NULLS LAST,
+		         m.beteckning, y.nummer`, hash)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []domain.RecurringMember
+	for rows.Next() {
+		var mem domain.RecurringMember
+		if err := rows.Scan(&mem.DokID, &mem.Riksmote, &mem.Beteckning, &mem.Number, &mem.Date,
+			&mem.ChamberDecision, &mem.Parties); err != nil {
+			return nil, err
+		}
+		out = append(out, mem)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) SetWordingHash(ctx context.Context, dokID string, number int, hash string) error {
+	_, err := r.db.Exec(ctx, `
+		UPDATE motion_yrkanden SET wording_hash = NULLIF($3, '')
+		WHERE dok_id = $1 AND nummer = $2`, dokID, number, hash)
+	return err
+}
+
+func (r *Repository) BackfillWordingHashes(ctx context.Context, after ports.YrkandeCursor, limit int) (int, int, ports.YrkandeCursor, error) {
+	last := after
+	rows, err := r.db.Query(ctx, `
+		SELECT dok_id, nummer, wording FROM motion_yrkanden
+		WHERE wording_hash IS NULL AND (dok_id, nummer) > ($1, $2)
+		ORDER BY dok_id, nummer LIMIT $3`, after.DokID, after.Number, limit)
+	if err != nil {
+		return 0, 0, last, err
+	}
+	type row struct {
+		dokID   string
+		number  int
+		wording string
+	}
+	var todo []row
+	for rows.Next() {
+		var x row
+		if err := rows.Scan(&x.dokID, &x.number, &x.wording); err != nil {
+			rows.Close()
+			return 0, 0, last, err
+		}
+		todo = append(todo, x)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return 0, 0, last, err
+	}
+	written := 0
+	for _, x := range todo {
+		last = ports.YrkandeCursor{DokID: x.dokID, Number: x.number}
+		h := domain.WordingHash(x.wording)
+		if h == "" {
+			continue // nothing to group on; the cursor moves past it
+		}
+		if err := r.SetWordingHash(ctx, x.dokID, x.number, h); err != nil {
+			return written, len(todo), last, err
+		}
+		written++
+	}
+	return written, len(todo), last, nil
 }

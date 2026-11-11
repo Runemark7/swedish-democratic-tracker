@@ -27,6 +27,45 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 type Yrkande = Motion["yrkanden"][number];
 type Decision = Yrkande["decisions"][number];
 
+type Recurring = NonNullable<Yrkande["recurring"]>;
+
+/** The history of a demand filed again with identical wording. Facts only:
+ *  who filed it, in which riksmöte, and how it ended. The rule that grouped
+ *  the filings is stated on each step. */
+function RecurringBlock({ r }: { r: Recurring }) {
+  return (
+    <div className="mt-3 rounded border p-3 text-sm" style={{ borderColor: "var(--color-border)" }} data-testid="recurring">
+      <p className="font-semibold">Återkommande krav</p>
+      <p className="text-xs text-on-surface-variant mb-2">
+        Samma ordalydelse (utan hänsyn till blanksteg, skiljetecken och versaler) har lämnats in {r.members.length}{" "}
+        gånger.
+      </p>
+      <ol className="flex flex-col gap-1">
+        {r.members.map((m) => (
+          <li key={`${m.riksmote}:${m.beteckning}:${m.number}`} data-testid="recurring-step" aria-current={m.current ? "true" : undefined}>
+            {m.current ? (
+              <strong>
+                {m.riksmote}:{m.beteckning} yrkande {m.number}
+              </strong>
+            ) : (
+              <Link
+                to={`/motioner/${encodeURIComponent(m.riksmote)}/${encodeURIComponent(m.beteckning)}`}
+                className="text-link hover:underline"
+              >
+                {m.riksmote}:{m.beteckning} yrkande {m.number}
+              </Link>
+            )}
+            {" · "}
+            {m.parties.length > 0 ? m.parties.join(", ") : "parti saknas"} · {m.outcome} · {m.rule === "identical_wording" ? r.ruleLabel : m.rule}
+            {m.current ? " (denna motion)" : ""}
+          </li>
+        ))}
+      </ol>
+      <SourceMarker sourceId="motions" />
+    </div>
+  );
+}
+
 /** The decision chain of one yrkande: where it was decided, how, and by whom.
  *  Facts only: the chamber's decision, the votering's Partilinje per party,
  *  with a link to Riksdagen's betänkande. */
@@ -173,6 +212,7 @@ export function MotionPage() {
                 <p className="text-sm mt-2" data-testid="yrkande-outcome">
                   Utfall: <strong>{y.outcome}</strong>
                 </p>
+                {y.recurring ? <RecurringBlock r={y.recurring} /> : null}
                 {y.decisions.map((d) => (
                   <DecisionBlock key={`${d.betankandeRiksmote}:${d.betankandeBeteckning}:${d.punkt}`} d={d} />
                 ))}
