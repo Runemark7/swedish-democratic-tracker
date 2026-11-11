@@ -4,6 +4,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -13,7 +14,14 @@ import (
 	"riksdagskollen/internal/motions/ports"
 )
 
-type Repository struct{ db *pgxpool.Pool }
+type Repository struct {
+	db *pgxpool.Pool
+	// ballotParties caches the distinct parties found in ballots (see
+	// partyHasBallots); guarded by ballotPartiesMu.
+	ballotPartiesMu sync.Mutex
+	ballotParties   map[string]bool
+	ballotPartiesAt time.Time
+}
 
 func NewRepository(db *pgxpool.Pool) *Repository { return &Repository{db: db} }
 

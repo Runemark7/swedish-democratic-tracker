@@ -38,6 +38,29 @@ func (r *Repository) GetByID(ctx context.Context, id string) (*domain.Politician
 	return p, nil
 }
 
+func (r *Repository) GetMany(ctx context.Context, ids []string) (map[string]*domain.Politician, error) {
+	out := map[string]*domain.Politician{}
+	if len(ids) == 0 {
+		return out, nil
+	}
+	rows, err := r.db.Query(ctx, `
+		SELECT intressent_id, first_name, last_name, party, constituency, image_url, is_active, updated_at
+		FROM politicians
+		WHERE intressent_id = ANY($1)`, ids)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		p, err := scanPolitician(rows)
+		if err != nil {
+			return nil, err
+		}
+		out[p.IntressentID] = p
+	}
+	return out, rows.Err()
+}
+
 func (r *Repository) List(ctx context.Context, f ports.ListFilter) (ports.ListResult, error) {
 	args := []any{}
 	where := "WHERE 1=1"

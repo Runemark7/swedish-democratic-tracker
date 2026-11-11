@@ -90,3 +90,13 @@ func TestPartyRecordRejectsABadPartyCode(t *testing.T) {
 		t.Errorf("status %d", code)
 	}
 }
+
+// An unknown party code answers as before (200, nothing listed) and, since
+// ballots have no party index, must not probe every ballot to find that out.
+func TestPartyRecordForAnUnknownPartyIsEmpty(t *testing.T) {
+	h := listHarness(t)
+	b, code := getPartyRecord(t, h, "ZZ")
+	if code != 200 || b.Party != "ZZ" || len(b.Decisions) != 0 || len(b.Motions) != 0 {
+		t.Fatalf("status %d, body %+v", code, b)
+	}
+}

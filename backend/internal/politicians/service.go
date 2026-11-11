@@ -54,6 +54,22 @@ func (s *Service) ImageURLByID(ctx context.Context, intressentID string) (string
 	return p.ImageURL, nil
 }
 
+// Identity is the display name and portrait of one politician.
+type Identity struct{ Name, ImageURL string }
+
+// IdentitiesByID resolves many ids in one query. Unknown ids are absent.
+func (s *Service) IdentitiesByID(ctx context.Context, ids []string) (map[string]Identity, error) {
+	ps, err := s.repo.GetMany(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+	out := make(map[string]Identity, len(ps))
+	for id, p := range ps {
+		out[id] = Identity{Name: p.FullName(), ImageURL: p.ImageURL}
+	}
+	return out, nil
+}
+
 func (s *Service) List(ctx context.Context, f ports.ListFilter) (ports.ListResult, error) {
 	if f.Page == 0 {
 		f.Page = 1

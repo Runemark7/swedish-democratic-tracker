@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"riksdagskollen/internal/politicians"
 	"riksdagskollen/internal/speeches"
 	"riksdagskollen/internal/speeches/domain"
 )
@@ -20,6 +21,12 @@ import (
 type PoliticianLookup interface {
 	NameByID(ctx context.Context, intressentID string) (string, error)
 	ImageURLByID(ctx context.Context, intressentID string) (string, error)
+}
+
+// BatchPoliticianLookup resolves many ids in one query. A PoliticianLookup
+// that also implements it avoids one lookup per speech in the list endpoints.
+type BatchPoliticianLookup interface {
+	IdentitiesByID(ctx context.Context, ids []string) (map[string]politicians.Identity, error)
 }
 
 type Handler struct {
@@ -68,11 +75,7 @@ func (h *Handler) listRecent(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	out := make([]SpeechDTO, 0, len(ss))
-	for _, s := range ss {
-		out = append(out, h.toDTO(r.Context(), s, false))
-	}
-	jsonOK(w, out)
+	jsonOK(w, h.toDTOs(r.Context(), ss))
 }
 
 func (h *Handler) getByID(w http.ResponseWriter, r *http.Request) {
@@ -101,11 +104,7 @@ func (h *Handler) listByDocument(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	out := make([]SpeechDTO, 0, len(ss))
-	for _, s := range ss {
-		out = append(out, h.toDTO(r.Context(), s, false))
-	}
-	jsonOK(w, out)
+	jsonOK(w, h.toDTOs(r.Context(), ss))
 }
 
 func (h *Handler) listByPolitician(w http.ResponseWriter, r *http.Request) {
@@ -124,11 +123,7 @@ func (h *Handler) listByPolitician(w http.ResponseWriter, r *http.Request) {
 	if len(ss) > limit {
 		ss = ss[:limit]
 	}
-	out := make([]SpeechDTO, 0, len(ss))
-	for _, s := range ss {
-		out = append(out, h.toDTO(r.Context(), s, false))
-	}
-	jsonOK(w, out)
+	jsonOK(w, h.toDTOs(r.Context(), ss))
 }
 
 func (h *Handler) listByParty(w http.ResponseWriter, r *http.Request) {
@@ -144,16 +139,44 @@ func (h *Handler) listByParty(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	jsonOK(w, h.toDTOs(r.Context(), ss))
+}
+
+// toDTOs builds list DTOs, resolving every politician in one query when the
+// lookup supports it (a failed batch leaves names empty, as a failed single
+// lookup does).
+func (h *Handler) toDTOs(ctx context.Context, ss []*domain.Speech) []SpeechDTO {
 	out := make([]SpeechDTO, 0, len(ss))
-	for _, s := range ss {
-		out = append(out, h.toDTO(r.Context(), s, false))
+	b, ok := h.pol.(BatchPoliticianLookup)
+	if !ok {
+		for _, s := range ss {
+			out = append(out, h.toDTO(ctx, s, false))
+		}
+		return out
 	}
-	jsonOK(w, out)
+	seen := map[string]bool{}
+	var ids []string
+	for _, s := range ss {
+		if !seen[s.PoliticianID] {
+			seen[s.PoliticianID] = true
+			ids = append(ids, s.PoliticianID)
+		}
+	}
+	idents, _ := b.IdentitiesByID(ctx, ids)
+	for _, s := range ss {
+		id := idents[s.PoliticianID]
+		out = append(out, buildDTO(s, id.Name, id.ImageURL, false))
+	}
+	return out
 }
 
 func (h *Handler) toDTO(ctx context.Context, s *domain.Speech, includeFullText bool) SpeechDTO {
 	name, _ := h.pol.NameByID(ctx, s.PoliticianID)
 	imageURL, _ := h.pol.ImageURLByID(ctx, s.PoliticianID)
+	return buildDTO(s, name, imageURL, includeFullText)
+}
+
+func buildDTO(s *domain.Speech, name, imageURL string, includeFullText bool) SpeechDTO {
 	text := s.SpeechText
 	if strings.TrimSpace(text) == "" {
 		text = ""
