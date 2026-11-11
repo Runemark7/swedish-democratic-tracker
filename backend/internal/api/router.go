@@ -263,6 +263,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 		return nil, err
 	}
 	betankandenWorker := workers.NewBetankandenWorker(motionSvc)
+	betankandenWorker.SetNow(clk.Now)
 	if err := sched.RegisterSync("@daily", &betankandenWorker); err != nil {
 		slog.Error("failed to register fetch-betankanden worker", "error", err)
 		return nil, err

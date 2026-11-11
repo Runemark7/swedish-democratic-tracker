@@ -15,6 +15,11 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"riksdagskollen/internal/api"
+	ingestionPG "riksdagskollen/internal/ingestion/adapters/postgres"
+	"riksdagskollen/internal/ingestion/workers"
+	"riksdagskollen/internal/motions"
+	motionsPG "riksdagskollen/internal/motions/adapters/postgres"
+	motionsRD "riksdagskollen/internal/motions/adapters/riksdagen"
 )
 
 // Harness is one test's API: its own database, a replay server, and the
@@ -24,6 +29,7 @@ type Harness struct {
 	DB     *pgxpool.Pool
 	App    *api.Router
 	replay *Replay
+	now    func() time.Time
 }
 
 // Option configures a harness.
@@ -34,6 +40,7 @@ type Option func(*Harness)
 func WithNow(now time.Time) Option {
 	return func(h *Harness) {
 		h.App.SetNow(func() time.Time { return now })
+		h.now = func() time.Time { return now }
 	}
 }
 
@@ -85,3 +92,22 @@ func (h *Harness) Served(path string) int {
 // ReplayURL is the base URL of the replay server, for tests that build their
 // own Riksdagen client (for example to run a service outside the scheduler).
 func (h *Harness) ReplayURL() string { return h.replay.URL }
+
+// Backfill runs the operator's motions backfill (cmd/backfill-motions) over
+// every riksmöte the mandate periods declare, against the replay server, and
+// returns its report. The daily workers only take the current riksmöte, so a
+// test that needs older ones goes through here.
+func (h *Harness) Backfill(ctx context.Context, opts workers.BackfillOptions) *workers.Report {
+	h.t.Helper()
+	workers.FetchDelay = 0
+	svc := motions.NewService(motionsPG.NewRepository(h.DB), motionsRD.NewClientWithBaseURL(h.replay.URL))
+	b := workers.NewMotionsBackfill(svc, ingestionPG.NewMandateRepository(h.DB))
+	if h.now != nil {
+		b.SetNow(h.now)
+	}
+	rep, err := b.Run(ctx, opts)
+	if err != nil {
+		h.t.Fatalf("backfill: %v", err)
+	}
+	return rep
+}

@@ -128,3 +128,18 @@ func YrkandeWord(kammaren string, punktDecisions []string) string {
 	}
 	return MotionOutcome(words).Word
 }
+
+// KnownOutcome reports whether Outcome maps a decision word to one of its own
+// words. A word it does not map is shown to the reader exactly as Riksdagen
+// wrote it, and listed by the backfill report.
+func KnownOutcome(word string) bool {
+	switch mapOutcomeWord(word) {
+	case OutcomeAvslagen, OutcomeBifallen, OutcomeDelvis, OutcomeBesvarad:
+		return true
+	}
+	return false
+}
+
+// MappedOutcome is the word the site shows for a decision word: ours when we
+// map it, Riksdagen's own otherwise, and empty for an empty word.
+func MappedOutcome(word string) string { return mapOutcomeWord(word) }

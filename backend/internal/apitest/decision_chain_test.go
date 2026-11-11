@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"riksdagskollen/internal/ingestion/workers"
 	"runtime"
 	"testing"
 	"time"
@@ -76,8 +77,7 @@ func runChain(h *Harness) {
 	ctx := context.Background()
 	h.RunWorker(ctx, "fetch-politicians")
 	h.RunWorker(ctx, "fetch-votes")
-	h.RunWorker(ctx, "fetch-motions")
-	h.RunWorker(ctx, "fetch-betankanden")
+	h.Backfill(ctx, workers.BackfillOptions{})
 }
 
 func getChain(t *testing.T, h *Harness, rm, bet string) chainMotion {
@@ -195,8 +195,7 @@ func TestMotion4202IsBifallenByAcklamationInTheNextRiksmote(t *testing.T) {
 
 func TestMotionMissingFromEveryForslagspunktIsEjAvgjordAn(t *testing.T) {
 	h := startChain(t, chainDir(t, "decision-chain-missing"), "{2018/19}")
-	h.RunWorker(context.Background(), "fetch-motions")
-	h.RunWorker(context.Background(), "fetch-betankanden")
+	h.Backfill(context.Background(), workers.BackfillOptions{})
 	if h.Served("/dokumentstatus/H601SkU11.json") == 0 {
 		t.Fatal("the betänkande was not read")
 	}

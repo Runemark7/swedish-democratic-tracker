@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"riksdagskollen/internal/ingestion/workers"
 	"runtime"
 	"sort"
 	"strings"
@@ -100,8 +101,7 @@ func startProposedBy(t *testing.T) *Harness {
 		h.App.SetNow(func() time.Time { return time.Date(y, 3, 1, 12, 0, 0, 0, time.UTC) })
 		h.RunWorker(ctx, "fetch-votes")
 	}
-	h.RunWorker(ctx, "fetch-motions")
-	h.RunWorker(ctx, "fetch-betankanden")
+	h.Backfill(ctx, workers.BackfillOptions{})
 	return h
 }
 
