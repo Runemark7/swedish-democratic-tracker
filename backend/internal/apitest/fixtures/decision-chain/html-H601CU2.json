@@ -1,0 +1,10 @@
+{
+  "method": "GET",
+  "path": "/dokument/H601CU2.html",
+  "query": {},
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "recordedFrom": "https://data.riksdagen.se/dokument/H601CU2.html",
+  "note": "Recorded 2026-11-11, unmodified; the raw response is in ../html.",
+  "bodyFile": "../html/H601CU2.html"
+}

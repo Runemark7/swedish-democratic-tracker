@@ -52,11 +52,16 @@ type fixtureFile struct {
 	Query  map[string]string `json:"query"`
 	Status int               `json:"status"`
 	Body   json.RawMessage   `json:"body"`
+	// BodyFile names a recorded raw response (HTML) next to the fixture,
+	// instead of an inline JSON body. ContentType is served with it.
+	BodyFile    string `json:"bodyFile"`
+	ContentType string `json:"contentType"`
 }
 
 type storedFixture struct {
-	status int
-	body   []byte
+	status      int
+	body        []byte
+	contentType string
 }
 
 type replayHandler struct {
@@ -90,7 +95,11 @@ func (h *replayHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.mu.Lock()
 	h.hits[key]++
 	h.mu.Unlock()
-	w.Header().Set("Content-Type", "application/json")
+	ct := f.contentType
+	if ct == "" {
+		ct = "application/json"
+	}
+	w.Header().Set("Content-Type", ct)
 	w.WriteHeader(f.status)
 	_, _ = w.Write(f.body)
 }
@@ -125,7 +134,16 @@ func loadReplay(dir string, onMiss func(string, ...any)) (*replayHandler, error)
 		if f.Method == "" || f.Path == "" {
 			return nil, fmt.Errorf("%s: method and path are required", name)
 		}
-		if len(f.Body) == 0 {
+		body := []byte(f.Body)
+		if f.BodyFile != "" {
+			if len(f.Body) != 0 {
+				return nil, fmt.Errorf("%s: set body or bodyFile, not both", name)
+			}
+			body, err = os.ReadFile(filepath.Join(dir, f.BodyFile))
+			if err != nil {
+				return nil, fmt.Errorf("%s: %w", name, err)
+			}
+		} else if len(f.Body) == 0 {
 			return nil, fmt.Errorf("%s: body is required", name)
 		}
 		q := url.Values{}
@@ -140,7 +158,7 @@ func loadReplay(dir string, onMiss func(string, ...any)) (*replayHandler, error)
 		if status == 0 {
 			status = http.StatusOK
 		}
-		byKey[key] = storedFixture{status: status, body: append([]byte(nil), f.Body...)}
+		byKey[key] = storedFixture{status: status, body: append([]byte(nil), body...), contentType: f.ContentType}
 	}
 
 	return &replayHandler{byKey: byKey, onMiss: onMiss, hits: map[string]int{}}, nil

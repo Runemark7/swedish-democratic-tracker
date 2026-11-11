@@ -80,6 +80,40 @@ type decisionResponse struct {
 	// VoteringStored is true when we hold the ballots of the votering.
 	VoteringStored bool            `json:"voteringStored"`
 	Parties        []partyResponse `json:"parties"`
+
+	// Reasoning is the utskott's own text (Utskottets ställningstagande) for
+	// this punkt, from the betänkande HTML. ReasoningAvailable is false when
+	// it could not be read; the page then says so and links the source.
+	Reasoning          string `json:"reasoning"`
+	ReasoningAvailable bool   `json:"reasoningAvailable"`
+	// ReservationsAvailable is false when the reservations could not be read
+	// (HTML not fetched, section unrecognised, or the voted reservation is
+	// missing from what was read). An empty list with this true means the
+	// betänkande has no reservation on the punkt.
+	ReservationsAvailable bool                `json:"reservationsAvailable"`
+	Reservations          []statementResponse `json:"reservations"`
+	SarskildaYttranden    []statementResponse `json:"sarskildaYttranden"`
+	// VotedReservation is the reservation the votering put against the
+	// utskott's proposal, when the alternative names one. It is set from the
+	// alternative Riksdagen wrote, whichever party's reservation it is.
+	VotedReservation *votedReservationResponse `json:"votedReservation"`
+}
+
+type statementResponse struct {
+	Number   int      `json:"number"`
+	Parties  []string `json:"parties"`
+	Signers  []string `json:"signers"`
+	Proposal string   `json:"proposal"`
+	Text     string   `json:"text"`
+}
+
+type votedReservationResponse struct {
+	Number int `json:"number"`
+	// Party is the party in the alternative's own wording, "M" in "reservation 12 (M)".
+	Party string `json:"party"`
+	// Parties are the parties on the reservation as the betänkande prints it;
+	// empty when the reservation could not be read.
+	Parties []string `json:"parties"`
 }
 
 type partyResponse struct {
@@ -283,6 +317,31 @@ func toDecision(d domain.YrkandeDecision, outcome string) decisionResponse {
 	if d.BetDokID != "" {
 		out.BetankandeSourceURL = sourceURLBase + d.BetDokID + ".html"
 	}
+	out.Reasoning = d.Punkt.Reasoning
+	out.ReasoningAvailable = d.HTMLRead && d.Punkt.Reasoning != ""
+	out.Reservations, out.SarskildaYttranden = []statementResponse{}, []statementResponse{}
+	for _, s := range d.Reservations {
+		out.Reservations = append(out.Reservations, toStatement(s))
+	}
+	for _, s := range d.Yttranden {
+		out.SarskildaYttranden = append(out.SarskildaYttranden, toStatement(s))
+	}
+	out.ReservationsAvailable = d.HTMLRead && (d.HasReservationsSection || d.HasReasoningSection)
+	if n, party, ok := domain.VotedReservation(d.Punkt.Alternativ); ok {
+		v := &votedReservationResponse{Number: n, Party: party, Parties: []string{}}
+		found := false
+		for _, s := range d.Reservations {
+			if s.Number == n {
+				v.Parties, found = s.Parties, true
+			}
+		}
+		out.VotedReservation = v
+		if !found {
+			// The vote was on a reservation we could not read: never imply
+			// the reservations listed are the whole picture.
+			out.ReservationsAvailable = false
+		}
+	}
 	for _, t := range d.Parties {
 		tally := votes.Tally{Ja: t.Ja, Nej: t.Nej, Avstar: t.Avstar, Franvarande: t.Franvarande}
 		out.Parties = append(out.Parties, partyResponse{
@@ -291,4 +350,15 @@ func toDecision(d domain.YrkandeDecision, outcome string) decisionResponse {
 		})
 	}
 	return out
+}
+
+func toStatement(s domain.Statement) statementResponse {
+	r := statementResponse{Number: s.Number, Parties: s.Parties, Signers: s.Signers, Proposal: s.Proposal, Text: s.Text}
+	if r.Parties == nil {
+		r.Parties = []string{}
+	}
+	if r.Signers == nil {
+		r.Signers = []string{}
+	}
+	return r
 }

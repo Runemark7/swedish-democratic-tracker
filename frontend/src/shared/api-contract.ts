@@ -1240,6 +1240,34 @@ export interface components {
             voteringStored: boolean;
             /** @description Partilinje of every party in the votering (shared definition); empty for acklamation */
             parties: components["schemas"]["PartyPartilinje"][];
+            /** @description The utskott's own text (Utskottets ställningstagande) for the punkt, from the betänkande HTML; empty when not read */
+            reasoning: string;
+            /** @description False when the reasoning could not be read; show it as not available from Riksdagen with a link to the source */
+            reasoningAvailable: boolean;
+            /** @description False when the reservations could not be read, or the voted reservation is missing from what was read. True with an empty list means no reservation on the punkt */
+            reservationsAvailable: boolean;
+            reservations: components["schemas"]["BetankandeStatement"][];
+            sarskildaYttranden: components["schemas"]["BetankandeStatement"][];
+            /** @description The reservation the votering put against the utskott's proposal, when the alternative names one. It can be another party's reservation than the motion's own party's. */
+            votedReservation: {
+                /** @example 12 */
+                number: number;
+                /** @description As in the alternative's wording, e.g. M in 'reservation 12 (M)' */
+                party: string;
+                /** @description Parties on the reservation as printed in the betänkande; empty if it could not be read */
+                parties: string[];
+            } | null;
+        };
+        /** @description A reservation or särskilt yttrande, as the betänkande prints it */
+        BetankandeStatement: {
+            number: number;
+            parties: string[];
+            /** @description Names with party, as printed */
+            signers: string[];
+            /** @description Förslag till riksdagsbeslut (reservations only) */
+            proposal: string;
+            /** @description Ställningstagande, paragraphs separated by blank lines */
+            text: string;
         };
         MotionListRow: {
             dokId: string;

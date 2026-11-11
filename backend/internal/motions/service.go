@@ -3,6 +3,8 @@ package motions
 
 import (
 	"context"
+	"errors"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -75,7 +77,28 @@ func (s *Service) SyncBetankande(ctx context.Context, ref ports.BetRef) (found b
 	if err := s.repo.SaveBetankande(ctx, b); err != nil {
 		return false, err
 	}
+	s.syncHTML(ctx, ref, b.DokID)
 	return true, s.Link(ctx, ref.Riksmote, ref.Beteckning)
+}
+
+// syncHTML reads the betänkande's HTML for reservations and reasoning. A
+// failure here does not fail the sync: the JSON part is already stored, the
+// page shows the HTML parts as not available, and the read is retried after a
+// day. A document Riksdagen serves no HTML for is recorded as read-and-empty.
+func (s *Service) syncHTML(ctx context.Context, ref ports.BetRef, dokID string) {
+	h, err := s.rd.FetchBetankandeHTML(ctx, dokID)
+	if errors.Is(err, ports.ErrHTMLUnavailable) {
+		h, err = &domain.BetankandeHTML{}, nil
+	}
+	if err == nil {
+		err = s.repo.SaveBetankandeHTML(ctx, ref.Riksmote, ref.Beteckning, h)
+	}
+	if err != nil {
+		slog.Warn("betankanden: html not stored", "rm", ref.Riksmote, "bet", ref.Beteckning, "error", err)
+		if merr := s.repo.MarkHTMLAttempt(ctx, ref.Riksmote, ref.Beteckning); merr != nil {
+			slog.Warn("betankanden: html attempt not recorded", "error", merr)
+		}
+	}
 }
 
 // Link recomputes the links of every yrkande handled in rm:bet from the stored

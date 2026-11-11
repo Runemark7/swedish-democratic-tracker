@@ -26,6 +26,9 @@ type Forslagspunkt struct {
 	// ("Utskottets förslag mot reservation 12 (M)").
 	Alternativ string
 	Vinnare    string
+	// Reasoning is the utskott's own text (Utskottets ställningstagande)
+	// read from the HTML; empty when it could not be read.
+	Reasoning string
 }
 
 // PartyTally is one party's cast ballots in a votering.
@@ -49,4 +52,16 @@ type YrkandeDecision struct {
 	// VoteringStored is true when the votering is one of ours (ballots held).
 	VoteringStored bool
 	Parties        []PartyTally
+	// Reservations and Yttranden on this punkt, read from the betänkande HTML.
+	Reservations []Statement
+	Yttranden    []Statement
+	// HTMLRead is true when the HTML was fetched; the two flags say which
+	// sections the parser recognised.
+	HTMLRead, HasReasoningSection, HasReservationsSection bool
+}
+
+// ReservationRef names one reservation printed in the betänkande.
+type ReservationRef struct {
+	Number  int
+	Parties []string
 }
