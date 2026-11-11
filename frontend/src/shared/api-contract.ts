@@ -390,6 +390,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/betankanden/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Which riksmöte an old betänkande or vote URL belongs to
+         * @description Backs the redirects. With `punkt` (a vote detail URL) the riksmöte is the votering's own; without `rm` it is the most recent riksmöte that holds the beteckning.
+         */
+        get: operations["resolveBetankande"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/betankanden/{riksmote}/{beteckning}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The canonical betänkande page, keyed by riksmöte + beteckning */
+        get: operations["getBetankande"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/votes/recent": {
         parameters: {
             query?: never;
@@ -1257,6 +1294,72 @@ export interface components {
                 /** @description Parties on the reservation as printed in the betänkande; empty if it could not be read */
                 parties: string[];
             } | null;
+        };
+        BetankandePage: {
+            /** @example 2025/26 */
+            riksmote: string;
+            /** @example SkU16 */
+            beteckning: string;
+            title: string;
+            organ: string;
+            dokId: string;
+            sourceUrl: string;
+            /** @description False when the punkter come from the voteringar alone (betänkande not ingested) */
+            held: boolean;
+            /** @description Riksdagen's status word, verbatim */
+            status: string;
+            /** @description Riksdagen's decided state (beslutad / status / beslutsdag via Decided()); null when it could not be read. Never derived from our own timestamps. */
+            decided: boolean | null;
+            /** @description beslutsdag, YYYY-MM-DD; the planned date while decided is false */
+            decisionDate: string;
+            /** @description 'Ej avgjort än' while decided is false; empty otherwise */
+            decisionText: string;
+            punkter: components["schemas"]["BetankandePunkt"][];
+        };
+        BetankandePunkt: {
+            number: string;
+            rubrik: string;
+            /** @description The utskott's proposal as served */
+            text: string;
+            beslutstyp: string;
+            /** @enum {string} */
+            mode: "acklamation" | "votering" | "ej_beslutad" | "annat";
+            modeLabel: string;
+            alternativ: string;
+            vinnare: string;
+            voteringId: string;
+            voteringStored: boolean;
+            parties: components["schemas"]["PartyPartilinje"][];
+            /** @description Members who voted against their Partilinje */
+            avvikare: {
+                politicianId: string;
+                name: string;
+                party: string;
+                voteResult: string;
+                partilinje: string;
+            }[];
+            reasoning: string;
+            reasoningAvailable: boolean;
+            reservationsAvailable: boolean;
+            reservations: components["schemas"]["BetankandeStatement"][];
+            sarskildaYttranden: components["schemas"]["BetankandeStatement"][];
+            votedReservation: {
+                number: number;
+                party: string;
+                parties: string[];
+            } | null;
+            /** @description Motions whose yrkanden this punkt decided */
+            motions: {
+                dokId: string;
+                /** @example 2017/18 */
+                riksmote: string;
+                /** @example 3293 */
+                beteckning: string;
+                title: string;
+                subtyp: string;
+                parties: string[];
+                yrkanden: number[];
+            }[];
         };
         /** @description A reservation or särskilt yttrande, as the betänkande prints it */
         BetankandeStatement: {
@@ -2956,6 +3059,80 @@ export interface operations {
             };
             400: components["responses"]["BadRequest"];
             /** @description No motion with that riksmöte and beteckning */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    resolveBetankande: {
+        parameters: {
+            query: {
+                beteckning: string;
+                punkt?: string;
+                /** @description Riksmöte in slash form, 2025/26 */
+                rm?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The canonical riksmöte */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example 2025/26 */
+                        riksmote: string;
+                        beteckning: string;
+                        punkt: string;
+                    };
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            /** @description No betänkande or votering with that beteckning */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getBetankande: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Riksmöte in slash form, `2025/26`, never `2025-26`. It sits in one path segment, so the slash is URL-encoded as `2025%2F26`. */
+                riksmote: string;
+                beteckning: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The betänkande with every förslagspunkt */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BetankandePage"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            /** @description Not stored, not voted and not listed by Riksdagen */
             404: {
                 headers: {
                     [name: string]: unknown;

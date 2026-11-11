@@ -7,6 +7,7 @@ import { swedishDate } from "@/shared/dates";
 import { COMMITTEES, committeeFromBeteckning } from "@/shared/design";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { components } from "@/shared/api-contract";
+import { betankandePath } from "@/features/votes/betankandeApi";
 
 type RecentBetankande = components["schemas"]["RecentBetankande"];
 
@@ -34,11 +35,10 @@ function committeeLabel(organ: string): string {
   return COMMITTEES[organ] ?? committeeFromBeteckning(organ) ?? organ;
 }
 
-/** Beteckning numbering restarts each riksmöte, so the link carries `rm`. */
+/** Beteckning numbering restarts each riksmöte, so the link is the canonical riksmöte + beteckning page. */
 function beslutHref(item: RecentBetankande): string {
-  const path = `/beslut/${encodeURIComponent(item.beteckning)}`;
-  if (!item.riksmote) return path;
-  return `${path}?rm=${encodeURIComponent(item.riksmote)}`;
+  if (item.riksmote) return betankandePath(item.riksmote, item.beteckning);
+  return `/beslut/${encodeURIComponent(item.beteckning)}`;
 }
 
 /**

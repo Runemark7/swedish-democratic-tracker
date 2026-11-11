@@ -25,6 +25,8 @@ func TestMain(m *testing.M) {
 // six root middlewares on every route: request id, real IP, logger, recoverer,
 // the 100/minute rate limit, and CORS.
 var routesBeforeExtraction = []string{
+	"GET /api/betankanden/resolve",
+	"GET /api/betankanden/{riksmote}/{beteckning}",
 	"GET /api/budget/areas",
 	"GET /api/budget/areas/{code}",
 	"GET /api/budget/years",

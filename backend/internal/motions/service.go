@@ -16,6 +16,17 @@ import (
 type Service struct {
 	repo ports.Repository
 	rd   ports.RiksdagenClient
+	now  func() time.Time
+}
+
+// SetNow pins the clock used to tell a decided betänkande from a planned one.
+func (s *Service) SetNow(now func() time.Time) { s.now = now }
+
+func (s *Service) clock() time.Time {
+	if s.now != nil {
+		return s.now()
+	}
+	return time.Now()
 }
 
 func NewService(repo ports.Repository, rd ports.RiksdagenClient) *Service {

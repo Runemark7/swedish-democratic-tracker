@@ -9,9 +9,9 @@ import { PoliticianPage } from "./features/politicians/PoliticianPage";
 import { MotionPage } from "./features/motions/MotionPage";
 import { MotionListPage } from "./features/motions/MotionListPage";
 import { VotesPage } from "./features/votes/VotesPage";
-import { VoteDetailPage } from "./features/votes/VoteDetailPage";
+import { BetankandePage } from "./features/votes/BetankandePage";
+import { VoteRedirect, BeslutRedirect } from "./features/votes/BetankandeRedirects";
 import { VoteSharePage } from "./features/votes/VoteSharePage";
-import { BeslutDetailPage } from "./features/votes/BeslutDetailPage";
 import { AreaHistoryPage } from "./features/budget/AreaHistoryPage";
 import { ManifestosPage } from "./features/manifestos/ManifestosPage";
 import { RegionLandingPage } from "./features/regions/RegionLandingPage";
@@ -110,7 +110,7 @@ export default function App() {
   // These must sit above the /dela early return: a hook called after a
   // conditional return changes the hook count between renders, so any
   // client-side navigation to or from a share page would throw. Today /dela is
-  // only ever opened as a fresh page load (VoteDetailPage builds it as an
+  // only ever opened as a fresh page load (the vote page builds it as an
   // absolute URL), which is the only reason this has not bitten yet.
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { data: coverage } = useRecordCoverage();
@@ -285,9 +285,11 @@ export default function App() {
           <Route path="/politicians/:id"                       element={<PoliticianPage />} />
           {/* The list moved to /beslut. Detail and share URLs stay. */}
           <Route path="/votes"                                 element={<Navigate to="/beslut" replace />} />
-          <Route path="/votes/:beteckning/:punkt"              element={<VoteDetailPage />} />
+          <Route path="/votes/:beteckning/:punkt"              element={<VoteRedirect />} />
           <Route path="/beslut"                                element={<VotesPage />} />
-          <Route path="/beslut/:beteckning"                    element={<BeslutDetailPage />} />
+          <Route path="/beslut/:beteckning"                    element={<BeslutRedirect />} />
+          <Route path="/beslut/:y/:yy/:beteckning"             element={<BetankandePage />} />
+          <Route path="/beslut/:riksmote/:beteckning"          element={<BetankandePage />} />
           <Route path="/motioner"                              element={<MotionListPage />} />
           {/* The riksmöte sits in one segment, so its slash is encoded: /motioner/2017%2F18/3293 */}
           <Route path="/motioner/:riksmote/:beteckning"        element={<MotionPage />} />

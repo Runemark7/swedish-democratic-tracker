@@ -43,6 +43,13 @@ type RiksdagenClient interface {
 type BetankandeRef struct {
 	DokID       string
 	SystemDatum time.Time
+	Title       string
+	// Status, DecisionDate (`beslutsdag`) and ChamberDecided (`beslutad`) are
+	// Riksdagen's own, read live: a stored copy would go stale the day the
+	// chamber decides. ChamberDecided is nil when the field was absent.
+	Status         string
+	DecisionDate   string
+	ChamberDecided *bool
 }
 
 // BetRef names a betänkande some yrkande points at.
@@ -114,5 +121,20 @@ type Repository interface {
 	// order after the cursor, at most limit of them, writes the hash of each
 	// and returns how many it wrote, how many it looked at, and the new
 	// cursor. Looking at none means the walk is done.
+	// GetBetankande reads a stored, found betänkande without its punkter.
+	GetBetankande(ctx context.Context, rm, bet string) (*domain.BetankandeStored, error)
+	// Statements reads the reservations and särskilda yttranden of a betänkande.
+	Statements(ctx context.Context, rm, bet string) ([]domain.Statement, error)
+	// PunktMotions lists, per punkt number, the motions and yrkanden decided there.
+	PunktMotions(ctx context.Context, rm, bet string) (map[string][]domain.PunktMotion, error)
+	// Ballots reads the ballots of one votering (case-insensitive id).
+	Ballots(ctx context.Context, voteringID string) ([]domain.Ballot, error)
+	// VoteringPunkter lists the voteringar we hold for a riksmöte + beteckning.
+	VoteringPunkter(ctx context.Context, rm, bet string) ([]domain.VoteringPunkt, error)
+	// ResolveBetankande finds the riksmöte for a beteckning (and, with punkt,
+	// a votering's riksmöte). rm, when given, is taken as is if it exists;
+	// otherwise the most recent riksmöte holding it wins.
+	ResolveBetankande(ctx context.Context, bet, punkt, rm string) (string, bool, error)
+
 	BackfillWordingHashes(ctx context.Context, after YrkandeCursor, limit int) (written, scanned int, last YrkandeCursor, err error)
 }

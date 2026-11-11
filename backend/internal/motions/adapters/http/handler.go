@@ -26,6 +26,10 @@ func (h *Handler) Routes(r chi.Router) {
 	r.Get("/motions/coverage", h.coverage)
 	// The riksmöte sits in one path segment, so its slash is encoded: 2017%2F18.
 	r.Get("/motions/{riksmote}/{beteckning}", h.get)
+	// The canonical betänkande page, keyed on riksmöte + beteckning. The
+	// riksmöte is one encoded segment (2025%2F26), as for motions.
+	r.Get("/betankanden/resolve", h.resolveBetankande)
+	r.Get("/betankanden/{riksmote}/{beteckning}", h.getBetankande)
 }
 
 var (

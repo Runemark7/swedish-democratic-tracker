@@ -47,6 +47,7 @@ Reservationer, särskilda yttranden och "Utskottets ställningstagande" finns ba
   - `votering_id` — kopplar till omröstningen vid `röstning`.
   - `votering_sammanfattning_html` — raden som anger vad omröstningen gällde, t.ex. "Utskottets förslag mot reservation 12 (M)".
   - `vinnare` — vilket förslag som vann.
+- `dokumentlista.dokument` (`status`, `beslutsdag`, `beslutad`) — betänkandets beslutsstatus och beslutsdag. Läses vid varje visning av betänkandesidan, aldrig sparat, så att sidan inte hamnar efter när kammaren beslutar.
 - Motionens `dokforslag.forslag.behandlas_i` och `behandlas_i_punkt` (se källan Motioner).
 
 ## Begränsningar och kända problem
@@ -55,6 +56,7 @@ Reservationer, särskilda yttranden och "Utskottets ställningstagande" finns ba
 - Kammarens beslut för ett yrkande är ibland tomt (t.ex. 2018/19:2900 yrkande 26). Då används punktens beslut enligt förslagstexten ("avslår", "bifaller", "bifaller delvis").
 - Ett beslutsord som sajten inte känner igen visas som Riksdagen anger det.
 - Votering-id skrivs med små bokstäver här och med stora i voteringsdatan; sajten jämför utan hänsyn till skiftläge.
+- Beslutsdatum och "avgjort" kommer från Riksdagens `beslutad`, `status` och `beslutsdag` (inte från vår egen tidsstämpel). Ett planerat betänkande visas som "Ej avgjort än" med planerad dag. Kan listan inte läsas visas ingen status.
 - Riksmötet skrivs `2017/18`, aldrig `2017-18`.
 
 ## Hur vi bearbetar
