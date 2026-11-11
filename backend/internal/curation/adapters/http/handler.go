@@ -3,6 +3,7 @@
 package http
 
 import (
+	"context"
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/json"
@@ -36,6 +37,10 @@ func (h *Handler) WriteRoutes(r chi.Router) {
 	r.Use(h.auth)
 	r.Post("/valmanifest", h.upsertValmanifest)
 	r.Post("/aendringslogg/{id}/undo", h.undo)
+	r.Post("/loften", h.proposeLoefte)
+	r.Post("/loften/{id}", h.editLoefte)
+	r.Post("/loften/{id}/approve", h.approveLoefte)
+	r.Post("/loften/{id}/strike", h.strikeLoefte)
 }
 
 func (h *Handler) auth(next http.Handler) http.Handler {
@@ -57,6 +62,58 @@ func (h *Handler) upsertValmanifest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res, err := h.svc.UpsertValmanifest(r.Context(), r.Header.Get("Idempotency-Key"), in)
+	h.respond(w, res, err)
+}
+
+func (h *Handler) proposeLoefte(w http.ResponseWriter, r *http.Request) {
+	var in domain.LoefteProposal
+	if !readJSON(w, r, &in) {
+		return
+	}
+	res, err := h.svc.ProposeLoefte(r.Context(), r.Header.Get("Idempotency-Key"), in)
+	h.respond(w, res, err)
+}
+
+func pathID(w http.ResponseWriter, r *http.Request) (int64, bool) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil || id <= 0 {
+		fail(w, http.StatusBadRequest, "bad_request", "invalid id")
+		return 0, false
+	}
+	return id, true
+}
+
+func (h *Handler) editLoefte(w http.ResponseWriter, r *http.Request) {
+	id, ok := pathID(w, r)
+	if !ok {
+		return
+	}
+	var in domain.LoefteEdit
+	if !readJSON(w, r, &in) {
+		return
+	}
+	res, err := h.svc.EditLoefte(r.Context(), r.Header.Get("Idempotency-Key"), id, in)
+	h.respond(w, res, err)
+}
+
+func (h *Handler) approveLoefte(w http.ResponseWriter, r *http.Request) {
+	h.decide(w, r, h.svc.ApproveLoefte)
+}
+func (h *Handler) strikeLoefte(w http.ResponseWriter, r *http.Request) {
+	h.decide(w, r, h.svc.StrikeLoefte)
+}
+
+func (h *Handler) decide(w http.ResponseWriter, r *http.Request,
+	fn func(context.Context, string, int64, domain.Provenance) (*domain.Result, error)) {
+	id, ok := pathID(w, r)
+	if !ok {
+		return
+	}
+	var p domain.Provenance
+	if !readJSON(w, r, &p) {
+		return
+	}
+	res, err := fn(r.Context(), r.Header.Get("Idempotency-Key"), id, p)
 	h.respond(w, res, err)
 }
 

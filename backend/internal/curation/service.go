@@ -148,31 +148,14 @@ func (s *Service) Undo(ctx context.Context, key string, id int64, p domain.Prove
 		if target == nil {
 			return domain.ErrNotFound
 		}
-		if target.Entity != domain.EntityValmanifest {
-			return fmt.Errorf("undo of %q is not supported", target.Entity)
-		}
-		want, err := unsnap(target.NewValue)
-		if err != nil {
-			return err
-		}
-		restore, err := unsnap(target.OldValue)
-		if err != nil {
-			return err
-		}
-		cur, err := st.ValmanifestByID(ctx, target.EntityID)
-		if err != nil {
-			return err
-		}
-		if !same(cur, want) {
-			return fmt.Errorf("%w: the value changed after entry %d", domain.ErrConflict, id)
-		}
-		switch {
-		case restore == nil:
-			err = st.DeleteValmanifest(ctx, target.EntityID)
-		case cur == nil:
-			_, err = st.InsertValmanifest(ctx, *restore)
+		var cur, restore json.RawMessage
+		switch target.Entity {
+		case domain.EntityValmanifest:
+			cur, restore, err = undoValmanifest(ctx, st, target)
+		case domain.EntityLoefte:
+			cur, restore, err = undoLoefte(ctx, st, target)
 		default:
-			err = st.UpdateValmanifest(ctx, *restore)
+			return fmt.Errorf("undo of %q is not supported", target.Entity)
 		}
 		if err != nil {
 			return err
@@ -180,7 +163,7 @@ func (s *Service) Undo(ctx context.Context, key string, id int64, p domain.Prove
 		e, err := st.AppendEntry(ctx, &domain.Entry{
 			Actor: Actor, OnBehalfOf: p.OnBehalfOf, ChatRef: p.ChatRef,
 			Action: domain.ActionUndo, Entity: target.Entity, EntityID: target.EntityID,
-			OldValue: snap(cur), NewValue: snap(restore), Undoes: &target.ID,
+			OldValue: cur, NewValue: restore, Undoes: &target.ID,
 			RequestKey: key, RequestHash: hash,
 		})
 		out = &domain.Result{Changed: true, Entry: e}
@@ -194,7 +177,37 @@ func (s *Service) Entries(ctx context.Context, limit int, beforeID int64) ([]*do
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	return s.repo.ListEntries(ctx, limit, beforeID)
+	entries, err := s.repo.ListEntries(ctx, limit, beforeID)
+	if err != nil {
+		return nil, err
+	}
+	for _, e := range entries {
+		redactPublic(e)
+	}
+	return entries, nil
+}
+
+// redactPublic withholds the side of a Löfte change that was not public.
+// The repository already drops entries where neither side was public, so a
+// proposed Löfte (text, quote, source) never leaves through the log.
+func redactPublic(e *domain.Entry) {
+	if e.Entity != domain.EntityLoefte {
+		return
+	}
+	hide := func(raw json.RawMessage) json.RawMessage {
+		if len(raw) == 0 || string(raw) == "null" {
+			return raw
+		}
+		var v struct {
+			Visibility string `json:"visibility"`
+		}
+		if json.Unmarshal(raw, &v) == nil && domain.PublicVisibility(v.Visibility) {
+			return raw
+		}
+		e.Redacted = true
+		return nil
+	}
+	e.OldValue, e.NewValue = hide(e.OldValue), hide(e.NewValue)
 }
 
 func validKey(key string) error {
@@ -202,4 +215,33 @@ func validKey(key string) error {
 		return &domain.ValidationError{Msg: "Idempotency-Key header is required (max 200 characters)"}
 	}
 	return nil
+}
+
+// undoValmanifest reverses a Valmanifest entry and returns the snapshots
+// before and after the reversal.
+func undoValmanifest(ctx context.Context, st ports.Store, target *domain.Entry) (cur, restored json.RawMessage, err error) {
+	want, err := unsnap(target.NewValue)
+	if err != nil {
+		return nil, nil, err
+	}
+	restore, err := unsnap(target.OldValue)
+	if err != nil {
+		return nil, nil, err
+	}
+	c, err := st.ValmanifestByID(ctx, target.EntityID)
+	if err != nil {
+		return nil, nil, err
+	}
+	if !same(c, want) {
+		return nil, nil, fmt.Errorf("%w: the value changed after entry %d", domain.ErrConflict, target.ID)
+	}
+	switch {
+	case restore == nil:
+		err = st.DeleteValmanifest(ctx, target.EntityID)
+	case c == nil:
+		_, err = st.InsertValmanifest(ctx, *restore)
+	default:
+		err = st.UpdateValmanifest(ctx, *restore)
+	}
+	return snap(c), snap(restore), err
 }

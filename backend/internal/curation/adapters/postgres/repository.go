@@ -43,7 +43,11 @@ func scanEntry(row pgx.Row) (*domain.Entry, error) {
 
 func (r *Repository) ListEntries(ctx context.Context, limit int, beforeID int64) ([]*domain.Entry, error) {
 	rows, err := r.db.Query(ctx,
-		`SELECT `+entryCols+` FROM aendringslogg WHERE ($2::bigint = 0 OR id < $2) ORDER BY id DESC LIMIT $1`,
+		`SELECT `+entryCols+` FROM aendringslogg WHERE ($2::bigint = 0 OR id < $2)
+		   AND NOT (entity = 'loefte'
+		            AND coalesce(old_value->>'visibility','') NOT IN ('approved','archived')
+		            AND coalesce(new_value->>'visibility','') NOT IN ('approved','archived'))
+		 ORDER BY id DESC LIMIT $1`,
 		limit, beforeID)
 	if err != nil {
 		return nil, err
@@ -168,6 +172,99 @@ func (s *store) DeleteValmanifest(ctx context.Context, id int64) error {
 	_, err := s.tx.Exec(ctx, `DELETE FROM valmanifest WHERE id=$1`, id)
 	if pgCode(err) == "23503" {
 		return fmt.Errorf("%w: other data still refers to this Valmanifest", domain.ErrConflict)
+	}
+	return err
+}
+
+const loefteCols = `id, party, valmanifest_id, text, coalesce(quote,''), coalesce(locator,''),
+	coalesce(source_url,''), coalesce(topic,''), coalesce(specificity,''), utskott, mandate_period, visibility`
+
+func scanLoefte(row pgx.Row) (*domain.Loefte, error) {
+	var l domain.Loefte
+	var vm *int64
+	err := row.Scan(&l.ID, &l.Party, &vm, &l.Text, &l.Quote, &l.Locator, &l.SourceURL, &l.Topic,
+		&l.Specificity, &l.Utskott, &l.MandatePeriod, &l.Visibility)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	if vm != nil {
+		l.ValmanifestID = *vm
+	}
+	if l.Utskott == nil {
+		l.Utskott = []string{}
+	}
+	return &l, nil
+}
+
+func (s *store) LoefteByID(ctx context.Context, id int64) (*domain.Loefte, error) {
+	return scanLoefte(s.tx.QueryRow(ctx, `SELECT `+loefteCols+` FROM loften WHERE id=$1 FOR UPDATE`, id))
+}
+
+func (s *store) LoefteByQuote(ctx context.Context, party string, vm int64, quote string) (*domain.Loefte, error) {
+	return scanLoefte(s.tx.QueryRow(ctx, `SELECT `+loefteCols+` FROM loften
+		WHERE party=$1 AND valmanifest_id=$2 AND quote=$3 AND visibility <> 'struck' ORDER BY id LIMIT 1`,
+		party, vm, quote))
+}
+
+func (s *store) InsertLoefte(ctx context.Context, l domain.Loefte) (*domain.Loefte, error) {
+	var id any
+	if l.ID != 0 {
+		id = l.ID
+	}
+	if l.Utskott == nil {
+		l.Utskott = []string{}
+	}
+	// The Valmanifest must belong to the same party.
+	var vmParty string
+	err := s.tx.QueryRow(ctx, `SELECT party FROM valmanifest WHERE id=$1`, l.ValmanifestID).Scan(&vmParty)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, &domain.ValidationError{Msg: fmt.Sprintf("unknown valmanifestId %d", l.ValmanifestID)}
+	}
+	if err != nil {
+		return nil, err
+	}
+	if vmParty != l.Party {
+		return nil, &domain.ValidationError{Msg: fmt.Sprintf("Valmanifest %d belongs to %s, not %s", l.ValmanifestID, vmParty, l.Party)}
+	}
+	out, err := scanLoefte(s.tx.QueryRow(ctx, `INSERT INTO loften
+		(id, party, valmanifest_id, text, quote, locator, source_url, topic, specificity, utskott, mandate_period, visibility, approved_at)
+		VALUES (COALESCE($1::int, nextval('loften_id_seq')), $2,$3,$4,NULLIF($5,''),NULLIF($6,''),NULLIF($7,''),NULLIF($8,''),NULLIF($9,''),$10,$11,$12,
+		        CASE WHEN $12 = 'approved' THEN now() END)
+		RETURNING `+loefteCols,
+		id, l.Party, l.ValmanifestID, l.Text, l.Quote, l.Locator, l.SourceURL, l.Topic, l.Specificity,
+		l.Utskott, l.MandatePeriod, l.Visibility))
+	switch pgCode(err) {
+	case "23503":
+		return nil, &domain.ValidationError{Msg: fmt.Sprintf("unknown party %q", l.Party)}
+	case "23514":
+		return nil, &domain.ValidationError{Msg: "a Löfte needs a quote and a source URL"}
+	}
+	return out, err
+}
+
+func (s *store) UpdateLoefte(ctx context.Context, l domain.Loefte) error {
+	if l.Utskott == nil {
+		l.Utskott = []string{}
+	}
+	_, err := s.tx.Exec(ctx, `UPDATE loften SET text=$2, quote=NULLIF($3,''), locator=NULLIF($4,''),
+		source_url=NULLIF($5,''), topic=NULLIF($6,''), specificity=NULLIF($7,''), utskott=$8, visibility=$9,
+		approved_at = CASE WHEN $9 = 'approved' THEN coalesce(approved_at, now())
+		                   WHEN $9 = 'proposed' THEN NULL ELSE approved_at END
+		WHERE id=$1`,
+		l.ID, l.Text, l.Quote, l.Locator, l.SourceURL, l.Topic, l.Specificity, l.Utskott, l.Visibility)
+	if pgCode(err) == "23514" {
+		return &domain.ValidationError{Msg: "a Löfte needs a quote and a source URL"}
+	}
+	return err
+}
+
+func (s *store) DeleteLoefte(ctx context.Context, id int64) error {
+	_, err := s.tx.Exec(ctx, `DELETE FROM loften WHERE id=$1`, id)
+	if pgCode(err) == "23503" {
+		return fmt.Errorf("%w: other data still refers to this Löfte", domain.ErrConflict)
 	}
 	return err
 }

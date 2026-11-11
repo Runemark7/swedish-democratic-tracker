@@ -24,6 +24,17 @@ type Store interface {
 	UpdateValmanifest(ctx context.Context, v domain.Valmanifest) error
 	// DeleteValmanifest returns ErrConflict when other data still refers to it.
 	DeleteValmanifest(ctx context.Context, id int64) error
+
+	// LoefteByID locks the row; nil when absent.
+	// LoefteByQuote finds a non-struck Löfte with the same party, Valmanifest and quote.
+	LoefteByQuote(ctx context.Context, party string, valmanifestID int64, quote string) (*domain.Loefte, error)
+	LoefteByID(ctx context.Context, id int64) (*domain.Loefte, error)
+	// InsertLoefte inserts l (with l.ID when non-zero). Unknown party or
+	// Valmanifest → ValidationError. A proposed Löfte gets no approved_at.
+	InsertLoefte(ctx context.Context, l domain.Loefte) (*domain.Loefte, error)
+	UpdateLoefte(ctx context.Context, l domain.Loefte) error
+	// DeleteLoefte removes a row (undo of a propose); ErrConflict when referenced.
+	DeleteLoefte(ctx context.Context, id int64) error
 }
 
 type Repository interface {
