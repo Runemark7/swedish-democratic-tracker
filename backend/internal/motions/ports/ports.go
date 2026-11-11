@@ -126,6 +126,9 @@ type Repository interface {
 	// RecurringMembers lists every stored yrkande with the wording hash,
 	// earliest riksmöte first. The members carry no Outcome yet.
 	RecurringMembers(ctx context.Context, hash string) ([]domain.RecurringMember, error)
+	// ConfirmedKravHashes lists the wording hashes the Redaktör confirmed to be
+	// the same Återkommande krav as hash (transitively), hash itself excluded.
+	ConfirmedKravHashes(ctx context.Context, hash string) ([]string, error)
 	// SetWordingHash stores the hash of one yrkande.
 	SetWordingHash(ctx context.Context, dokID string, number int, hash string) error
 	// BackfillWordingHashes walks yrkanden without a hash in (dok_id, nummer)

@@ -51,13 +51,28 @@ type Store interface {
 	OpenSuggestions(ctx context.Context, max int) ([]domain.OpenSuggestion, error)
 	CloseOpenBatches(ctx context.Context) error
 	InsertBatch(ctx context.Context) (int64, error)
-	InsertBatchItem(ctx context.Context, batchID int64, nr int, kopplingID int64) error
+	// InsertBatchItem numbers o in the batch; o names a Löfte or a motion koppling.
+	InsertBatchItem(ctx context.Context, batchID int64, nr int, o domain.OpenSuggestion) error
 	// BatchByID with the batch row and its kopplingar locked; nil when absent.
 	BatchByID(ctx context.Context, id int64) (*domain.Batch, error)
 	// DecideItem sets the koppling's state/direction (decided_at follows the
 	// state) and the item's answer; answer "" clears it.
 	DecideItem(ctx context.Context, batchID int64, nr int, kopplingID int64, state, direction, answer string) error
 	CloseBatch(ctx context.Context, id int64) error
+	// Motion kopplingar (issue #163).
+	// ResolveMotionSuggestion turns the named question/motion/yrkanden into a
+	// draft MotionKoppling with the stored dok ids. A reference that does not
+	// exist is a ValidationError.
+	ResolveMotionSuggestion(ctx context.Context, s domain.MotionSuggestion) (*domain.MotionKoppling, error)
+	// MotionKopplingByPair locks the row of the same link; nil when absent.
+	MotionKopplingByPair(ctx context.Context, k domain.MotionKoppling) (*domain.MotionKoppling, error)
+	InsertMotionKoppling(ctx context.Context, k domain.MotionKoppling) (*domain.MotionKoppling, error)
+	// MotionKopplingByID locks the row and includes its latest batch item; nil when absent.
+	MotionKopplingByID(ctx context.Context, id int64) (*domain.MotionKoppling, error)
+	// DecideMotionItem sets the link's state (decided_at follows it) and the
+	// item's answer; answer "" clears it.
+	DecideMotionItem(ctx context.Context, batchID int64, nr int, id int64, state, answer string) error
+
 	// KopplingByID locks the row and includes its batch item; nil when absent.
 	KopplingByID(ctx context.Context, id int64) (*domain.Koppling, error)
 }

@@ -41,25 +41,30 @@ func (r *BatchRequest) Normalize() (int, error) {
 // to judge it in chat. Direction is the ballot in the Löfte's direction
 // (flipped once answered ja-omvaent).
 type BatchItem struct {
-	Nr            int     `json:"nr"`
-	KopplingID    int64   `json:"kopplingId"`
-	State         string  `json:"state"`
-	RolledOver    bool    `json:"rolledOver"`
-	LoefteID      int64   `json:"loefteId"`
-	Party         string  `json:"party"`
-	LoefteText    string  `json:"loefteText"`
-	Quote         string  `json:"quote"`
-	Locator       string  `json:"locator"`
-	SourceURL     string  `json:"sourceUrl"`
-	VoteringID    string  `json:"voteringId"`
-	Beteckning    string  `json:"beteckning"`
-	Forslagspunkt string  `json:"forslagspunkt"`
-	Betankande    string  `json:"betankande"`
-	Datum         *string `json:"datum"`
-	Direction     string  `json:"direction"`
-	Confidence    float64 `json:"confidence"`
-	Reasoning     string  `json:"reasoning"`
-	Answer        *string `json:"answer"`
+	Nr int `json:"nr"`
+	// Kind is "loefte" (a Löfte↔votering koppling), "fraga" or "krav" (a
+	// curated motion link, described in Motion).
+	Kind             string           `json:"kind"`
+	KopplingID       int64            `json:"kopplingId"`
+	MotionKopplingID int64            `json:"motionKopplingId,omitempty"`
+	Motion           *MotionBatchItem `json:"motion,omitempty"`
+	State            string           `json:"state"`
+	RolledOver       bool             `json:"rolledOver"`
+	LoefteID         int64            `json:"loefteId"`
+	Party            string           `json:"party"`
+	LoefteText       string           `json:"loefteText"`
+	Quote            string           `json:"quote"`
+	Locator          string           `json:"locator"`
+	SourceURL        string           `json:"sourceUrl"`
+	VoteringID       string           `json:"voteringId"`
+	Beteckning       string           `json:"beteckning"`
+	Forslagspunkt    string           `json:"forslagspunkt"`
+	Betankande       string           `json:"betankande"`
+	Datum            *string          `json:"datum"`
+	Direction        string           `json:"direction"`
+	Confidence       float64          `json:"confidence"`
+	Reasoning        string           `json:"reasoning"`
+	Answer           *string          `json:"answer"`
 }
 
 type Batch struct {
@@ -81,8 +86,9 @@ func (b *Batch) Item(nr int) *BatchItem {
 
 // OpenSuggestion is a foreslagen koppling waiting for a batch.
 type OpenSuggestion struct {
-	KopplingID int64
-	RolledOver bool
+	KopplingID       int64 // a Löfte koppling, or 0
+	MotionKopplingID int64 // a motion koppling, or 0
+	RolledOver       bool
 }
 
 // Answer decides one numbered item.
@@ -232,12 +238,14 @@ func parseNumbers(t string) ([]int, bool) {
 
 // ItemOutcome is one decided item in the answer to AnswerRequest.
 type ItemOutcome struct {
-	Nr         int    `json:"nr"`
-	KopplingID int64  `json:"kopplingId"`
-	Answer     string `json:"answer"`
-	State      string `json:"state"`
-	Direction  string `json:"direction"`
-	EntryID    int64  `json:"entryId"`
+	Nr               int    `json:"nr"`
+	Kind             string `json:"kind"`
+	KopplingID       int64  `json:"kopplingId"`
+	MotionKopplingID int64  `json:"motionKopplingId,omitempty"`
+	Answer           string `json:"answer"`
+	State            string `json:"state"`
+	Direction        string `json:"direction"`
+	EntryID          int64  `json:"entryId"`
 }
 
 type AnswerResponse struct {

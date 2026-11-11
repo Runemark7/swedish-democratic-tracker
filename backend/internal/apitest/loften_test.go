@@ -48,6 +48,14 @@ func startLoften(t *testing.T) *Harness {
 	if err != nil {
 		t.Fatal(err)
 	}
+	down62, err := os.ReadFile(filepath.Join(dir, "000062_motion_kopplingar.down.sql"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	up62, err := os.ReadFile(filepath.Join(dir, "000062_motion_kopplingar.up.sql"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	down60, err := os.ReadFile(filepath.Join(dir, "000060_veckobatch_items.down.sql"))
 	if err != nil {
 		t.Fatal(err)
@@ -55,6 +63,9 @@ func startLoften(t *testing.T) *Harness {
 	up60, err := os.ReadFile(filepath.Join(dir, "000060_veckobatch_items.up.sql"))
 	if err != nil {
 		t.Fatal(err)
+	}
+	if _, err := h.DB.Exec(ctx, string(down62)); err != nil {
+		t.Fatalf("down 62: %v", err)
 	}
 	if _, err := h.DB.Exec(ctx, string(down60)); err != nil {
 		t.Fatalf("down 60: %v", err)
@@ -85,6 +96,9 @@ func startLoften(t *testing.T) *Harness {
 	}
 	if _, err := h.DB.Exec(ctx, string(up60)); err != nil {
 		t.Fatalf("up 60: %v", err)
+	}
+	if _, err := h.DB.Exec(ctx, string(up62)); err != nil {
+		t.Fatalf("up 62: %v", err)
 	}
 	// A proposed and an approved Löfte, created by the test the way a later
 	// write API would. Nothing in the migration approves anything.

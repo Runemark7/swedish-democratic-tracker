@@ -62,7 +62,11 @@ function RecurringBlock({ r }: { r: Recurring }) {
               </Link>
             )}
             {" · "}
-            {m.parties.length > 0 ? m.parties.join(", ") : "parti saknas"} · {m.outcome} · {m.rule === "identical_wording" ? r.ruleLabel : m.rule}
+            {m.parties.length > 0 ? m.parties.join(", ") : "parti saknas"} · {m.outcome} · {m.rule === "identical_wording"
+              ? r.ruleLabel
+              : m.rule === "redaktor-confirmed"
+                ? "Bekräftad av redaktören: samma krav med annan ordalydelse"
+                : m.rule}
             {m.current ? " (denna motion)" : ""}
           </li>
         ))}

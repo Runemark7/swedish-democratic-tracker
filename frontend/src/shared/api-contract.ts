@@ -317,6 +317,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/write/motion-kopplingar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Suggest curated motion links (a fråga that cites a motion only in prose; yrkanden of different wording that are the same Återkommande krav)
+         * @description Suggestions at or above `threshold` (default 0.6) are stored as foreslagen; below it as bortsorterad, kept only so the pair is not suggested again. They join the same numbered Veckobatch as Löfte kopplingar (`kind` "fraga" or "krav" on the item). A link becomes public only when the Redaktör answers ja; suggested, rejected and undone links are never returned by a public endpoint or shown in the public Ändringslogg. All-or-nothing: an unknown question, motion or yrkande is 422 and stores nothing. A pair that already exists (a krav pair in either order) is reported as `existing` and left unchanged. "ja men omvänt" has no meaning for these items and is 422.
+         */
+        post: operations["submitMotionKopplingSuggestions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/write/veckobatch": {
         parameters: {
             query?: never;
@@ -1765,8 +1785,40 @@ export interface components {
             replayed?: boolean;
             items: {
                 nr: number;
-                /** Format: int64 */
+                /**
+                 * @description loefte = a Löfte↔votering koppling; fraga and krav = a curated motion link, described in `motion` (the Löfte and votering fields are then empty)
+                 * @enum {string}
+                 */
+                kind: "loefte" | "fraga" | "krav";
+                /**
+                 * Format: int64
+                 * @description 0 for a motion link
+                 */
                 kopplingId: number;
+                /**
+                 * Format: int64
+                 * @description Set for kind fraga and krav
+                 */
+                motionKopplingId?: number;
+                /** @description Present for kind fraga and krav */
+                motion?: {
+                    /** @enum {string} */
+                    kind: "fraga" | "krav";
+                    /** @enum {string} */
+                    rule: "prose-citation" | "similar-wording";
+                    /** @description kind fraga */
+                    question?: {
+                        kind?: string;
+                        riksmote?: string;
+                        beteckning?: string;
+                        title?: string;
+                        asker?: string;
+                        excerpt?: string;
+                        sourceUrl?: string;
+                    };
+                    motion: components["schemas"]["CuratedMotionView"];
+                    other?: components["schemas"]["CuratedMotionView"];
+                };
                 state: string;
                 rolledOver: boolean;
                 /** Format: int64 */
@@ -1787,6 +1839,65 @@ export interface components {
                 reasoning: string;
                 /** @enum {string|null} */
                 answer: "ja" | "nej" | "ja-omvaent" | null;
+            }[];
+        };
+        CuratedMotionView: {
+            riksmote?: string;
+            beteckning?: string;
+            title?: string;
+            parties?: string[];
+            /** @description kind krav only */
+            yrkande?: number;
+            /** @description kind krav only */
+            wording?: string;
+            sourceUrl?: string;
+        };
+        MotionKopplingSuggestionsWrite: {
+            /** @default 0.6 */
+            threshold: number;
+            suggestions: {
+                /** @enum {string} */
+                kind: "fraga" | "krav";
+                /** @description kind fraga - the fråga or interpellation that cites the motion in prose */
+                question?: {
+                    /** @enum {string} */
+                    kind: "fraga" | "interpellation";
+                    /** @example 2022/23 */
+                    riksmote: string;
+                    /** @example 339 */
+                    beteckning: string;
+                };
+                /** @description kind fraga - the cited motion; kind krav - the first yrkande (give `yrkande`) */
+                motion: {
+                    /** @example 2017/18 */
+                    riksmote: string;
+                    /** @example 3293 */
+                    beteckning: string;
+                    yrkande?: number;
+                };
+                /** @description kind krav - the second yrkande */
+                other?: {
+                    riksmote: string;
+                    beteckning: string;
+                    yrkande: number;
+                };
+                confidence: number;
+                reasoning: string;
+            }[];
+            chatRef: string;
+            onBehalfOf: string;
+        };
+        MotionKopplingSuggestionsResult: {
+            replayed: boolean;
+            results: {
+                /** Format: int64 */
+                motionKopplingId: number;
+                /** @enum {string} */
+                kind: "fraga" | "krav";
+                /** @enum {string} */
+                state: "foreslagen" | "bortsorterad" | "bekraftad" | "avvisad";
+                /** @enum {string} */
+                status: "created" | "existing";
             }[];
         };
         KopplingSuggestionsWrite: {
@@ -1981,7 +2092,7 @@ export interface components {
             /** @enum {string} */
             role?: "asker" | "answerer";
             /** @enum {string} */
-            rule?: "riksdagen-reference" | "cited-beteckning";
+            rule?: "riksdagen-reference" | "cited-beteckning" | "redaktor-confirmed";
             sourceUrl: string;
         };
         QuestionDetail: components["schemas"]["QuestionItem"] & {
@@ -2138,10 +2249,10 @@ export interface components {
             /** @description Outcome word of this filing, as on the motion page */
             outcome: string;
             /**
-             * @description Why this filing is in the group
+             * @description Why this filing is in the group; redaktor-confirmed = the Redaktör confirmed in a Veckobatch that it is the same demand in other words
              * @enum {string}
              */
-            rule: "identical_wording";
+            rule: "identical_wording" | "redaktor-confirmed";
             /** @description True for the yrkande the request is about */
             current: boolean;
             sourceUrl: string;
@@ -4121,6 +4232,45 @@ export interface operations {
             422: components["responses"]["ValidationFailed"];
         };
     };
+    submitMotionKopplingSuggestions: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MotionKopplingSuggestionsWrite"];
+            };
+        };
+        responses: {
+            /** @description One result per suggestion */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MotionKopplingSuggestionsResult"];
+                };
+            };
+            /** @description Malformed JSON or unknown field */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WriteError"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
     createVeckobatch: {
         parameters: {
             query?: never;
@@ -4253,8 +4403,15 @@ export interface operations {
                         replayed: boolean;
                         decided: {
                             nr: number;
+                            /** @enum {string} */
+                            kind: "loefte" | "fraga" | "krav";
                             /** Format: int64 */
                             kopplingId: number;
+                            /**
+                             * Format: int64
+                             * @description Set for kind fraga and krav
+                             */
+                            motionKopplingId?: number;
                             /** @enum {string} */
                             answer: "ja" | "nej" | "ja-omvaent";
                             /** @enum {string} */

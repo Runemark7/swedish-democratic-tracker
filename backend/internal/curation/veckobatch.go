@@ -68,14 +68,18 @@ func (s *Service) CreateBatch(ctx context.Context, key string, in domain.BatchRe
 		if err != nil {
 			return err
 		}
-		ids := make([]int64, len(open))
+		ids, mids := []int64{}, []int64{}
 		for i, o := range open {
-			ids[i] = o.KopplingID
-			if err := st.InsertBatchItem(ctx, id, i+1, o.KopplingID); err != nil {
+			if o.MotionKopplingID != 0 {
+				mids = append(mids, o.MotionKopplingID)
+			} else {
+				ids = append(ids, o.KopplingID)
+			}
+			if err := st.InsertBatchItem(ctx, id, i+1, o); err != nil {
 				return err
 			}
 		}
-		nv, _ := json.Marshal(map[string]any{"id": id, "kopplingIds": ids})
+		nv, _ := json.Marshal(map[string]any{"id": id, "kopplingIds": ids, "motionKopplingIds": mids})
 		if _, err := st.AppendEntry(ctx, &domain.Entry{
 			Actor: Actor, OnBehalfOf: in.OnBehalfOf, ChatRef: in.ChatRef,
 			Action: domain.ActionUpsert, Entity: domain.EntityVeckobatch, EntityID: id,
@@ -155,28 +159,64 @@ func (s *Service) AnswerBatch(ctx context.Context, key string, id int64, in doma
 				return fmt.Errorf("%w: item %d is already answered", domain.ErrConflict, nr)
 			}
 		}
+		// Resolve every decision before writing so a refused answer ("ja men
+		// omvänt" on a motion link) rejects the whole request.
+		type decision struct{ state, dir string }
+		dec := map[int]decision{}
+		for _, nr := range nrs {
+			it := b.Item(nr)
+			if it.Kind == domain.ItemLoefte {
+				state, dir := domain.Decision(plan[nr], it.Direction)
+				dec[nr] = decision{state, dir}
+				continue
+			}
+			state, err := domain.MotionDecision(plan[nr])
+			if err != nil {
+				return fmt.Errorf("item %d: %w", nr, err)
+			}
+			dec[nr] = decision{state, ""}
+		}
 		for i, nr := range nrs {
 			it := b.Item(nr)
-			state, dir := domain.Decision(plan[nr], it.Direction)
-			base := domain.Koppling{ID: it.KopplingID, LoefteID: it.LoefteID, VoteringID: it.VoteringID,
-				Confidence: it.Confidence, Reasoning: it.Reasoning, VeckobatchID: &id, Nr: &nr}
-			before, after := base, base
-			before.State, before.Direction = it.State, it.Direction
-			after.State, after.Direction, after.Answer = state, dir, plan[nr]
-			if err := st.DecideItem(ctx, id, nr, it.KopplingID, state, dir, plan[nr]); err != nil {
-				return err
+			state, dir := dec[nr].state, dec[nr].dir
+			var ob, nb json.RawMessage
+			entity, entityID := domain.EntityKoppling, it.KopplingID
+			if it.Kind == domain.ItemLoefte {
+				base := domain.Koppling{ID: it.KopplingID, LoefteID: it.LoefteID, VoteringID: it.VoteringID,
+					Confidence: it.Confidence, Reasoning: it.Reasoning, VeckobatchID: &id, Nr: &nr}
+				before, after := base, base
+				before.State, before.Direction = it.State, it.Direction
+				after.State, after.Direction, after.Answer = state, dir, plan[nr]
+				if err := st.DecideItem(ctx, id, nr, it.KopplingID, state, dir, plan[nr]); err != nil {
+					return err
+				}
+				ob, _ = json.Marshal(before)
+				nb, _ = json.Marshal(after)
+			} else {
+				entity, entityID = domain.EntityMotionKoppling, it.MotionKopplingID
+				before, err := st.MotionKopplingByID(ctx, it.MotionKopplingID)
+				if err != nil {
+					return err
+				}
+				if before == nil {
+					return domain.ErrNotFound
+				}
+				after := *before
+				after.State, after.Answer = state, plan[nr]
+				if err := st.DecideMotionItem(ctx, id, nr, it.MotionKopplingID, state, plan[nr]); err != nil {
+					return err
+				}
+				ob, nb = snapMK(before), snapMK(&after)
 			}
-			ob, _ := json.Marshal(before)
-			nb, _ := json.Marshal(after)
 			e, err := st.AppendEntry(ctx, &domain.Entry{
 				Actor: Actor, OnBehalfOf: in.OnBehalfOf, ChatRef: in.ChatRef,
-				Action: domain.ActionUpsert, Entity: domain.EntityKoppling, EntityID: it.KopplingID,
+				Action: domain.ActionUpsert, Entity: entity, EntityID: entityID,
 				OldValue: ob, NewValue: nb, RequestKey: fmt.Sprintf("%s#%d", key, i), RequestHash: hash})
 			if err != nil {
 				return err
 			}
-			out.Decided = append(out.Decided, domain.ItemOutcome{Nr: nr, KopplingID: it.KopplingID,
-				Answer: plan[nr], State: state, Direction: dir, EntryID: e.ID})
+			out.Decided = append(out.Decided, domain.ItemOutcome{Nr: nr, Kind: it.Kind, KopplingID: it.KopplingID,
+				MotionKopplingID: it.MotionKopplingID, Answer: plan[nr], State: state, Direction: dir, EntryID: e.ID})
 		}
 		for _, it := range b.Items {
 			if _, done := plan[it.Nr]; !done && it.Answer == nil {
@@ -205,6 +245,19 @@ func replayAnswers(ctx context.Context, st ports.Store, key string, id int64, ou
 		if e == nil {
 			break
 		}
+		if e.Entity == domain.EntityMotionKoppling {
+			var k domain.MotionKoppling
+			if err := json.Unmarshal(e.NewValue, &k); err != nil {
+				return err
+			}
+			nr := 0
+			if k.Nr != nil {
+				nr = *k.Nr
+			}
+			out.Decided = append(out.Decided, domain.ItemOutcome{Nr: nr, Kind: k.Kind, MotionKopplingID: k.ID,
+				Answer: k.Answer, State: k.State, EntryID: e.ID})
+			continue
+		}
 		var k domain.Koppling
 		if err := json.Unmarshal(e.NewValue, &k); err != nil {
 			return err
@@ -213,7 +266,7 @@ func replayAnswers(ctx context.Context, st ports.Store, key string, id int64, ou
 		if k.Nr != nil {
 			nr = *k.Nr
 		}
-		out.Decided = append(out.Decided, domain.ItemOutcome{Nr: nr, KopplingID: k.ID, Answer: k.Answer,
+		out.Decided = append(out.Decided, domain.ItemOutcome{Nr: nr, Kind: domain.ItemLoefte, KopplingID: k.ID, Answer: k.Answer,
 			State: k.State, Direction: k.Direction, EntryID: e.ID})
 	}
 	b, err := st.BatchByID(ctx, id)
@@ -261,4 +314,42 @@ func undoKoppling(ctx context.Context, st ports.Store, target *domain.Entry) (cu
 		return nil, nil, err
 	}
 	return snapK(c), snapK(&restore), nil
+}
+
+func snapMK(k *domain.MotionKoppling) json.RawMessage {
+	b, _ := json.Marshal(k)
+	return b
+}
+
+// undoMotionKoppling reverses a Veckobatch decision on a motion link: it goes
+// back to foreslagen (so it stops being public at once) and the item to
+// unanswered. A suggestion entry cannot be undone.
+func undoMotionKoppling(ctx context.Context, st ports.Store, target *domain.Entry) (cur, restored json.RawMessage, err error) {
+	if len(target.OldValue) == 0 || string(target.OldValue) == "null" {
+		return nil, nil, &domain.ValidationError{Msg: "a suggestion entry cannot be undone; only Veckobatch decisions can"}
+	}
+	var want, restore domain.MotionKoppling
+	if err := json.Unmarshal(target.NewValue, &want); err != nil {
+		return nil, nil, err
+	}
+	if err := json.Unmarshal(target.OldValue, &restore); err != nil {
+		return nil, nil, err
+	}
+	c, err := st.MotionKopplingByID(ctx, target.EntityID)
+	if err != nil {
+		return nil, nil, err
+	}
+	if c == nil {
+		return nil, nil, domain.ErrNotFound
+	}
+	if c.State != want.State || c.Answer != want.Answer {
+		return nil, nil, fmt.Errorf("%w: the value changed after entry %d", domain.ErrConflict, target.ID)
+	}
+	if want.VeckobatchID == nil || want.Nr == nil {
+		return nil, nil, &domain.ValidationError{Msg: "entry has no Veckobatch item to restore"}
+	}
+	if err := st.DecideMotionItem(ctx, *want.VeckobatchID, *want.Nr, c.ID, restore.State, restore.Answer); err != nil {
+		return nil, nil, err
+	}
+	return snapMK(c), snapMK(&restore), nil
 }

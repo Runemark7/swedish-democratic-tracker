@@ -11,6 +11,7 @@ const KIND: Record<string, string> = { fraga: "Skriftlig fråga", interpellation
 const RULE: Record<string, string> = {
   "riksdagen-reference": "Riksdagen pekar ut motionen",
   "cited-beteckning": "Frågan anger motionens beteckning",
+  "redaktor-confirmed": "Bekräftad av redaktören: frågan nämner motionen i text",
 };
 
 interface Props {

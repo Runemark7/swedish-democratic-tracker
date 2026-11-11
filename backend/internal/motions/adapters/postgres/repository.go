@@ -498,6 +498,39 @@ func (r *Repository) RecurringMembers(ctx context.Context, hash string) ([]domai
 	return out, rows.Err()
 }
 
+// ConfirmedKravHashes walks the links the Redaktör confirmed between yrkanden
+// of different wording, from hash to every hash it is connected to. Only
+// bekraftad links count: a suggested, rejected or undone one connects nothing.
+func (r *Repository) ConfirmedKravHashes(ctx context.Context, hash string) ([]string, error) {
+	rows, err := r.db.Query(ctx, `
+		WITH RECURSIVE edges AS (
+		  SELECT ya.wording_hash AS a, yb.wording_hash AS b
+		    FROM motion_kopplingar k
+		    JOIN motion_yrkanden ya ON ya.dok_id = k.motion_dok_id AND ya.nummer = k.yrkande_nr
+		    JOIN motion_yrkanden yb ON yb.dok_id = k.other_motion_dok_id AND yb.nummer = k.other_yrkande_nr
+		   WHERE k.kind = 'krav' AND k.state = 'bekraftad'
+		     AND ya.wording_hash IS NOT NULL AND yb.wording_hash IS NOT NULL
+		), conn(h) AS (
+		  SELECT $1::text
+		  UNION
+		  SELECT CASE WHEN e.a = c.h THEN e.b ELSE e.a END FROM conn c JOIN edges e ON e.a = c.h OR e.b = c.h
+		)
+		SELECT h FROM conn WHERE h <> $1 ORDER BY h`, hash)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []string
+	for rows.Next() {
+		var h string
+		if err := rows.Scan(&h); err != nil {
+			return nil, err
+		}
+		out = append(out, h)
+	}
+	return out, rows.Err()
+}
+
 func (r *Repository) SetWordingHash(ctx context.Context, dokID string, number int, hash string) error {
 	_, err := r.db.Exec(ctx, `
 		UPDATE motion_yrkanden SET wording_hash = NULLIF($3, '')

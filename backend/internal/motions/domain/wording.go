@@ -36,6 +36,10 @@ func WordingHash(wording string) string {
 	return hex.EncodeToString(sum[:])
 }
 
+// RuleConfirmed marks a filing that is in the group because the Redaktör
+// confirmed, in a Veckobatch, that it is the same demand in other words.
+const RuleConfirmed = "redaktor-confirmed"
+
 // RecurringMember is one filing of a recurring demand.
 type RecurringMember struct {
 	DokID      string

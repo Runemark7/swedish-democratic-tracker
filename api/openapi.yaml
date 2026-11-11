@@ -442,6 +442,40 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationFailed"
 
+  /write/motion-kopplingar:
+    post:
+      operationId: submitMotionKopplingSuggestions
+      tags: [write]
+      summary: Suggest curated motion links (a fråga that cites a motion only in prose; yrkanden of different wording that are the same Återkommande krav)
+      description: >
+        Suggestions at or above `threshold` (default 0.6) are stored as foreslagen; below it as bortsorterad, kept only so the pair is not suggested again. They join the same numbered Veckobatch as Löfte kopplingar (`kind` "fraga" or "krav" on the item). A link becomes public only when the Redaktör answers ja; suggested, rejected and undone links are never returned by a public endpoint or shown in the public Ändringslogg. All-or-nothing: an unknown question, motion or yrkande is 422 and stores nothing. A pair that already exists (a krav pair in either order) is reported as `existing` and left unchanged. "ja men omvänt" has no meaning for these items and is 422.
+      security:
+        - writeToken: []
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MotionKopplingSuggestionsWrite" }
+      responses:
+        "200":
+          description: One result per suggestion
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MotionKopplingSuggestionsResult" }
+        "400":
+          description: Malformed JSON or unknown field
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WriteError" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/WriteConflict"
+        "422":
+          $ref: "#/components/responses/ValidationFailed"
+
   /write/veckobatch:
     post:
       operationId: createVeckobatch
@@ -545,10 +579,12 @@ paths:
                     type: array
                     items:
                       type: object
-                      required: [nr, kopplingId, answer, state, direction, entryId]
+                      required: [nr, kind, kopplingId, answer, state, direction, entryId]
                       properties:
                         nr: { type: integer }
+                        kind: { type: string, enum: [loefte, fraga, krav] }
                         kopplingId: { type: integer, format: int64 }
+                        motionKopplingId: { type: integer, format: int64, description: "Set for kind fraga and krav" }
                         answer: { type: string, enum: [ja, nej, ja-omvaent] }
                         state: { type: string, enum: [bekraftad, avvisad] }
                         direction: { type: string, enum: [Ja, Nej] }
@@ -2454,10 +2490,32 @@ components:
           type: array
           items:
             type: object
-            required: [nr, kopplingId, state, rolledOver, loefteId, party, loefteText, quote, locator, sourceUrl, voteringId, beteckning, forslagspunkt, betankande, datum, direction, confidence, reasoning, answer]
+            required: [nr, kind, kopplingId, state, rolledOver, loefteId, party, loefteText, quote, locator, sourceUrl, voteringId, beteckning, forslagspunkt, betankande, datum, direction, confidence, reasoning, answer]
             properties:
               nr: { type: integer }
-              kopplingId: { type: integer, format: int64 }
+              kind: { type: string, enum: [loefte, fraga, krav], description: "loefte = a Löfte↔votering koppling; fraga and krav = a curated motion link, described in `motion` (the Löfte and votering fields are then empty)" }
+              kopplingId: { type: integer, format: int64, description: "0 for a motion link" }
+              motionKopplingId: { type: integer, format: int64, description: "Set for kind fraga and krav" }
+              motion:
+                type: object
+                description: Present for kind fraga and krav
+                required: [kind, rule, motion]
+                properties:
+                  kind: { type: string, enum: [fraga, krav] }
+                  rule: { type: string, enum: [prose-citation, similar-wording] }
+                  question:
+                    type: object
+                    description: kind fraga
+                    properties:
+                      kind: { type: string }
+                      riksmote: { type: string }
+                      beteckning: { type: string }
+                      title: { type: string }
+                      asker: { type: string }
+                      excerpt: { type: string }
+                      sourceUrl: { type: string }
+                  motion: { $ref: "#/components/schemas/CuratedMotionView" }
+                  other: { $ref: "#/components/schemas/CuratedMotionView" }
               state: { type: string }
               rolledOver: { type: boolean }
               loefteId: { type: integer, format: int64 }
@@ -2475,6 +2533,78 @@ components:
               confidence: { type: number }
               reasoning: { type: string }
               answer: { type: string, nullable: true, enum: [ja, nej, ja-omvaent] }
+    CuratedMotionView:
+      type: object
+      properties:
+        riksmote: { type: string }
+        beteckning: { type: string }
+        title: { type: string }
+        parties: { type: array, items: { type: string } }
+        yrkande: { type: integer, description: "kind krav only" }
+        wording: { type: string, description: "kind krav only" }
+        sourceUrl: { type: string }
+    MotionKopplingSuggestionsWrite:
+      type: object
+      required: [suggestions, chatRef, onBehalfOf]
+      additionalProperties: false
+      properties:
+        threshold: { type: number, minimum: 0, maximum: 1, default: 0.6 }
+        suggestions:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            type: object
+            required: [kind, motion, confidence, reasoning]
+            additionalProperties: false
+            properties:
+              kind: { type: string, enum: [fraga, krav] }
+              question:
+                type: object
+                description: kind fraga - the fråga or interpellation that cites the motion in prose
+                required: [kind, riksmote, beteckning]
+                additionalProperties: false
+                properties:
+                  kind: { type: string, enum: [fraga, interpellation] }
+                  riksmote: { type: string, example: "2022/23" }
+                  beteckning: { type: string, example: "339" }
+              motion:
+                type: object
+                description: kind fraga - the cited motion; kind krav - the first yrkande (give `yrkande`)
+                required: [riksmote, beteckning]
+                additionalProperties: false
+                properties:
+                  riksmote: { type: string, example: "2017/18" }
+                  beteckning: { type: string, example: "3293" }
+                  yrkande: { type: integer, minimum: 1 }
+              other:
+                type: object
+                description: kind krav - the second yrkande
+                required: [riksmote, beteckning, yrkande]
+                additionalProperties: false
+                properties:
+                  riksmote: { type: string }
+                  beteckning: { type: string }
+                  yrkande: { type: integer, minimum: 1 }
+              confidence: { type: number, minimum: 0, maximum: 1 }
+              reasoning: { type: string, maxLength: 4000 }
+        chatRef: { type: string }
+        onBehalfOf: { type: string }
+    MotionKopplingSuggestionsResult:
+      type: object
+      required: [replayed, results]
+      properties:
+        replayed: { type: boolean }
+        results:
+          type: array
+          items:
+            type: object
+            required: [motionKopplingId, kind, state, status]
+            properties:
+              motionKopplingId: { type: integer, format: int64 }
+              kind: { type: string, enum: [fraga, krav] }
+              state: { type: string, enum: [foreslagen, bortsorterad, bekraftad, avvisad] }
+              status: { type: string, enum: [created, existing] }
     KopplingSuggestionsWrite:
       type: object
       required: [suggestions, chatRef, onBehalfOf]
@@ -2675,7 +2805,7 @@ components:
         answerDate: { type: string, format: date-time, nullable: true }
         answerDokId: { type: string }
         role: { type: string, enum: [asker, answerer] }
-        rule: { type: string, enum: [riksdagen-reference, cited-beteckning] }
+        rule: { type: string, enum: [riksdagen-reference, cited-beteckning, redaktor-confirmed] }
         sourceUrl: { type: string }
     QuestionDetail:
       allOf:
@@ -2823,7 +2953,7 @@ components:
         date: { type: string, nullable: true, description: "Filing date, YYYY-MM-DD" }
         parties: { type: array, items: { type: string }, description: "Distinct parties among the signers" }
         outcome: { type: string, description: "Outcome word of this filing, as on the motion page" }
-        rule: { type: string, enum: [identical_wording], description: "Why this filing is in the group" }
+        rule: { type: string, enum: [identical_wording, redaktor-confirmed], description: "Why this filing is in the group; redaktor-confirmed = the Redaktör confirmed in a Veckobatch that it is the same demand in other words" }
         current: { type: boolean, description: "True for the yrkande the request is about" }
         sourceUrl: { type: string }
 

@@ -64,6 +64,14 @@ omits `koppling` and `veckobatch` entries.
 - Retrying with the same key returns the same result; the same key with a
   different body is 409.
 
+## Motion links in the same batch
+
+A Veckobatch also holds curated motion links ([curated-motion-links.md](curated-motion-links.md)):
+items with `kind` `fraga` or `krav`. They are numbered, answered, rolled over
+and undone exactly like the Löfte items. `ja` confirms (and makes the link
+public), `nej` rejects. **`ja men omvänt` is 422 for them** (nothing stored):
+ask the Redaktör again.
+
 ## Chat format (post exactly this shape)
 
 ```
