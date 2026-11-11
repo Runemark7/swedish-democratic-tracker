@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"riksdagskollen/internal/regions/adapters/scb"
@@ -103,13 +104,13 @@ func TestFetchRegionBudgetMultiYear_GotlandSpecialCode(t *testing.T) {
 	var gotSCBCode string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body map[string]any
+		// PxWebApi v2 body: {"selection":[{"variableCode":..,"valueCodes":[..]}]}
 		if err := json.NewDecoder(r.Body).Decode(&body); err == nil {
-			if q, ok := body["query"].([]any); ok {
+			if q, ok := body["selection"].([]any); ok {
 				for _, item := range q {
 					m, _ := item.(map[string]any)
-					if m["code"] == "Region" {
-						sel, _ := m["selection"].(map[string]any)
-						vals, _ := sel["values"].([]any)
+					if m["variableCode"] == "Region" {
+						vals, _ := m["valueCodes"].([]any)
 						if len(vals) > 0 {
 							gotSCBCode, _ = vals[0].(string)
 						}
@@ -239,6 +240,64 @@ func TestFetchAreaAcrossRegions_SkipDotDot(t *testing.T) {
 	for _, d := range datapoints {
 		if d.RegionCode == "06" && d.Pct != 0.0 {
 			t.Errorf("expected pct=0 when area value is skipped, got %f", d.Pct)
+		}
+	}
+}
+
+// --- FetchPopulationTrend (recorded SCB fixtures, see internal/scbpx/testdata) ---
+
+func TestFetchPopulationTrend_SkipsUnpublishedYears(t *testing.T) {
+	meta, err := os.ReadFile("../../../scbpx/testdata/befolkning_meta_v2_tab638.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile("../../../scbpx/testdata/befolkning_trend_v2_tab638.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var gotTid []any
+	dataCalls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/tables/TAB638/metadata":
+			w.Write(meta)
+		case "/tables/TAB638/data":
+			dataCalls++
+			if dataCalls == 1 { // SCB v2's intermittent 500
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			var body map[string]any
+			_ = json.NewDecoder(r.Body).Decode(&body)
+			for _, item := range body["selection"].([]any) {
+				m := item.(map[string]any)
+				if m["variableCode"] == "Tid" {
+					gotTid = m["valueCodes"].([]any)
+				}
+			}
+			w.Write(data)
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer srv.Close()
+
+	cl := newTestClient(srv)
+	// 2025 is not in BE0101 yet; asking for it would make SCB reject the query.
+	entries, err := cl.FetchPopulationTrend(context.Background(), "0180", []int{2025, 2024, 2023, 2022, 2021})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(gotTid) != 4 || gotTid[0] != "2024" {
+		t.Errorf("requested Tid = %v, want 2024..2021", gotTid)
+	}
+	want := map[int]int{2021: 978770, 2022: 984748, 2023: 988943, 2024: 995574}
+	if len(entries) != len(want) {
+		t.Fatalf("entries = %v", entries)
+	}
+	for _, e := range entries {
+		if want[e.Year] != e.Population {
+			t.Errorf("%d = %d, want %d", e.Year, e.Population, want[e.Year])
 		}
 	}
 }

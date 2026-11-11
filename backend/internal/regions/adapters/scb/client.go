@@ -1,55 +1,48 @@
 package scb
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"riksdagskollen/internal/regions/ports"
+	"riksdagskollen/internal/scbpx"
 )
 
-const (
-	populationURL   = "https://api.scb.se/OV0104/v1/doris/sv/ssd/BE/BE0101/BE0101A/BefolkningNy"
-	regionBudgetURL = "https://api.scb.se/OV0104/v1/doris/sv/ssd/OE/OE0107/OE0107D/KostnDRLT"
-)
-
+// Client reads SCB's KostnDRLT (region budgets) and BefolkningNy tables via
+// PxWebApi v2, falling back to v1 while it exists (see package scbpx).
 type Client struct {
-	http           *http.Client
-	regionBudgetBase string // overridable for tests; empty means use regionBudgetURL
-	populationBase   string // overridable for tests; empty means use populationURL
+	px *scbpx.Client
+
+	mu    sync.Mutex
+	trend map[string]cachedTrend // munCode|years -> result
+}
+
+// BE0101 is published once a year, so a municipality's trend is cached.
+const trendTTL = 12 * time.Hour
+
+type cachedTrend struct {
+	entries []ports.PopulationEntry
+	at      time.Time
 }
 
 func NewClient() *Client {
-	return &Client{http: &http.Client{Timeout: 15 * time.Second}}
+	return &Client{px: scbpx.New(&http.Client{Timeout: 15 * time.Second})}
 }
 
-// NewClientWithHTTP creates a Client for testing, routing all requests to baseURL.
+// NewClientWithHTTP creates a Client for testing: baseURL stands in for the
+// PxWebApi v2 base and the v1 fallback is disabled.
 func NewClientWithHTTP(baseURL string, httpClient *http.Client) *Client {
-	return &Client{
-		http:             httpClient,
-		regionBudgetBase: baseURL,
-		populationBase:   baseURL,
-	}
+	px := scbpx.NewWithBaseURLs(baseURL, "", httpClient)
+	px.SetRetryDelay(time.Millisecond)
+	return &Client{px: px}
 }
 
-func (c *Client) regionBudgetURL() string {
-	if c.regionBudgetBase != "" {
-		return c.regionBudgetBase
-	}
-	return regionBudgetURL
-}
-
-func (c *Client) populationTrendURL() string {
-	if c.populationBase != "" {
-		return c.populationBase
-	}
-	return populationURL
-}
+type scbRow = scbpx.Row
 
 // regionBudgetAreas maps SCB verksamhetsområde codes to Swedish labels.
 // We fetch individual subcategories and compute percentages against total (0-9).
@@ -79,46 +72,16 @@ func (c *Client) FetchRegionBudget(ctx context.Context, regionCode string, year 
 	areaCodes[len(regionBudgetAreas)] = "0-9" // total
 
 	yearStr := strconv.Itoa(year)
-	body := map[string]any{
-		"query": []map[string]any{
-			{"code": "Region", "selection": map[string]any{"filter": "item", "values": []string{scbCode}}},
-			{"code": "Verksomrkom", "selection": map[string]any{"filter": "item", "values": areaCodes}},
-			{"code": "ContentsCode", "selection": map[string]any{"filter": "item", "values": []string{"000000A7"}}},
-			{"code": "Tid", "selection": map[string]any{"filter": "item", "values": []string{yearStr}}},
-		},
-		"response": map[string]any{"format": "json"},
-	}
-
-	bodyBytes, err := json.Marshal(body)
+	rows, err := c.px.Data(ctx, scbpx.KostnDRLT, []scbpx.Select{
+		{Code: "Region", Values: []string{scbCode}},
+		{Code: "Verksomrkom", Values: areaCodes},
+		{Code: "ContentsCode", Values: []string{"000000A7"}},
+		{Code: "Tid", Values: []string{yearStr}},
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("SCB region budget: %w", err)
 	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.regionBudgetURL(), bytes.NewReader(bodyBytes))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := c.http.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("SCB region budget API returned %d", resp.StatusCode)
-	}
-
-	var payload struct {
-		Data []struct {
-			Key    []string `json:"key"`
-			Values []string `json:"values"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
-		return nil, fmt.Errorf("decode SCB region budget: %w", err)
-	}
+	payload := struct{ Data []scbRow }{Data: rows}
 
 	// Build a map from area code to mnkr value.
 	byCode := map[string]float64{}
@@ -190,46 +153,16 @@ func (c *Client) FetchRegionBudgetMultiYear(ctx context.Context, regionCode stri
 		yearStrs[i] = strconv.Itoa(y)
 	}
 
-	body := map[string]any{
-		"query": []map[string]any{
-			{"code": "Region", "selection": map[string]any{"filter": "item", "values": []string{code}}},
-			{"code": "Verksomrkom", "selection": map[string]any{"filter": "item", "values": areaCodes}},
-			{"code": "ContentsCode", "selection": map[string]any{"filter": "item", "values": []string{"000000A7"}}},
-			{"code": "Tid", "selection": map[string]any{"filter": "item", "values": yearStrs}},
-		},
-		"response": map[string]any{"format": "json"},
-	}
-
-	bodyBytes, err := json.Marshal(body)
+	rows, err := c.px.Data(ctx, scbpx.KostnDRLT, []scbpx.Select{
+		{Code: "Region", Values: []string{code}},
+		{Code: "Verksomrkom", Values: areaCodes},
+		{Code: "ContentsCode", Values: []string{"000000A7"}},
+		{Code: "Tid", Values: yearStrs},
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("SCB region budget: %w", err)
 	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.regionBudgetURL(), bytes.NewReader(bodyBytes))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := c.http.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("SCB region budget API returned %d", resp.StatusCode)
-	}
-
-	var payload struct {
-		Data []struct {
-			Key    []string `json:"key"`
-			Values []string `json:"values"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
-		return nil, fmt.Errorf("decode SCB region budget multi-year: %w", err)
-	}
+	payload := struct{ Data []scbRow }{Data: rows}
 
 	// Group by year: year → areaCode → value
 	type yearData struct {
@@ -308,46 +241,16 @@ func (c *Client) FetchAreaAcrossRegions(ctx context.Context, areaName string, re
 		reverseMap[sc] = rc
 	}
 
-	body := map[string]any{
-		"query": []map[string]any{
-			{"code": "Region", "selection": map[string]any{"filter": "item", "values": scbCodes}},
-			{"code": "Verksomrkom", "selection": map[string]any{"filter": "item", "values": []string{areaCode, "0-9"}}},
-			{"code": "ContentsCode", "selection": map[string]any{"filter": "item", "values": []string{"000000A7"}}},
-			{"code": "Tid", "selection": map[string]any{"filter": "item", "values": []string{strconv.Itoa(year)}}},
-		},
-		"response": map[string]any{"format": "json"},
-	}
-
-	bodyBytes, err := json.Marshal(body)
+	rows, err := c.px.Data(ctx, scbpx.KostnDRLT, []scbpx.Select{
+		{Code: "Region", Values: scbCodes},
+		{Code: "Verksomrkom", Values: []string{areaCode, "0-9"}},
+		{Code: "ContentsCode", Values: []string{"000000A7"}},
+		{Code: "Tid", Values: []string{strconv.Itoa(year)}},
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("SCB area-across-regions: %w", err)
 	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.regionBudgetURL(), bytes.NewReader(bodyBytes))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := c.http.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("SCB area-across-regions API returned %d", resp.StatusCode)
-	}
-
-	var payload struct {
-		Data []struct {
-			Key    []string `json:"key"`
-			Values []string `json:"values"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
-		return nil, fmt.Errorf("decode SCB area-across-regions: %w", err)
-	}
+	payload := struct{ Data []scbRow }{Data: rows}
 
 	// Build per-region data: scbCode → {areaValue, totalValue}
 	type regionVals struct {
@@ -399,69 +302,60 @@ func (c *Client) FetchAreaAcrossRegions(ctx context.Context, areaName string, re
 }
 
 func (c *Client) FetchPopulationTrend(ctx context.Context, munCode string, years []int) ([]ports.PopulationEntry, error) {
+	key := fmt.Sprint(munCode, years)
+	c.mu.Lock()
+	if e, ok := c.trend[key]; ok && time.Since(e.at) < trendTTL {
+		c.mu.Unlock()
+		return e.entries, nil
+	}
+	c.mu.Unlock()
+	entries, err := c.fetchPopulationTrend(ctx, munCode, years)
+	if err != nil {
+		return nil, err
+	}
+	c.mu.Lock()
+	if c.trend == nil {
+		c.trend = make(map[string]cachedTrend)
+	}
+	c.trend[key] = cachedTrend{entries: entries, at: time.Now()}
+	c.mu.Unlock()
+	return entries, nil
+}
+
+func (c *Client) fetchPopulationTrend(ctx context.Context, munCode string, years []int) ([]ports.PopulationEntry, error) {
 	yearStrs := make([]string, len(years))
 	for i, y := range years {
 		yearStrs[i] = strconv.Itoa(y)
 	}
-
-	body := map[string]any{
-		"query": []map[string]any{
-			{
-				"code":      "Region",
-				"selection": map[string]any{"filter": "item", "values": []string{munCode}},
-			},
-			{
-				"code":      "ContentsCode",
-				"selection": map[string]any{"filter": "item", "values": []string{"BE0101N1"}},
-			},
-			{
-				"code":      "Tid",
-				"selection": map[string]any{"filter": "item", "values": yearStrs},
-			},
-		},
-		"response": map[string]any{"format": "json"},
-	}
-
-	bodyBytes, err := json.Marshal(body)
+	// Ask only for published years: SCB rejects the whole query (400) if one
+	// year is missing, and BE0101 lags the calendar by more than a year.
+	yearStrs, err := c.px.Has(ctx, scbpx.BefolkningNy, "Tid", yearStrs)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("SCB population trend: %w", err)
+	}
+	if len(yearStrs) == 0 {
+		return []ports.PopulationEntry{}, nil
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.populationTrendURL(), bytes.NewReader(bodyBytes))
+	rows, err := c.px.Data(ctx, scbpx.BefolkningNy, []scbpx.Select{
+		{Code: "Region", Values: []string{munCode}},
+		{Code: "Alder", Values: []string{"tot"}},
+		{Code: "ContentsCode", Values: []string{"BE0101N1"}},
+		{Code: "Tid", Values: yearStrs},
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("SCB population trend: %w", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := c.http.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("SCB API returned %d", resp.StatusCode)
-	}
-
-	var payload struct {
-		Data []struct {
-			Key    []string `json:"key"`
-			Values []string `json:"values"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
-		return nil, fmt.Errorf("decode SCB response: %w", err)
-	}
+	payload := struct{ Data []scbRow }{Data: rows}
 
 	result := []ports.PopulationEntry{}
 	for _, d := range payload.Data {
-		// SCB key layout is [region, year] — verified against live API 2026-04-19.
-		// ContentsCode is declared via the query but does not appear in the key;
-		// it is returned as the (only) entry in values[].
+		// Key layout is [region, alder, year] (Alder pinned to "tot").
+		// ContentsCode is not in the key; it is the (only) entry in values[].
 		if len(d.Key) < 2 || len(d.Values) == 0 {
 			continue
 		}
-		year, err := strconv.Atoi(d.Key[1])
+		year, err := strconv.Atoi(d.Key[len(d.Key)-1])
 		if err != nil {
 			continue
 		}
