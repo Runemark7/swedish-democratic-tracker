@@ -16,6 +16,28 @@ const DECISION_3293 = {
   outcome: "Avslagen",
   voteringStored: false,
   parties: [],
+  reasoning:
+    "Skatteverket gör bedömningen att virtuella varor kan vara momspliktiga.\n\nUtskottet gör ingen annan bedömning om virtuella varor än Skatteverket.\n\nUtskottet avstyrker därmed samtliga motionsyrkanden.",
+  reasoningAvailable: true,
+  reservationsAvailable: true,
+  reservations: [
+    {
+      number: 8,
+      parties: ["M"],
+      signers: ["Cecilia Widegren (M)", "Helena Bouveng (M)", "Fredrik Schulte (M)", "Lotta Finstorp (M)"],
+      proposal: "Riksdagen ställer sig bakom det som anförs i reservationen och tillkännager detta för regeringen.",
+      text: "Vi föreslår en utredning för att se över den skatterättsliga bedömningen av handel med virtuella varor.",
+    },
+    {
+      number: 9,
+      parties: ["KD"],
+      signers: ["Larry Söder (KD)"],
+      proposal: "Riksdagen ställer sig bakom det som anförs i reservationen och tillkännager detta för regeringen.",
+      text: "Privatpersoner som egenproducerar förnybar el har i dag möjlighet att sälja den el som blir över.",
+    },
+  ],
+  sarskildaYttranden: [],
+  votedReservation: null,
 };
 
 const MOTION_3293 = {
@@ -148,6 +170,69 @@ test.describe("motion page 2017/18:3293", () => {
     );
     await page.goto("/motioner/2017%2F18/999999");
     await expect(page.getByText("finns inte i vårt register")).toBeVisible();
+  });
+
+  test("shows the reservations and the utskott's reasoning on the 3293 page", async ({ page }) => {
+    await page.route("**/api/motions/**", (route) => route.fulfill({ json: MOTION_3293 }));
+    await page.goto("/motioner/2017%2F18/3293");
+    const reasoning = page.getByTestId("reasoning");
+    await expect(reasoning).toContainText("Utskottets ställningstagande");
+    await expect(reasoning).toContainText("gör ingen annan bedömning om virtuella varor än Skatteverket");
+    const reservations = page.getByTestId("reservation");
+    await expect(reservations).toHaveCount(2);
+    await expect(reservations.nth(0)).toContainText("Reservation 8 (M)");
+    await expect(reservations.nth(1)).toContainText("Reservation 9 (KD)");
+    await expect(page.getByTestId("voted-alternative")).toHaveCount(0);
+  });
+
+  test("names the reservation that was put to the vote", async ({ page }) => {
+    const json = {
+      ...MOTION_3638,
+      yrkanden: [
+        {
+          ...MOTION_3638.yrkanden[0],
+          decisions: [
+            {
+              ...MOTION_3638.yrkanden[0].decisions[0],
+              votedReservation: { number: 2, party: "SD", parties: ["SD"] },
+              reservations: [DECISION_3293.reservations[0]],
+            },
+          ],
+        },
+      ],
+    };
+    await page.route("**/api/motions/**", (route) => route.fulfill({ json }));
+    await page.goto("/motioner/2021%2F22/3638");
+    await expect(page.getByTestId("voted-alternative")).toContainText("reservation 2 (SD)");
+    await expect(page.getByTestId("voted-alternative")).toContainText("Övriga reservationer");
+  });
+
+  test("says not available from Riksdagen, with the source link, instead of inventing text", async ({ page }) => {
+    const json = {
+      ...MOTION_3293,
+      yrkanden: [
+        {
+          ...MOTION_3293.yrkanden[0],
+          decisions: [
+            {
+              ...DECISION_3293,
+              reasoning: "",
+              reasoningAvailable: false,
+              reservationsAvailable: false,
+              reservations: [],
+            },
+          ],
+        },
+      ],
+    };
+    await page.route("**/api/motions/**", (route) => route.fulfill({ json }));
+    await page.goto("/motioner/2017%2F18/3293");
+    await expect(page.getByTestId("reasoning")).toHaveCount(0);
+    await expect(page.getByTestId("reservations")).toHaveCount(0);
+    const na = page.getByTestId("not-available");
+    await expect(na).toHaveCount(2);
+    await expect(na.first()).toContainText("inte tillgänglig från Riksdagen");
+    await expect(na.first().getByRole("link")).toHaveAttribute("href", "https://data.riksdagen.se/dokument/H501SkU11.html");
   });
 });
 
