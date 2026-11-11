@@ -7,6 +7,8 @@ skapar `SourceRegistry.generated.ts`.
 | ID | Namn | Kind | Backas i UI av |
 |---|---|---|---|
 | [riksdagen](./riksdagen.md) | Riksdagen Open Data | api | beslut, omröstningar, anföranden |
+| [voteringar](./voteringar.md) | Voteringar (Riksdagen) | api | täckning under Data, hur ledamöter och partier röstade |
+| [questions](./questions.md) | Skriftliga frågor, svar och interpellationer (Riksdagen) | api | frågor och interpellationer, täckning under Data |
 | [speeches-backfill](./speeches-backfill.md) | Anföranden, äldre riksmöten (Riksdagen) | api | täckning under Data, debatten på betänkandesidan |
 | [motions](./motions.md) | Motioner (Riksdagen) | api | motionssidan (/motioner) |
 | [betankanden](./betankanden.md) | Betänkanden och förslagspunkter (Riksdagen) | api | betänkande, förslagspunkt, beslut och Partilinje per yrkande (/motioner/:riksmöte/:beteckning) |

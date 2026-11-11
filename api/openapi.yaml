@@ -35,6 +35,8 @@ tags:
     description: Cabinet ministers and their proposals
   - name: committees
     description: Riksdag committees (utskott) and the utgiftsområden they bereder
+  - name: data
+    description: The Data section — what each source holds and how much of it is loaded
 
 paths:
   /riksdag/authorities:
@@ -536,6 +538,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FrontPageResponse"
+
+  /data/coverage:
+    get:
+      operationId: getDataCoverage
+      tags: [data]
+      summary: Per source and riksmöte, whether it is loaded and when it last changed
+      description: >-
+        One row per source (`motioner`, `betankanden`, `voteringar`,
+        `anforanden`, `fragor`, `interpellationer`) and riksmöte that has an
+        ingestion coverage record, newest riksmöte first. A riksmöte without a
+        row has not been read. `status` is `complete` when the backfill marked it
+        finished or what we hold reaches what Riksdagen reports, else `partial`.
+        `lastUpdate` is the newest timestamp on the coverage record.
+      responses:
+        "200":
+          description: Coverage rows
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/DataCoverage" }
 
   /questions/coverage:
     get:
@@ -1828,6 +1855,17 @@ components:
                   party: { type: string }
                   date: { type: string, format: date-time }
                   excerpt: { type: string }
+    DataCoverage:
+      type: object
+      required: [source, riksmote, status, expected, held, lastUpdate]
+      properties:
+        source: { type: string, enum: [motioner, betankanden, voteringar, anforanden, fragor, interpellationer] }
+        riksmote: { type: string, example: "2021/22" }
+        status: { type: string, enum: [complete, partial] }
+        expected: { type: integer, description: "What Riksdagen's own listing reports" }
+        held: { type: integer, description: "What we hold, counted live" }
+        lastUpdate: { type: string, format: date-time }
+
     QuestionCoverage:
       type: object
       properties:

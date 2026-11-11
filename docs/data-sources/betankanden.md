@@ -73,3 +73,11 @@ parti enligt sajtens gemensamma definition; vid acklamation visas "Avgjord utan 
 
 ## Listan över beslut
 Jobbet `sync-beslut-list` (dagligen) läser betänkandelistan för det pågående och det föregående riksmötet vid varje körning. Äldre riksmöten från mandatperioderna läses en gång, högst tre nya per körning, och hoppas sedan över. Att köra om jobbet ändrar inget; ett riksmöte skrivs först när alla dess sidor lästs. Listan visar kommande beslut först (närmast planerad beslutsdag först, utan dag sist) och därefter fattade beslut, senaste först. Partifiltret visar betänkanden som avgör en motion från partiet eller där partiet har en reservation; ett parti röstar i varje votering, så "har röstat" skulle inte avgränsa något. Partiets linje i listan är Partilinje per votering enligt den gemensamma definitionen; skiljer den sig mellan betänkandets voteringar visas "Varierar".
+
+## Länkregler
+- **Riksdagens referens**: motionens `behandlas_i` (och `behandlas_i_punkt` när den finns) pekar ut betänkandet och punkten.
+- **Citerad beteckning**: när `behandlas_i_punkt` saknas läser sajten förslagstexten, där motionen och dess yrkanden anges med beteckning (regel `forslag_text`).
+- **Identisk ordalydelse** används inte för att koppla ett yrkande till en punkt, bara för att gruppera återkommande krav (se Motioner).
+
+## Täckning
+Betänkanden räknas som inlästa för ett riksmöte när inget betänkande som riksmötets motioner pekar på återstår att läsa. Status och senaste uppdatering per riksmöte står under Data (`/data`, API: `/api/data/coverage`).

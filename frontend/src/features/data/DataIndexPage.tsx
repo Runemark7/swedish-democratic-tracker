@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { motionsApi } from "@/features/motions/api";
 import { speechesApi } from "@/features/speeches/api";
+import { dataApi } from "@/features/data/api";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SOURCES, type SourceKind } from "@/components/sources/SourceRegistry";
@@ -116,6 +117,66 @@ function SpeechCoverage({ isMobile }: { isMobile: boolean }) {
                 <td>{r.stored} av {r.expected}</td>
                 <td>{r.linked}</td>
                 <td>{r.unlinked}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+}
+
+const COVERAGE_SOURCES: { id: string; label: string; sourceId: string }[] = [
+  { id: "voteringar", label: "Voteringar", sourceId: "voteringar" },
+  { id: "motioner", label: "Motioner", sourceId: "motions" },
+  { id: "betankanden", label: "Betänkanden", sourceId: "betankanden" },
+  { id: "anforanden", label: "Anföranden", sourceId: "speeches-backfill" },
+  { id: "fragor", label: "Skriftliga frågor", sourceId: "questions" },
+  { id: "interpellationer", label: "Interpellationer", sourceId: "questions" },
+];
+
+/** Status and last update per source and riksmöte, read from the ingestion coverage records. */
+function SourceCoverage({ isMobile }: { isMobile: boolean }) {
+  const { data } = useQuery({ queryKey: ["data-coverage"], queryFn: () => dataApi.coverage() });
+  const rows = data?.data ?? [];
+  const riksmoten = [...new Set(rows.map((r) => r.riksmote))].sort().reverse();
+  const cell = (rm: string, source: string) => {
+    const r = rows.find((x) => x.riksmote === rm && x.source === source);
+    if (!r) return "ej inläst";
+    return `${r.status === "complete" ? "klar" : "delvis"} · ${r.held} av ${r.expected} · ${r.lastUpdate.slice(0, 10)}`;
+  };
+  return (
+    <section
+      data-testid="source-coverage"
+      style={{ margin: isMobile ? "0 14px 28px" : "0 32px 28px", border: "1px solid var(--color-border)", padding: isMobile ? 14 : 20, overflowX: "auto" }}
+    >
+      <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 20, fontWeight: 400, margin: "0 0 4px" }}>
+        Täckning per källa och riksmöte
+      </h2>
+      <p style={{ fontSize: 12, color: "var(--color-fg-muted)", margin: "0 0 12px" }}>
+        Status, antal lästa av Riksdagens egen siffra, och datum för senaste uppdatering. Det som inte står här är inte inläst.
+      </p>
+      {riksmoten.length === 0 ? (
+        <p data-testid="source-coverage-empty" style={{ fontSize: 13 }}>Inget riksmöte är inläst än.</p>
+      ) : (
+        <table style={{ fontSize: 12, borderCollapse: "collapse", width: "100%" }}>
+          <thead>
+            <tr style={{ textAlign: "left", color: "var(--color-fg-muted)" }}>
+              <th>Riksmöte</th>
+              {COVERAGE_SOURCES.map((s) => (
+                <th key={s.id}>
+                  {s.label} <SourceMarker sourceId={s.sourceId} />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {riksmoten.map((rm) => (
+              <tr key={rm} data-testid="source-coverage-row">
+                <td>{rm}</td>
+                {COVERAGE_SOURCES.map((s) => (
+                  <td key={s.id}>{cell(rm, s.id)}</td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -247,6 +308,7 @@ export function DataIndexPage() {
           </Link>
         ))}
       </div>
+      <SourceCoverage isMobile={isMobile} />
       <MotionCoverage isMobile={isMobile} />
       <SpeechCoverage isMobile={isMobile} />
     </div>
