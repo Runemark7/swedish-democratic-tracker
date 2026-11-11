@@ -64,8 +64,8 @@ func main() {
 		}()
 	}
 
-	// WRITE_TOKEN is empty until the Phase 2 write API exists. NewRouter
-	// accepts it so that API can be registered without a new constructor.
+	// WRITE_TOKEN comes from an optional Kubernetes Secret. Empty means the
+	// write API is not registered (its routes answer 404).
 	app, err := api.NewRouter(db, os.Getenv("WRITE_TOKEN"), riksdagenBaseURL)
 	if err != nil {
 		os.Exit(1)

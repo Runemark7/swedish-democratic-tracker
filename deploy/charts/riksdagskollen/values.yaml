@@ -84,6 +84,11 @@ ingress:
 ## Must be pre-created with key: DATABASE_URL
 dbSecretName: riksdagskollen-db-secret
 
+## Secret holding the write API token (key: WRITE_TOKEN), shared with the bot.
+## Optional: if it does not exist the backend starts and the write routes
+## answer 404. Create it out of band; never put the value in this repo.
+writeTokenSecretName: riksdagskollen-write-token
+
 migrations:
   enabled: false
 

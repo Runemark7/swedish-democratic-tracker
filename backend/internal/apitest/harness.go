@@ -53,9 +53,17 @@ func WithNow(now time.Time) Option {
 // Start migrates a fresh database, serves fixtureDir, and builds the router.
 func Start(t *testing.T, fixtureDir string, opts ...Option) *Harness {
 	t.Helper()
+	return StartWithWriteToken(t, fixtureDir, "", opts...)
+}
+
+// StartWithWriteToken is Start with the write API token the router is given.
+// An empty token leaves the write routes unregistered, as in production before
+// the Secret exists.
+func StartWithWriteToken(t *testing.T, fixtureDir, writeToken string, opts ...Option) *Harness {
+	t.Helper()
 	db := OpenDB(t)
 	replay := NewReplay(t, fixtureDir)
-	app, err := api.NewRouter(db, "", replay.URL)
+	app, err := api.NewRouter(db, writeToken, replay.URL)
 	if err != nil {
 		t.Fatalf("router: %v", err)
 	}

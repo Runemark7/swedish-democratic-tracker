@@ -217,6 +217,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/aendringslogg": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What changed and when (Ändringslogg), newest first
+         * @description Public and read-only. Request keys and tokens are never served.
+         */
+        get: operations["listAendringslogg"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/valmanifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create or update a Valmanifest (key - party, electionYear, title)
+         * @description Idempotent by Idempotency-Key. The change and its Ändringslogg entry are written in one transaction. Repeating the request returns the original entry (header Idempotent-Replayed - true) and changes nothing. A request that matches the stored value changes nothing and is not logged (changed - false). When no write token is configured the route does not exist and answers 404.
+         */
+        post: operations["upsertValmanifest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/write/aendringslogg/{id}/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Undo an Ändringslogg entry; the undo is logged as a new entry
+         * @description Restores the entry's old value, provided the entity still holds the value the entry wrote. If it changed since, nothing happens and the answer is 409. Idempotent by Idempotency-Key.
+         */
+        post: operations["undoAendringslogg"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/loften": {
         parameters: {
             query?: never;
@@ -1450,6 +1510,61 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        WriteError: {
+            error: string;
+            /** @enum {string} */
+            code: "bad_request" | "unauthorized" | "validation" | "not_found" | "conflict" | "idempotency_key_reused" | "internal";
+        };
+        Provenance: {
+            /** @description The Redaktör the bot acts for */
+            onBehalfOf: string;
+            /** @description Reference to the chat answer the change came from */
+            chatRef: string;
+        };
+        ValmanifestWrite: {
+            /** @example M */
+            party: string;
+            electionYear: number;
+            title: string;
+            /** Format: date */
+            publishedOn?: string;
+            url: string;
+            pdfUrl?: string;
+            /** @enum {string} */
+            state: "draft" | "final";
+            onBehalfOf: string;
+            chatRef: string;
+        };
+        AendringsloggEntry: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            actor: string;
+            onBehalfOf: string;
+            chatRef: string;
+            /** @enum {string} */
+            action: "upsert" | "undo";
+            /** @example valmanifest */
+            entity: string;
+            /** Format: int64 */
+            entityId: number;
+            /** @description null when the entity did not exist before */
+            oldValue: {
+                [key: string]: unknown;
+            } | null;
+            /** @description null when the entity does not exist after */
+            newValue: {
+                [key: string]: unknown;
+            } | null;
+            /** Format: int64 */
+            undoes: number | null;
+        };
+        WriteResult: {
+            changed: boolean;
+            replayed: boolean;
+            entry: components["schemas"]["AendringsloggEntry"] | null;
+        };
         QuestionPerson: {
             id: string;
             name: string;
@@ -2997,6 +3112,44 @@ export interface components {
         };
     };
     responses: {
+        /** @description Applied, replayed, or unchanged */
+        WriteResult: {
+            headers: {
+                /** @description true when this is the stored answer to an earlier request with the same key */
+                "Idempotent-Replayed"?: string;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["WriteResult"];
+            };
+        };
+        /** @description Missing or wrong bearer token */
+        Unauthorized: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["WriteError"];
+            };
+        };
+        /** @description The request is well-formed JSON but fails validation (including a missing Idempotency-Key) */
+        ValidationFailed: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["WriteError"];
+            };
+        };
+        /** @description code "conflict" - an undo of a since-changed value, or a collision with other data; code "idempotency_key_reused" - the key belongs to a different request. */
+        WriteConflict: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["WriteError"];
+            };
+        };
         /** @description Resource not found */
         NotFound: {
             headers: {
@@ -3017,6 +3170,8 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+        IdempotencyKey: string;
         PartyParam: components["schemas"]["PartyCode"];
         PoliticianIdParam: string;
         BudgetYearParam: number;
@@ -3346,6 +3501,110 @@ export interface operations {
                     "application/json": components["schemas"]["PartySummary"][];
                 };
             };
+        };
+    };
+    listAendringslogg: {
+        parameters: {
+            query?: {
+                limit?: number;
+                /** @description Return only entries with an id lower than this (paging) */
+                before?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Entries */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        entries: components["schemas"]["AendringsloggEntry"][];
+                    };
+                };
+            };
+        };
+    };
+    upsertValmanifest: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ValmanifestWrite"];
+            };
+        };
+        responses: {
+            200: components["responses"]["WriteResult"];
+            /** @description Malformed JSON or unknown field */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WriteError"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Write API not configured */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
+        };
+    };
+    undoAendringslogg: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per intended change (max 200 characters). Reusing it for a different request answers 409. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Provenance"];
+            };
+        };
+        responses: {
+            200: components["responses"]["WriteResult"];
+            /** @description Malformed JSON, unknown field or invalid id */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WriteError"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            /** @description Write API not configured, or no such entry */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            409: components["responses"]["WriteConflict"];
+            422: components["responses"]["ValidationFailed"];
         };
     };
     listLoften: {

@@ -41,6 +41,7 @@ var routesBeforeExtraction = []string{
 	"GET /api/context/topic/{topic}",
 	"GET /api/documents/{dokId}",
 	"GET /api/documents/{dokId}/full",
+	"GET /api/aendringslogg",
 	"GET /api/ingestion/freshness",
 	"GET /api/loften",
 	"GET /api/loften/{id}",
@@ -112,13 +113,25 @@ var routesBeforeExtraction = []string{
 
 func TestRegisteredRoutesMatchThePreExtractionList(t *testing.T) {
 	without := mustRouter(t, "")
-	withToken := mustRouter(t, "phase-2-token")
+	withToken := mustRouter(t, "write-token")
 
 	got := walkRoutes(t, without)
-	tokenRoutes := walkRoutes(t, withToken)
+	// A token adds exactly the write routes and nothing else.
+	var tokenRoutes, writeRoutes []string
+	for _, r := range walkRoutes(t, withToken) {
+		if strings.Contains(r, " /api/write/") {
+			writeRoutes = append(writeRoutes, r)
+		} else {
+			tokenRoutes = append(tokenRoutes, r)
+		}
+	}
 	if strings.Join(got, "\n") != strings.Join(tokenRoutes, "\n") {
-		t.Fatalf("a write token changed the route list:\nwithout:\n%s\nwith token:\n%s",
+		t.Fatalf("a write token changed the public route list:\nwithout:\n%s\nwith token:\n%s",
 			strings.Join(got, "\n"), strings.Join(tokenRoutes, "\n"))
+	}
+	wantWrite := []string{"POST /api/write/aendringslogg/{id}/undo", "POST /api/write/valmanifest"}
+	if strings.Join(writeRoutes, "\n") != strings.Join(wantWrite, "\n") {
+		t.Fatalf("write routes = %v, want %v", writeRoutes, wantWrite)
 	}
 
 	want := append([]string(nil), routesBeforeExtraction...)
@@ -206,7 +219,7 @@ func walkRoutes(t *testing.T, app *Router) []string {
 				}
 			}
 		}
-		if len(middlewares) != 6 {
+		if len(middlewares) != 6 && !strings.HasPrefix(route, "/api/write/") {
 			t.Errorf("%s %s has %d middlewares, want 6", method, route, len(middlewares))
 		}
 		return nil
