@@ -152,17 +152,48 @@ func (c *Client) FetchMotion(ctx context.Context, dokID string) (*domain.Motion,
 			Order: order, PoliticianID: a.IntressentID, Name: a.Namn, Party: a.Partibet, Role: a.Roll,
 		})
 	}
-	for i, f := range payload.Status.Forslag.Forslag {
-		n, err := strconv.Atoi(f.Nummer)
+	m.Yrkanden = yrkandenFrom(payload.Status.Forslag.Forslag)
+	return m, nil
+}
+
+// yrkandenFrom turns Riksdagen's förslag rows into one Yrkande per number.
+// Older motions (2002/03 to about 2013/14) list a yrkande once per betänkande
+// it was referred to, so the same nummer can appear several times with the
+// same wording and different behandlas_i. motion_yrkanden is keyed on
+// (dok_id, nummer), so the first row is kept and later rows only fill fields
+// the first left empty. The betänkanden named only by later rows are not
+// stored for that yrkande.
+func yrkandenFrom(rows []forslag) []domain.Yrkande {
+	var out []domain.Yrkande
+	at := map[int]int{}
+	for i, f := range rows {
+		n, err := strconv.Atoi(strings.TrimSpace(f.Nummer))
 		if err != nil {
 			n = i + 1
 		}
-		m.Yrkanden = append(m.Yrkanden, domain.Yrkande{
+		y := domain.Yrkande{
 			Number: n, Wording: f.Lydelse, UtskottProposal: f.Utskottet, ChamberDecision: f.Kammaren,
 			BehandlasI: f.BehandlasI, BehandlasIPunkt: f.BehandlasIPunkt,
-		})
+		}
+		j, dup := at[n]
+		if !dup {
+			at[n] = len(out)
+			out = append(out, y)
+			continue
+		}
+		k := &out[j]
+		fill := func(dst *string, src string) {
+			if strings.TrimSpace(*dst) == "" {
+				*dst = src
+			}
+		}
+		fill(&k.Wording, y.Wording)
+		fill(&k.UtskottProposal, y.UtskottProposal)
+		fill(&k.ChamberDecision, y.ChamberDecision)
+		fill(&k.BehandlasI, y.BehandlasI)
+		fill(&k.BehandlasIPunkt, y.BehandlasIPunkt)
 	}
-	return m, nil
+	return out
 }
 
 type forslag struct {
