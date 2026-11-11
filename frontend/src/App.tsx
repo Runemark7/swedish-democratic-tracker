@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { Routes, Route, useLocation, Link, Navigate, useParams } from "react-router-dom";
+import { Routes, Route, useLocation, Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { PartiesPage } from "./features/parties/PartiesPage";
 import { PartyDetailPage } from "./features/parties/PartyDetailPage";
-import { GoalVotesPage } from "./features/parties/GoalVotesPage";
+import { LoftenOverviewPage } from "./features/loften/LoftenOverviewPage";
+import { LoefteDetailPage } from "./features/loften/LoefteDetailPage";
 import { CommitteePage } from "./features/committees/CommitteePage";
 import { PoliticiansPage } from "./features/politicians/PoliticiansPage";
 import { PoliticianPage } from "./features/politicians/PoliticianPage";
@@ -13,7 +14,6 @@ import { BetankandePage } from "./features/votes/BetankandePage";
 import { VoteRedirect, BeslutRedirect } from "./features/votes/BetankandeRedirects";
 import { VoteSharePage } from "./features/votes/VoteSharePage";
 import { AreaHistoryPage } from "./features/budget/AreaHistoryPage";
-import { ManifestosPage } from "./features/manifestos/ManifestosPage";
 import { RegionLandingPage } from "./features/regions/RegionLandingPage";
 import { RegionDetailPage } from "./features/regions/RegionDetailPage";
 import { RegionBudgetAreaPage } from "./features/regions/RegionBudgetAreaPage";
@@ -81,9 +81,9 @@ function PillNav({ to, label, active }: PillNavProps) {
 
 // ── Main App ───────────────────────────────────────────────────────────────
 /**
- * /parties/:party/goals used to be a separate full record view. That view now
- * lives in the party page's Mål tab (?tab=mal), so the old URL redirects rather than 404s —
- * it has been linked and shared.
+ * /parties/:party/goals used to be a separate full record view. The 2022 goals
+ * are now the party page's Löften archive (?tab=loften), so the old URL
+ * redirects rather than 404s — it has been linked and shared.
  *
  * The redirect is absolute on purpose. A relative <Navigate to=".." /> resolves
  * against the route hierarchy, and because this route is declared flat that
@@ -91,7 +91,24 @@ function PillNav({ to, label, active }: PillNavProps) {
  */
 function GoalsRedirect() {
   const { party = "" } = useParams<{ party: string }>();
-  return <Navigate to={`/parties/${party}?tab=mal`} replace />;
+  return <Navigate to={`/parties/${party}?tab=loften`} replace />;
+}
+
+/** A goal's votes page: the goal is now the archived Löfte with the same id. */
+function GoalVotesRedirect() {
+  const { goalId = "" } = useParams<{ goalId: string }>();
+  return <Navigate to={`/loften/${goalId}`} replace />;
+}
+
+/**
+ * /manifestos is now the Valmanifest list on the party page. With ?party=X it
+ * goes to that party; without, to the cross-party Löften page, which lists
+ * every Valmanifest as a source.
+ */
+function ManifestosRedirect() {
+  const [params] = useSearchParams();
+  const party = (params.get("party") ?? "").toUpperCase();
+  return <Navigate to={/^[A-Z]{1,4}$/.test(party) ? `/parties/${party}?tab=loften` : "/loften#valmanifest"} replace />;
 }
 
 /**
@@ -280,7 +297,7 @@ export default function App() {
           <Route path="/parties/:party"                        element={<PartyDetailPage />} />
           <Route path="/committees/:code"                      element={<CommitteePage />} />
           <Route path="/parties/:party/goals"                  element={<GoalsRedirect />} />
-          <Route path="/parties/:party/goals/:goalId/votes"    element={<GoalVotesPage />} />
+          <Route path="/parties/:party/goals/:goalId/votes"    element={<GoalVotesRedirect />} />
           <Route path="/politicians"                           element={<PoliticiansPage />} />
           <Route path="/politicians/:id"                       element={<PoliticianPage />} />
           {/* The list moved to /beslut. Detail and share URLs stay. */}
@@ -295,7 +312,9 @@ export default function App() {
           <Route path="/motioner/:riksmote/:beteckning"        element={<MotionPage />} />
           <Route path="/budget/areas/:code"                    element={<LegacyRegeringenRedirect />} />
           <Route path="/budget"                                element={<LegacyRegeringenRedirect />} />
-          <Route path="/manifestos"                            element={<ManifestosPage />} />
+          <Route path="/manifestos"                            element={<ManifestosRedirect />} />
+          <Route path="/loften"                                element={<LoftenOverviewPage />} />
+          <Route path="/loften/:id"                            element={<LoefteDetailPage />} />
           <Route path="/lokalt"                               element={<LokaltPage />} />
           <Route path="/region"                                element={<RegionLandingPage />} />
           <Route path="/region/:code/budget/:areaName"         element={<RegionBudgetAreaPage />} />

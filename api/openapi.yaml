@@ -275,6 +275,106 @@ paths:
                 items:
                   $ref: "#/components/schemas/PartySummary"
 
+  /loften:
+    get:
+      operationId: listLoften
+      tags: [loften]
+      summary: Public Löften (approved and archived), optionally for one party
+      description: >
+        Proposed and struck Löften are never returned. Archived 2022 Löften
+        carry no Löftesstatus; the schema has no such field.
+      parameters:
+        - name: party
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Public Löften
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Loefte"
+        "400":
+          description: Invalid party
+
+  /loften/{id}:
+    get:
+      operationId: getLoefte
+      tags: [loften]
+      summary: One public Löfte. Archived 2022 Löften keep their old goal id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The Löfte
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Loefte"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /parties/{party}/loften:
+    get:
+      operationId: listPartyLoften
+      tags: [loften]
+      summary: Public Löften for one party
+      parameters:
+        - $ref: "#/components/parameters/PartyParam"
+      responses:
+        "200":
+          description: Public Löften
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Loefte"
+
+  /valmanifest:
+    get:
+      operationId: listValmanifest
+      tags: [loften]
+      summary: Every Valmanifest, newest election first
+      parameters:
+        - name: party
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Valmanifest
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Valmanifest"
+
+  /parties/{party}/valmanifest:
+    get:
+      operationId: listPartyValmanifest
+      tags: [loften]
+      summary: A party's Valmanifest, listed as sources
+      parameters:
+        - $ref: "#/components/parameters/PartyParam"
+      responses:
+        "200":
+          description: Valmanifest
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Valmanifest"
+
   /parties/{party}/goals:
     get:
       operationId: listPartyGoals
@@ -2399,6 +2499,38 @@ components:
           type: string
         detail:
           type: string
+
+    Loefte:
+      type: object
+      required: [id, party, text, utskott, mandatePeriod, visibility, archived, createdAt]
+      properties:
+        id: { type: integer }
+        party: { type: string }
+        valmanifestId: { type: integer, nullable: true }
+        text: { type: string }
+        quote: { type: string }
+        locator: { type: string }
+        sourceUrl: { type: string }
+        sourceDocument: { type: string }
+        topic: { type: string }
+        utskott: { type: array, items: { type: string } }
+        mandatePeriod: { type: string, example: "2022-2026" }
+        visibility: { type: string, enum: [approved, archived] }
+        archived: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    Valmanifest:
+      type: object
+      required: [id, party, electionYear, title, url, state]
+      properties:
+        id: { type: integer }
+        party: { type: string }
+        electionYear: { type: integer }
+        title: { type: string }
+        publishedOn: { type: string, format: date-time, nullable: true }
+        url: { type: string }
+        pdfUrl: { type: string }
+        state: { type: string, enum: [draft, final], description: "The party's own marking" }
 
     PartyCode:
       type: string
