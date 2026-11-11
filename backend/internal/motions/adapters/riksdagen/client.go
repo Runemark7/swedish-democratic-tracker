@@ -241,10 +241,14 @@ func (c *Client) FindBetankande(ctx context.Context, rm, bet string) (ports.Beta
 	var payload struct {
 		Dokumentlista struct {
 			Dokument flexList[struct {
-				DokID       string `json:"dok_id"`
-				Rm          string `json:"rm"`
-				Beteckning  string `json:"beteckning"`
-				Systemdatum string `json:"systemdatum"`
+				DokID       string          `json:"dok_id"`
+				Rm          string          `json:"rm"`
+				Beteckning  string          `json:"beteckning"`
+				Systemdatum string          `json:"systemdatum"`
+				Titel       string          `json:"titel"`
+				Status      string          `json:"status"`
+				Beslutsdag  string          `json:"beslutsdag"`
+				Beslutad    json.RawMessage `json:"beslutad"`
 			}] `json:"dokument"`
 		} `json:"dokumentlista"`
 	}
@@ -253,7 +257,10 @@ func (c *Client) FindBetankande(ctx context.Context, rm, bet string) (ports.Beta
 	}
 	for _, d := range payload.Dokumentlista.Dokument {
 		if d.Rm == rm && strings.EqualFold(d.Beteckning, bet) && d.DokID != "" {
-			return ports.BetankandeRef{DokID: d.DokID, SystemDatum: parseTime(d.Systemdatum)}, true, nil
+			return ports.BetankandeRef{
+				DokID: d.DokID, SystemDatum: parseTime(d.Systemdatum), Title: d.Titel, Status: d.Status,
+				DecisionDate: d.Beslutsdag, ChamberDecided: parseBeslutad(d.Beslutad),
+			}, true, nil
 		}
 	}
 	return ports.BetankandeRef{}, false, nil
@@ -351,4 +358,19 @@ func votedAlternative(raw json.RawMessage) string {
 	}
 	walk(v)
 	return found
+}
+
+// parseBeslutad reads Riksdagen's `beslutad` flag, which arrives as the
+// strings "0"/"1", a number or a bool. nil means absent or unreadable.
+func parseBeslutad(raw json.RawMessage) *bool {
+	t := strings.Trim(strings.TrimSpace(string(raw)), `"`)
+	switch strings.ToLower(t) {
+	case "1", "true":
+		v := true
+		return &v
+	case "0", "false":
+		v := false
+		return &v
+	}
+	return nil
 }

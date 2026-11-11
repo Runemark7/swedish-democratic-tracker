@@ -120,6 +120,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	voteHandler := votesHTTP.NewHandler(voteSvc)
 
 	motionSvc := motions.NewService(motionsPG.NewRepository(db), motionsRD.NewClientWithBaseURL(riksdagenBaseURL))
+	motionSvc.SetNow(clk.Now)
 	motionHandler := motionsHTTP.NewHandler(motionSvc)
 
 	goalRepo := goalsPG.NewRepository(db)

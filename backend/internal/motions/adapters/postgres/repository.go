@@ -339,7 +339,7 @@ func (r *Repository) YrkandenHandledIn(ctx context.Context, rm, bet string) ([]p
 
 func (r *Repository) Punkter(ctx context.Context, rm, bet string) ([]domain.Forslagspunkt, error) {
 	rows, err := r.db.Query(ctx, `
-		SELECT punkt, rubrik, forslag_text, beslutstyp, votering_id, alternativ, vinnare
+		SELECT punkt, rubrik, forslag_text, beslutstyp, votering_id, alternativ, vinnare, reasoning
 		FROM forslagspunkter WHERE riksmote = $1 AND beteckning = $2
 		ORDER BY nullif(regexp_replace(punkt, '\D', '', 'g'), '')::int NULLS LAST, punkt`, rm, bet)
 	if err != nil {
@@ -349,7 +349,7 @@ func (r *Repository) Punkter(ctx context.Context, rm, bet string) ([]domain.Fors
 	var out []domain.Forslagspunkt
 	for rows.Next() {
 		var p domain.Forslagspunkt
-		if err := rows.Scan(&p.Number, &p.Rubrik, &p.Text, &p.Beslutstyp, &p.VoteringID, &p.Alternativ, &p.Vinnare); err != nil {
+		if err := rows.Scan(&p.Number, &p.Rubrik, &p.Text, &p.Beslutstyp, &p.VoteringID, &p.Alternativ, &p.Vinnare, &p.Reasoning); err != nil {
 			return nil, err
 		}
 		out = append(out, p)
@@ -545,6 +545,10 @@ func (r *Repository) BackfillWordingHashes(ctx context.Context, after ports.Yrka
 	return written, len(todo), last, nil
 }
 
+func (r *Repository) Statements(ctx context.Context, rm, bet string) ([]domain.Statement, error) {
+	return r.statements(ctx, rm, bet)
+}
+
 func (r *Repository) statements(ctx context.Context, rm, bet string) ([]domain.Statement, error) {
 	rows, err := r.db.Query(ctx, `
 		SELECT kind, nummer, rubrik, punkt, parties, signers, proposal, body
@@ -563,4 +567,120 @@ func (r *Repository) statements(ctx context.Context, rm, bet string) ([]domain.S
 		out = append(out, s)
 	}
 	return out, rows.Err()
+}
+
+func (r *Repository) GetBetankande(ctx context.Context, rm, bet string) (*domain.BetankandeStored, error) {
+	var b domain.BetankandeStored
+	var sd *time.Time
+	err := r.db.QueryRow(ctx, `
+		SELECT riksmote, beteckning, dok_id, title, organ, systemdatum,
+		       html_fetched_at IS NOT NULL, html_has_reasoning, html_has_reservations
+		FROM betankanden WHERE riksmote = $1 AND beteckning = $2 AND found`, rm, bet).
+		Scan(&b.Riksmote, &b.Beteckning, &b.DokID, &b.Title, &b.Organ, &sd,
+			&b.HTMLRead, &b.HasReasoningSection, &b.HasReservationsSection)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, ports.ErrNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	if sd != nil {
+		b.SystemDatum = *sd
+	}
+	return &b, nil
+}
+
+func (r *Repository) PunktMotions(ctx context.Context, rm, bet string) (map[string][]domain.PunktMotion, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT l.punkt, m.dok_id, m.riksmote, m.beteckning, m.title, m.subtyp, l.yrkande_nummer,
+		       COALESCE((SELECT array_agg(s.party ORDER BY s.first)
+		                 FROM (SELECT a.party, min(a.ordning) AS first FROM motion_authors a
+		                       WHERE a.dok_id = m.dok_id AND a.party NOT IN ('', '-') GROUP BY a.party) s), '{}')
+		FROM yrkande_forslagspunkt l JOIN motions m ON m.dok_id = l.motion_dok_id
+		WHERE l.riksmote = $1 AND l.beteckning = $2
+		ORDER BY l.punkt, m.riksmote, nullif(regexp_replace(m.beteckning, '\D', '', 'g'), '')::int NULLS LAST, m.dok_id, l.yrkande_nummer`, rm, bet)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[string][]domain.PunktMotion{}
+	for rows.Next() {
+		var punkt string
+		var m domain.PunktMotion
+		var nr int
+		if err := rows.Scan(&punkt, &m.DokID, &m.Riksmote, &m.Beteckning, &m.Title, &m.Subtyp, &nr, &m.Parties); err != nil {
+			return nil, err
+		}
+		list := out[punkt]
+		if n := len(list); n > 0 && list[n-1].DokID == m.DokID {
+			list[n-1].Yrkanden = append(list[n-1].Yrkanden, nr)
+		} else {
+			m.Yrkanden = []int{nr}
+			list = append(list, m)
+		}
+		out[punkt] = list
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) Ballots(ctx context.Context, voteringID string) ([]domain.Ballot, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT b.politician_id, trim(p.first_name || ' ' || p.last_name), b.party, b.vote_result
+		FROM voteringar v JOIN ballots b ON b.votering_ref = v.id
+		JOIN politicians p ON p.intressent_id = b.politician_id
+		WHERE upper(v.votering_id) = upper($1)
+		ORDER BY b.party, b.politician_id`, voteringID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []domain.Ballot
+	for rows.Next() {
+		var b domain.Ballot
+		if err := rows.Scan(&b.PoliticianID, &b.Name, &b.Party, &b.Result); err != nil {
+			return nil, err
+		}
+		out = append(out, b)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) VoteringPunkter(ctx context.Context, rm, bet string) ([]domain.VoteringPunkt, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT votering_id, forslagspunkt, coalesce(document_title, '')
+		FROM voteringar WHERE session = $1 AND beteckning = $2
+		ORDER BY nullif(regexp_replace(forslagspunkt, '\D', '', 'g'), '')::int NULLS LAST, forslagspunkt, votering_id`, rm, bet)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []domain.VoteringPunkt
+	for rows.Next() {
+		var v domain.VoteringPunkt
+		if err := rows.Scan(&v.VoteringID, &v.Punkt, &v.Title); err != nil {
+			return nil, err
+		}
+		out = append(out, v)
+	}
+	return out, rows.Err()
+}
+
+func (r *Repository) ResolveBetankande(ctx context.Context, bet, punkt, rm string) (string, bool, error) {
+	// Riksmöten written YYYY/YY sort correctly as text.
+	var found *string
+	err := r.db.QueryRow(ctx, `
+		SELECT max(rm) FROM (
+			SELECT riksmote AS rm FROM betankanden WHERE found AND upper(beteckning) = upper($1)
+			  AND ($2 = '' OR EXISTS (SELECT 1 FROM forslagspunkter f WHERE f.riksmote = betankanden.riksmote
+			       AND f.beteckning = betankanden.beteckning AND f.punkt = $2))
+			UNION
+			SELECT session FROM voteringar WHERE upper(beteckning) = upper($1) AND ($2 = '' OR forslagspunkt = $2)
+		) x WHERE ($3 = '' OR rm = $3)`, bet, punkt, rm).Scan(&found)
+	if err != nil {
+		return "", false, err
+	}
+	if found == nil {
+		return "", false, nil
+	}
+	return *found, true, nil
 }

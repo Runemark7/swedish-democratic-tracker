@@ -563,6 +563,76 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /betankanden/resolve:
+    get:
+      operationId: resolveBetankande
+      tags: [motions]
+      summary: Which riksmöte an old betänkande or vote URL belongs to
+      description: >-
+        Backs the redirects. With `punkt` (a vote detail URL) the riksmöte is
+        the votering's own; without `rm` it is the most recent riksmöte that
+        holds the beteckning.
+      parameters:
+        - { name: beteckning, in: query, required: true, schema: { type: string, example: "SkU16" } }
+        - { name: punkt, in: query, required: false, schema: { type: string, example: "6" } }
+        - { name: rm, in: query, required: false, description: "Riksmöte in slash form, 2025/26", schema: { type: string, example: "2025/26" } }
+      responses:
+        "200":
+          description: The canonical riksmöte
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [riksmote, beteckning, punkt]
+                properties:
+                  riksmote: { type: string, example: "2025/26" }
+                  beteckning: { type: string }
+                  punkt: { type: string }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: No betänkande or votering with that beteckning
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /betankanden/{riksmote}/{beteckning}:
+    get:
+      operationId: getBetankande
+      tags: [motions]
+      summary: The canonical betänkande page, keyed by riksmöte + beteckning
+      parameters:
+        - name: riksmote
+          in: path
+          required: true
+          description: >-
+            Riksmöte in slash form, `2025/26`, never `2025-26`. It sits in one
+            path segment, so the slash is URL-encoded as `2025%2F26`.
+          schema:
+            type: string
+            pattern: '^\d{4}/\d{2}$'
+            example: "2025/26"
+        - name: beteckning
+          in: path
+          required: true
+          schema: { type: string, example: "SkU16" }
+      responses:
+        "200":
+          description: The betänkande with every förslagspunkt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BetankandePage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: Not stored, not voted and not listed by Riksdagen
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /votes/recent:
     get:
       operationId: getRecentBetankanden
@@ -1621,6 +1691,89 @@ components:
             number: { type: integer, example: 12 }
             party: { type: string, description: "As in the alternative's wording, e.g. M in 'reservation 12 (M)'" }
             parties: { type: array, items: { type: string }, description: "Parties on the reservation as printed in the betänkande; empty if it could not be read" }
+
+    BetankandePage:
+      type: object
+      required: [riksmote, beteckning, title, organ, dokId, sourceUrl, held, status, decided, decisionDate, decisionText, punkter]
+      properties:
+        riksmote: { type: string, example: "2025/26" }
+        beteckning: { type: string, example: "SkU16" }
+        title: { type: string }
+        organ: { type: string }
+        dokId: { type: string }
+        sourceUrl: { type: string }
+        held: { type: boolean, description: "False when the punkter come from the voteringar alone (betänkande not ingested)" }
+        status: { type: string, description: "Riksdagen's status word, verbatim" }
+        decided:
+          type: boolean
+          nullable: true
+          description: "Riksdagen's decided state (beslutad / status / beslutsdag via Decided()); null when it could not be read. Never derived from our own timestamps."
+        decisionDate: { type: string, description: "beslutsdag, YYYY-MM-DD; the planned date while decided is false" }
+        decisionText: { type: string, description: "'Ej avgjort än' while decided is false; empty otherwise" }
+        punkter:
+          type: array
+          items: { $ref: "#/components/schemas/BetankandePunkt" }
+
+    BetankandePunkt:
+      type: object
+      required: [number, rubrik, text, beslutstyp, mode, modeLabel, alternativ, vinnare, voteringId, voteringStored, parties, avvikare, reasoning, reasoningAvailable, reservationsAvailable, reservations, sarskildaYttranden, votedReservation, motions]
+      properties:
+        number: { type: string }
+        rubrik: { type: string }
+        text: { type: string, description: "The utskott's proposal as served" }
+        beslutstyp: { type: string }
+        mode: { type: string, enum: [acklamation, votering, ej_beslutad, annat] }
+        modeLabel: { type: string }
+        alternativ: { type: string }
+        vinnare: { type: string }
+        voteringId: { type: string }
+        voteringStored: { type: boolean }
+        parties:
+          type: array
+          items: { $ref: "#/components/schemas/PartyPartilinje" }
+        avvikare:
+          type: array
+          description: Members who voted against their Partilinje
+          items:
+            type: object
+            required: [politicianId, name, party, voteResult, partilinje]
+            properties:
+              politicianId: { type: string }
+              name: { type: string }
+              party: { type: string }
+              voteResult: { type: string }
+              partilinje: { type: string }
+        reasoning: { type: string }
+        reasoningAvailable: { type: boolean }
+        reservationsAvailable: { type: boolean }
+        reservations:
+          type: array
+          items: { $ref: "#/components/schemas/BetankandeStatement" }
+        sarskildaYttranden:
+          type: array
+          items: { $ref: "#/components/schemas/BetankandeStatement" }
+        votedReservation:
+          nullable: true
+          type: object
+          required: [number, party, parties]
+          properties:
+            number: { type: integer }
+            party: { type: string }
+            parties: { type: array, items: { type: string } }
+        motions:
+          type: array
+          description: Motions whose yrkanden this punkt decided
+          items:
+            type: object
+            required: [dokId, riksmote, beteckning, title, subtyp, parties, yrkanden]
+            properties:
+              dokId: { type: string }
+              riksmote: { type: string, example: "2017/18" }
+              beteckning: { type: string, example: "3293" }
+              title: { type: string }
+              subtyp: { type: string }
+              parties: { type: array, items: { type: string } }
+              yrkanden: { type: array, items: { type: integer } }
 
     BetankandeStatement:
       type: object
