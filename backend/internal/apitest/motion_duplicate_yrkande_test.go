@@ -33,3 +33,16 @@ func TestMotionUpsertStoresAMotionWithARepeatedYrkandeNumber(t *testing.T) {
 		t.Errorf("stored %d rows (behandlas_i %q), want 1 row from the first listing", n, bet)
 	}
 }
+
+// Two signers with the same ordning must not fail the motion on motion_authors_pkey.
+func TestMotionUpsertStoresAMotionWithARepeatedAuthorOrdning(t *testing.T) {
+	db := OpenDB(t)
+	ctx := context.Background()
+	m := &domain.Motion{
+		DokID: "H102Sk12", Riksmote: "2013/14", Beteckning: "Sk12", Title: "t",
+		Authors: []domain.Author{{Order: 1, Name: "A"}, {Order: 1, Name: "B"}},
+	}
+	if err := postgres.NewRepository(db).Upsert(ctx, m); err != nil {
+		t.Fatalf("upsert: %v", err)
+	}
+}

@@ -58,3 +58,38 @@ func TestYrkandenFromFillsEmptyFieldsFromALaterDuplicate(t *testing.T) {
 		t.Errorf("yrkande 1 = %+v, want behandlas_i of the first row and the decision of the second", got[0])
 	}
 }
+
+// testdata/mot-2013-14-Sk12-H102Sk12.json is /dokumentstatus/H102Sk12.json as
+// Riksdagen served it on 2026-11-11 (wordings cut). Both signers have ordning 1.
+func TestFetchMotionKeepsBothSignersWhenTheyShareAnOrdning(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("testdata", "mot-2013-14-Sk12-H102Sk12.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(raw)
+	}))
+	defer srv.Close()
+
+	m, err := NewClientWithBaseURL(srv.URL).FetchMotion(context.Background(), "H102Sk12")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(m.Authors) != 2 {
+		t.Fatalf("got %d signers, want 2", len(m.Authors))
+	}
+	if m.Authors[0].Order != 1 || m.Authors[1].Order != 2 {
+		t.Errorf("orders = %d, %d, want 1, 2 (listing order)", m.Authors[0].Order, m.Authors[1].Order)
+	}
+	if m.Authors[0].Name != "Thoralf Alfsson" || m.Authors[1].Name != "Josef Fransson" {
+		t.Errorf("signers = %q, %q", m.Authors[0].Name, m.Authors[1].Name)
+	}
+}
+
+func TestAuthorsFromKeepsRiksdagensOrdningWhenUnique(t *testing.T) {
+	got := authorsFrom([]intressent{{Ordning: "2", Namn: "B"}, {Ordning: "1", Namn: "A"}})
+	if got[0].Order != 2 || got[1].Order != 1 {
+		t.Errorf("orders = %d, %d, want 2, 1", got[0].Order, got[1].Order)
+	}
+}
