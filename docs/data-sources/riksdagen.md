@@ -4,7 +4,7 @@ name: Riksdagen Open Data
 kind: api
 upstream: https://data.riksdagen.se
 license: Public domain — Sveriges riksdag
-freshness: "dagligen (cron: politicians @daily, speeches @daily, votes @daily)"
+freshness: "dagligen (cron: politicians @daily, speeches @daily, votes @daily); äldre anföranden via backfill-speeches"
 last_verified: 2026-06-08
 verification_status: verified
 verification_notes: ""

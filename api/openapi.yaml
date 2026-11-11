@@ -1458,6 +1458,31 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Speech"
+  /speeches/backfill:
+    get:
+      operationId: getSpeechBackfill
+      tags: [speeches]
+      summary: Which riksmöten the operator's speech backfill has read in
+      description: >-
+        One row per riksmöte the backfill command has worked on, newest first.
+        `stored`, `linked` and `unlinked` are counted from the stored speeches
+        when read; `linked` means linked to a betänkande by a stated rule.
+        `complete` is true when every speech the lists report is stored with its
+        text and no speaker is missing. The `*Added` fields are the storage the
+        backfill added for the riksmöte, summed over its runs.
+      responses:
+        "200":
+          description: One row per riksmöte, newest first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SpeechBackfill"
   /speeches/{id}:
     get:
       summary: Single speech by id (full text)
@@ -1819,6 +1844,24 @@ components:
         expected: { type: integer, description: "Total Riksdagen's listing reports (@traffar)" }
         held: { type: integer, description: "Motions we hold for the riksmöte, counted at read time" }
         lastEnumeratedAt: { type: string, format: date-time }
+
+    SpeechBackfill:
+      type: object
+      required: [riksmote, expected, stored, linked, unlinked, textBytes, rowsAdded, tableBytesAdded, indexBytesAdded, politiciansCreated, unresolvedSpeakers, complete, completedAt]
+      properties:
+        riksmote: { type: string, example: "2017/18" }
+        expected: { type: integer, description: "Speeches the lists report for the riksmöte" }
+        stored: { type: integer, description: "Speeches of the riksmöte we hold" }
+        linked: { type: integer, description: "Stored speeches linked to a betänkande" }
+        unlinked: { type: integer, description: "Stored speeches no betänkande could be named for" }
+        textBytes: { type: integer, format: int64, description: "Bytes of speech text stored for the riksmöte" }
+        rowsAdded: { type: integer, description: "Speech rows the backfill added" }
+        tableBytesAdded: { type: integer, format: int64, description: "Growth of the speeches table (heap and TOAST) while the riksmöte was read in" }
+        indexBytesAdded: { type: integer, format: int64, description: "Growth of the speeches indexes while the riksmöte was read in" }
+        politiciansCreated: { type: integer, description: "Speakers created from Riksdagen's person data" }
+        unresolvedSpeakers: { type: integer, description: "Speakers Riksdagen has no person for; their speeches are not stored" }
+        complete: { type: boolean }
+        completedAt: { type: string, format: date-time, nullable: true }
 
     MotionBackfill:
       type: object

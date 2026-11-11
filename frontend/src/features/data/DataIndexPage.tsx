@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { motionsApi } from "@/features/motions/api";
+import { speechesApi } from "@/features/speeches/api";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SOURCES, type SourceKind } from "@/components/sources/SourceRegistry";
@@ -68,6 +69,53 @@ function MotionCoverage({ isMobile }: { isMobile: boolean }) {
                 <td>{rm}</td>
                 <td>{cell(rm, "motioner")}</td>
                 <td>{cell(rm, "betankanden")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+}
+
+/** Which riksmöten the speech backfill has read in: speeches stored, linked to a betänkande, not linked. */
+function SpeechCoverage({ isMobile }: { isMobile: boolean }) {
+  const { data } = useQuery({ queryKey: ["speeches-backfill"], queryFn: () => speechesApi.backfill() });
+  const rows = data?.data ?? [];
+  return (
+    <section
+      data-testid="speech-coverage"
+      style={{ margin: isMobile ? "0 14px 28px" : "0 32px 28px", border: "1px solid var(--color-border)", padding: isMobile ? 14 : 20 }}
+    >
+      <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 20, fontWeight: 400, margin: "0 0 4px" }}>
+        Täckning: anföranden
+      </h2>
+      <p style={{ fontSize: 12, color: "var(--color-fg-muted)", margin: "0 0 12px" }}>
+        Anföranden som är inlästa per riksmöte <SourceMarker sourceId="speeches-backfill" />. Okopplade
+        anföranden hör till ett ärende vi inte kunnat peka ut; de finns kvar på ledamotens sida.
+        Äldre riksmöten läses in av en operatör, ett riksmöte i taget.
+      </p>
+      {rows.length === 0 ? (
+        <p data-testid="speech-coverage-empty" style={{ fontSize: 13 }}>Inga äldre riksmöten är inlästa än.</p>
+      ) : (
+        <table style={{ fontSize: 12, borderCollapse: "collapse", width: "100%" }}>
+          <thead>
+            <tr style={{ textAlign: "left", color: "var(--color-fg-muted)" }}>
+              <th>Riksmöte</th>
+              <th>Status</th>
+              <th>Hämtade</th>
+              <th>Kopplade</th>
+              <th>Okopplade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.riksmote} data-testid="speech-coverage-row">
+                <td>{r.riksmote}</td>
+                <td>{r.complete ? "klar" : "delvis"}</td>
+                <td>{r.stored} av {r.expected}</td>
+                <td>{r.linked}</td>
+                <td>{r.unlinked}</td>
               </tr>
             ))}
           </tbody>
@@ -200,6 +248,7 @@ export function DataIndexPage() {
         ))}
       </div>
       <MotionCoverage isMobile={isMobile} />
+      <SpeechCoverage isMobile={isMobile} />
     </div>
   );
 }
