@@ -249,6 +249,9 @@ func (c *Client) FindBetankande(ctx context.Context, rm, bet string) (ports.Beta
 				Status      string          `json:"status"`
 				Beslutsdag  string          `json:"beslutsdag"`
 				Beslutad    json.RawMessage `json:"beslutad"`
+				Sokdata     struct {
+					Statusrad string `json:"statusrad"`
+				} `json:"sokdata"`
 			}] `json:"dokument"`
 		} `json:"dokumentlista"`
 	}
@@ -260,6 +263,7 @@ func (c *Client) FindBetankande(ctx context.Context, rm, bet string) (ports.Beta
 			return ports.BetankandeRef{
 				DokID: d.DokID, SystemDatum: parseTime(d.Systemdatum), Title: d.Titel, Status: d.Status,
 				DecisionDate: d.Beslutsdag, ChamberDecided: parseBeslutad(d.Beslutad),
+				DebateDate: parseDebateDate(d.Sokdata.Statusrad),
 			}, true, nil
 		}
 	}
@@ -310,6 +314,23 @@ func (c *Client) ListBetankanden(ctx context.Context, rm string, page, size int)
 		})
 	}
 	return out, total, nil
+}
+
+var debateDateRe = regexp.MustCompile(`<dt>\s*Debatt\s*</dt>\s*<dd>\s*(\d{4}-\d{2}-\d{2})`)
+
+// parseDebateDate reads the "Debatt" date out of a listing row's statusrad
+// (HTML: <dt>Debatt</dt> <dd>2018-03-22</dd>). It returns the zero time when
+// the row has none.
+func parseDebateDate(statusrad string) time.Time {
+	m := debateDateRe.FindStringSubmatch(statusrad)
+	if m == nil {
+		return time.Time{}
+	}
+	t, err := time.Parse("2006-01-02", m[1])
+	if err != nil {
+		return time.Time{}
+	}
+	return t
 }
 
 // FetchBetankande reads /dokumentstatus/{dok_id}.json and its

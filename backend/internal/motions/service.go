@@ -86,6 +86,7 @@ func (s *Service) SyncBetankande(ctx context.Context, ref ports.BetRef) (found b
 	}
 	// Store under the key the yrkanden use, whatever case Riksdagen answered.
 	b.Riksmote, b.Beteckning = ref.Riksmote, ref.Beteckning
+	b.DebateDate = hit.DebateDate
 	if err := s.repo.SaveBetankande(ctx, b); err != nil {
 		return false, err
 	}

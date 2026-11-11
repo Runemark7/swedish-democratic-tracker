@@ -15,6 +15,18 @@ type SpeechesWorker struct {
 	svc      *speeches.Service
 	cursors  ports.CursorRepository
 	mandates ports.MandatePeriodReader
+	now      func() time.Time
+}
+
+// SetNow pins the clock the riksmöte list is derived from. The scheduler
+// stores a copy of the worker, so set this before registration.
+func (w *SpeechesWorker) SetNow(now func() time.Time) { w.now = now }
+
+func (w SpeechesWorker) at() time.Time {
+	if w.now != nil {
+		return w.now()
+	}
+	return time.Now()
 }
 
 func NewSpeechesWorker(svc *speeches.Service, cursors ports.CursorRepository) SpeechesWorker {
@@ -41,7 +53,7 @@ func (w *SpeechesWorker) Run(ctx context.Context) error {
 	if cur, err := w.cursors.Get(ctx, "speeches"); err == nil && cur != nil && cur.LastDate != nil {
 		since = *cur.LastDate
 	}
-	sessions := w.sessions(ctx, since, time.Now().UTC())
+	sessions := w.sessions(ctx, since, w.at().UTC())
 	sinceLabel := "none"
 	if !since.IsZero() {
 		sinceLabel = since.Format("2006-01-02")

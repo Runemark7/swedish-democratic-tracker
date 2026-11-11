@@ -1308,6 +1308,8 @@ export interface components {
             betankandeBeteckning: string;
             betankandeTitle: string;
             betankandeSourceUrl: string;
+            /** @description The chamber debate on the betänkande that decided the yrkande */
+            debate: components["schemas"]["Debate"] | null;
             /** @example 6 */
             punkt: string;
             /** @example Övriga frågor */
@@ -1368,6 +1370,34 @@ export interface components {
             /** @description 'Ej avgjort än' while decided is false; empty otherwise */
             decisionText: string;
             punkter: components["schemas"]["BetankandePunkt"][];
+            /** @description The chamber debate on this betänkande: the anföranden linked to it. Empty (total 0) when none are linked. */
+            debate: components["schemas"]["Debate"];
+        };
+        /** @description The anföranden linked to a betänkande (by rel_dok_id, otherwise by avsnittsrubrik and protocol date; a speech neither matches stays unlinked), in speaking order. `total` can exceed the speeches listed. */
+        Debate: {
+            /** @description Date of the first linked speech, YYYY-MM-DD; null without speeches */
+            date: string | null;
+            total: number;
+            speeches: components["schemas"]["DebateSpeech"][];
+        };
+        DebateSpeech: {
+            /** @description Our id; the full speech is at /anforanden/{speechId} */
+            speechId: number;
+            politicianId: string;
+            name: string;
+            party: string;
+            /** @description Protocol date, YYYY-MM-DD */
+            date: string;
+            /** @description Start of the speech as plain text (at most 240 characters); empty while the text has not been fetched */
+            excerpt: string;
+            excerptAvailable: boolean;
+            /** @description The speech on data.riksdagen.se */
+            riksdagenUrl: string;
+            /**
+             * @description The rule that tied the speech to the betänkande
+             * @enum {string}
+             */
+            linkRule: "rel_dok_id" | "avsnittsrubrik_datum";
         };
         BetankandePunkt: {
             number: string;

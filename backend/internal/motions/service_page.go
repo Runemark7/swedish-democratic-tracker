@@ -162,3 +162,11 @@ func (s *Service) fillVotes(ctx context.Context, v *PunktView) error {
 func (s *Service) Resolve(ctx context.Context, bet, punkt, rm string) (string, bool, error) {
 	return s.repo.ResolveBetankande(ctx, bet, punkt, rm)
 }
+
+// DebateLimit caps the speeches returned for one debate.
+const DebateLimit = 300
+
+// Debate reads the speeches linked to a betänkande, by its dok_id.
+func (s *Service) Debate(ctx context.Context, betDokID string) (*domain.Debate, error) {
+	return s.repo.Debate(ctx, betDokID, DebateLimit)
+}

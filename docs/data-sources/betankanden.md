@@ -50,6 +50,7 @@ Reservationer, särskilda yttranden och "Utskottets ställningstagande" finns ba
   - `vinnare` — vilket förslag som vann.
 - `dokumentlista.dokument` (`status`, `beslutsdag`, `beslutad`) — betänkandets beslutsstatus och beslutsdag. Läses vid varje visning av betänkandesidan, aldrig sparat, så att sidan inte hamnar efter när kammaren beslutar.
 - `dokumentlista` per riksmöte (`doktyp=bet&rm=2026/27&sz=200&sort=datum&sortorder=desc`) — en rad per betänkande med `organ`, `titel`, `status`, `beslutsdag`, `beslutad` och `datum`. Listan över beslut (`/beslut`) bygger på de här raderna. Till skillnad från betänkandesidan sparas de, i tabellen `beslut_listing`, och skrivs över vid varje körning; "avgjort" räknas ut från de sparade fälten med samma regel som betänkandesidan (`beslutad`, annars `status` och `beslutsdag`) och sparas aldrig som ett eget värde.
+- `dokumentlista.dokument.sokdata.statusrad` — raden `<dt>Debatt</dt> <dd>2018-03-22</dd>` ger debattdagen. Den sparas och används för att koppla anföranden som saknar `rel_dok_id` (se källan Riksdagen Open Data).
 - Motionens `dokforslag.forslag.behandlas_i` och `behandlas_i_punkt` (se källan Motioner).
 
 ## Begränsningar och kända problem

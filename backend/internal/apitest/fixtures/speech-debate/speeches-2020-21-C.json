@@ -1,0 +1,21 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2020/21",
+  "parti": "C",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforandelista/?rm=2020/21&parti=C&iid=&sz=10000&anftyp=Akt&utformat=json",
+ "note": "Recorded 2026-11-11 (967 rows live). Reduced to no rows: the worker also asks for the previous riksmöte, and no test needs its speeches.",
+ "body": {
+  "anforandelista": {
+   "@antal": "0",
+   "anforande": []
+  }
+ }
+}

@@ -31,6 +31,8 @@ type betankandeResponse struct {
 	DecisionDate string          `json:"decisionDate"`
 	DecisionText string          `json:"decisionText"`
 	Punkter      []punktResponse `json:"punkter"`
+	// Debate is the chamber debate: the anföranden linked to this betänkande.
+	Debate *debateResponse `json:"debate"`
 }
 
 type avvikareResponse struct {
@@ -103,6 +105,11 @@ func (h *Handler) getBetankande(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, v := range p.Punkter {
 		out.Punkter = append(out.Punkter, toPunkt(p, v))
+	}
+	deb := &debates{read: h.svc.Debate, cache: map[string]*debateResponse{}}
+	if out.Debate, err = deb.get(r.Context(), p.DokID); err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	jsonOK(w, out)
 }

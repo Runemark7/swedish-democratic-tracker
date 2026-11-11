@@ -86,6 +86,10 @@ type decisionResponse struct {
 	// VoteringStored is true when we hold the ballots of the votering.
 	VoteringStored bool            `json:"voteringStored"`
 	Parties        []partyResponse `json:"parties"`
+	// Debate is the chamber debate on the betänkande that decided this
+	// yrkande (the speeches linked to it); null when the betänkande is not
+	// known.
+	Debate *debateResponse `json:"debate"`
 
 	// Reasoning is the utskott's own text (Utskottets ställningstagande) for
 	// this punkt, from the betänkande HTML. ReasoningAvailable is false when
@@ -199,6 +203,17 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp := toResponse(m, decisions)
+	deb := &debates{read: h.svc.Debate, cache: map[string]*debateResponse{}}
+	for i := range resp.Yrkanden {
+		for j := range resp.Yrkanden[i].Decisions {
+			dr, err := deb.get(r.Context(), decisionDokID(decisions, resp.Yrkanden[i].Number, j))
+			if err != nil {
+				jsonError(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			resp.Yrkanden[i].Decisions[j].Debate = dr
+		}
+	}
 	for i, y := range m.Yrkanden {
 		rec, err := h.svc.Recurring(r.Context(), m.DokID, y)
 		if err != nil {
@@ -397,4 +412,20 @@ func toStatement(s domain.Statement) statementResponse {
 		r.Signers = []string{}
 	}
 	return r
+}
+
+// decisionDokID is the betänkande dok_id of the j:th decision of a yrkande,
+// in the order toResponse lists them.
+func decisionDokID(decisions []domain.YrkandeDecision, number, j int) string {
+	n := 0
+	for _, d := range decisions {
+		if d.YrkandeNumber != number {
+			continue
+		}
+		if n == j {
+			return d.BetDokID
+		}
+		n++
+	}
+	return ""
 }

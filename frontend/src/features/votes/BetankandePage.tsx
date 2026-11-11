@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { betankandeApi, type BetankandePage as Page, type BetankandePunkt } from "./betankandeApi";
@@ -7,8 +7,7 @@ import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { motionPath } from "@/features/motions/api";
 import { Reasoning, Reservations, VotedAlternative } from "@/features/motions/DecisionParts";
-import { useSpeechesByDocument } from "@/hooks/useDemocracy";
-import { SpeechRow } from "@/features/speeches/SpeechRow";
+import { Debate } from "@/features/motions/Debate";
 
 function Notice({ children }: { children: React.ReactNode }) {
   return (
@@ -153,8 +152,6 @@ export function BetankandePage() {
     queryFn: () => betankandeApi.get(riksmote, beteckning),
     retry: false,
   });
-  const { data: speeches } = useSpeechesByDocument(data?.dokId || undefined);
-  const [all, setAll] = useState(false);
 
   useEffect(() => {
     if (data && hash) document.getElementById(hash.slice(1))?.scrollIntoView();
@@ -186,21 +183,7 @@ export function BetankandePage() {
         )}
       </div>
 
-      <section className="mt-8">
-        <h2 className="text-xs uppercase tracking-wider text-on-surface-variant">
-          Debatten{speeches && speeches.length > 0 ? ` · ${speeches.length} talare` : ""}
-        </h2>
-        {(!speeches || speeches.length === 0) ? (
-          <p className="text-sm italic text-on-surface-variant">Inga anföranden registrerade här.</p>
-        ) : (
-          <>
-            {(all ? speeches : speeches.slice(0, 5)).map((s) => <SpeechRow key={s.id} speech={s} />)}
-            {speeches.length > 5 && !all ? (
-              <button className="mt-2 text-xs text-link" onClick={() => setAll(true)}>Visa alla {speeches.length} anföranden →</button>
-            ) : null}
-          </>
-        )}
-      </section>
+      <div className="mt-8"><Debate debate={data.debate} /></div>
     </div>
   );
 }

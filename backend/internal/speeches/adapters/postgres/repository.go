@@ -3,11 +3,13 @@ package postgres
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"riksdagskollen/internal/speeches/domain"
+	"riksdagskollen/internal/speeches/ports"
 )
 
 type Repository struct {
@@ -46,8 +48,9 @@ func (r *Repository) UpsertMany(ctx context.Context, ss []*domain.Speech) error 
 		SELECT $1, $2, $3, $4, $5, $6, $7, $8
 		WHERE EXISTS (SELECT 1 FROM politicians WHERE intressent_id = $3)
 		ON CONFLICT (dok_id, anforande_nummer) DO UPDATE SET
-			topic_heading = EXCLUDED.topic_heading,
-			speech_text   = EXCLUDED.speech_text`
+			topic_heading  = EXCLUDED.topic_heading,
+			speech_text    = EXCLUDED.speech_text,
+			related_dok_id = COALESCE(NULLIF(EXCLUDED.related_dok_id, ''), speeches.related_dok_id)`
 
 	batch := &pgx.Batch{}
 	for _, s := range ss {
@@ -178,4 +181,67 @@ func scanSpeeches(rows pgx.Rows) ([]*domain.Speech, error) {
 		ss = append(ss, s)
 	}
 	return ss, rows.Err()
+}
+
+// DebateCandidates lists the stored betänkanden that have a debate date.
+func (r *Repository) DebateCandidates(ctx context.Context) ([]domain.DebateCandidate, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT dok_id, title, debate_date
+		FROM betankanden
+		WHERE found AND dok_id <> '' AND debate_date IS NOT NULL`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []domain.DebateCandidate
+	for rows.Next() {
+		var c domain.DebateCandidate
+		var d time.Time
+		if err := rows.Scan(&c.DokID, &c.Title, &d); err != nil {
+			return nil, err
+		}
+		c.DebateDate = d
+		out = append(out, c)
+	}
+	return out, rows.Err()
+}
+
+// ListForLinking reads at most limit speeches with id > afterID, in id order.
+func (r *Repository) ListForLinking(ctx context.Context, afterID, limit int) ([]ports.LinkRow, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT id, coalesce(related_dok_id, ''), coalesce(topic_heading, ''), date,
+		       coalesce(betankande_dok_id, ''), coalesce(betankande_link_rule, '')
+		FROM speeches WHERE id > $1 ORDER BY id LIMIT $2`, afterID, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []ports.LinkRow
+	for rows.Next() {
+		var l ports.LinkRow
+		if err := rows.Scan(&l.ID, &l.RelatedDokID, &l.TopicHeading, &l.Date, &l.CurrentDokID, &l.CurrentRule); err != nil {
+			return nil, err
+		}
+		out = append(out, l)
+	}
+	return out, rows.Err()
+}
+
+// SetLinks writes the links in one batch. An empty DokID clears the link.
+func (r *Repository) SetLinks(ctx context.Context, links []ports.LinkUpdate) error {
+	batch := &pgx.Batch{}
+	for _, l := range links {
+		batch.Queue(`
+			UPDATE speeches
+			SET betankande_dok_id = NULLIF($2, ''), betankande_link_rule = NULLIF($3, ''), betankande_linked_at = now()
+			WHERE id = $1`, l.ID, l.DokID, l.Rule)
+	}
+	br := r.db.SendBatch(ctx, batch)
+	defer br.Close()
+	for range links {
+		if _, err := br.Exec(); err != nil {
+			return err
+		}
+	}
+	return br.Close()
 }

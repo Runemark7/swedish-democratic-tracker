@@ -11,7 +11,9 @@ type Betankande struct {
 	Title       string
 	Organ       string
 	SystemDatum time.Time
-	Punkter     []Forslagspunkt
+	// DebateDate is the day the chamber debated it; zero when unknown.
+	DebateDate time.Time
+	Punkter    []Forslagspunkt
 }
 
 // Forslagspunkt is one numbered decision point of a betänkande.

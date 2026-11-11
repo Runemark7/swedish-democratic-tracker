@@ -235,6 +235,7 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	freshnessRepo := ingestionPG.NewFreshnessRepository(db)
 	pollWorker := workers.NewPoliticiansWorker(polSvc)
 	speechWorker := workers.NewSpeechesWorker(speechSvc, cursorRepo).WithMandates(ingestionPG.NewMandateRepository(db))
+	speechWorker.SetNow(clk.Now)
 	enrichSpeechesWorker := workers.NewEnrichSpeechesWorker(speechSvc, 200)
 	voteWorker := workers.NewVotesWorker(voteSvc, cursorRepo)
 	voteWorker.SetNow(clk.Now)
@@ -276,6 +277,11 @@ func NewRouter(db *pgxpool.Pool, writeToken, riksdagenBaseURL string) (*Router, 
 	}
 	if err := sched.RegisterSync("@daily", &enrichSpeechesWorker); err != nil {
 		slog.Error("failed to register enrich-speech-text worker", "error", err)
+		return nil, err
+	}
+	linkSpeechesWorker := workers.NewLinkSpeechesWorker(speechSvc)
+	if err := sched.RegisterSync("@daily", &linkSpeechesWorker); err != nil {
+		slog.Error("failed to register link-speeches worker", "error", err)
 		return nil, err
 	}
 	if err := sched.RegisterSync("@weekly", &agencyIntelWorker); err != nil {

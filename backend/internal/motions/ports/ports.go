@@ -57,6 +57,9 @@ type BetankandeRef struct {
 	Status         string
 	DecisionDate   string
 	ChamberDecided *bool
+	// DebateDate is the "Debatt" date of the listing's statusrad; zero when the
+	// betänkande was not debated (or has no date yet).
+	DebateDate time.Time
 }
 
 // BetRef names a betänkande some yrkande points at.
@@ -139,6 +142,9 @@ type Repository interface {
 	Ballots(ctx context.Context, voteringID string) ([]domain.Ballot, error)
 	// VoteringPunkter lists the voteringar we hold for a riksmöte + beteckning.
 	VoteringPunkter(ctx context.Context, rm, bet string) ([]domain.VoteringPunkt, error)
+	// Debate reads at most limit speeches linked to the betänkande with this
+	// dok_id, in speaking order, and how many are linked in all.
+	Debate(ctx context.Context, betDokID string, limit int) (*domain.Debate, error)
 	// ResolveBetankande finds the riksmöte for a beteckning (and, with punkt,
 	// a votering's riksmöte). rm, when given, is taken as is if it exists;
 	// otherwise the most recent riksmöte holding it wins.
