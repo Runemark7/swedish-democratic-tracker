@@ -143,17 +143,38 @@ func (c *Client) FetchMotion(ctx context.Context, dokID string) (*domain.Motion,
 			break
 		}
 	}
-	for i, a := range payload.Status.Intressenter.Intressent {
-		order, err := strconv.Atoi(a.Ordning)
+	m.Authors = authorsFrom(payload.Status.Intressenter.Intressent)
+	m.Yrkanden = yrkandenFrom(payload.Status.Forslag.Forslag)
+	return m, nil
+}
+
+// authorsFrom turns Riksdagen's intressent rows into signers. Some motions
+// (e.g. 2013/14:Sk12) give two signers the same ordning; motion_authors is
+// keyed on (dok_id, ordning), so then every signer is numbered by its place in
+// the listing instead. No signer is dropped.
+func authorsFrom(rows []intressent) []domain.Author {
+	out := make([]domain.Author, 0, len(rows))
+	seen := map[int]bool{}
+	repeated := false
+	for i, a := range rows {
+		order, err := strconv.Atoi(strings.TrimSpace(a.Ordning))
 		if err != nil {
 			order = i + 1
 		}
-		m.Authors = append(m.Authors, domain.Author{
+		if seen[order] {
+			repeated = true
+		}
+		seen[order] = true
+		out = append(out, domain.Author{
 			Order: order, PoliticianID: a.IntressentID, Name: a.Namn, Party: a.Partibet, Role: a.Roll,
 		})
 	}
-	m.Yrkanden = yrkandenFrom(payload.Status.Forslag.Forslag)
-	return m, nil
+	if repeated {
+		for i := range out {
+			out[i].Order = i + 1
+		}
+	}
+	return out
 }
 
 // yrkandenFrom turns Riksdagen's förslag rows into one Yrkande per number.

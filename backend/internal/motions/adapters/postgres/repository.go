@@ -46,7 +46,8 @@ func (r *Repository) Upsert(ctx context.Context, m *domain.Motion) error {
 	for _, a := range m.Authors {
 		if _, err := tx.Exec(ctx, `
 			INSERT INTO motion_authors (dok_id, ordning, intressent_id, name, party, role)
-			VALUES ($1,$2,$3,$4,$5,$6)`,
+			VALUES ($1,$2,$3,$4,$5,$6)
+			ON CONFLICT (dok_id, ordning) DO NOTHING`,
 			m.DokID, a.Order, a.PoliticianID, a.Name, a.Party, a.Role); err != nil {
 			return err
 		}
