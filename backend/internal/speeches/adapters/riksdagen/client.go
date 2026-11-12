@@ -1,9 +1,12 @@
 package riksdagen
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -115,15 +118,38 @@ func (c *Client) FetchSpeechText(ctx context.Context, dokID, anforandeNummer str
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("riksdagen speech text returned %d", resp.StatusCode)
 	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return parseSpeechTextBody(body)
+}
+
+// parseSpeechTextBody reads anförandetext from a JSON body, or from the XML
+// document Riksdagen sometimes serves on the .json URL (the body then starts
+// with '<', and json.Decoder fails with invalid character '<'). An HTML error
+// page or other markup without anförandetext is treated as unavailable
+// (empty, no error) so a backfill can finish instead of retrying forever.
+// Non-markup garbage still returns a decode error so a flaky response is retried.
+func parseSpeechTextBody(body []byte) (string, error) {
+	trim := bytes.TrimSpace(body)
 	var payload struct {
 		Anforande struct {
 			Anforandetext string `json:"anforandetext"`
 		} `json:"anforande"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
+	if err := json.Unmarshal(trim, &payload); err == nil {
+		return payload.Anforande.Anforandetext, nil
+	} else if len(trim) == 0 || trim[0] != '<' {
 		return "", fmt.Errorf("decode speech text: %w", err)
 	}
-	return payload.Anforande.Anforandetext, nil
+	var xmlPayload struct {
+		Anforandetext string `xml:"anforandetext"`
+	}
+	if err := xml.Unmarshal(trim, &xmlPayload); err == nil {
+		return xmlPayload.Anforandetext, nil
+	}
+	return "", nil
 }
 
 // riksmoteOf is the riksmöte the protocol names, or the one asked for when the
