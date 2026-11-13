@@ -14,9 +14,20 @@ type ListVotesFilter struct {
 	PageSize     int
 }
 
+// PoliticianVoteSummary counts every ballot of a member in scope (all of
+// their history, or one riksmöte when filtered) — never just the page returned.
+type PoliticianVoteSummary struct {
+	Ja          int `json:"ja"`
+	Nej         int `json:"nej"`
+	Avstar      int `json:"avstar"`
+	Franvarande int `json:"franvarande"`
+	Total       int `json:"total"`
+}
+
 type ListVotesResult struct {
-	Votes []*domain.Vote
-	Total int
+	Votes   []*domain.Vote
+	Total   int
+	Summary PoliticianVoteSummary
 }
 
 // VoteSummary is a lightweight projection for the decision feed and matching

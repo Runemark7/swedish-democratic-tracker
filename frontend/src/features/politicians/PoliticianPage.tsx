@@ -360,10 +360,16 @@ export function PoliticianPage() {
   const pc = PARTY_COLORS[politician.party];
   const votes = votesData?.data ?? [];
 
-  const ja = votes.filter((v) => v.voteResult === "Ja").length;
-  const nej = votes.filter((v) => v.voteResult === "Nej").length;
-  const avstar = votes.filter((v) => v.voteResult === "Avstår").length;
-  const franvarande = votes.filter((v) => v.voteResult === "Frånvarande").length;
+  // Counts come from the server's aggregate over the member's whole recorded
+  // history — the list above is capped at 100 rows and must not be counted.
+  const summary = votesData?.summary;
+  const ja = summary?.ja ?? 0;
+  const nej = summary?.nej ?? 0;
+  const avstar = summary?.avstar ?? 0;
+  const franvarande = summary?.franvarande ?? 0;
+  const totalVotes = summary?.total ?? 0;
+  const pct = (n: number) =>
+    totalVotes > 0 ? `${((n / totalVotes) * 100).toFixed(1).replace(".", ",")} %` : "";
 
   return (
     <div>
@@ -402,7 +408,7 @@ export function PoliticianPage() {
         </div>
 
         {/* Stats row */}
-        {votes.length > 0 && (
+        {totalVotes > 0 && (
           <div className="flex gap-6 mt-5 pt-4" style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
             {[
               { label: "Ja", value: ja, color: "#16a34a" },
@@ -415,6 +421,7 @@ export function PoliticianPage() {
                   {s.value}
                   <SourceMarker sourceId="riksdagen" />
                 </div>
+                <div className="text-[11px] text-on-surface-variant">{pct(s.value)}</div>
                 <div className="text-[10px] text-on-surface-variant uppercase tracking-widest">
                   {s.label}
                 </div>
@@ -422,12 +429,16 @@ export function PoliticianPage() {
             ))}
             <div className="text-center">
               <div className="font-mono font-extrabold text-lg text-on-surface">
-                {votes.length}
+                {totalVotes}
                 <SourceMarker sourceId="riksdagen" />
               </div>
               <div className="text-[10px] text-on-surface-variant uppercase tracking-widest">
                 Totalt
               </div>
+            </div>
+            <div className="text-[11px] text-on-surface-variant self-center">
+              Gäller alla {totalVotes} röstningar i registret (hela ledamotens registrerade
+              historik), inte bara de senaste som listas nedan.
             </div>
           </div>
         )}

@@ -2738,6 +2738,14 @@ export interface components {
         VoteListResponse: {
             data: components["schemas"]["Vote"][];
             total: number;
+            /** @description Counts over every ballot of the member in scope (all recorded history, or the riksmöte given by `session`) — independent of page and pageSize. Only returned by /politicians/{id}/votes. */
+            summary?: {
+                ja: number;
+                nej: number;
+                avstar: number;
+                franvarande: number;
+                total: number;
+            };
             page: number;
             pageSize: number;
         };
