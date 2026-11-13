@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import App from "./App";
+import { retryDelayMs, shouldRetry } from "./shared/api-errors";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { MyPartyProvider } from "./contexts/MyPartyContext";
 
@@ -11,7 +12,9 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000,
-      retry: 2,
+      // Temporary failures (429, 5xx, network) get two more attempts; a 404 none.
+      retry: shouldRetry,
+      retryDelay: retryDelayMs,
     },
   },
 });
