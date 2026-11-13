@@ -757,6 +757,17 @@ paths:
           schema:
             type: string
             example: "2026/27:SkU2"
+        - name: mandatperiod
+          in: query
+          description: >
+            Only Löften of this mandate period, written as its code
+            (2022-2026, 2026-2030). Left out, every period is returned. It
+            combines freely with party, utskott and status; a period without
+            Löften gives an empty list.
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{4}$'
+            example: "2026-2030"
         - name: status
           in: query
           description: Filter by Löftesstatus; "arkiv" selects archived Löften (no status)
@@ -773,13 +784,24 @@ paths:
                 items:
                   $ref: "#/components/schemas/LoefteMedStatus"
         "400":
-          description: Invalid party, utskott or status
+          description: Invalid party, utskott, mandatperiod or status
 
   /loften/summary:
     get:
       operationId: getLoftenSummary
       tags: [loften]
       summary: Per party, how many public Löften have each Löftesstatus
+      parameters:
+        - name: mandatperiod
+          in: query
+          description: >
+            Only Löften of this mandate period, written as its code
+            (2022-2026, 2026-2030). Left out, every period is returned. A
+            party without Löften in the period has no row.
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{4}$'
+            example: "2026-2030"
       responses:
         "200":
           description: One row per party
@@ -789,6 +811,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/LoftePartySummary"
+        "400":
+          description: Invalid mandatperiod
 
   /loften/{id}/kopplingar:
     get:
@@ -862,6 +886,13 @@ paths:
       summary: Public Löften for one party
       parameters:
         - $ref: "#/components/parameters/PartyParam"
+        - name: mandatperiod
+          in: query
+          description: Only Löften of this mandate period (2022-2026, 2026-2030); left out, every period.
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{4}$'
+            example: "2026-2030"
       responses:
         "200":
           description: Public Löften

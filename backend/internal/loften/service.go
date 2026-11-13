@@ -47,6 +47,23 @@ type Filter struct {
 	// Betankande is "riksmöte:beteckning": only Löften with a Bekräftad
 	// koppling to that betänkande.
 	Betankande string
+	// Mandatperiod is a mandate period code such as "2026-2030". It is
+	// independent of Status: any period combines with any Löftesstatus.
+	Mandatperiod string
+}
+
+// inPeriod keeps the Löften of one mandate period ("" = every period).
+func inPeriod(ls []*domain.Loefte, period string) []*domain.Loefte {
+	if period == "" {
+		return ls
+	}
+	kept := ls[:0]
+	for _, l := range ls {
+		if l.MandatePeriod == period {
+			kept = append(kept, l)
+		}
+	}
+	return kept
 }
 
 func (s *Service) views(ctx context.Context, ls []*domain.Loefte, withKopplingar bool) ([]*domain.LoefteView, error) {
@@ -102,7 +119,7 @@ func (s *Service) views(ctx context.Context, ls []*domain.Loefte, withKopplingar
 }
 
 // ListWithStatus lists public Löften with Löftesstatus, filtered by party,
-// utskott and status.
+// utskott, mandatperiod and status.
 func (s *Service) ListWithStatus(ctx context.Context, f Filter) ([]*domain.LoefteView, error) {
 	want, ok := statusSlugs[f.Status]
 	if f.Status != "" && f.Status != "arkiv" && !ok {
@@ -112,6 +129,7 @@ func (s *Service) ListWithStatus(ctx context.Context, f Filter) ([]*domain.Loeft
 	if err != nil {
 		return nil, err
 	}
+	ls = inPeriod(ls, f.Mandatperiod)
 	if f.Utskott != "" {
 		kept := ls[:0]
 		for _, l := range ls {
@@ -189,12 +207,15 @@ func (s *Service) Koppling(ctx context.Context, id int) (*domain.KopplingView, e
 	return nil, nil
 }
 
-// Summary counts public Löften per party and Löftesstatus, in party order.
-func (s *Service) Summary(ctx context.Context) ([]domain.PartySummary, error) {
+// Summary counts public Löften per party and Löftesstatus, in party order,
+// for one mandate period ("" = every period). A party without Löften in the
+// period has no row.
+func (s *Service) Summary(ctx context.Context, period string) ([]domain.PartySummary, error) {
 	ls, err := s.repo.ListPublic(ctx, "")
 	if err != nil {
 		return nil, err
 	}
+	ls = inPeriod(ls, period)
 	vs, err := s.views(ctx, ls, false)
 	if err != nil {
 		return nil, err
@@ -248,7 +269,7 @@ func (s *Service) ForBetankanden(ctx context.Context, keys []string) (map[string
 // PartyTiles summarises Löftesstatus for all eight parties, always in
 // alphabetical order of party code and with zeros for a party without Löften.
 func (s *Service) PartyTiles(ctx context.Context) ([]domain.PartySummary, error) {
-	sum, err := s.Summary(ctx)
+	sum, err := s.Summary(ctx, "")
 	if err != nil {
 		return nil, err
 	}

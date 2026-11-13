@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 import { loftenApi } from "./api";
-import { ArchiveNote, LoefteCard, ValmanifestList } from "./components";
+import { ArchiveNote, LoefteCard, MandatperiodSelect, ValmanifestList } from "./components";
 import { loftenHitCount } from "./hitCount";
-import { STATUS_FILTERS } from "./labels";
+import { MANDATE_LABEL, STATUS_FILTERS, mandatperiodFromQuery } from "./labels";
 import { betankandePath } from "@/features/votes/betankandeApi";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 
@@ -17,6 +17,7 @@ export function LoftenOverviewPage() {
   const utskott = sp.get("utskott") ?? "";
   const status = sp.get("status") ?? "";
   const betankande = sp.get("betankande") ?? "";
+  const mandatperiod = mandatperiodFromQuery(sp.get("mandatperiod"));
   const set = (k: string, v: string) => {
     const n = new URLSearchParams(sp);
     if (v) n.set(k, v);
@@ -25,11 +26,15 @@ export function LoftenOverviewPage() {
   };
 
   const loften = useQuery({
-    queryKey: ["loften", party, utskott, status, betankande],
-    queryFn: () => loftenApi.list({ party, utskott, status, betankande }),
+    queryKey: ["loften", party, utskott, status, betankande, mandatperiod],
+    queryFn: () => loftenApi.list({ party, utskott, status, betankande, mandatperiod }),
     staleTime: 60_000,
   });
-  const summary = useQuery({ queryKey: ["loften-summary"], queryFn: () => loftenApi.summary(), staleTime: 60_000 });
+  const summary = useQuery({
+    queryKey: ["loften-summary", mandatperiod],
+    queryFn: () => loftenApi.summary(mandatperiod),
+    staleTime: 60_000,
+  });
   const manifest = useQuery({ queryKey: ["valmanifest"], queryFn: () => loftenApi.valmanifest(), staleTime: 60_000 });
 
   return (
@@ -45,6 +50,9 @@ export function LoftenOverviewPage() {
 
       <section data-testid="loften-summary" className="my-4 overflow-x-auto">
         <table className="text-xs w-full">
+          <caption data-testid="loften-summary-period" className="text-left text-on-surface-variant mb-1">
+            {mandatperiod ? `Mandatperiod ${MANDATE_LABEL[mandatperiod] ?? mandatperiod}` : "Alla mandatperioder"}
+          </caption>
           <thead>
             <tr className="text-left text-on-surface-variant">
               <th>Parti</th><th>Röstat för</th><th>Röstat emot</th><th>Blandat</th><th>Inte prövat än</th><th>Arkiv</th>
@@ -53,7 +61,7 @@ export function LoftenOverviewPage() {
           <tbody>
             {(summary.data ?? []).map((r) => (
               <tr key={r.party} data-testid={`summary-${r.party}`}>
-                <td><Link to={`/loften?party=${r.party}`} className="underline">{r.party}</Link></td>
+                <td><Link to={`/loften?party=${r.party}${mandatperiod ? `&mandatperiod=${mandatperiod}` : ""}`} className="underline">{r.party}</Link></td>
                 <td>{r.for}</td><td>{r.emot}</td><td>{r.blandat}</td><td>{r.inteProvat}</td><td>{r.arkiv}</td>
               </tr>
             ))}
@@ -75,6 +83,7 @@ export function LoftenOverviewPage() {
             {UTSKOTT.map((u) => <option key={u} value={u}>{u}</option>)}
           </select>
         </label>
+        <MandatperiodSelect value={mandatperiod} onChange={(v) => set("mandatperiod", v)} />
         <label>Löftesstatus{" "}
           <select value={status} onChange={(e) => set("status", e.target.value)}>
             <option value="">Alla</option>
@@ -93,7 +102,7 @@ export function LoftenOverviewPage() {
 
       {loften.data && (
         <p data-testid="loften-hit-count" aria-live="polite" className="text-sm font-medium mb-2">
-          {loftenHitCount(loften.data.length, party)}
+          {loftenHitCount(loften.data.length, party, mandatperiod)}
         </p>
       )}
 
