@@ -494,6 +494,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/loften.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The Löften selection as a CSV file for a spreadsheet
+         * @description Exactly the selection GET /loften returns for the same filters, one row per Löfte, as a download. UTF-8 with a byte order mark, semicolon separated, CRLF line endings, one header row. Columns: Id, Parti, Löfte, Löftesstatus, Status ändrad, Mandatperiod, Utskott, Ämne, Citat, Plats i källan, Källdokument, Källa (URL), Arkiverat. Archived Löften have an empty Löftesstatus. Proposed and struck Löften are never included. Text cells that start with =, +, - or @ get a leading apostrophe so a spreadsheet does not run them as formulas. Not paginated: public Löften are a curated set of a few hundred rows.
+         */
+        get: operations["downloadLoftenCsv"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/loften/summary": {
         parameters: {
             query?: never;
@@ -571,6 +591,23 @@ export interface paths {
         };
         /** Public Löften for one party */
         get: operations["listPartyLoften"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/parties/{party}/loften.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One party's Löften as a CSV file; same format and filters as /loften.csv */
+        get: operations["downloadPartyLoftenCsv"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4474,6 +4511,42 @@ export interface operations {
             };
         };
     };
+    downloadLoftenCsv: {
+        parameters: {
+            query?: {
+                party?: string;
+                /** @description Utskott code, e.g. SkU */
+                utskott?: string;
+                /** @description riksmöte:beteckning, as on GET /loften */
+                betankande?: string;
+                /** @description Mandate period code (2022-2026, 2026-2030), as on GET /loften; left out, every period. */
+                mandatperiod?: string;
+                status?: "for" | "emot" | "blandat" | "inte-provat" | "arkiv";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CSV file (Content-Disposition attachment) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description Invalid party, utskott, betankande, mandatperiod or status */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getLoftenSummary: {
         parameters: {
             query?: {
@@ -4594,6 +4667,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LoefteMedStatus"][];
+                };
+            };
+        };
+    };
+    downloadPartyLoftenCsv: {
+        parameters: {
+            query?: {
+                /** @description Mandate period code (2022-2026, 2026-2030), as on GET /loften; left out, every period. */
+                mandatperiod?: string;
+            };
+            header?: never;
+            path: {
+                party: components["parameters"]["PartyParam"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CSV file (Content-Disposition attachment) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
                 };
             };
         };

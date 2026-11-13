@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"riksdagskollen/internal/loften"
+	"riksdagskollen/internal/loften/domain"
 )
 
 var utskottPattern = regexp.MustCompile(`^[A-Za-zÅÄÖåäö]{2,5}$`)
@@ -27,12 +28,14 @@ func NewHandler(svc *loften.Service) *Handler { return &Handler{svc: svc} }
 
 func (h *Handler) Routes(r chi.Router) {
 	r.Get("/loften", h.list)
+	r.Get("/loften.csv", h.listCSV)
 	r.Get("/loften/summary", h.summary)
 	r.Get("/loften/{id}", h.get)
 	r.Get("/loften/{id}/kopplingar", h.loefteKopplingar)
 	r.Get("/kopplingar/{id}", h.koppling)
 	r.Get("/valmanifest", h.valmanifest)
 	r.Get("/parties/{party}/loften", h.list)
+	r.Get("/parties/{party}/loften.csv", h.listCSV)
 	r.Get("/parties/{party}/valmanifest", h.valmanifest)
 }
 
@@ -62,36 +65,46 @@ func mandatperiodParam(w http.ResponseWriter, r *http.Request) (string, bool) {
 	return p, true
 }
 
-func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
+// selection reads the list filters and returns the matching public Löften.
+// ok is false (and an error response written) when a filter is malformed or
+// the read fails. The JSON list and the CSV download share it, so a file
+// always holds exactly the selection the list shows.
+func (h *Handler) selection(w http.ResponseWriter, r *http.Request) ([]*domain.LoefteView, bool) {
 	party, ok := partyParam(w, r)
 	if !ok {
-		return
+		return nil, false
 	}
 	q := r.URL.Query()
 	utskott := q.Get("utskott")
 	if utskott != "" && !utskottPattern.MatchString(utskott) {
 		jsonError(w, "invalid utskott", http.StatusBadRequest)
-		return
+		return nil, false
 	}
 	bet := q.Get("betankande")
 	if bet != "" && !betankandePattern.MatchString(bet) {
 		jsonError(w, "invalid betankande; write it 2026/27:SkU2", http.StatusBadRequest)
-		return
+		return nil, false
 	}
 	period, ok := mandatperiodParam(w, r)
 	if !ok {
-		return
+		return nil, false
 	}
 	out, err := h.svc.ListWithStatus(r.Context(), loften.Filter{Party: party, Utskott: utskott, Status: q.Get("status"), Betankande: bet, Mandatperiod: period})
 	if errors.Is(err, loften.ErrBadStatus) {
 		jsonError(w, "invalid status", http.StatusBadRequest)
-		return
+		return nil, false
 	}
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
-		return
+		return nil, false
 	}
-	jsonOK(w, out)
+	return out, true
+}
+
+func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
+	if out, ok := h.selection(w, r); ok {
+		jsonOK(w, out)
+	}
 }
 
 func (h *Handler) summary(w http.ResponseWriter, r *http.Request) {

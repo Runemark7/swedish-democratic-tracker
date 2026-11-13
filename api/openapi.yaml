@@ -786,6 +786,59 @@ paths:
         "400":
           description: Invalid party, utskott, mandatperiod or status
 
+  /loften.csv:
+    get:
+      operationId: downloadLoftenCsv
+      tags: [loften]
+      summary: The Löften selection as a CSV file for a spreadsheet
+      description: >
+        Exactly the selection GET /loften returns for the same filters, one row
+        per Löfte, as a download. UTF-8 with a byte order mark, semicolon
+        separated, CRLF line endings, one header row. Columns: Id, Parti,
+        Löfte, Löftesstatus, Status ändrad, Mandatperiod, Utskott, Ämne, Citat,
+        Plats i källan, Källdokument, Källa (URL), Arkiverat. Archived Löften
+        have an empty Löftesstatus. Proposed and struck Löften are never
+        included. Text cells that start with =, +, - or @ get a leading
+        apostrophe so a spreadsheet does not run them as formulas. Not
+        paginated: public Löften are a curated set of a few hundred rows.
+      parameters:
+        - name: party
+          in: query
+          schema:
+            type: string
+        - name: utskott
+          in: query
+          description: Utskott code, e.g. SkU
+          schema:
+            type: string
+        - name: betankande
+          in: query
+          description: riksmöte:beteckning, as on GET /loften
+          schema:
+            type: string
+            example: "2026/27:SkU2"
+        - name: mandatperiod
+          in: query
+          description: Mandate period code (2022-2026, 2026-2030), as on GET /loften; left out, every period.
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{4}$'
+            example: "2026-2030"
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [for, emot, blandat, inte-provat, arkiv]
+      responses:
+        "200":
+          description: CSV file (Content-Disposition attachment)
+          content:
+            text/csv:
+              schema:
+                type: string
+        "400":
+          description: Invalid party, utskott, betankande, mandatperiod or status
+
   /loften/summary:
     get:
       operationId: getLoftenSummary
@@ -902,6 +955,28 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/LoefteMedStatus"
+
+  /parties/{party}/loften.csv:
+    get:
+      operationId: downloadPartyLoftenCsv
+      tags: [loften]
+      summary: One party's Löften as a CSV file; same format and filters as /loften.csv
+      parameters:
+        - $ref: "#/components/parameters/PartyParam"
+        - name: mandatperiod
+          in: query
+          description: Mandate period code (2022-2026, 2026-2030), as on GET /loften; left out, every period.
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{4}$'
+            example: "2026-2030"
+      responses:
+        "200":
+          description: CSV file (Content-Disposition attachment)
+          content:
+            text/csv:
+              schema:
+                type: string
 
   /valmanifest:
     get:

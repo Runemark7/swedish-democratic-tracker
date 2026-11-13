@@ -134,6 +134,26 @@ test.describe("Mandatperiod filter on Löften", () => {
     await expect(page.getByTestId("loefte-card")).toHaveCount(0);
   });
 
+  // Gap no-data-export-csv: the download is the visible selection, so its
+  // link carries every active filter, Mandatperiod included.
+  test("the CSV download link follows the active filters", async ({ page }) => {
+    await page.goto("/loften");
+    const csv = page.getByTestId("loften-csv");
+    await expect(csv).toHaveText("Ladda ner urvalet (CSV)");
+    await expect(csv).toHaveAttribute("href", "/api/loften.csv");
+
+    await page.getByTestId("mandatperiod-select").selectOption({ label: "2026–2030" });
+    await expect(csv).toHaveAttribute("href", "/api/loften.csv?mandatperiod=2026-2030");
+
+    await page.getByTestId("loften-filters").getByRole("combobox", { name: "Löftesstatus" }).selectOption("inte-provat");
+    await expect(csv).toHaveAttribute("href", "/api/loften.csv?status=inte-provat&mandatperiod=2026-2030");
+
+    // Nothing to download when the selection is empty.
+    await page.getByTestId("mandatperiod-select").selectOption({ label: "2022–2026" });
+    await expect(page.getByTestId("loefte-card")).toHaveCount(0);
+    await expect(csv).toHaveCount(0);
+  });
+
   test("a link with ?mandatperiod= opens with that period chosen", async ({ page }) => {
     await page.goto("/loften?mandatperiod=2022-2026");
     await expect(page.getByTestId("mandatperiod-select")).toHaveValue("2022-2026");
