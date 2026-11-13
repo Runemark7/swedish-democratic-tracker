@@ -6,6 +6,7 @@ import { loftenHitCount } from "./hitCount";
 import { MANDATE_LABEL, STATUS_FILTERS, mandatperiodFromQuery } from "./labels";
 import { betankandePath } from "@/features/votes/betankandeApi";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { TemporaryError } from "@/shared/components";
 
 const PARTIES = ["C", "KD", "L", "M", "MP", "S", "SD", "V"];
 const UTSKOTT = ["AU", "CU", "FiU", "FöU", "JuU", "KU", "KrU", "MJU", "NU", "SfU", "SkU", "SoU", "TU", "UbU", "UU"];
@@ -109,7 +110,7 @@ export function LoftenOverviewPage() {
       <ArchiveNote />
 
       {loften.isLoading && <p className="text-sm">Laddar...</p>}
-      {loften.isError && <p className="text-sm text-on-surface-variant">Kunde inte ladda löften. Försök igen.</p>}
+      {loften.isError && <TemporaryError what="Löftena" onRetry={() => void loften.refetch()} />}
       {loften.data?.length === 0 && <p className="text-sm text-on-surface-variant">Inga löften matchar filtret.</p>}
       {PARTIES.map((p) => {
         const rows = (loften.data ?? []).filter((l) => l.party === p);

@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import { betankandeApi, betankandePath, voteSharePath, type BetankandePage as Page, type BetankandePunkt } from "./betankandeApi";
-import { PartyBadge } from "@/shared/components";
+import { isNotFound } from "@/shared/api-errors";
+import { PartyBadge, TemporaryError } from "@/shared/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { motionPath } from "@/features/motions/api";
@@ -148,10 +149,9 @@ export function BetankandePage() {
   const riksmote = params.riksmote ?? `${params.y}/${params.yy}`;
   const beteckning = params.beteckning ?? "";
   const { hash } = useLocation();
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["betankande", riksmote, beteckning],
     queryFn: () => betankandeApi.get(riksmote, beteckning),
-    retry: false,
   });
 
   useEffect(() => {
@@ -159,7 +159,14 @@ export function BetankandePage() {
   }, [data, hash]);
 
   if (isLoading) return <Notice>Hämtar betänkandet…</Notice>;
-  if (isError || !data) return <Notice>Betänkande {riksmote}:{beteckning} finns inte i vårt register.</Notice>;
+  if (isNotFound(error)) return <Notice>Betänkande {riksmote}:{beteckning} finns inte i vårt register.</Notice>;
+  if (error || !data) {
+    return (
+      <div className="sdt-page px-8 py-16">
+        <TemporaryError what={`Betänkande ${riksmote}:${beteckning}`} onRetry={() => void refetch()} />
+      </div>
+    );
+  }
   // One address per betänkande: /beslut/2025/26/sfu18 moves to …/SfU18.
   if (data.beteckning !== beteckning) return <Navigate to={betankandePath(data.riksmote, data.beteckning) + hash} replace />;
 

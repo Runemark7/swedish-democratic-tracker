@@ -1,13 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { betankandeApi, betankandePath } from "./betankandeApi";
+import { isNotFound } from "@/shared/api-errors";
+import { TemporaryError } from "@/shared/components";
 
-function Waiting({ failed }: { failed: boolean }) {
+/** Only a 404 from the lookup means the betänkande is missing; a 429 or 5xx
+ *  is a temporary failure and says so. */
+function Waiting({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   return (
     <div className="sdt-page px-8 py-16">
-      <p className="text-sm text-on-surface-variant" data-testid="redirect-status">
-        {failed ? "Betänkandet finns inte i vårt register." : "Letar upp betänkandet…"}
-      </p>
+      {error && !isNotFound(error) ? (
+        <TemporaryError what="Betänkandet" onRetry={onRetry} />
+      ) : (
+        <p className="text-sm text-on-surface-variant" data-testid="redirect-status">
+          {error ? "Betänkandet finns inte i vårt register." : "Letar upp betänkandet…"}
+        </p>
+      )}
     </div>
   );
 }
@@ -21,10 +29,9 @@ export function VoteRedirect() {
   const q = useQuery({
     queryKey: ["resolve", beteckning, punkt, rm],
     queryFn: () => betankandeApi.resolve(beteckning, punkt, rm || undefined),
-    retry: false,
   });
   if (q.data) return <Navigate to={betankandePath(q.data.riksmote, q.data.beteckning, punkt)} replace />;
-  return <Waiting failed={q.isError} />;
+  return <Waiting error={q.error} onRetry={() => void q.refetch()} />;
 }
 
 /** Old betänkande URL (/beslut/:beteckning, optionally ?rm=) → the canonical
@@ -36,8 +43,7 @@ export function BeslutRedirect() {
   const q = useQuery({
     queryKey: ["resolve", beteckning, "", rm],
     queryFn: () => betankandeApi.resolve(beteckning, undefined, rm || undefined),
-    retry: false,
   });
   if (q.data) return <Navigate to={betankandePath(q.data.riksmote, q.data.beteckning)} replace />;
-  return <Waiting failed={q.isError} />;
+  return <Waiting error={q.error} onRetry={() => void q.refetch()} />;
 }

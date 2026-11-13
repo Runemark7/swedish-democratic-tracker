@@ -133,7 +133,7 @@ export default function App() {
   // only ever opened as a fresh page load (the vote page builds it as an
   // absolute URL), which is the only reason this has not bitten yet.
   const isMobile = useMediaQuery("(max-width: 640px)");
-  const { data: coverage } = useRecordCoverage();
+  const { data: coverage, isLoading: coverageLoading, isError: coverageFailed } = useRecordCoverage();
   const pathname = location.pathname;
 
   useEffect(() => {
@@ -234,9 +234,16 @@ export default function App() {
                   flexShrink: 0,
                 }}
               />
-              {coverage?.lastDecisionDate
-                ? `Senaste beslut · ${swedishDate(coverage.lastDecisionDate)}`
-                : "Ingen omröstningsdata"}
+              {/* A failed or pending fetch is not the same as an empty record. */}
+              <span data-testid="header-status">
+                {coverage?.lastDecisionDate
+                  ? `Senaste beslut · ${swedishDate(coverage.lastDecisionDate)}`
+                  : coverageFailed
+                    ? "Senaste beslut kunde inte hämtas"
+                    : coverageLoading
+                      ? "Hämtar senaste beslut…"
+                      : "Ingen omröstningsdata"}
+              </span>
             </div>
 
             <nav aria-label="Mer" style={{ display: "flex", alignItems: "center", gap: 16 }}>
