@@ -6,14 +6,15 @@ import { ArchiveNote, StatusBadge } from "./components";
 import { MANDATE_LABEL } from "./labels";
 import { betankandePath } from "@/features/votes/betankandeApi";
 import { SourceMarker } from "@/components/sources/SourceMarker";
+import { isNotFound } from "@/shared/api-errors";
+import { TemporaryError } from "@/shared/components";
 
 /** One Löfte. Archived 2022 goals open here under their old id. */
 export function LoefteDetailPage() {
   const { id = "" } = useParams<{ id: string }>();
-  const { data: l, isLoading, isError } = useQuery({
+  const { data: l, isLoading, error, refetch } = useQuery({
     queryKey: ["loefte", id],
     queryFn: () => loftenApi.get(Number(id)),
-    retry: false,
   });
 
   const { hash } = useLocation();
@@ -33,7 +34,10 @@ export function LoefteDetailPage() {
     <div className="sdt-page" style={{ padding: "24px 32px 64px", maxWidth: 760 }}>
       <Link to="/loften" className="text-xs text-link">← Löften</Link>
       {isLoading && <p className="text-sm mt-4">Laddar...</p>}
-      {isError && <p className="text-sm mt-4">Löftet finns inte.</p>}
+      {isNotFound(error) && <p className="text-sm mt-4">Löftet finns inte.</p>}
+      {error && !isNotFound(error) && (
+        <div className="mt-4"><TemporaryError what="Löftet" onRetry={() => void refetch()} /></div>
+      )}
       {l && (
         <>
           <h1 className="font-display text-2xl mt-2 mb-3" data-testid="loefte-text">{l.text}</h1>
