@@ -4445,6 +4445,8 @@ export interface operations {
                 utskott?: string;
                 /** @description Only Löften with a Bekräftad koppling to a votering of this betänkande, written riksmöte:beteckning (2026/27:SkU2). This is what "berör N löften" links to. */
                 betankande?: string;
+                /** @description Only Löften of this mandate period, written as its code (2022-2026, 2026-2030). Left out, every period is returned. It combines freely with party, utskott and status; a period without Löften gives an empty list. */
+                mandatperiod?: string;
                 /** @description Filter by Löftesstatus; "arkiv" selects archived Löften (no status) */
                 status?: "for" | "emot" | "blandat" | "inte-provat" | "arkiv";
             };
@@ -4463,7 +4465,7 @@ export interface operations {
                     "application/json": components["schemas"]["LoefteMedStatus"][];
                 };
             };
-            /** @description Invalid party, utskott or status */
+            /** @description Invalid party, utskott, mandatperiod or status */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -4474,7 +4476,10 @@ export interface operations {
     };
     getLoftenSummary: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Only Löften of this mandate period, written as its code (2022-2026, 2026-2030). Left out, every period is returned. A party without Löften in the period has no row. */
+                mandatperiod?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4489,6 +4494,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["LoftePartySummary"][];
                 };
+            };
+            /** @description Invalid mandatperiod */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -4563,7 +4575,10 @@ export interface operations {
     };
     listPartyLoften: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Only Löften of this mandate period (2022-2026, 2026-2030); left out, every period. */
+                mandatperiod?: string;
+            };
             header?: never;
             path: {
                 party: components["parameters"]["PartyParam"];

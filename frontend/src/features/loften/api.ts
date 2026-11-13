@@ -14,6 +14,8 @@ export interface LoftenFilter {
   status?: string;
   /** riksmöte:beteckning, e.g. 2026/27:SkU2 */
   betankande?: string;
+  /** mandate period code, e.g. 2026-2030; empty = every period */
+  mandatperiod?: string;
 }
 
 export const loftenApi = {
@@ -23,10 +25,12 @@ export const loftenApi = {
     if (f.utskott) q.set("utskott", f.utskott);
     if (f.status) q.set("status", f.status);
     if (f.betankande) q.set("betankande", f.betankande);
+    if (f.mandatperiod) q.set("mandatperiod", f.mandatperiod);
     const qs = q.toString();
     return api.get<LoefteMedStatus[]>(`/loften${qs ? `?${qs}` : ""}`);
   },
-  summary: () => api.get<LoftePartySummary[]>("/loften/summary"),
+  summary: (mandatperiod = "") =>
+    api.get<LoftePartySummary[]>(`/loften/summary${mandatperiod ? `?mandatperiod=${encodeURIComponent(mandatperiod)}` : ""}`),
   get: (id: number) => api.get<LoefteMedStatus>(`/loften/${id}`),
   koppling: (id: number) => api.get<BekraftadKoppling>(`/kopplingar/${id}`),
   valmanifest: (party?: string) =>

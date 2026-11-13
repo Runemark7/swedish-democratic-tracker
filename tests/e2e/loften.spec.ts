@@ -71,3 +71,87 @@ test.describe("Löften under Partier", () => {
     await expect(page.getByTestId("valmanifest-row")).toHaveCount(2);
   });
 });
+
+// Gap promise-list-no-term-filter: Mandatperiod is its own filter, separate
+// from Löftesstatus, on /loften and on a party's Löften tab.
+test.describe("Mandatperiod filter on Löften", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  const OLD = {
+    id: 7, party: "S", valmanifestId: 3, text: "Gammalt löfte", topic: "skatt",
+    sourceDocument: "Valmanifest 2022", utskott: ["SkU"], mandatePeriod: "2022-2026",
+    visibility: "archived", archived: true, createdAt: "2022-08-01T00:00:00Z", status: null,
+  };
+  const NEW = {
+    id: 90, party: "S", valmanifestId: 12, text: "Nytt löfte", topic: "skatt",
+    sourceDocument: "Valmanifest 2026", utskott: ["SkU"], mandatePeriod: "2026-2030",
+    visibility: "approved", archived: false, createdAt: "2026-08-01T00:00:00Z", status: "Inte prövat än",
+  };
+  const row = (n: number, arkiv: number) =>
+    ({ party: "S", total: n, for: 0, emot: 0, blandat: 0, inteProvat: n - arkiv, arkiv });
+
+  test.beforeEach(async ({ page }) => {
+    // The mock filters as the API does (backend/internal/apitest/loften_mandatperiod_test.go).
+    const list = (url: string) => {
+      const q = new URL(url).searchParams;
+      return [OLD, NEW].filter((l) =>
+        (!q.get("mandatperiod") || l.mandatePeriod === q.get("mandatperiod")) &&
+        (q.get("status") !== "inte-provat" || l.status === "Inte prövat än"));
+    };
+    await page.route(/\/api\/loften(\?.*)?$/, (r) => r.fulfill({ json: list(r.request().url()) }));
+    await page.route(/\/api\/parties\/S\/loften(\?.*)?$/, (r) => r.fulfill({ json: list(r.request().url()) }));
+    await page.route(/\/api\/loften\/summary(\?.*)?$/, (r) => {
+      const p = new URL(r.request().url()).searchParams.get("mandatperiod");
+      return r.fulfill({ json: [p === "2026-2030" ? row(1, 0) : p === "2022-2026" ? row(1, 1) : row(2, 1)] });
+    });
+    await page.route("**/api/valmanifest", (r) => r.fulfill({ json: [] }));
+    await page.route("**/api/parties/S/valmanifest", (r) => r.fulfill({ json: [] }));
+    await page.route("**/api/parties/S/record", (r) => r.fulfill({ json: { party: "S", decisions: [], motions: [] } }));
+  });
+
+  test("/loften has a Mandatperiod filter that combines with Löftesstatus", async ({ page }) => {
+    await page.goto("/loften");
+    const select = page.getByTestId("mandatperiod-select");
+    await expect(select).toHaveValue("");
+    await expect(page.getByTestId("loften-summary-period")).toHaveText("Alla mandatperioder");
+    await expect(page.getByTestId("loefte-card")).toHaveCount(2);
+
+    await select.selectOption({ label: "2026–2030" });
+    await expect(page).toHaveURL(/mandatperiod=2026-2030/);
+    await expect(page.getByTestId("loefte-card")).toHaveCount(1);
+    await expect(page.getByTestId("loefte-card")).toContainText("Nytt löfte");
+    await expect(page.getByTestId("loften-hit-count")).toHaveText("1 löfte, mandatperiod 2026–2030");
+    await expect(page.getByTestId("loften-summary-period")).toHaveText("Mandatperiod 2026–2030");
+    await expect(page.getByTestId("summary-S").locator("td").last()).toHaveText("0");
+
+    await page.getByTestId("loften-filters").getByRole("combobox", { name: "Löftesstatus" }).selectOption("inte-provat");
+    await expect(page).toHaveURL(/mandatperiod=2026-2030/);
+    await expect(page).toHaveURL(/status=inte-provat/);
+    await expect(page.getByTestId("loefte-card")).toHaveCount(1);
+
+    await select.selectOption({ label: "2022–2026" });
+    await expect(page.getByTestId("loften-hit-count")).toHaveText("Inga löften, mandatperiod 2022–2026");
+    await expect(page.getByTestId("loefte-card")).toHaveCount(0);
+  });
+
+  test("a link with ?mandatperiod= opens with that period chosen", async ({ page }) => {
+    await page.goto("/loften?mandatperiod=2022-2026");
+    await expect(page.getByTestId("mandatperiod-select")).toHaveValue("2022-2026");
+    await expect(page.getByTestId("loefte-card")).toHaveCount(1);
+    await expect(page.getByTestId("loefte-card")).toContainText("Gammalt löfte");
+  });
+
+  test("the party's Löften tab has the same Mandatperiod filter", async ({ page }) => {
+    await page.goto("/parties/S?tab=loften");
+    const select = page.getByTestId("mandatperiod-select");
+    await expect(select).toHaveValue("");
+    await expect(page.getByTestId("loefte-card")).toHaveCount(2);
+
+    await select.selectOption({ label: "2026–2030" });
+    await expect(page).toHaveURL(/tab=loften/);
+    await expect(page).toHaveURL(/mandatperiod=2026-2030/);
+    await expect(page.getByTestId("loefte-card")).toHaveCount(1);
+    await expect(page.getByTestId("loefte-card")).toContainText("Nytt löfte");
+    await expect(page.getByTestId("loften-hit-count")).toHaveText("1 löfte för S, mandatperiod 2026–2030");
+  });
+});

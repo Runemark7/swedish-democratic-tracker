@@ -16,6 +16,9 @@ import (
 var utskottPattern = regexp.MustCompile(`^[A-Za-zÅÄÖåäö]{2,5}$`)
 var betankandePattern = regexp.MustCompile(`^\d{4}/\d{2}:[0-9A-Za-zÅÄÖåäö]{1,12}$`)
 
+// mandatperiodPattern is the shape of mandate_periods.code, e.g. 2026-2030.
+var mandatperiodPattern = regexp.MustCompile(`^\d{4}-\d{4}$`)
+
 var partyPattern = regexp.MustCompile(`^[A-Z]{1,4}$`)
 
 type Handler struct{ svc *loften.Service }
@@ -48,6 +51,17 @@ func partyParam(w http.ResponseWriter, r *http.Request) (string, bool) {
 	return p, true
 }
 
+// mandatperiodParam reads ?mandatperiod= ("" = every period). ok is false (and
+// a 400 written) when it is present but malformed.
+func mandatperiodParam(w http.ResponseWriter, r *http.Request) (string, bool) {
+	p := r.URL.Query().Get("mandatperiod")
+	if p != "" && !mandatperiodPattern.MatchString(p) {
+		jsonError(w, "invalid mandatperiod; write it 2026-2030", http.StatusBadRequest)
+		return "", false
+	}
+	return p, true
+}
+
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	party, ok := partyParam(w, r)
 	if !ok {
@@ -64,7 +78,11 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "invalid betankande; write it 2026/27:SkU2", http.StatusBadRequest)
 		return
 	}
-	out, err := h.svc.ListWithStatus(r.Context(), loften.Filter{Party: party, Utskott: utskott, Status: q.Get("status"), Betankande: bet})
+	period, ok := mandatperiodParam(w, r)
+	if !ok {
+		return
+	}
+	out, err := h.svc.ListWithStatus(r.Context(), loften.Filter{Party: party, Utskott: utskott, Status: q.Get("status"), Betankande: bet, Mandatperiod: period})
 	if errors.Is(err, loften.ErrBadStatus) {
 		jsonError(w, "invalid status", http.StatusBadRequest)
 		return
@@ -77,7 +95,11 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) summary(w http.ResponseWriter, r *http.Request) {
-	out, err := h.svc.Summary(r.Context())
+	period, ok := mandatperiodParam(w, r)
+	if !ok {
+		return
+	}
+	out, err := h.svc.Summary(r.Context(), period)
 	if err != nil {
 		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -10,7 +10,9 @@ import { SpeechRow } from "@/features/speeches/SpeechRow";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { PartyLoefteSummary } from "@/features/loften/OnDecision";
 import { loftenApi } from "@/features/loften/api";
-import { ArchiveNote, LoefteCard, ValmanifestList } from "@/features/loften/components";
+import { loftenHitCount } from "@/features/loften/hitCount";
+import { MANDATE_LABEL, mandatperiodFromQuery } from "@/features/loften/labels";
+import { ArchiveNote, LoefteCard, MandatperiodSelect, ValmanifestList } from "@/features/loften/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 
 type Tab = "beslut" | "motioner" | "loften" | "anforanden" | "politiker";
@@ -39,6 +41,15 @@ export function PartyDetailPage() {
     setSearchParams(params, { replace: true });
   };
 
+  // Mandatperiod for the Löften tab; "" keeps every period.
+  const mandatperiod = mandatperiodFromQuery(searchParams.get("mandatperiod"));
+  const setMandatperiod = (next: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (next) params.set("mandatperiod", next);
+    else params.delete("mandatperiod");
+    setSearchParams(params, { replace: true });
+  };
+
   const { data: record, isLoading: loadingRecord, isError: recordError } = useQuery({
     queryKey: ["party-record", party],
     queryFn: () => partyRecordApi.get(party),
@@ -47,8 +58,8 @@ export function PartyDetailPage() {
   });
 
   const { data: loften, isLoading: loadingLoften, isError: loftenError } = useQuery({
-    queryKey: ["loften", party],
-    queryFn: () => loftenApi.list({ party }),
+    queryKey: ["loften", party, mandatperiod],
+    queryFn: () => loftenApi.list({ party, mandatperiod }),
     enabled: !!party && tab === "loften",
     staleTime: 60_000,
   });
@@ -221,6 +232,14 @@ export function PartyDetailPage() {
 
         {tab === "loften" && (
           <section>
+            <div className="flex gap-3 flex-wrap items-baseline text-sm mb-3" data-testid="party-loften-filters">
+              <MandatperiodSelect value={mandatperiod} onChange={setMandatperiod} />
+              {loften && (
+                <span data-testid="loften-hit-count" aria-live="polite" className="font-medium">
+                  {loftenHitCount(loften.length, party, mandatperiod)}
+                </span>
+              )}
+            </div>
             {loadingLoften && (
               <div style={{ fontSize: 13, color: "var(--color-fg-muted)" }}>Laddar löften...</div>
             )}
@@ -232,7 +251,8 @@ export function PartyDetailPage() {
                 <ArchiveNote />
                 {loften.length === 0 ? (
                   <p style={{ fontStyle: "italic", color: "var(--color-fg-muted)", fontSize: 13 }}>
-                    Vi har inga inlästa löften från {partyShortToName(party)}.{" "}
+                    Vi har inga inlästa löften från {partyShortToName(party)}
+                    {mandatperiod ? ` för mandatperioden ${MANDATE_LABEL[mandatperiod] ?? mandatperiod}` : ""}.{" "}
                     <SourceMarker sourceId="seed-party-goals" />
                   </p>
                 ) : (
@@ -241,7 +261,7 @@ export function PartyDetailPage() {
                   </div>
                 )}
                 <p className="mt-6 text-xs">
-                  <Link to="/loften" className="text-link underline">Löften för alla partier</Link>
+                  <Link to={`/loften${mandatperiod ? `?mandatperiod=${mandatperiod}` : ""}`} className="text-link underline">Löften för alla partier</Link>
                 </p>
               </>
             )}

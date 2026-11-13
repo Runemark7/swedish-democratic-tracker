@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { SourceMarker } from "@/components/sources/SourceMarker";
-import { MANDATE_LABEL } from "./labels";
+import { MANDATE_LABEL, MANDATPERIODER } from "./labels";
 import type { LoefteMedStatus, Valmanifest } from "./api";
 
 /**
@@ -30,6 +30,23 @@ export function ValmanifestList({ items }: { items: Valmanifest[] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/**
+ * Mandatperiod as its own choice, separate from Löftesstatus. "Alla" keeps
+ * every period; the chosen one is stored in ?mandatperiod= by the caller.
+ */
+export function MandatperiodSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const known = MANDATPERIODER.includes(value) || value === "";
+  return (
+    <label>Mandatperiod{" "}
+      <select data-testid="mandatperiod-select" value={value} onChange={(e) => onChange(e.target.value)}>
+        <option value="">Alla</option>
+        {MANDATPERIODER.map((p) => <option key={p} value={p}>{MANDATE_LABEL[p] ?? p}</option>)}
+        {!known && <option value={value}>{value}</option>}
+      </select>
+    </label>
   );
 }
 
