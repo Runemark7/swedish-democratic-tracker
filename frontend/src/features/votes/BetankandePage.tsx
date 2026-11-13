@@ -53,7 +53,7 @@ function PunktBlock({ page, k }: { page: Page; k: BetankandePunkt }) {
         <strong>{page.decided === false ? "Ej avgjort än" : k.modeLabel}</strong>
         {k.alternativ ? <span> – {k.alternativ}</span> : null}
       </p>
-      {k.text ? <p className="mt-2 text-sm whitespace-pre-line">{k.text.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "")}</p> : null}
+      {k.text ? <p className="mt-2 text-sm whitespace-pre-line">{k.text}</p> : null}
 
       {k.mode === "votering" && k.voteringStored && k.parties.length > 0 ? (
         <table className="mt-3 text-xs" data-testid="party-table">

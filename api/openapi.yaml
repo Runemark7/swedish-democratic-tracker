@@ -2982,7 +2982,7 @@ components:
       properties:
         number: { type: string }
         rubrik: { type: string }
-        text: { type: string, description: "The utskott's proposal as served" }
+        text: { type: string, description: "The utskott's proposal as plain text: Riksdagen's HTML entities are decoded (å, ä, ö), <br> is a line break (\\n) and other tags are dropped. Show it as text, never as HTML." }
         beslutstyp: { type: string }
         mode: { type: string, enum: [acklamation, votering, ej_beslutad, annat] }
         modeLabel: { type: string }

@@ -1,0 +1,640 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HD01FiU47.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HD01FiU47.json",
+ "note": "Recorded 2026-11-13. Reduced: the large dokument fields the client does not read (html) are dropped; dokutskottsforslag is unmodified, with the entities and <br /> as served.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5278772",
+    "dok_id": "HD01FiU47",
+    "rm": "2025/26",
+    "beteckning": "FiU47",
+    "typ": "bet",
+    "subtyp": "bet",
+    "doktyp": "bet",
+    "typrubrik": "Betänkande 2025/26:FiU47",
+    "dokumentnamn": "Betänkande",
+    "debattnamn": "Debatt om förslag",
+    "tempbeteckning": "",
+    "organ": "FiU",
+    "mottagare": "",
+    "nummer": "47",
+    "slutnummer": "0",
+    "datum": "2026-06-16 00:00:00",
+    "systemdatum": "2026-10-29 17:33:54",
+    "publicerad": "2026-05-22 16:45:53",
+    "titel": "Extra ändringsbudget för 2026 – Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+    "subtitel": "",
+    "status": "Webbpublicering",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "RIM",
+    "sourceid": "bcc89dd6-6898-4f2a-9382-7cd202ff5d5b",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/HD01FiU47/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/HD01FiU47",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/HD01FiU47",
+    "utskottsforslag_url_xml": "https://data.riksdagen.se/utskottsforslag/HD01FiU47"
+   },
+   "dokutskottsforslag": {
+    "utskottsforslag": [
+     {
+      "punkt": "1",
+      "rubrik": "Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "forslag": "Ändringar i statens budget för 2026<BR/>Riksdagen<br />a) godk&auml;nner &auml;ndrade ramar f&ouml;r utgiftsomr&aring;den och anvisar &auml;ndrade och nya anslag enligt utskottets f&ouml;rslag i bilaga 4,&#160;<br />b) bemyndigar regeringen att under 2026 ing&aring; ekonomiska &aring;taganden som inklusive tidigare &aring;taganden medf&ouml;r behov av framtida anslag p&aring; h&ouml;gst de belopp och inom de tidsperioder som utskottet f&ouml;resl&aring;r i bilaga&#160;7,<br />c) godk&auml;nner &auml;ndrad ber&auml;kning av inkomster i statens budget f&ouml;r 2026 enligt regeringens f&ouml;rslag,<br />d) bemyndigar regeringen att under 2026 och 2027 f&ouml;r anslaget 1:3 Anskaffning av materiel och anl&auml;ggningar inom utgiftsomr&aring;de 6 F&ouml;rsvar och samh&auml;llets krisberedskap besluta att sk&auml;nka f&ouml;rsvarsmateriel till Ukraina i form av marin ledningsmateriel samt, som ett led i f&ouml;rs&auml;ljningen av Gripen E/F, upp till 16 stycken Jas 39 Gripen C/D inklusive kvalificerad ammunition som kan avvaras av F&ouml;rsvarsmakten under en begr&auml;nsad tid, till ett v&auml;rde om h&ouml;gst 19&#160;571&#160;000&#160;000 kronor,<br />e) bemyndigar regeringen att ing&aring; avtal med Ukraina om f&ouml;rs&auml;ljning av upp till 20 stycken Gripen E/F med tillh&ouml;rande luftf&ouml;rsvarssystem,<br />f) godk&auml;nner den f&ouml;reslagna anv&auml;ndningen av anslaget 1:12 Tran&#173;sport&#173;styrelsen inom utgiftsomr&aring;de 22 Kommunikationer,<br />g) godk&auml;nner den f&ouml;reslagna anv&auml;ndningen av anslaget 1:17 &Aring;tg&auml;rder f&ouml;r landsbygdens milj&ouml; och struktur inom utgiftsomr&aring;de 23 Areella n&auml;ringar, landsbygd och livsmedel.<BR/>Därmed bifaller riksdagen proposition 2025/26:275 punkterna 5-11 och avslår motionerna \n\n2025/26:4199 av Janine Alm Ericson m.fl. (MP) yrkandena 2 och 4 samt \n\n2025/26:4201 av Nooshi Dadgostar m.fl. (V) yrkande 2.<BR/><BR/>Ytterligare tillfälligt sänkt skatt på bensin och diesel<BR/>Riksdagen antar regeringens f&ouml;rslag till<br />1. lag om &auml;ndring i lagen (2026:372) om &auml;ndring i lagen (2025:1358) om &auml;ndring i lagen (1994:1776) om skatt p&aring; energi,<br />2. lag om &auml;ndring i lagen (1994:1776) om skatt p&aring; energi,<br />3. lag om &auml;ndring i lagen (2026:373) om &auml;ndring i lagen (1994:1776) om skatt p&aring; energi,<br />4. lag om &auml;ndring i lagen (1994:1776) om skatt p&aring; energi.<BR/>Därmed bifaller riksdagen proposition 2025/26:275 punkterna 1-4 och avslår motionerna \n\n2025/26:4199 av Janine Alm Ericson m.fl. (MP) yrkande 1 och \n\n2025/26:4201 av Nooshi Dadgostar m.fl. (V) yrkande 1.<BR/><BR/>Punktskattebefrielse för jetbensin<BR/>Riksdagen antar utskottets f&ouml;rslag i bilaga 9 till lag om &auml;ndring i lagen (1994:1776) om skatt p&aring; energi.<BR/><BR/><BR/>",
+      "beslutstyp": "röstning",
+      "motforslag_nummer": "1",
+      "motforslag_partier": "\"V\",\"MP\"",
+      "votering_id": "14b90381-2745-4f7f-9a08-e6af4f8b493c",
+      "votering_sammanfattning_html": {
+       "table": {
+        "caption": {
+         "b": "Omröstning i sakfrågan",
+         "br": null,
+         "#text": "Utskottets förslag mot reservation 1 (V, MP)"
+        },
+        "thead": {
+         "tr": {
+          "th": [
+           "Parti",
+           "Ja",
+           "Nej",
+           "Avstående",
+           "Frånvarande"
+          ]
+         }
+        },
+        "tbody": {
+         "tr": [
+          {
+           "th": "S",
+           "td": [
+            "105",
+            "0",
+            "0",
+            "1"
+           ]
+          },
+          {
+           "th": "SD",
+           "td": [
+            "70",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "M",
+           "td": [
+            "66",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "V",
+           "td": [
+            "0",
+            "21",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "C",
+           "td": [
+            "24",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "KD",
+           "td": [
+            "19",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "MP",
+           "td": [
+            "0",
+            "18",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "L",
+           "td": [
+            "16",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "-",
+           "td": [
+            "5",
+            "0",
+            "3",
+            "1"
+           ]
+          }
+         ]
+        },
+        "tfooter": {
+         "tr": {
+          "th": "Totalt",
+          "td": [
+           "305",
+           "39",
+           "3",
+           "2"
+          ]
+         }
+        }
+       },
+       "br": null
+      },
+      "votering_url_xml": "http://data.riksdagen.se/votering/14B90381-2745-4F7F-9A08-E6AF4F8B493C",
+      "rm": "2025/26",
+      "bet": "FiU47",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     },
+     {
+      "punkt": "2",
+      "rubrik": "Krisstöd till hushåll och företag",
+      "forslag": "<BR/>Riksdagen avslår motion \n\n2025/26:4199 av Janine Alm Ericson m.fl. (MP) yrkande 3.<BR/><BR/>",
+      "beslutstyp": "röstning",
+      "motforslag_nummer": "2",
+      "motforslag_partier": "\"V\",\"MP\"",
+      "votering_id": "c699f89b-07d4-4d0a-abe1-29d4018242b9",
+      "votering_sammanfattning_html": {
+       "table": {
+        "caption": {
+         "b": "Omröstning i sakfrågan",
+         "br": null,
+         "#text": "Utskottets förslag mot reservation 2 (V, MP)"
+        },
+        "thead": {
+         "tr": {
+          "th": [
+           "Parti",
+           "Ja",
+           "Nej",
+           "Avstående",
+           "Frånvarande"
+          ]
+         }
+        },
+        "tbody": {
+         "tr": [
+          {
+           "th": "S",
+           "td": [
+            "105",
+            "0",
+            "0",
+            "1"
+           ]
+          },
+          {
+           "th": "SD",
+           "td": [
+            "70",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "M",
+           "td": [
+            "66",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "V",
+           "td": [
+            "0",
+            "21",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "C",
+           "td": [
+            "24",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "KD",
+           "td": [
+            "19",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "MP",
+           "td": [
+            "0",
+            "18",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "L",
+           "td": [
+            "16",
+            "0",
+            "0",
+            "0"
+           ]
+          },
+          {
+           "th": "-",
+           "td": [
+            "5",
+            "1",
+            "2",
+            "1"
+           ]
+          }
+         ]
+        },
+        "tfooter": {
+         "tr": {
+          "th": "Totalt",
+          "td": [
+           "305",
+           "40",
+           "2",
+           "2"
+          ]
+         }
+        }
+       },
+       "br": null
+      },
+      "votering_url_xml": "http://data.riksdagen.se/votering/C699F89B-07D4-4D0A-ABE1-29D4018242B9",
+      "rm": "2025/26",
+      "bet": "FiU47",
+      "vinnare": "utskottet",
+      "voteringskrav": "Enkel majoritet",
+      "beslutsregelkvot": "",
+      "beslutsregelparagraf": "",
+      "punkttyp": ""
+     }
+    ]
+   },
+   "dokmotforslag": {
+    "motforslag": [
+     {
+      "nummer": "1",
+      "rubrik": "",
+      "partier": "\"V\",\"MP\"",
+      "typ": "reservation",
+      "utskottsforslag_punkt": "1"
+     },
+     {
+      "nummer": "2",
+      "rubrik": "",
+      "partier": "\"V\",\"MP\"",
+      "typ": "reservation",
+      "utskottsforslag_punkt": "2"
+     }
+    ]
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "UBE",
+      "namn": "Beredning",
+      "datum": "2026-06-11 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "UBE",
+      "namn": "Beredning",
+      "datum": "2026-06-15 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "B",
+      "namn": "Bordläggning",
+      "datum": "2026-06-16 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "JUS",
+      "namn": "Justering",
+      "datum": "2026-06-16 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "TRY",
+      "namn": "Trycklov",
+      "datum": "2026-06-16 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "BEH",
+      "namn": "Behandling",
+      "datum": "2026-06-17 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "BES",
+      "namn": "Beslut",
+      "datum": "2026-06-17 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "arendestatuskammaren",
+      "namn": "Beslutat",
+      "text": "",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 14:15:44"
+     },
+     {
+      "kod": "beslutdatumtid",
+      "namn": "Datum och tid för beslutet",
+      "text": "2026-06-17 00:00:00",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 14:17:41"
+     },
+     {
+      "kod": "beslutssammanfattningusk",
+      "namn": "Utskottets förslag till beslut",
+      "text": "Bifall till propositionen och avslag på samtliga motionsyrkanden.",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 08:35:43"
+     },
+     {
+      "kod": "debattdatumtid",
+      "namn": "Datum och tid för debatten",
+      "text": "2026-06-17 00:00:00",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 14:17:41"
+     },
+     {
+      "kod": "notis",
+      "namn": "Beslut i korthet",
+      "text": "<p>Riksdagen sa ja till regeringens förslag om en extra ändringsbudget för att ge stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern.</p>\n<p>Förslaget innebär bland annat att regeringen, genom så kallade bemyndiganden, ska få rätt att besluta om att till Ukraina skänka 16 Jas 39 Gripen C/D inklusive kvalificerad ammunition, samt att ingå avtal med Ukraina om försäljning av Gripen E/F med tillhörande luftförsvarssystem.</p>\n<p>Regeringen föreslår även ytterligare tillfälligt sänkt skatt på bensin och diesel under perioden den 1 juli–30 november 2026, ett tillfälligt stöd för sänkta priser i kollektivtrafiken under perioden den 1 juli–31 december 2026 och åtgärder för att stötta flyg- och jordbrukssektorerna.</p>\n<p>Utöver regeringens förslag la finansutskottet på eget initiativ fram ett lagförslag om punktskattebefrielse för jetbensin. Förslaget innebär att jetbensin ges samma energiskattemässiga förutsättningar som flygfotogen. Lagändringen börjar gälla den 1 juli 2026. Ett utskottsinitiativ betyder att utskottet har tagit initiativ till förslaget. Det bygger inte på ett regeringsförslag eller en riksdagsmotion.</p>\n<p>Sammantaget innebär regeringens förslag att den offentliga förvaltningens finansiella sparande och statens budgetsaldo beräknas förbättras med 5,3 miljarder kronor 2026. Förslag om förändringar av beställningsbemyndiganden för 2026 innebär att regeringen beräknar att anslagen behöver öka med totalt 22,6 miljarder kronor för 2027–2034.</p>\n<p>Regeringen får lämna ordinarie ändringsbudgetar två gånger om året. Men den får även lämna extra ändringsbudgetar om den anser att det finns särskilda skäl för det. Situationen i Ukraina och drivmedels- och flygbränslepriserna med anledning av kriget i Mellanöstern är enligt regeringen sådana skäl och riksdagen gör ingen annan bedömning.</p>",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 14:17:41"
+     },
+     {
+      "kod": "notisrubrik",
+      "namn": "Beslut",
+      "text": "Extra ändringsbudget för 2026 – Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern (FiU47)",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 14:17:41"
+     },
+     {
+      "kod": "rdbeslut",
+      "namn": "Riksdagens beslut",
+      "text": "Kammaren biföll utskottets förslag.",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 14:15:44"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är klart för beslut",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 08:47:40"
+     },
+     {
+      "kod": "utsknotis",
+      "namn": "Utskottets förslag till beslut",
+      "text": "<p>Finansutskottet föreslår att riksdagen säger ja till regeringens förslag om en extra ändringsbudget för att ge stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern.</p>\n<p>Förslaget innebär bland annat att regeringen, genom så kallade bemyndiganden, ska få rätt att besluta om att till Ukraina skänka 16 Jas 39 Gripen C/D inklusive kvalificerad ammunition, samt att ingå avtal med Ukraina om försäljning av Gripen E/F med tillhörande luftförsvarssystem.</p>\n<p>Regeringen föreslår även ytterligare tillfälligt sänkt skatt på bensin och diesel under perioden den 1 juli–30 november 2026, ett tillfälligt stöd för sänkta priser i kollektivtrafiken under perioden den 1 juli–31 december 2026 och åtgärder för att stötta flyg- och jordbrukssektorerna.</p>\n<p>Utöver regeringens förslag lägger finansutskottet på eget initiativ fram ett lagförslag om punktskattebefrielse för jetbensin. Förslaget innebär att jetbensin ges samma energiskattemässiga förutsättningar som flygfotogen. Lagändringen föreslås börja gälla den 1 juli 2026. Ett utskottsinitiativ betyder att utskottet har tagit initiativ till förslaget. Det bygger inte på ett regeringsförslag eller en riksdagsmotion.</p>\n<p>Sammantaget innebär regeringens förslag att den offentliga förvaltningens finansiella sparande och statens budgetsaldo beräknas förbättras med 5,3 miljarder kronor 2026. Förslag om förändringar av beställningsbemyndiganden för 2026 innebär att regeringen beräknar att anslagen behöver öka med totalt 22,6 miljarder kronor för 2027–2034.</p>\n<p>Regeringen får lämna ordinarie ändringsbudgetar två gånger om året. Men den får även lämna extra ändringsbudgetar om den anser att det finns särskilda skäl för det. Situationen i Ukraina och drivmedels- och flygbränslepriserna med anledning av kriget i Mellanöstern är enligt regeringen sådana skäl och finansutskottet gör ingen annan bedömning.</p>",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 14:17:41"
+     },
+     {
+      "kod": "utsknotisrubrik",
+      "namn": "Utskottets förslag",
+      "text": "Extra ändringsbudget för 2026 – Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern (FiU47)",
+      "dok_id": "HD01FiU47",
+      "systemdatum": "2026-06-17 14:17:41"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "HD01FiU47",
+      "subtitel": "",
+      "filnamn": "2025_26_FiU47_20260616120731_Publicering.pdf",
+      "filstorlek": "2707947",
+      "filtyp": "pdf",
+      "titel": "Extra ändringsbudget för 2026 – Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "fil_url": "https://data.riksdagen.se/fil/FEF234D4-06AB-477E-8AF2-F057E901032F"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:4199 med anledning av prop. 2025/26:275 Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "ref_dok_id": "HD024199",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "4199",
+      "ref_dok_titel": "med anledning av prop. 2025/26:275 Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "ref_dok_subtitel": "av Janine Alm Ericson m.fl. (MP)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "motion 2025/26:4201 med anledning av prop. 2025/26:275 Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "ref_dok_id": "HD024201",
+      "ref_dok_typ": "mot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "4201",
+      "ref_dok_titel": "med anledning av prop. 2025/26:275 Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "ref_dok_subtitel": "av Nooshi Dadgostar m.fl. (V)",
+      "ref_dok_subtyp": "mot",
+      "ref_dok_dokumentnamn": "Motion"
+     },
+     {
+      "referenstyp": "behandlar",
+      "uppgift": "Proposition 2025/26:275 Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "ref_dok_id": "HD03275",
+      "ref_dok_typ": "prop",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "275",
+      "ref_dok_titel": "Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "prop",
+      "ref_dok_dokumentnamn": "Proposition"
+     },
+     {
+      "referenstyp": "beslut_id",
+      "uppgift": "Beslut 2025/26:FiU47",
+      "ref_dok_id": "HDC320260617FiU47",
+      "ref_dok_typ": "kammakt",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "FiU47",
+      "ref_dok_titel": "Beslut: Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "vo",
+      "ref_dok_dokumentnamn": "Votering"
+     },
+     {
+      "referenstyp": "föredragningslista",
+      "uppgift": "föredragningslista 2025/26:143 Onsdag den 17 juni 2026",
+      "ref_dok_id": "HD0I143",
+      "ref_dok_typ": "f-lista",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "143",
+      "ref_dok_titel": "Onsdag den 17 juni 2026",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Kammarens föredragningslista"
+     },
+     {
+      "referenstyp": "protokollbeslut",
+      "uppgift": "2026-06-17",
+      "ref_dok_id": "HD09143",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "143",
+      "ref_dok_titel": "Protokoll 2025/26:143 Onsdagen den 17 juni",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "protokolldebatt",
+      "uppgift": "2026-06-17",
+      "ref_dok_id": "HD09143",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "143",
+      "ref_dok_titel": "Protokoll 2025/26:143 Onsdagen den 17 juni",
+      "ref_dok_subtitel": "Extra ändringsbudget för 2026 - Stöd till Ukraina samt stöd till hushåll och andra åtgärder med anledning av kriget i Mellanöstern",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "rskr",
+      "uppgift": "",
+      "ref_dok_id": "HD0K424",
+      "ref_dok_typ": "rskr",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "424",
+      "ref_dok_titel": "Riksdagsskrivelse 2025/26:424",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "rskr",
+      "ref_dok_dokumentnamn": "Riksdagsskrivelse"
+     },
+     {
+      "referenstyp": "rskr",
+      "uppgift": "",
+      "ref_dok_id": "HD0K425",
+      "ref_dok_typ": "rskr",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "425",
+      "ref_dok_titel": "Riksdagsskrivelse 2025/26:425",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "rskr",
+      "ref_dok_dokumentnamn": "Riksdagsskrivelse"
+     },
+     {
+      "referenstyp": "rskr",
+      "uppgift": "",
+      "ref_dok_id": "HD0K426",
+      "ref_dok_typ": "rskr",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "426",
+      "ref_dok_titel": "Riksdagsskrivelse 2025/26:426",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "rskr",
+      "ref_dok_dokumentnamn": "Riksdagsskrivelse"
+     },
+     {
+      "referenstyp": "rskr",
+      "uppgift": "",
+      "ref_dok_id": "HD0K427",
+      "ref_dok_typ": "rskr",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "427",
+      "ref_dok_titel": "Riksdagsskrivelse 2025/26:427",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "rskr",
+      "ref_dok_dokumentnamn": "Riksdagsskrivelse"
+     },
+     {
+      "referenstyp": "rskr",
+      "uppgift": "",
+      "ref_dok_id": "HD0K428",
+      "ref_dok_typ": "rskr",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "428",
+      "ref_dok_titel": "Riksdagsskrivelse 2025/26:428",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "rskr",
+      "ref_dok_dokumentnamn": "Riksdagsskrivelse"
+     },
+     {
+      "referenstyp": "talarlista",
+      "uppgift": "talarlista 2025/26:143 Onsdag den 17 juni 2026",
+      "ref_dok_id": "HD0J20260617",
+      "ref_dok_typ": "t-lista",
+      "ref_dok_rm": "2025/26",
+      "ref_dok_bet": "143",
+      "ref_dok_titel": "Onsdag den 17 juni 2026",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Talarlista"
+     }
+    ]
+   }
+  }
+ }
+}
