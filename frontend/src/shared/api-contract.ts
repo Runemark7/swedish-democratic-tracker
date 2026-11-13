@@ -5125,7 +5125,7 @@ export interface operations {
     getVoteDetail: {
         parameters: {
             query?: {
-                /** @description Riksmöte, e.g. "2026/27". When set, ballots and the live document lookup are limited to that session. Beteckning numbering restarts each riksmöte, so an unscoped lookup can mix two years that share a beteckning. */
+                /** @description Riksmöte, e.g. "2026/27". When set, ballots and the live document lookup are limited to that session. Beteckning numbering restarts each riksmöte, so the same beteckning and punkt exist in several. When omitted, the answer is the latest riksmöte holding that punkt — always one riksmöte, never a blend — and the response's `session` says which. */
                 session?: string;
             };
             header?: never;

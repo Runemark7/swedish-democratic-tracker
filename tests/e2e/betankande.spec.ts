@@ -80,6 +80,39 @@ test.describe("canonical betänkande page", () => {
     await expect(pw.getByText("Betänkande 2025/26:SkU16")).toBeVisible();
   });
 
+  // Gap share-card-wrong-session: beteckning + punkt recur every riksmöte, so
+  // the share address must carry the riksmöte and the card must show that one.
+  for (const rm of ["2021/22", "2025/26"]) {
+    test(`the share card of ${rm} shows ${rm}`, async ({ page: pw }) => {
+      await pw.route("**/api/betankanden/20**", (route) => route.fulfill({ json: page(rm) }));
+      await pw.route("**/api/speeches**", (route) => route.fulfill({ json: [] }));
+      const asked: string[] = [];
+      await pw.route("**/api/votes/SkU16/6**", (route) => {
+        const session = new URL(route.request().url()).searchParams.get("session") ?? "";
+        asked.push(session);
+        // Without a riksmöte the API answers with the latest one.
+        return route.fulfill({
+          json: {
+            beteckning: "SkU16", forslagspunkt: "6", session: session || "2025/26",
+            documentTitle: `Mervärdesskatt ${session || "2025/26"}`, status: "Bifall", avvikare: [],
+            partyBreakdown: [{ party: "S", jaCount: 8, nejCount: 0, avstarCount: 0, franvarandeCount: 0, partilinje: "Ja" }],
+          },
+        });
+      });
+      await pw.goto(`/beslut/${rm}/SkU16`);
+      const share = pw.getByRole("link", { name: "Dela omröstningen" });
+      await expect(share).toHaveAttribute("href", `/votes/SkU16/6/dela?session=${encodeURIComponent(rm)}`);
+      await share.click();
+      await expect(pw).toHaveURL(new RegExp(`/votes/SkU16/6/dela\\?session=${encodeURIComponent(rm)}$`));
+      const card = pw.locator("#vote-share-card");
+      await expect(card).toContainText(`Riksdagsomröstning · ${rm} · SkU16 punkt 6`);
+      await expect(card).toContainText(`Mervärdesskatt ${rm}`);
+      expect(asked).toEqual([rm]);
+      await expect(pw.getByRole("link", { name: /Tillbaka till omröstningen/ }))
+        .toHaveAttribute("href", `/votes/SkU16/6?session=${encodeURIComponent(rm)}`);
+    });
+  }
+
   test("the vote share URL still opens the share page", async ({ page: pw }) => {
     await pw.goto("/votes/SkU16/6/dela");
     await expect(pw).toHaveURL(/\/votes\/SkU16\/6\/dela$/);

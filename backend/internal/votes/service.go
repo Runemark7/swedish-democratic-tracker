@@ -190,6 +190,11 @@ func (s *Service) GetBetankandeInfo(ctx context.Context, beteckning, session str
 }
 
 func (s *Service) GetDocumentStatus(ctx context.Context, dokID string) (*domain.DocumentStatus, error) {
+	// A votering without a dok_id has no document to look up; asking upstream
+	// for an empty id is a wasted call that can only fail.
+	if dokID == "" {
+		return nil, nil
+	}
 	return s.riksdagen.FetchDocumentStatus(ctx, dokID)
 }
 

@@ -211,7 +211,7 @@ export function CommitteePage() {
             >
               <div className="flex items-baseline gap-2 flex-wrap">
                 <Link
-                  to={`/votes/${v.beteckning}/${v.forslagspunkt}`}
+                  to={`/votes/${v.beteckning}/${v.forslagspunkt}?session=${encodeURIComponent(v.riksmote)}`}
                   className="text-sm font-semibold text-on-surface hover:underline"
                 >
                   {v.beteckning} punkt {v.forslagspunkt}

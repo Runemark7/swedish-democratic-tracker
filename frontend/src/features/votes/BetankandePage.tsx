@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { betankandeApi, type BetankandePage as Page, type BetankandePunkt } from "./betankandeApi";
+import { betankandeApi, voteSharePath, type BetankandePage as Page, type BetankandePunkt } from "./betankandeApi";
 import { PartyBadge } from "@/shared/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
@@ -134,7 +134,7 @@ function PunktBlock({ page, k }: { page: Page; k: BetankandePunkt }) {
       </div>
       <p className="mt-2 text-xs">
         {/* A plain anchor: the share page must be a fresh load (see App.tsx). */}
-        <a href={`/votes/${encodeURIComponent(page.beteckning)}/${encodeURIComponent(k.number)}/dela`} className="text-link hover:underline">
+        <a href={voteSharePath(page.riksmote, page.beteckning, k.number)} className="text-link hover:underline">
           Dela omröstningen
         </a>
       </p>

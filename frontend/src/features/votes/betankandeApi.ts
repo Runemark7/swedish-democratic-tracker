@@ -11,6 +11,14 @@ export function betankandePath(riksmote: string, beteckning: string, punkt?: str
   return `/beslut/${riksmote}/${encodeURIComponent(beteckning)}${hash}`;
 }
 
+/** Share-card URL of one förslagspunkt's omröstning. The riksmöte is part of
+ *  the address: beteckning numbering restarts every riksmöte, so without it
+ *  the same address would mean a different omröstning the year after. */
+export function voteSharePath(riksmote: string, beteckning: string, punkt: string): string {
+  const q = riksmote ? `?session=${encodeURIComponent(riksmote)}` : "";
+  return `/votes/${encodeURIComponent(beteckning)}/${encodeURIComponent(punkt)}/dela${q}`;
+}
+
 export const betankandeApi = {
   /** The riksmöte sits in one path segment, so its slash is encoded (2025%2F26). */
   get: (riksmote: string, beteckning: string) =>
