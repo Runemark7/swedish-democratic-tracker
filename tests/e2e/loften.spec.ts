@@ -155,3 +155,48 @@ test.describe("Mandatperiod filter on Löften", () => {
     await expect(page.getByTestId("loften-hit-count")).toHaveText("1 löfte för S, mandatperiod 2026–2030");
   });
 });
+
+// Gap promise-summary-zeros-for-missing-data: "no Löften published for the
+// period" must not look like "zero Löften with this status".
+test.describe("Löften summary table", () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  const SUMMARY = [
+    // Only archived Löften: nothing published for the current period.
+    { party: "M", total: 10, for: 0, emot: 0, blandat: 0, inteProvat: 0, arkiv: 10 },
+    // Published Löften, with genuine zeros for some statuses.
+    { party: "S", total: 16, for: 3, emot: 0, blandat: 0, inteProvat: 7, arkiv: 6 },
+  ];
+
+  test.beforeEach(async ({ page }) => {
+    await page.route("**/api/loften", (r) => r.fulfill({ json: [] }));
+    await page.route("**/api/valmanifest", (r) => r.fulfill({ json: [] }));
+    await page.route("**/api/loften/summary", (r) => r.fulfill({ json: SUMMARY }));
+  });
+
+  test("a party without published Löften shows a text, not zeros, in the status columns", async ({ page }) => {
+    await page.goto("/loften");
+    const m = page.getByTestId("summary-M");
+    await expect(m.getByTestId("summary-no-loften")).toHaveText("Inga löften publicerade ännu");
+    await expect(m.getByTestId("summary-status-count")).toHaveCount(0);
+    // The archive count is real data and stays.
+    await expect(m.getByTestId("summary-arkiv")).toHaveText("10");
+    await expect(m.getByRole("link", { name: "M" })).toHaveAttribute("href", "/loften?party=M");
+  });
+
+  test("a party the summary does not mention at all gets the same text", async ({ page }) => {
+    await page.goto("/loften");
+    await expect(page.getByTestId("loften-summary").locator("tbody tr")).toHaveCount(8);
+    const v = page.getByTestId("summary-V");
+    await expect(v.getByTestId("summary-no-loften")).toHaveText("Inga löften publicerade ännu");
+    await expect(v.getByTestId("summary-status-count")).toHaveCount(0);
+  });
+
+  test("a party with published Löften keeps its counts, genuine zeros included", async ({ page }) => {
+    await page.goto("/loften");
+    const s = page.getByTestId("summary-S");
+    await expect(s.getByTestId("summary-no-loften")).toHaveCount(0);
+    await expect(s.getByTestId("summary-status-count")).toHaveText(["3", "0", "0", "7"]);
+    await expect(s.getByTestId("summary-arkiv")).toHaveText("6");
+  });
+});
