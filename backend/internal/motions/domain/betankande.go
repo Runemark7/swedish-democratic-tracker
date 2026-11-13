@@ -20,7 +20,8 @@ type Betankande struct {
 type Forslagspunkt struct {
 	Number string
 	Rubrik string
-	// Text is the utskottets förslag as served (HTML breaks and entities kept).
+	// Text is the utskottets förslag as served and stored (HTML breaks and
+	// entities kept); PlainForslagstext makes it readable.
 	Text       string
 	Beslutstyp string // "acklamation", "röstning", as given
 	VoteringID string // empty when decided without a votering

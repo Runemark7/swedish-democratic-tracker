@@ -133,7 +133,7 @@ func toPunkt(p *motions.BetankandePage, v motions.PunktView) punktResponse {
 		HTMLRead: p.HTMLRead, HasReasoningSection: p.HasReasoningSection, HasReservationsSection: p.HasReservationsSection,
 	}, "")
 	out := punktResponse{
-		Number: v.Number, Rubrik: v.Rubrik, Text: v.Text, Beslutstyp: v.Beslutstyp, Mode: d.Mode, ModeLabel: d.ModeLabel,
+		Number: v.Number, Rubrik: v.Rubrik, Text: domain.PlainForslagstext(v.Text), Beslutstyp: v.Beslutstyp, Mode: d.Mode, ModeLabel: d.ModeLabel,
 		Alternativ: v.Alternativ, Vinnare: v.Vinnare, VoteringID: v.VoteringID, VoteringStored: v.VoteringStored,
 		Reasoning: d.Reasoning, ReasoningAvailable: d.ReasoningAvailable,
 		ReservationsAvailable: d.ReservationsAvailable && p.Held, Reservations: d.Reservations,

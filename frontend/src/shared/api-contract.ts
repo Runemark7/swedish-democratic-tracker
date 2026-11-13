@@ -2289,7 +2289,7 @@ export interface components {
         BetankandePunkt: {
             number: string;
             rubrik: string;
-            /** @description The utskott's proposal as served */
+            /** @description The utskott's proposal as plain text: Riksdagen's HTML entities are decoded (å, ä, ö), <br> is a line break (\n) and other tags are dropped. Show it as text, never as HTML. */
             text: string;
             beslutstyp: string;
             /** @enum {string} */

@@ -1,0 +1,10 @@
+{
+ "method": "GET",
+ "path": "/dokument/HD01FiU47.html",
+ "query": {},
+ "status": 200,
+ "contentType": "text/html; charset=utf-8",
+ "recordedFrom": "https://data.riksdagen.se/dokument/HD01FiU47.html",
+ "note": "Recorded 2026-11-13. Unmodified; the raw response is in ../html.",
+ "bodyFile": "../html/HD01FiU47.html"
+}
