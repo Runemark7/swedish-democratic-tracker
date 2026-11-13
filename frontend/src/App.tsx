@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Routes, Route, useLocation, Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { NotFoundPage } from "./features/NotFoundPage";
 import { PartiesPage } from "./features/parties/PartiesPage";
 import { PartyDetailPage } from "./features/parties/PartyDetailPage";
 import { LoftenOverviewPage } from "./features/loften/LoftenOverviewPage";
@@ -334,6 +335,7 @@ export default function App() {
           <Route path="/om-sajten"                             element={<OmSajtenPage />} />
           <Route path="/data"                                  element={<DataIndexPage />} />
           <Route path="/data/:id"                              element={<DataSourcePage />} />
+          <Route path="*"                                      element={<NotFoundPage />} />
         </Routes>
       </main>
 
