@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { SOURCES } from "@/components/sources/SourceRegistry";
+import { swedishDate } from "@/shared/dates";
 import { Markdown } from "./markdown";
 
 const RAW_MARKDOWN = import.meta.glob("../../data-sources/*.md", {
@@ -86,7 +87,7 @@ export function DataSourcePage() {
               marginBottom: 6,
             }}
           >
-            {KIND_LABEL[entry.kind]} · senast verifierad {entry.lastVerified}
+            {KIND_LABEL[entry.kind]} · senast verifierad {swedishDate(entry.lastVerified)}
           </div>
           <h1
             style={{
@@ -116,7 +117,7 @@ export function DataSourcePage() {
           }}
         >
           <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-            {STATUS_LABEL[entry.verificationStatus]} · senast {entry.lastVerified}
+            {STATUS_LABEL[entry.verificationStatus]} · senast {swedishDate(entry.lastVerified)}
           </div>
           {entry.verificationNotes ? (
             <div style={{ fontSize: 12, lineHeight: 1.5 }}>{entry.verificationNotes}</div>

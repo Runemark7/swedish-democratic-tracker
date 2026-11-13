@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { SOURCES, type SourceId } from "./SourceRegistry";
 import { SourcePopover } from "./SourcePopover";
+import { swedishDate } from "@/shared/dates";
 
 const KIND_GLYPH: Record<string, string> = {
   api: "ⓘ",
@@ -65,6 +66,7 @@ export function SourceMarker({ sourceId, label }: SourceMarkerProps) {
         }}
         aria-label={label ?? `Källa: ${entry.name}${ariaSuffix}`}
         aria-expanded={open}
+        title={`${entry.name} — källan senast verifierad ${swedishDate(entry.lastVerified)}`}
         style={{
           display: "inline-flex",
           alignItems: "center",
