@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 import { loftenApi } from "./api";
 import { ArchiveNote, LoefteCard, ValmanifestList } from "./components";
+import { loftenHitCount } from "./hitCount";
 import { STATUS_FILTERS } from "./labels";
 import { betankandePath } from "@/features/votes/betankandeApi";
 import { SourceMarker } from "@/components/sources/SourceMarker";
@@ -87,6 +88,12 @@ export function LoftenOverviewPage() {
           Löften som berörs av betänkande{" "}
           <Link to={betankandePath(betankande.split(":")[0], betankande.split(":")[1] ?? "")} className="text-link underline">{betankande}</Link>.{" "}
           <button type="button" className="text-link underline" onClick={() => set("betankande", "")}>Visa alla</button>
+        </p>
+      )}
+
+      {loften.data && (
+        <p data-testid="loften-hit-count" aria-live="polite" className="text-sm font-medium mb-2">
+          {loftenHitCount(loften.data.length, party)}
         </p>
       )}
 
