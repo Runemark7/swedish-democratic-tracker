@@ -41,9 +41,17 @@ func (h *Handler) Routes(r chi.Router) {
 }
 
 var (
-	riksmotePattern   = regexp.MustCompile(`^\d{4}/\d{2}$`)
-	beteckningPattern = regexp.MustCompile(`^[0-9A-Za-z]{1,12}$`)
+	riksmotePattern = regexp.MustCompile(`^\d{4}/\d{2}$`)
+	// Committee codes carry Swedish letters: FöU, UFöU.
+	beteckningPattern = regexp.MustCompile(`^[0-9A-Za-zÅÄÖåäö]{1,12}$`)
 )
+
+// pathParam reads a path parameter decoded. chi matches on the raw path when
+// the URL has one (the riksmöte's %2F always gives it one), so a parameter
+// arrives still percent-encoded: FöU2 as F%C3%B6U2.
+func pathParam(r *http.Request, name string) (string, error) {
+	return url.PathUnescape(chi.URLParam(r, name))
+}
 
 const sourceURLBase = "https://data.riksdagen.se/dokument/"
 
@@ -198,9 +206,9 @@ type recurringMemberResponse struct {
 const ruleLabelIdenticalWording = "Identisk ordalydelse"
 
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
-	rm, err := url.PathUnescape(chi.URLParam(r, "riksmote"))
-	bet := chi.URLParam(r, "beteckning")
-	if err != nil || !riksmotePattern.MatchString(rm) || !beteckningPattern.MatchString(bet) {
+	rm, err := pathParam(r, "riksmote")
+	bet, berr := pathParam(r, "beteckning")
+	if err != nil || berr != nil || !riksmotePattern.MatchString(rm) || !beteckningPattern.MatchString(bet) {
 		jsonError(w, "invalid riksmöte or beteckning; the riksmöte is written 2017/18 and sent as 2017%2F18", http.StatusBadRequest)
 		return
 	}

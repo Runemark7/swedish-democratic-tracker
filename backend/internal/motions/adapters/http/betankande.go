@@ -3,9 +3,6 @@ package http
 import (
 	"errors"
 	"net/http"
-	"net/url"
-
-	"github.com/go-chi/chi/v5"
 
 	loften "riksdagskollen/internal/loften/domain"
 	"riksdagskollen/internal/motions"
@@ -81,9 +78,9 @@ type punktResponse struct {
 }
 
 func (h *Handler) getBetankande(w http.ResponseWriter, r *http.Request) {
-	rm, err := url.PathUnescape(chi.URLParam(r, "riksmote"))
-	bet := chi.URLParam(r, "beteckning")
-	if err != nil || !riksmotePattern.MatchString(rm) || !beteckningPattern.MatchString(bet) {
+	rm, err := pathParam(r, "riksmote")
+	bet, berr := pathParam(r, "beteckning")
+	if err != nil || berr != nil || !riksmotePattern.MatchString(rm) || !beteckningPattern.MatchString(bet) {
 		jsonError(w, "invalid riksmöte or beteckning; the riksmöte is written 2025/26 and sent as 2025%2F26", http.StatusBadRequest)
 		return
 	}
@@ -169,6 +166,12 @@ func (h *Handler) resolveBetankande(w http.ResponseWriter, r *http.Request) {
 	}
 	if !ok {
 		jsonError(w, "betänkande not found", http.StatusNotFound)
+		return
+	}
+	// Answer with the spelling Riksdagen uses, so the redirect lands on the
+	// canonical URL whatever case the old link had.
+	if bet, err = h.svc.CanonicalBeteckning(r.Context(), found, bet); err != nil {
+		jsonError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	jsonOK(w, map[string]string{"riksmote": found, "beteckning": bet, "punkt": punkt})

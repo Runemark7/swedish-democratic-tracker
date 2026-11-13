@@ -14,7 +14,7 @@ import (
 )
 
 var utskottPattern = regexp.MustCompile(`^[A-Za-zÅÄÖåäö]{2,5}$`)
-var betankandePattern = regexp.MustCompile(`^\d{4}/\d{2}:[0-9A-Za-z]{1,12}$`)
+var betankandePattern = regexp.MustCompile(`^\d{4}/\d{2}:[0-9A-Za-zÅÄÖåäö]{1,12}$`)
 
 var partyPattern = regexp.MustCompile(`^[A-Z]{1,4}$`)
 

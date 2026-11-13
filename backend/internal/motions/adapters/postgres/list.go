@@ -26,9 +26,30 @@ func likeEscape(s string) string {
 }
 
 func upperAll(in []string) []string {
-	out := make([]string, len(in))
-	for i, s := range in {
-		out[i] = strings.ToUpper(s)
+	return foldAll(in, strings.ToUpper, 'a', 'z', 'A'-'a')
+}
+
+// foldAll folds each code the way SQL upper() or lower() will fold the stored
+// column it is compared with. Postgres folds å, ä and ö only when the
+// database's locale knows them; under the C locale it folds ASCII alone and
+// upper('FöU') stays 'FöU'. So each code is given both ways: fully folded,
+// and with only its ASCII letters folded (from either spelling of the rest).
+func foldAll(in []string, fold func(string) string, from, to, shift rune) []string {
+	ascii := func(s string) string {
+		return strings.Map(func(r rune) rune {
+			if r >= from && r <= to {
+				return r + shift
+			}
+			return r
+		}, s)
+	}
+	out := make([]string, 0, len(in))
+	for _, s := range in {
+		for _, v := range []string{fold(s), ascii(s), ascii(strings.ToLower(s)), ascii(strings.ToUpper(s))} {
+			if !slices.Contains(out, v) {
+				out = append(out, v)
+			}
+		}
 	}
 	return out
 }
