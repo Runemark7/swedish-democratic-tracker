@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { motionsApi, betankandePath, type Motion } from "./api";
-import { ApiError } from "@/shared/api-client";
-import { PartyBadge } from "@/shared/components";
+import { isNotFound } from "@/shared/api-errors";
+import { PartyBadge, TemporaryError } from "@/shared/components";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { swedishDate } from "@/shared/dates";
 import { VotedAlternative, Reasoning, Reservations } from "./DecisionParts";
@@ -145,17 +145,22 @@ function DecisionBlock({ d, explain }: { d: Decision; explain: boolean }) {
 
 export function MotionPage() {
   const { riksmote = "", beteckning = "" } = useParams<{ riksmote: string; beteckning: string }>();
-  const { data: motion, isLoading, error } = useQuery({
+  const { data: motion, isLoading, error, refetch } = useQuery({
     queryKey: ["motion", riksmote, beteckning],
     queryFn: () => motionsApi.get(riksmote, beteckning),
-    retry: false,
   });
 
   if (isLoading) return <Notice>Laddar...</Notice>;
-  if (error instanceof ApiError && (error.status === 404 || error.status === 400)) {
+  if (isNotFound(error)) {
     return <Notice>Motion {riksmote}:{beteckning} finns inte i vårt register.</Notice>;
   }
-  if (error || !motion) return <Notice>Kunde inte ladda motionen.</Notice>;
+  if (error || !motion) {
+    return (
+      <div className="sdt-page px-8 py-16">
+        <TemporaryError what={`Motion ${riksmote}:${beteckning}`} onRetry={() => void refetch()} />
+      </div>
+    );
+  }
 
   return (
     <article className="sdt-page px-8 py-8" style={{ maxWidth: 860 }}>
