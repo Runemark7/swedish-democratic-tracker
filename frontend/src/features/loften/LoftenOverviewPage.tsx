@@ -9,6 +9,7 @@ import { SourceMarker } from "@/components/sources/SourceMarker";
 import { TemporaryError } from "@/shared/components";
 
 const PARTIES = ["C", "KD", "L", "M", "MP", "S", "SD", "V"];
+const EMPTY_SUMMARY = { total: 0, for: 0, emot: 0, blandat: 0, inteProvat: 0, arkiv: 0 };
 const UTSKOTT = ["AU", "CU", "FiU", "FöU", "JuU", "KU", "KrU", "MJU", "NU", "SfU", "SkU", "SoU", "TU", "UbU", "UU"];
 
 /** Löften across parties, with Löftesstatus. Reached from Partier, not from the top menu. */
@@ -60,12 +61,26 @@ export function LoftenOverviewPage() {
             </tr>
           </thead>
           <tbody>
-            {(summary.data ?? []).map((r) => (
-              <tr key={r.party} data-testid={`summary-${r.party}`}>
-                <td><Link to={`/loften?party=${r.party}${mandatperiod ? `&mandatperiod=${mandatperiod}` : ""}`} className="underline">{r.party}</Link></td>
-                <td>{r.for}</td><td>{r.emot}</td><td>{r.blandat}</td><td>{r.inteProvat}</td><td>{r.arkiv}</td>
-              </tr>
-            ))}
+            {summary.data && PARTIES.map((code) => {
+              // A party the API leaves out has no public Löften at all.
+              const r = summary.data.find((x) => x.party === code) ?? EMPTY_SUMMARY;
+              // Archived Löften carry no Löftesstatus, so only the rest count here.
+              const published = r.total - r.arkiv;
+              return (
+                <tr key={code} data-testid={`summary-${code}`}>
+                  <td><Link to={`/loften?party=${code}${mandatperiod ? `&mandatperiod=${mandatperiod}` : ""}`} className="underline">{code}</Link></td>
+                  {published === 0 ? (
+                    // No data is not the same as zero Löften with a status.
+                    <td colSpan={4} className="text-on-surface-variant" data-testid="summary-no-loften">Inga löften publicerade ännu</td>
+                  ) : (
+                    [r.for, r.emot, r.blandat, r.inteProvat].map((n, i) => (
+                      <td key={i} data-testid="summary-status-count">{n}</td>
+                    ))
+                  )}
+                  <td data-testid="summary-arkiv">{r.arkiv}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <SourceMarker sourceId="loften-valmanifest" />
