@@ -1,6 +1,7 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import type { SourceEntry } from "./SourceRegistry";
+import { swedishDate } from "@/shared/dates";
 
 const KIND_LABEL: Record<string, string> = {
   api: "API",
@@ -89,7 +90,7 @@ export function SourcePopover({ entry, anchorRef, onClose }: SourcePopoverProps)
           textTransform: "uppercase",
         }}
       >
-        {KIND_LABEL[entry.kind] ?? entry.kind} · senast verifierad {entry.lastVerified}
+        {KIND_LABEL[entry.kind] ?? entry.kind} · källan senast verifierad {swedishDate(entry.lastVerified)}
       </div>
       <div
         style={{

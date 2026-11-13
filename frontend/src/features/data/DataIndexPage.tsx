@@ -6,6 +6,7 @@ import { speechesApi } from "@/features/speeches/api";
 import { dataApi } from "@/features/data/api";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { swedishDate } from "@/shared/dates";
 import { SOURCES, type SourceKind } from "@/components/sources/SourceRegistry";
 
 const KIND_LABEL: Record<SourceKind | "all", string> = {
@@ -303,7 +304,7 @@ export function DataIndexPage() {
               {e.blurb}
             </p>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--color-fg-muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 4 }}>
-              SENAST VERIFIERAD {e.lastVerified}
+              SENAST VERIFIERAD {swedishDate(e.lastVerified)}
             </div>
           </Link>
         ))}

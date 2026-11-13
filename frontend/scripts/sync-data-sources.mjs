@@ -2,7 +2,7 @@
 import { readdir, readFile, writeFile, mkdir, copyFile, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import matter from "gray-matter";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -38,6 +38,24 @@ function validateStatus(file, fm) {
       );
     }
   }
+}
+
+/**
+ * `last_verified` as an ISO date ("2026-11-11").
+ *
+ * YAML reads an unquoted `2026-11-11` as a date, so gray-matter hands us a
+ * Date at midnight UTC. Stringifying that Date put "Wed Nov 11 2026 00:00:00
+ * GMT+0000 (Coordinated Universal Time)" in front of readers; the registry
+ * carries the plain date instead and the UI formats it in Swedish.
+ */
+export function isoDate(file, value) {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10);
+  }
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value.trim())) {
+    return value.trim();
+  }
+  throw new Error(`${file}: 'last_verified' must be a date written YYYY-MM-DD, got "${value}"`);
 }
 
 function firstParagraph(body) {
@@ -114,7 +132,7 @@ async function main() {
       upstream: fm.upstream && fm.upstream !== "~" ? fm.upstream : null,
       license: fm.license ?? null,
       freshness: fm.freshness ?? null,
-      lastVerified: String(fm.last_verified),
+      lastVerified: isoDate(file, fm.last_verified),
       blurb: firstParagraph(parsed.content),
       verificationStatus: fm.verification_status,
       verificationNotes: fm.verification_notes
@@ -143,7 +161,9 @@ async function main() {
   console.log(`sync-data-sources: ${entries.length} sources → ${path.relative(REPO_ROOT, GEN_FILE)}`);
 }
 
-main().catch((err) => {
-  console.error("sync-data-sources failed:", err.message);
-  process.exit(1);
-});
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  main().catch((err) => {
+    console.error("sync-data-sources failed:", err.message);
+    process.exit(1);
+  });
+}

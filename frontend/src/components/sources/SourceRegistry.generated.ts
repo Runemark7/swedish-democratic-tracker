@@ -9,7 +9,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://data.riksdagen.se/dokumentlista/?doktyp=bet",
     "license": "Public domain — Sveriges riksdag",
     "freshness": "dagligen (cron: fetch-betankanden @daily, högst 25 betänkanden per körning; sync-beslut-list @daily för listan)",
-    "lastVerified": "Tue Nov 10 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "lastVerified": "2026-11-10",
     "blurb": "Ett betänkande är utskottets förslag till riksdagen. Det delas in i förslagspunkter, och varje motions yrkanden avgörs i en förslagspunkt. Kammaren beslutar antingen genom acklamation (ingen omröstning) eller genom votering. Riksdagen publicerar betänkandet, varje punkts förslagstext, beslutstyp och, vid votering, votering-id.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -21,7 +21,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.kolada.se/v3",
     "license": "Kommun- och regionkollade — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "Samma upstream som [kolada](./kolada.md), men begränsad till de KPI-id:n som beskriver kommunens verksamhetsutgifter per ansvarsområde — skola, omsorg, plan, gata, etc. Separata MD eftersom endpointen, mappningen, och visualiseringen skiljer sig från KPI-stripen.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -33,7 +33,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.kolada.se/v3",
     "license": "Kommun- och regionkollade — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "Kolada är Rådet för främjande av kommunala analyser (RKA) sin databas med jämförelsetal för svenska kommuner och regioner — ekonomi, vård, skola, befolkning. Vi använder underlag för KPI-stripen på region- och kommunsidor.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -45,7 +45,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": null,
     "license": "Citat ur partiernas egna valmanifest, med källänk; röstdata ur Riksdagens öppna data",
     "freshness": "löpande — Löften och kopplingar bekräftas av redaktören; Löftesstatus räknas om vid varje visning",
-    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "lastVerified": "2026-11-11",
     "blurb": "Ett Löfte är ett konkret, prövbart uttalande i ett partis valmanifest. Varje Löfte har ett citat och en länk till originaldokumentet. En koppling knyter ett Löfte till en omröstning i riksdagen. Redaktören bekräftar varje koppling och anger vilken röst, Ja eller Nej, som går i Löftets riktning. Först då räknas kopplingen.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -57,7 +57,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://data.riksdagen.se/dokumentlista/?doktyp=mot",
     "license": "Public domain — Sveriges riksdag",
     "freshness": "dagligen för pågående riksmöte (cron: fetch-motions @daily); äldre riksmöten via backfill-motions",
-    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "lastVerified": "2026-11-11",
     "blurb": "En motion är ett förslag till riksdagen från en eller flera ledamöter. Riksdagen publicerar varje motion med undertecknare, ett numrerat yrkande per krav och, när utskottet och kammaren har behandlat den, vad som beslutades. Samma uppgifter finns i Riksdagens öppna data.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -69,7 +69,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.regeringen.se/rattsliga-dokument/",
     "license": "Regeringens dokument är offentliga; Tidöavtalet publiceras av partierna själva",
     "freshness": "manuell; uppdateras när ett nytt program- eller budgetdokument registreras",
-    "lastVerified": "Tue Aug 11 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-08-11",
     "blurb": "En katalog över regeringens program- och budgetdokument för mandatperioden. Katalogen pekar på dokumenten i sin helhet. Den innehåller inga sammanfattningar, inga citat och ingen bedömning av hur långt regeringen har kommit med något.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -81,7 +81,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": null,
     "license": "Partiernas egna publicerade dokument; länkas, återges inte",
     "freshness": "manuell — uppdateras när ett parti publicerar ett nytt dokument",
-    "lastVerified": "Tue Aug 04 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-08-04",
     "blurb": "En katalog över de valmanifest och valplattformar partierna själva har publicerat, från 2014 till 2026. Katalogen innehåller inga citat och ingen sammanfattning av politiken — den pekar på partiets eget dokument så att du kan läsa originaltexten.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -93,7 +93,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://data.riksdagen.se/dokumentlista/?doktyp=fr",
     "license": "Public domain — Sveriges riksdag",
     "freshness": "dagligen för pågående riksmöte (cron: fetch-questions @daily); äldre riksmöten via cmd/backfill-questions",
-    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "lastVerified": "2026-11-11",
     "blurb": "En skriftlig fråga (`doktyp=fr`) är en ledamots fråga till ett statsråd som besvaras skriftligt; svaret är ett eget dokument (`frs`). En interpellation (`ip`) besvaras och debatteras i kammaren. Riksdagen publicerar båda med frågeställare, statsråd och datum.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -105,7 +105,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": null,
     "license": "Public domain — respektive regions offentliga handlingar",
     "freshness": "manuell; länkarna pekar på regionens egen budgetsida",
-    "lastVerified": "Sat Jun 20 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-20",
     "blurb": "Varje region är enligt kommunallagen (11 kap.) skyldig att varje år anta en budget som innehåller mål och riktlinjer för verksamheten — regionens faktiska årsplan. Dokumentet heter olika i olika regioner (\"Mål och budget\", \"Regionplan och budget\", \"Verksamhetsplan med budget\" osv.) och beslutas av regionfullmäktige. Det finns ingen strukturerad, maskinläsbar nationell källa för dessa planer. Vi gör två saker: vi återger regionens egna övergripande mål ordagrant ur det beslutade dokumentet, och vi länkar alltid till hela originalplanen. Vi sammanfattar eller tolkar inte — formuleringarna är regionens egna och hela uppsättningen mål visas, aldrig ett urval.",
     "verificationStatus": "frozen",
     "verificationNotes": null
@@ -117,7 +117,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://data.riksdagen.se",
     "license": "Public domain — Sveriges riksdag",
     "freshness": "dagligen (cron: politicians @daily, speeches @daily, votes @daily); äldre anföranden via backfill-speeches",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "Riksdagens öppna data är portalen som Sveriges riksdag publicerar för all kammaraktivitet: ledamöter, anföranden, omröstningar, betänkanden, motioner och utskottsärenden. Det är primärkällan för all \"vad har politikerna gjort\"-data på sidan.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -129,7 +129,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__AM__AM0401__AM0401A/AKURLBefK/",
     "license": "SCB öppna data — fri användning (CC0)",
     "freshness": "kvartalsvis",
-    "lastVerified": "Wed Jun 10 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-10",
     "blurb": "Arbetskraftsundersökningarna (AKU) är SCB:s officiella mätning av arbetsmarknaden. Vi använder det säsongrensade relativa arbetslöshetstalet för hela befolkningen 15–74 år — andelen av arbetskraften som är arbetslös — som nationell indikator på riksdagssidan.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -141,7 +141,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://statistikdatabasen.scb.se/api/v2/tables/TAB638/metadata?lang=sv",
     "license": "PxWeb open data — fri användning",
     "freshness": "årlig (kvartal för kommunnivå)",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "SCB:s folkmängdsdatabas — total befolkning per kommun.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -153,7 +153,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://statistikdatabasen.scb.se/api/v2/tables/TAB1971/metadata?lang=sv",
     "license": "PxWeb open data — fri användning",
     "freshness": "4-årscykel (val)",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "SCB:s tabell över mandatfördelning i kommunfullmäktige efter senaste val. Källa till alla mandatkort på kommunsidor.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -165,7 +165,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.scb.se/hitta-statistik/statistik-efter-amne/arbetsmarknad/loner-och-arbetskostnader/konjunkturstatistik-loner-for-statlig-sektor-kls/",
     "license": "SCB öppna data — fri användning (CC0)",
     "freshness": "månadsvis (december-snapshot används som årsavstämning)",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-06",
     "blurb": "SCB:s Konjunkturstatistik löner, sysselsättning och arbetstid (KLS) är en månatlig enkät till statliga arbetsgivare om antal anställda. Vi använder Tabell 14 — *Månadsanställda i statlig sektor per myndighet* — ur databasdelen AM0102A. Varje post avser en specifik myndighet (kodad med KLS-myndighetskod) och ett specifikt månadsslut. Vi tar december-snapshoten för varje år och använder dem som årsavstämningar för att bygga personalhistorik.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -177,7 +177,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://statistikdatabasen.scb.se/api/v2/tables/TAB4242/metadata?lang=sv",
     "license": "PxWeb open data — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "SCB:s tabell över regioners nettokostnader per verksamhetsområde (hälso- och sjukvård, kollektivtrafik, regional utveckling).",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -189,7 +189,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statistikdatabasen.scb.se/pxweb/sv/ssd/START__PR__PR0101__PR0101A/KPI2020M/",
     "license": "SCB öppna data — fri användning (CC0)",
     "freshness": "månadsvis",
-    "lastVerified": "Wed Jun 10 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-10",
     "blurb": "Konsumentprisindex (KPI) är SCB:s officiella mått på prisutvecklingen för hushållens konsumtion. Vi använder seriens publicerade *årsförändring* — hur mycket priserna ändrats de senaste tolv månaderna, dvs. inflationstakten — som nationell indikator på riksdagssidan. Riksbankens inflationsmål är 2 %.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -201,7 +201,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://statistikdatabasen.scb.se/api/v2/tables/TAB2590/metadata?lang=sv",
     "license": "PxWeb open data — fri användning",
     "freshness": "4-årscykel (val)",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "SCB:s tabell över mandatfördelning i regionfullmäktige (landsting). Syster till Kfmandat men för regionnivå.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -213,7 +213,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://myndighetsregistret.scb.se",
     "license": "SCB öppna data — fri användning",
     "freshness": "löpande (uppdateras när myndigheter inrättas, avvecklas eller byter namn)",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-06",
     "blurb": "SCB:s Myndighetsregister är den officiella förteckningen över alla statliga myndigheter i Sverige. Det förs av Statistiska centralbyrån på uppdrag av regeringen och innehåller namn, organisationsnummer, typ (förvaltningsmyndighet, domstol, utlandsmyndighet m.m.), huvudman och webbadress för varje myndighet. Registret är källan för hela myndighetslistans struktur på sidan — utan det vet vi inte ens vilka myndigheter som existerar.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -225,7 +225,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.regeringen.se/rattsliga-dokument/proposition/",
     "license": "Public domain — Regeringskansliet",
     "freshness": "engångs per år; uppdateras vid ny budget",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-06",
     "blurb": "Hand-kuraterad data från statens budgetproposition (BP) över flera år. Innehåller anslagna belopp per utgiftsområde (UO 1–27) samt vilken status posten har — föreslagen av regeringen eller beslutad av riksdagen.",
     "verificationStatus": "frozen",
     "verificationNotes": null
@@ -237,7 +237,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": null,
     "license": "Sammanställt från partiernas valmanifest 2022, valplattform 2026, Tidöavtalet och partiprogram",
     "freshness": "engångs (vid antagande); uppdateras manuellt vid nya manifest",
-    "lastVerified": "Sun Jun 21 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-21",
     "blurb": "Sedan migration 000057 kopieras 2022 års mål (och mål utan valår) till tabellen `loften` med oförändrat id och synlighet `archived`; 2026-material kopieras inte. De visas som arkiv 2022–2026, utan Löftesstatus. Tabellen `party_goals` har tagits bort (migration 000064, #164); arkivet i `loften` är den enda kvarvarande kopian.",
     "verificationStatus": "frozen",
     "verificationNotes": null
@@ -249,7 +249,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://data.riksdagen.se/anforandelista/",
     "license": "Public domain — Sveriges riksdag",
     "freshness": "engångskörning av en operatör, ett riksmöte i taget (kommandot backfill-speeches); löpande riksmöte via fetch-speeches @daily",
-    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "lastVerified": "2026-11-11",
     "blurb": "Riksdagen publicerar varje anförande i kammaren, med talare, parti, protokolldatum, rubrik och, för de flesta debatter, vilket betänkande det gäller. Sajten läste länge bara in de senaste riksmötena. Den här källan är inläsningen av äldre riksmöten, ett i taget och de nyaste först, så att man kan följa en fråga genom debatten i kammaren tillbaka i tiden. Första omgången är de två senaste mandatperioderna och 2014–2018.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -261,7 +261,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statskontoret.se/analys-och-statistik/oppna-data/arsutfall/",
     "license": "Statskontoret open data — fri användning",
     "freshness": "årlig",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "Statskontoret publicerar årligen statliga myndigheters faktiska driftkostnader (löner, lokaler, IT — exkl. transfereringar) som en ZIP med CSV-filer. Detta är \"kvittot\" för Myndigheter-avsnittet på Regeringen.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -273,7 +273,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.statskontoret.se/analys-och-statistik/oppna-data/myndighetsforteckning/",
     "license": "Statskontoret open data — fri användning",
     "freshness": "årlig (ny version publiceras vanligtvis under Q1 nästkommande år)",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-06",
     "blurb": "Statskontoret publicerar varje år en Myndighetsförteckning — ett XLSX-dokument med longitudinella personaluppgifter för samtliga statliga myndigheter. Centrala måttet är *årsarbetskrafter*: heltidsekvivalenter per myndighet och år, med täckning från 2007 och framåt. Statskontoret beräknar detta mått från arbetsgivardeklarationer till Skatteverket och det är det officiella måttet för personalstyrka i statlig sektor.",
     "verificationStatus": "verified",
     "verificationNotes": "Den exakta XLSX-URL:en innehåller ett hårdkodat filnamn med årstal (statskontorets-myndighetsforteckning-2025.xlsx). URL:en måste uppdateras när Statskontoret publicerar nästa utgåva."
@@ -285,7 +285,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://api.ted.europa.eu/v3/notices/search",
     "license": "EU public data",
     "freshness": "löpande",
-    "lastVerified": "Sat Jun 06 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-06",
     "blurb": "EU:s officiella databas över alla offentliga upphandlingar över tröskelvärdet. Vi använder den för att visa kommunala kontrakt på kommunsidor.",
     "verificationStatus": "unsure",
     "verificationNotes": "Upstream-URL i MD pekade på ted.europa.eu (webbgränssnitt) men backenden anropar api.ted.europa.eu/v3/notices/search; MD uppdaterat till korrekt API-host. Tidigare bash-block med curl mot fel host borttaget. Inga SourceMarker-konsumenter finns i UI idag."
@@ -297,7 +297,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/riksdagsordning-2014801_sfs-2014-801/",
     "license": "Svensk författningssamling — fri användning",
     "freshness": "ändras genom lagändring; kontrolleras vid ny lydelse",
-    "lastVerified": "Wed Aug 05 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-08-05",
     "blurb": "Vilket utskott som bereder vilket utgiftsområde (UO) är inte vår tolkning — det är lag. Fördelningen står i Bilagan (tilläggsbestämmelse 7.5.1) till riksdagsordningen (2014:801), den författning som reglerar riksdagens arbetsformer. Det är **inte** hämtat från riksdagen.se:s sidor om de enskilda utskotten, som beskriver ansvarsområden i löptext utan att lista en maskinläsbar koppling till UO-koder.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -309,7 +309,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://resultat.val.se/val2026/",
     "license": "Valmyndighetens publicerade valresultat — offentlig handling",
     "freshness": "4-årscykel (val). Raden byts när en regering har utsetts.",
-    "lastVerified": "Tue Oct 27 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "lastVerified": "2026-10-27",
     "blurb": "Valmyndighetens fastställda fördelning av riksdagens 349 mandat efter valet den 13 september 2026. Beslutet är daterat 19 september 2026 (dnr VAL-735-2026). Riksdagen publicerar samma siffror.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -321,7 +321,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://data.riksdagen.se/voteringlista/",
     "license": "Public domain — Sveriges riksdag",
     "freshness": "dagligen (cron: fetch-votes @daily); täckningens nämnare räknas om veckovis (söndagar)",
-    "lastVerified": "Wed Nov 11 2026 01:00:00 GMT+0100 (Central European Standard Time)",
+    "lastVerified": "2026-11-11",
     "blurb": "En votering är en omröstning i kammaren om en förslagspunkt i ett betänkande. Riksdagen publicerar hur varje ledamot röstade (Ja, Nej, Avstår eller Frånvarande) och vilket datum omröstningen hölls. Beslut som fattas utan omröstning (acklamation) har ingen votering.",
     "verificationStatus": "verified",
     "verificationNotes": null
@@ -333,7 +333,7 @@ export const SOURCES: Record<string, SourceEntry> = {
     "upstream": "https://commons.wikimedia.org/wiki/Category:Maps_of_municipalities_of_Sweden",
     "license": "CC BY-SA 2.5",
     "freshness": "engångs (statiska SVG-banor inkluderade i bundle)",
-    "lastVerified": "Mon Jun 08 2026 02:00:00 GMT+0200 (Central European Summer Time)",
+    "lastVerified": "2026-06-08",
     "blurb": "SVG-paths för Sveriges 21 regioner och 290 kommuner. De är inbyggda direkt i sidan så kartan kan ritas omedelbart utan extra hämtning. Ursprunget är Wikimedia Commons, baserat på SCB:s administrativa indelning.",
     "verificationStatus": "frozen",
     "verificationNotes": "Statisk SVG; CC BY-SA 2.5-attribution renderas nu i kartvyerna."
