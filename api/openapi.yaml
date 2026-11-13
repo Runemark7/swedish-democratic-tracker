@@ -3640,6 +3640,19 @@ components:
             $ref: "#/components/schemas/Vote"
         total:
           type: integer
+        summary:
+          type: object
+          description: >-
+            Counts over every ballot of the member in scope (all recorded
+            history, or the riksmöte given by `session`) — independent of
+            page and pageSize. Only returned by /politicians/{id}/votes.
+          required: [ja, nej, avstar, franvarande, total]
+          properties:
+            ja: { type: integer }
+            nej: { type: integer }
+            avstar: { type: integer }
+            franvarande: { type: integer }
+            total: { type: integer }
         page:
           type: integer
         pageSize:

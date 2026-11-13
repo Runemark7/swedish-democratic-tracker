@@ -36,23 +36,50 @@ func (r *Repository) ListByPolitician(ctx context.Context, f ports.ListVotesFilt
 	// Columns are qualified because the ballot and the votering now come from
 	// different tables: politician_id is the member's, everything else describes
 	// the question they voted on.
-	var total int
+	// One grouped aggregate over the member's whole history (or one riksmöte)
+	// gives both the page total and the summary counts — never the page rows.
+	var summary ports.PoliticianVoteSummary
 	var err error
+	var rows pgx.Rows
 	if f.Session == "" {
 		// Every ballot has a votering (NOT NULL FK, ON DELETE CASCADE), so the
-		// join adds nothing to the count: an index-only scan answers it.
-		err = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM ballots WHERE politician_id = $1`, f.PoliticianID).Scan(&total)
+		// join adds nothing: an index-only scan answers it.
+		rows, err = r.db.Query(ctx, `SELECT vote_result, COUNT(*) FROM ballots WHERE politician_id = $1 GROUP BY vote_result`, f.PoliticianID)
 	} else {
-		err = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM ballots b JOIN voteringar vg ON vg.id = b.votering_ref
-			WHERE b.politician_id = $1 AND vg.session = $2`, f.PoliticianID, f.Session).Scan(&total)
+		rows, err = r.db.Query(ctx, `SELECT b.vote_result, COUNT(*) FROM ballots b JOIN voteringar vg ON vg.id = b.votering_ref
+			WHERE b.politician_id = $1 AND vg.session = $2 GROUP BY b.vote_result`, f.PoliticianID, f.Session)
 	}
 	if err != nil {
 		return ports.ListVotesResult{}, err
 	}
+	for rows.Next() {
+		var result string
+		var n int
+		if err := rows.Scan(&result, &n); err != nil {
+			rows.Close()
+			return ports.ListVotesResult{}, err
+		}
+		switch domain.VoteResult(result) {
+		case "Ja":
+			summary.Ja = n
+		case "Nej":
+			summary.Nej = n
+		case "Avstår":
+			summary.Avstar = n
+		case "Frånvarande":
+			summary.Franvarande = n
+		}
+		summary.Total += n
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return ports.ListVotesResult{}, err
+	}
+	total := summary.Total
 
 	offset := (f.Page - 1) * f.PageSize
 	if total == 0 || offset >= total {
-		return ports.ListVotesResult{Votes: nil, Total: total}, nil
+		return ports.ListVotesResult{Votes: nil, Total: total, Summary: summary}, nil
 	}
 
 	args := []any{f.PoliticianID, f.PageSize, offset}
@@ -79,7 +106,7 @@ func (r *Repository) ListByPolitician(ctx context.Context, f ports.ListVotesFilt
 			ORDER BY vg.created_at DESC, vg.id DESC LIMIT $2 OFFSET $3`
 	}
 
-	rows, err := r.db.Query(ctx, q, args...)
+	rows, err = r.db.Query(ctx, q, args...)
 	if err != nil {
 		return ports.ListVotesResult{}, err
 	}
@@ -93,7 +120,7 @@ func (r *Repository) ListByPolitician(ctx context.Context, f ports.ListVotesFilt
 		}
 		vv = append(vv, v)
 	}
-	return ports.ListVotesResult{Votes: vv, Total: total}, rows.Err()
+	return ports.ListVotesResult{Votes: vv, Total: total, Summary: summary}, rows.Err()
 }
 
 func (r *Repository) BallotsOfVoteringar(ctx context.Context, voteringIDs []string) ([]*domain.Vote, error) {

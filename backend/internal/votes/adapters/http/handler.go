@@ -50,6 +50,7 @@ func (h *Handler) listByPolitician(w http.ResponseWriter, r *http.Request) {
 	jsonOK(w, map[string]any{
 		"data":     result.Votes,
 		"total":    result.Total,
+		"summary":  result.Summary,
 		"page":     f.Page,
 		"pageSize": f.PageSize,
 	})
