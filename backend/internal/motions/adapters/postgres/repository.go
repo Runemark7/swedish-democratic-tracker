@@ -4,6 +4,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"strings"
 	"sync"
 	"time"
 
@@ -633,6 +634,25 @@ func (r *Repository) GetBetankande(ctx context.Context, rm, bet string) (*domain
 		b.SystemDatum = *sd
 	}
 	return &b, nil
+}
+
+func (r *Repository) CanonicalBeteckning(ctx context.Context, rm, bet string) (string, error) {
+	var found string
+	err := r.db.QueryRow(ctx, `
+		SELECT b FROM (
+			SELECT beteckning AS b FROM betankanden WHERE riksmote = $1 AND lower(beteckning) = ANY($3)
+			UNION
+			SELECT beteckning FROM beslut_listing WHERE riksmote = $1 AND lower(beteckning) = ANY($3)
+			UNION
+			SELECT beteckning FROM voteringar WHERE session = $1 AND lower(beteckning) = ANY($3)
+		) x ORDER BY (b = $2) DESC, b LIMIT 1`, rm, bet, foldAll([]string{bet}, strings.ToLower, 'A', 'Z', 'a'-'A')).Scan(&found)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return bet, nil
+	}
+	if err != nil {
+		return "", err
+	}
+	return found, nil
 }
 
 func (r *Repository) PunktMotions(ctx context.Context, rm, bet string) (map[string][]domain.PunktMotion, error) {

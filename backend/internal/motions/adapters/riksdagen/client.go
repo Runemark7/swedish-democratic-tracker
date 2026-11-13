@@ -313,7 +313,8 @@ func (c *Client) FindBetankande(ctx context.Context, rm, bet string) (ports.Beta
 	for _, d := range payload.Dokumentlista.Dokument {
 		if d.Rm == rm && strings.EqualFold(d.Beteckning, bet) && d.DokID != "" {
 			return ports.BetankandeRef{
-				DokID: d.DokID, SystemDatum: parseTime(d.Systemdatum), Title: d.Titel, Status: d.Status,
+				DokID: d.DokID, Riksmote: d.Rm, Beteckning: d.Beteckning,
+				SystemDatum: parseTime(d.Systemdatum), Title: d.Titel, Status: d.Status,
 				DecisionDate: d.Beslutsdag, ChamberDecided: parseBeslutad(d.Beslutad),
 				DebateDate: parseDebateDate(d.Sokdata.Statusrad),
 			}, true, nil

@@ -1,0 +1,45 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "votering",
+  "rm": "2026/27",
+  "utformat": "json",
+  "sz": "200",
+  "p": "1",
+  "sort": "datum",
+  "sortorder": "desc"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=votering&rm=2026/27&bet=FöU2&utformat=json&sz=1&p=1&sort=datum&sortorder=desc",
+ "note": "Recorded 2026-11-13. Live page filtered to FöU2 (its one votering), reduced to the fields the client reads; served for the worker's sz=200 request.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "46.0",
+   "@version": "3.9.0",
+   "@q": "sz=1&p=1&sortorder=desc&doktyp=votering&sort=datum&rm=2026%2f27&utformat=json&bet=F%c3%b6U2",
+   "@datum": "2026-11-13 08:01:13",
+   "@sida": "1",
+   "@sidor": "1",
+   "@traff_fran": "1",
+   "@traff_till": "1",
+   "@traffar": "1",
+   "@dPre": "0",
+   "@dSol": "15",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null,
+   "dokument": [
+    {
+     "dok_id": "HE19FöU2p2",
+     "beteckning": "FöU2",
+     "organ": "FöU",
+     "datum": "2026-11-04",
+     "systemdatum": "2026-11-04 16:02:38",
+     "titel": "Omröstning: betänkande 2026/27:FöU2 Personalförsörjning av det militära försvaret, förslagspunkt 2",
+     "rm": "2026/27"
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "method": "GET",
+ "path": "/dokumentlista/",
+ "query": {
+  "doktyp": "bet",
+  "rm": "2026/27",
+  "bet": "FöU99",
+  "sz": "5",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentlista/?doktyp=bet&rm=2026/27&bet=FöU99&sz=5&utformat=json",
+ "note": "Recorded 2026-11-13 from data.riksdagen.se, unreduced: no such betänkande, zero hits.",
+ "body": {
+  "dokumentlista": {
+   "@ms": "0.0",
+   "@version": "3.9.0",
+   "@q": "sz=5&doktyp=bet&rm=2026%2f27&utformat=json&bet=F%c3%b6U99",
+   "@datum": "2026-11-13 11:19:28",
+   "@sida": "1",
+   "@sidor": "0",
+   "@traff_fran": "1",
+   "@traff_till": "0",
+   "@traffar": "0",
+   "@dPre": "160",
+   "@dSol": "0",
+   "@dDt": "0",
+   "@dR": "0",
+   "facettlista": null
+  }
+ }
+}

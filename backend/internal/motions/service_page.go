@@ -56,6 +56,12 @@ var ErrBetankandeNotFound = errors.New("betänkande not found")
 // row (beslutsdag, beslutad, status) through RiksdagDocument.Decided, never a
 // timestamp of ours.
 func (s *Service) Betankande(ctx context.Context, rm, bet string) (*BetankandePage, error) {
+	// Every row is keyed on the beteckning as Riksdagen spells it (SfU18,
+	// FöU2); a URL typed sfu18 or FÖU2 means the same betänkande.
+	bet, err := s.repo.CanonicalBeteckning(ctx, rm, bet)
+	if err != nil {
+		return nil, err
+	}
 	page := &BetankandePage{Riksmote: rm, Beteckning: bet, Punkter: []PunktView{}}
 
 	ref, listed, lerr := s.rd.FindBetankande(ctx, rm, bet)
@@ -67,6 +73,9 @@ func (s *Service) Betankande(ctx context.Context, rm, bet string) (*BetankandePa
 		d := doc.Decided(s.clock())
 		page.Decided, page.Status, page.DecisionDate = &d, ref.Status, ref.DecisionDate
 		page.Title, page.DokID = ref.Title, ref.DokID
+		if ref.Beteckning != "" {
+			page.Beteckning = ref.Beteckning
+		}
 	}
 
 	stored, err := s.repo.GetBetankande(ctx, rm, bet)
@@ -161,6 +170,12 @@ func (s *Service) fillVotes(ctx context.Context, v *PunktView) error {
 // Resolve backs the redirects: which riksmöte a beteckning (and punkt) lives in.
 func (s *Service) Resolve(ctx context.Context, bet, punkt, rm string) (string, bool, error) {
 	return s.repo.ResolveBetankande(ctx, bet, punkt, rm)
+}
+
+// CanonicalBeteckning returns the beteckning as it is stored for the riksmöte,
+// matched without regard to case; unchanged when nothing is stored.
+func (s *Service) CanonicalBeteckning(ctx context.Context, rm, bet string) (string, error) {
+	return s.repo.CanonicalBeteckning(ctx, rm, bet)
 }
 
 // DebateLimit caps the speeches returned for one debate.

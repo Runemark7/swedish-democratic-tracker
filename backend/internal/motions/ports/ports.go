@@ -137,6 +137,10 @@ type Repository interface {
 	// cursor. Looking at none means the walk is done.
 	// GetBetankande reads a stored, found betänkande without its punkter.
 	GetBetankande(ctx context.Context, rm, bet string) (*domain.BetankandeStored, error)
+	// CanonicalBeteckning returns the stored spelling of a beteckning in a
+	// riksmöte, matched case-insensitively across the betänkanden, the
+	// listing and the voteringar; bet unchanged when none matches.
+	CanonicalBeteckning(ctx context.Context, rm, bet string) (string, error)
 	// Statements reads the reservations and särskilda yttranden of a betänkande.
 	Statements(ctx context.Context, rm, bet string) ([]domain.Statement, error)
 	// PunktMotions lists, per punkt number, the motions and yrkanden decided there.
