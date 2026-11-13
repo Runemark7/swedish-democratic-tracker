@@ -1,5 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Link } from "react-router-dom";
+import { resolveDocHref } from "./docLinks";
 
 interface MarkdownProps {
   source: string;
@@ -23,6 +25,17 @@ export function Markdown({ source }: MarkdownProps) {
           <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--color-fg)", margin: "0 0 12px" }}>{children}</p>
         ),
         a: ({ href, children }) => {
+          const docPath = resolveDocHref(href);
+          if (docPath) {
+            return (
+              <Link
+                to={docPath}
+                style={{ color: "var(--color-accent)", textDecoration: "none", borderBottom: "1px solid var(--color-border)" }}
+              >
+                {children}
+              </Link>
+            );
+          }
           const isExternal = !!href && /^https?:/.test(href);
           return (
             <a
