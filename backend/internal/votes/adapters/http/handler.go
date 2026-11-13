@@ -130,8 +130,8 @@ func (h *Handler) listByCommittee(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getDetail(w http.ResponseWriter, r *http.Request) {
 	bet := chi.URLParam(r, "beteckning")
 	punkt := chi.URLParam(r, "punkt")
-	// Optional riksmöte. Beteckning numbering restarts each year, so an
-	// unscoped read mixes two betänkanden that share a code.
+	// Optional riksmöte. Beteckning numbering restarts each year; without it
+	// the repository answers with the latest riksmöte holding this punkt.
 	session := r.URL.Query().Get("session")
 
 	vv, err := h.svc.ListByBeteckning(r.Context(), bet, punkt, session)

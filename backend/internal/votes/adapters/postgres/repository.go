@@ -117,13 +117,21 @@ func (r *Repository) BallotsOfVoteringar(ctx context.Context, voteringIDs []stri
 	return vv, rows.Err()
 }
 
+// ListByBeteckning reads one förslagspunkt of one riksmöte, never several.
+// Beteckning numbering restarts each riksmöte (KU4 punkt 1 exists in 2005/06
+// and in 2026/27), so without a session the latest riksmöte holding that
+// beteckning + punkt is used — the same choice /api/betankanden/resolve makes.
+// Riksmöten sort correctly as text ("2005/06" < "2026/27").
 func (r *Repository) ListByBeteckning(ctx context.Context, beteckning, punkt, session string) ([]*domain.Vote, error) {
 	const q = `SELECT vg.votering_id, b.politician_id, b.party, b.vote_result, vg.beteckning, vg.forslagspunkt,
 		vg.session, vg.dok_id, vg.document_title, vg.created_at
 		FROM ballots b
 		JOIN voteringar vg ON vg.id = b.votering_ref
 		WHERE vg.beteckning = $1 AND vg.forslagspunkt = $2
-		  AND ($3 = '' OR vg.session = $3)
+		  AND vg.session = CASE WHEN $3 = '' THEN (
+		        SELECT MAX(latest.session) FROM voteringar latest
+		        WHERE latest.beteckning = $1 AND latest.forslagspunkt = $2)
+		      ELSE $3 END
 		ORDER BY b.party, b.politician_id`
 
 	rows, err := r.db.Query(ctx, q, beteckning, punkt, session)

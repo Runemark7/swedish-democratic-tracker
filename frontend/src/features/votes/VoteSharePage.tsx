@@ -1,17 +1,28 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { votesApi } from "./api";
 import { VoteShareCard } from "./VoteShareCard";
 
 export function VoteSharePage() {
   const { beteckning = "", punkt = "" } = useParams();
+  // The riksmöte names which omröstning this is: beteckning + punkt alone
+  // recur every riksmöte. Old addresses without it still open, and the API
+  // then answers with the latest riksmöte holding that punkt.
+  const [sp] = useSearchParams();
+  const session = sp.get("session") ?? sp.get("rm") ?? "";
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["vote-detail", beteckning, punkt],
-    queryFn: () => votesApi.getDetail(beteckning, punkt),
+    queryKey: ["vote-detail", beteckning, punkt, session],
+    queryFn: () => votesApi.getDetail(beteckning, punkt, session || undefined),
     enabled: !!beteckning && !!punkt,
     staleTime: 5 * 60 * 1000,
   });
+
+  // Back to the same riksmöte the card shows, not whichever is latest.
+  const backSession = session || data?.session || "";
+  const backHref =
+    `/votes/${encodeURIComponent(beteckning)}/${encodeURIComponent(punkt)}` +
+    (backSession ? `?session=${encodeURIComponent(backSession)}` : "");
 
   return (
     <div
@@ -53,7 +64,7 @@ export function VoteSharePage() {
       {data && <VoteShareCard data={data} />}
 
       <a
-        href={`/votes/${beteckning}/${punkt}`}
+        href={backHref}
         style={{
           marginTop: 28,
           fontFamily: "monospace",
