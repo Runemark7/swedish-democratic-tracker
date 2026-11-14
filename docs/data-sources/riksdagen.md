@@ -50,6 +50,9 @@ per-ledamots röst (Ja/Nej/Avstår/Frånvarande) och anförandetext.
 - `personlista.person.intressent_id` — primärnyckel för politiker.
 - `personlista.person.tilltalsnamn` / `efternamn` — namn.
 - `personlista.person.parti` — partikod (S, M, ...).
+- `personlista.person.personuppgift` (typ `eadress`, "Officiell e-postadress") — publik e-post; Riksdagen skriver `@` som `[på]`, vi översätter tillbaka. Gissas aldrig.
+- `personlista.person.personuppdrag.uppdrag` — `typ=uppdrag` med `tom` i framtiden → nuvarande utskottsuppdrag (organ_kod, roll_kod, namn i `uppgift`). `typ=kammaruppdrag`, roll `Riksdagsledamot` (status Tjänstgörande/Ledig) i obruten följd (glapp ≤ 48 h) → "Ledamot sedan <år>"; utelämnas om det inte går att fastställa.
+- Länken "Kontaktuppgifter hos Riksdagen" byggs som `https://www.riksdagen.se/sv/ledamoter-och-partier/ledamot/<namn-slug>_<intressent_id>/` (slug är kosmetisk; id avgör, verifierat 2026-11-14).
 - `dokumentlista.dokument.beteckning` / `dok_id` — för omröstningar.
 - `voteringlista.votering.rost` — Ja/Nej/Avstår/Frånvarande per ledamot.
 - `anforandelista.anforande.anforande_text` — anförandetext för debatter.

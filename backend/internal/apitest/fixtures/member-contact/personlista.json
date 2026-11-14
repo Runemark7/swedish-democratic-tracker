@@ -1,0 +1,1456 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "rdlstatus": "tjanstgorande",
+  "parti": "",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?rdlstatus=tjanstgorande&parti=&utformat=json",
+ "note": "Recorded 2026-11-14. Reduced to two members (Malin Larsson, Mikael Damberg) and to the fields the politicians client reads; personuppgift reduced to the eadress entry.",
+ "body": {
+  "personlista": {
+   "person": [
+    {
+     "intressent_id": "014744660015",
+     "tilltalsnamn": "Mikael",
+     "efternamn": "Damberg",
+     "parti": "S",
+     "valkrets": "Stockholms län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/70b5dfce-7871-4e6e-b0bf-a0d482fa4c6b_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot",
+     "personuppdrag": {
+      "uppdrag": [
+       {
+        "organ_kod": "Fi",
+        "roll_kod": "Finansminister",
+        "ordningsnummer": "4",
+        "status": "",
+        "typ": "Departement",
+        "from": "2022-10-07",
+        "tom": "2022-10-18 13:00:00",
+        "uppgift": [
+         "Finansdepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "50",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "Fi",
+        "roll_kod": "Finansminister",
+        "ordningsnummer": "5",
+        "status": "",
+        "typ": "Departement",
+        "from": "2021-11-30 13:00:00",
+        "tom": "2022-10-06 23:59:00",
+        "uppgift": [
+         "Finansdepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "50",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "Ju",
+        "roll_kod": "Statsråd",
+        "ordningsnummer": "8",
+        "status": "",
+        "typ": "Departement",
+        "from": "2021-07-09 14:00:00",
+        "tom": "2021-11-30 12:59:00",
+        "uppgift": [
+         "Justitiedepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "100",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "Ju",
+        "roll_kod": "Statsråd",
+        "ordningsnummer": "8",
+        "status": "",
+        "typ": "Departement",
+        "from": "2021-02-05",
+        "tom": "2021-07-09 13:59:00",
+        "uppgift": [
+         "Justitiedepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "100",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "Ju",
+        "roll_kod": "Statsråd",
+        "ordningsnummer": "9",
+        "status": "",
+        "typ": "Departement",
+        "from": "2019-09-10 14:00:00",
+        "tom": "2021-02-04 23:59:00",
+        "uppgift": [
+         "Justitiedepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "100",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "Ju",
+        "roll_kod": "Statsråd",
+        "ordningsnummer": "11",
+        "status": "",
+        "typ": "Departement",
+        "from": "2019-01-21",
+        "tom": "2019-09-10 14:00:00",
+        "uppgift": [
+         "Justitiedepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "100",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "N",
+        "roll_kod": "Närings- och innovationsminister",
+        "ordningsnummer": "13",
+        "status": "",
+        "typ": "Departement",
+        "from": "2017-07-27",
+        "tom": "2019-01-21 23:59:00",
+        "uppgift": [
+         "Näringsdepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "N",
+        "roll_kod": "Närings- och innovationsminister",
+        "ordningsnummer": "15",
+        "status": "",
+        "typ": "Departement",
+        "from": "2016-05-25",
+        "tom": "2017-07-27 23:59:00",
+        "uppgift": [
+         "Näringsdepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "N",
+        "roll_kod": "Närings- och innovationsminister",
+        "ordningsnummer": "18",
+        "status": "",
+        "typ": "Departement",
+        "from": "2014-10-03",
+        "tom": "2016-05-25 23:59:00",
+        "uppgift": [
+         "Näringsdepartementet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "S",
+        "roll_kod": "Gruppledare",
+        "ordningsnummer": "0",
+        "status": "",
+        "typ": "partiuppdrag",
+        "from": "2014-09-29",
+        "tom": "2014-10-03",
+        "uppgift": [
+         "Socialdemokraterna"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "25",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "S",
+        "roll_kod": "Gruppledare",
+        "ordningsnummer": "0",
+        "status": "",
+        "typ": "partiuppdrag",
+        "from": "2012-02-23",
+        "tom": "2014-09-29",
+        "uppgift": [
+         "Socialdemokraterna"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "25",
+        "organ_sortering": "",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "8",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2026-09-28 11:00:00",
+        "tom": "2030-09-23 10:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "7",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2022-10-18 13:01:00",
+        "tom": "2026-09-28 10:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "7",
+        "status": "Ledig",
+        "typ": "kammaruppdrag",
+        "from": "2022-09-26 11:00:00",
+        "tom": "2022-10-18 13:00:00",
+        "uppgift": [
+         "Abraham Halef 2022-06-28 - 2022-09-26, Solange Olame Bayibsa 2022-09-26 - 2022-10-18"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "30"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "26",
+        "status": "Ledig",
+        "typ": "kammaruppdrag",
+        "from": "2018-09-24",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Azadeh Rojhan 2017-04-02 - 2018-09-24, Anders Lönnberg 2018-09-24 - 2019-01-31, Azadeh Rojhan 2019-02-01 - 2020-07-31, Markus Selin 2020-08-01 - 2022-06-28, Abraham Halef 2022-06-28 - 2022-09-26"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "30"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "82",
+        "status": "Ledig",
+        "typ": "kammaruppdrag",
+        "from": "2014-10-03",
+        "tom": "2018-09-24 23:59:00",
+        "uppgift": [
+         "Azadeh Rojhan 2014-10-03 - 2016-08-09, Anna Vikström 2016-08-10 - 2017-04-01, Azadeh Rojhan 2017-04-02 - 2018-09-24"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "30"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "82",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2014-09-29",
+        "tom": "2014-10-02 23:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "114",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2010-10-04",
+        "tom": "2014-09-29 23:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "175",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2006-10-02",
+        "tom": "2010-10-04 23:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "68",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2004-10-05",
+        "tom": "2006-10-02 23:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "68",
+        "status": "Ledig",
+        "typ": "kammaruppdrag",
+        "from": "2004-08-30",
+        "tom": "2004-10-04 23:59:00",
+        "uppgift": [
+         "Christer Erlandsson 2004-08-30 - 2004-10-04"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "30"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "68",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2004-08-16",
+        "tom": "2004-08-29 23:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "68",
+        "status": "Ledig",
+        "typ": "kammaruppdrag",
+        "from": "2004-04-05",
+        "tom": "2004-08-15 23:59:00",
+        "uppgift": [
+         "Maryam Yazdanfar 2004-04-05 - 2004-04-14, Christer Erlandsson 2004-04-15 - 2004-06-14, Maryam Yazdanfar 2004-06-15 - 2004-08-15"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "30"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "68",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2003-03-01",
+        "tom": "2004-04-04 23:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "68",
+        "status": "Ledig",
+        "typ": "kammaruppdrag",
+        "from": "2003-01-21",
+        "tom": "2003-02-28 23:59:00",
+        "uppgift": [
+         "Mariam Osman Sherifay 2003-01-21 - 2003-02-17, Christer Erlandsson 2003-02-18 - 2003-02-28"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "30"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "68",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2002-09-30",
+        "tom": "2003-01-20 23:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "FiU",
+        "roll_kod": "Ordförande",
+        "ordningsnummer": "1",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2026-10-06 11:31:00",
+        "tom": "2030-09-23 10:59:00",
+        "uppgift": [
+         "Finansutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "FiU",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "1",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2026-10-06 11:00:00",
+        "tom": "2026-10-06 11:30:00",
+        "uppgift": [
+         "Finansutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "FiU",
+        "roll_kod": "Vice ordförande",
+        "ordningsnummer": "2",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2022-10-20 14:01:00",
+        "tom": "2026-09-28 10:59:00",
+        "uppgift": [
+         "Finansutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "20",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "FiU",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "2",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2022-10-19 09:00:00",
+        "tom": "2022-10-20 14:00:00",
+        "uppgift": [
+         "Finansutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "UbU",
+        "roll_kod": "Vice ordförande",
+        "ordningsnummer": "2",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2010-10-12",
+        "tom": "2012-02-23 23:59:00",
+        "uppgift": [
+         "Utbildningsutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "20",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "UbU",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "2",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2010-10-12",
+        "tom": "2010-10-12 23:59:00",
+        "uppgift": [
+         "Utbildningsutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "UbU",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "4",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2006-10-10",
+        "tom": "2010-10-04 23:59:00",
+        "uppgift": [
+         "Utbildningsutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "FiU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "11",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2006-10-10",
+        "tom": "2010-10-04 23:59:00",
+        "uppgift": [
+         "Finansutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "UbU",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "0",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2002-10-08",
+        "tom": "2006-10-02 23:59:00",
+        "uppgift": [
+         "Utbildningsutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "FöU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "0",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2002-10-08",
+        "tom": "2006-10-02 23:59:00",
+        "uppgift": [
+         "Försvarsutskottet"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "KD",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "17",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2026-10-13 13:00:00",
+        "tom": "2030-10-08 12:59:00",
+        "uppgift": [
+         "Krigsdelegationen"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "KD",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "12",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2022-10-11 11:00:00",
+        "tom": "2026-10-13 12:59:00",
+        "uppgift": [
+         "Krigsdelegationen"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "KD",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "2",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2012-02-24",
+        "tom": "2014-10-14 23:59:00",
+        "uppgift": [
+         "Krigsdelegationen"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "VB",
+        "roll_kod": "Ordförande",
+        "ordningsnummer": "1",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2014-09-29",
+        "tom": "2014-10-03 23:59:00",
+        "uppgift": [
+         "Valberedningen"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "10",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "RS",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "1",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2012-02-24",
+        "tom": "2014-10-03 23:59:00",
+        "uppgift": [
+         "Riksdagsstyrelsen"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "UN",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "2",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2012-02-24",
+        "tom": "2014-10-03 23:59:00",
+        "uppgift": [
+         "Utrikesnämnden"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "VB",
+        "roll_kod": "Vice ordförande",
+        "ordningsnummer": "1",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2012-03-01",
+        "tom": "2014-09-29 23:59:00",
+        "uppgift": [
+         "Valberedningen"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "20",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "14",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2013-09-17",
+        "tom": "2014-09-29 23:59:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "14",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2012-10-04",
+        "tom": "2013-09-16 23:59:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "14",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2012-02-24",
+        "tom": "2012-09-18 23:59:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "VB",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "1",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2012-02-24",
+        "tom": "2012-02-29 23:59:00",
+        "uppgift": [
+         "Valberedningen"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "KD",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "30",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2010-10-19",
+        "tom": "2012-02-23 23:59:00",
+        "uppgift": [
+         "Krigsdelegationen"
+        ],
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       }
+      ]
+     },
+     "personuppgift": {
+      "uppgift": [
+       {
+        "kod": "Officiell e-postadress",
+        "uppgift": [
+         "mikael.damberg[på]riksdagen.se"
+        ],
+        "typ": "eadress",
+        "intressent_id": "014744660015",
+        "hangar_id": "2343497"
+       }
+      ]
+     }
+    },
+    {
+     "intressent_id": "0203877548421",
+     "tilltalsnamn": "Malin",
+     "efternamn": "Larsson",
+     "parti": "S",
+     "valkrets": "Västernorrlands län",
+     "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/39523176-322e-469e-a754-3c46db2b0756_192.jpg",
+     "status": "Tjänstgörande riksdagsledamot",
+     "personuppdrag": {
+      "uppdrag": [
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "77",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2026-09-28 11:00:00",
+        "tom": "2030-09-23 10:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "310",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2022-09-26 11:00:00",
+        "tom": "2026-09-28 10:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "kam",
+        "roll_kod": "Riksdagsledamot",
+        "ordningsnummer": "167",
+        "status": "Tjänstgörande",
+        "typ": "kammaruppdrag",
+        "from": "2018-09-24",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         {}
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "10",
+        "organ_sortering": "10",
+        "uppdrag_rollsortering": "60",
+        "uppdrag_statussortering": "10"
+       },
+       {
+        "organ_kod": "MJU",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "5",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2026-10-06 11:00:00",
+        "tom": "2030-09-23 10:59:00",
+        "uppgift": [
+         "Miljö- och jordbruksutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "30",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "MJU",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "6",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2022-10-04 11:00:00",
+        "tom": "2026-09-28 10:59:00",
+        "uppgift": [
+         "Miljö- och jordbruksutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "30",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "MJU",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "11",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2018-10-02",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Miljö- och jordbruksutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "30",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "AU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "189",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Arbetsmarknadsutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "CU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "186",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Civilutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "FiU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "188",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Finansutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "JuU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "189",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Justitieutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "KrU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "189",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Kulturutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "190",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Näringsutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "SfU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "193",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Socialförsäkringsutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "SkU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "189",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Skatteutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "SoU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "191",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Socialutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "TU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "188",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Trafikutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "UbU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "3",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2019-02-15",
+        "tom": "2022-09-26 10:59:00",
+        "uppgift": [
+         "Utbildningsutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "FöU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "190",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2020-09-03 23:59:00",
+        "uppgift": [
+         "Försvarsutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "KU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "188",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2020-09-03 23:59:00",
+        "uppgift": [
+         "Konstitutionsutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "UU",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "186",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2020-09-03 23:59:00",
+        "uppgift": [
+         "Utrikesutskottet"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "150",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "EUN",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "228",
+        "status": "",
+        "typ": "uppdrag",
+        "from": "2020-03-18 09:00:00",
+        "tom": "2022-10-04 11:00:00",
+        "uppgift": [
+         "EU-nämnden"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "170",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "BSPC",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "1",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2026-10-21 12:00:00",
+        "tom": "2030-09-23 10:59:00",
+        "uppgift": [
+         "Riksdagens delegation till parlamentariska Östersjökonferensen"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "VB",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "11",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2026-09-28 16:15:00",
+        "tom": "2030-09-23 10:59:00",
+        "uppgift": [
+         "Valberedningen"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Ledamot",
+        "ordningsnummer": "15",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2026-10-13 13:00:00",
+        "tom": "2027-10-15 23:59:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "30",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "8",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2025-10-15 09:00:00",
+        "tom": "2026-10-13 12:59:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "8",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2024-10-16 09:01:00",
+        "tom": "2025-10-15 08:59:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "8",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2023-10-19 12:00:00",
+        "tom": "2024-10-16 09:00:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "8",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2023-01-26 12:01:00",
+        "tom": "2023-10-19 11:59:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       },
+       {
+        "organ_kod": "NR",
+        "roll_kod": "Suppleant",
+        "ordningsnummer": "10",
+        "status": "",
+        "typ": "Riksdagsorgan",
+        "from": "2022-10-11 11:00:00",
+        "tom": "2023-01-26 12:00:00",
+        "uppgift": [
+         "Nordiska rådets svenska delegation"
+        ],
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082",
+        "sortering": "50",
+        "organ_sortering": "300",
+        "uppdrag_rollsortering": "90",
+        "uppdrag_statussortering": "90"
+       }
+      ]
+     },
+     "personuppgift": {
+      "uppgift": [
+       {
+        "kod": "Officiell e-postadress",
+        "uppgift": [
+         "malin.larsson[på]riksdagen.se"
+        ],
+        "typ": "eadress",
+        "intressent_id": "0203877548421",
+        "hangar_id": "5004082"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ }
+}

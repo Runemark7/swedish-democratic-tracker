@@ -54,33 +54,17 @@ func (c *Client) FetchMembers(ctx context.Context, party, status string) ([]*dom
 
 	var payload struct {
 		Personlista struct {
-			Person []struct {
-				IntressentID string `json:"intressent_id"`
-				Tilltalsnamn string `json:"tilltalsnamn"`
-				Efternamn    string `json:"efternamn"`
-				Parti        string `json:"parti"`
-				Valkrets     string `json:"valkrets"`
-				BildURL192   string `json:"bild_url_192"`
-				Status       string `json:"status"`
-			} `json:"person"`
+			Person []rawPerson `json:"person"`
 		} `json:"personlista"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
 		return nil, fmt.Errorf("decode members: %w", err)
 	}
 
+	now := time.Now()
 	politicians := make([]*domain.Politician, 0, len(payload.Personlista.Person))
 	for _, p := range payload.Personlista.Person {
-		politicians = append(politicians, &domain.Politician{
-			IntressentID: p.IntressentID,
-			FirstName:    p.Tilltalsnamn,
-			LastName:     p.Efternamn,
-			Party:        p.Parti,
-			Constituency: p.Valkrets,
-			ImageURL:     p.BildURL192,
-			IsActive:     strings.Contains(strings.ToLower(p.Status), "tjänstgörande"),
-			UpdatedAt:    time.Now(),
-		})
+		politicians = append(politicians, p.toPolitician(now))
 	}
 	return politicians, nil
 }
@@ -103,15 +87,6 @@ func (c *Client) FetchPerson(ctx context.Context, intressentID string) (*domain.
 		return nil, fmt.Errorf("riksdagen API returned %d for person %s", resp.StatusCode, intressentID)
 	}
 
-	type person struct {
-		IntressentID string `json:"intressent_id"`
-		Tilltalsnamn string `json:"tilltalsnamn"`
-		Efternamn    string `json:"efternamn"`
-		Parti        string `json:"parti"`
-		Valkrets     string `json:"valkrets"`
-		BildURL192   string `json:"bild_url_192"`
-		Status       string `json:"status"`
-	}
 	var payload struct {
 		Personlista struct {
 			Person json.RawMessage `json:"person"`
@@ -124,32 +99,23 @@ func (c *Client) FetchPerson(ctx context.Context, intressentID string) (*domain.
 	if len(raw) == 0 || string(raw) == "null" {
 		return nil, nil
 	}
-	var people []person
+	var people []rawPerson
 	if raw[0] == '[' {
 		if err := json.Unmarshal(raw, &people); err != nil {
 			return nil, fmt.Errorf("decode person: %w", err)
 		}
 	} else {
-		var one person
+		var one rawPerson
 		if err := json.Unmarshal(raw, &one); err != nil {
 			return nil, fmt.Errorf("decode person: %w", err)
 		}
-		people = []person{one}
+		people = []rawPerson{one}
 	}
 	for _, p := range people {
 		if p.IntressentID != intressentID {
 			continue
 		}
-		return &domain.Politician{
-			IntressentID: p.IntressentID,
-			FirstName:    p.Tilltalsnamn,
-			LastName:     p.Efternamn,
-			Party:        p.Parti,
-			Constituency: p.Valkrets,
-			ImageURL:     p.BildURL192,
-			IsActive:     strings.Contains(strings.ToLower(p.Status), "tjänstgörande"),
-			UpdatedAt:    time.Now(),
-		}, nil
+		return p.toPolitician(time.Now()), nil
 	}
 	return nil, nil
 }

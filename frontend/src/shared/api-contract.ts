@@ -2691,6 +2691,23 @@ export interface components {
             /** Format: uri */
             imageUrl?: string;
             isActive: boolean;
+            /** @description Official public e-mail address as published by Riksdagen. Absent when Riksdagen publishes none. */
+            email?: string;
+            /**
+             * Format: uri
+             * @description The member's official page on riksdagen.se (contact details). Only on GET /politicians/{id}.
+             */
+            riksdagenUrl?: string;
+            /** @description Year the current unbroken run as riksdagsledamot began (leave of absence does not break it). Absent when it cannot be established. */
+            memberSince?: number;
+            /** @description Current committee assignments (utskott, EU-nämnden). Only on GET /politicians/{id}. */
+            committees?: {
+                code: string;
+                name: string;
+                role: string;
+                /** Format: date */
+                from?: string;
+            }[];
         };
         PoliticianSummary: components["schemas"]["Politician"] & {
             totalVotes?: number;

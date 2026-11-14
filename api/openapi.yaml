@@ -3549,6 +3549,32 @@ components:
           format: uri
         isActive:
           type: boolean
+        email:
+          type: string
+          description: Official public e-mail address as published by Riksdagen. Absent when Riksdagen publishes none.
+        riksdagenUrl:
+          type: string
+          format: uri
+          description: The member's official page on riksdagen.se (contact details). Only on GET /politicians/{id}.
+        memberSince:
+          type: integer
+          description: Year the current unbroken run as riksdagsledamot began (leave of absence does not break it). Absent when it cannot be established.
+        committees:
+          type: array
+          description: Current committee assignments (utskott, EU-nämnden). Only on GET /politicians/{id}.
+          items:
+            type: object
+            required: [code, name, role]
+            properties:
+              code:
+                type: string
+              name:
+                type: string
+              role:
+                type: string
+              from:
+                type: string
+                format: date
 
     PoliticianSummary:
       allOf:
