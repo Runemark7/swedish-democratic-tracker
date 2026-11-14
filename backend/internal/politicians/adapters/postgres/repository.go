@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -23,19 +24,43 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 
 func (r *Repository) GetByID(ctx context.Context, id string) (*domain.Politician, error) {
 	const q = `
-		SELECT intressent_id, first_name, last_name, party, constituency, image_url, is_active, updated_at
+		SELECT intressent_id, first_name, last_name, party, constituency, image_url, is_active, updated_at,
+		       email, member_since, committees
 		FROM politicians
 		WHERE intressent_id = $1`
 
-	row := r.db.QueryRow(ctx, q, id)
-	p, err := scanPolitician(row)
+	var p domain.Politician
+	var constituency, imageURL, email *string
+	var since *int
+	var committees []byte
+	err := r.db.QueryRow(ctx, q, id).Scan(
+		&p.IntressentID, &p.FirstName, &p.LastName, &p.Party,
+		&constituency, &imageURL, &p.IsActive, &p.UpdatedAt,
+		&email, &since, &committees)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, err
 	}
-	return p, nil
+	if constituency != nil {
+		p.Constituency = *constituency
+	}
+	if imageURL != nil {
+		p.ImageURL = *imageURL
+	}
+	if email != nil {
+		p.Email = *email
+	}
+	if since != nil {
+		p.MemberSince = *since
+	}
+	if len(committees) > 0 {
+		if err := json.Unmarshal(committees, &p.Committees); err != nil {
+			return nil, fmt.Errorf("decode committees for %s: %w", id, err)
+		}
+	}
+	return &p, nil
 }
 
 func (r *Repository) GetMany(ctx context.Context, ids []string) (map[string]*domain.Politician, error) {
@@ -107,8 +132,9 @@ func (r *Repository) List(ctx context.Context, f ports.ListFilter) (ports.ListRe
 
 func (r *Repository) UpsertMany(ctx context.Context, pp []*domain.Politician) error {
 	const q = `
-		INSERT INTO politicians (intressent_id, first_name, last_name, party, constituency, image_url, is_active, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO politicians (intressent_id, first_name, last_name, party, constituency, image_url, is_active, updated_at,
+			email, member_since, committees)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 		ON CONFLICT (intressent_id) DO UPDATE SET
 			first_name    = EXCLUDED.first_name,
 			last_name     = EXCLUDED.last_name,
@@ -116,12 +142,30 @@ func (r *Repository) UpsertMany(ctx context.Context, pp []*domain.Politician) er
 			constituency  = EXCLUDED.constituency,
 			image_url     = EXCLUDED.image_url,
 			is_active     = EXCLUDED.is_active,
-			updated_at    = EXCLUDED.updated_at`
+			updated_at    = EXCLUDED.updated_at,
+			email         = EXCLUDED.email,
+			member_since  = EXCLUDED.member_since,
+			committees    = EXCLUDED.committees`
 
 	batch := &pgx.Batch{}
 	for _, p := range pp {
+		var email *string
+		if p.Email != "" {
+			email = &p.Email
+		}
+		var since *int
+		if p.MemberSince > 0 {
+			since = &p.MemberSince
+		}
+		var committees []byte
+		if len(p.Committees) > 0 {
+			var err error
+			if committees, err = json.Marshal(p.Committees); err != nil {
+				return err
+			}
+		}
 		batch.Queue(q, p.IntressentID, p.FirstName, p.LastName, p.Party,
-			p.Constituency, p.ImageURL, p.IsActive, time.Now())
+			p.Constituency, p.ImageURL, p.IsActive, time.Now(), email, since, committees)
 	}
 	br := r.db.SendBatch(ctx, batch)
 	defer br.Close()

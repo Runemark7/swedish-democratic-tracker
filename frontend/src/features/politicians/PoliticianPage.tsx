@@ -466,6 +466,42 @@ export function PoliticianPage() {
             {politician.constituency && (
               <p className="text-sm text-on-surface-variant">{politician.constituency}</p>
             )}
+            {politician.memberSince && (
+              <p className="text-sm text-on-surface-variant" data-testid="member-since">
+                Ledamot sedan {politician.memberSince}
+                <SourceMarker sourceId="riksdagen" />
+              </p>
+            )}
+            {politician.committees && politician.committees.length > 0 && (
+              <ul className="text-sm text-on-surface-variant mt-1 list-none p-0" data-testid="member-committees">
+                {politician.committees.map((c) => (
+                  <li key={`${c.code}-${c.role}`}>
+                    {c.name}, {c.role.toLowerCase()}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {(politician.riksdagenUrl || politician.email) && (
+              <p className="text-sm mt-2" data-testid="member-contact">
+                {politician.riksdagenUrl && (
+                  <a
+                    href={politician.riksdagenUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Kontaktuppgifter hos Riksdagen
+                  </a>
+                )}
+                {politician.riksdagenUrl && politician.email && " · "}
+                {politician.email && (
+                  <a href={`mailto:${politician.email}`} className="underline">
+                    {politician.email}
+                  </a>
+                )}
+                <SourceMarker sourceId="riksdagen" />
+              </p>
+            )}
           </div>
         </div>
 

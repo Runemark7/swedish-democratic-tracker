@@ -29,7 +29,12 @@ func (s *Service) SyncAll(ctx context.Context) error {
 }
 
 func (s *Service) GetByID(ctx context.Context, id string) (*domain.Politician, error) {
-	return s.repo.GetByID(ctx, id)
+	p, err := s.repo.GetByID(ctx, id)
+	if err != nil || p == nil {
+		return p, err
+	}
+	p.RiksdagenURL = domain.RiksdagenURL(p.FirstName, p.LastName, p.IntressentID)
+	return p, nil
 }
 
 func (s *Service) NameByID(ctx context.Context, intressentID string) (string, error) {
