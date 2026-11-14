@@ -424,8 +424,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Edit a proposed or approved Löfte
-         * @description Replaces text, quote, locator, sourceUrl, topic, specificity and utskott. Quote and sourceUrl stay mandatory. Struck and archived Löften cannot be edited (409).
+         * Edit a proposed or approved Löfte (archived Löften: quote and source only)
+         * @description Replaces text, quote, locator, sourceUrl, topic, specificity and utskott. Quote and sourceUrl stay mandatory. Struck Löften cannot be edited (409). On an archived Löfte only quote, locator (source document) and sourceUrl can change, each edit is logged in the Ändringslogg; a differing text, topic, specificity or utskott is refused (409).
          */
         post: operations["editLoefte"];
         delete?: never;
