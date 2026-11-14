@@ -1,0 +1,16 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "0000000000000",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=0000000000000&utformat=json",
+ "note": "Recorded 2026-11-14; Riksdagen knows no person with this id (the placeholder).",
+ "body": {
+  "personlista": {
+   "@hits": "0"
+  }
+ }
+}

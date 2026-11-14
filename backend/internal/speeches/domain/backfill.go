@@ -24,6 +24,9 @@ type BackfillRun struct {
 	IndexBytesAdded    int64
 	PoliticiansCreated int
 	Unresolved         int
+	// Speakerless counts speeches listed with the placeholder speaker id; they
+	// are not stored and not part of Expected.
+	Speakerless int
 	// Complete sets completed_at; false clears it.
 	Complete bool
 }
@@ -42,5 +45,6 @@ type Backfill struct {
 	IndexBytesAdded    int64
 	PoliticiansCreated int
 	Unresolved         int
+	Speakerless        int
 	CompletedAt        *time.Time
 }

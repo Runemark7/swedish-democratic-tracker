@@ -18,16 +18,17 @@ import (
 // No politician is seeded: the backfill creates every speaker.
 
 type speechCoverage struct {
-	Riksmote           string `json:"riksmote"`
-	Expected           int    `json:"expected"`
-	Stored             int    `json:"stored"`
-	Linked             int    `json:"linked"`
-	Unlinked           int    `json:"unlinked"`
-	TextBytes          int64  `json:"textBytes"`
-	RowsAdded          int    `json:"rowsAdded"`
-	TableBytesAdded    int64  `json:"tableBytesAdded"`
-	PoliticiansCreated int    `json:"politiciansCreated"`
-	Complete           bool   `json:"complete"`
+	Riksmote            string `json:"riksmote"`
+	Expected            int    `json:"expected"`
+	Stored              int    `json:"stored"`
+	Linked              int    `json:"linked"`
+	Unlinked            int    `json:"unlinked"`
+	TextBytes           int64  `json:"textBytes"`
+	RowsAdded           int    `json:"rowsAdded"`
+	TableBytesAdded     int64  `json:"tableBytesAdded"`
+	PoliticiansCreated  int    `json:"politiciansCreated"`
+	SpeakerlessSpeeches int    `json:"speakerlessSpeeches"`
+	Complete            bool   `json:"complete"`
 }
 
 func getSpeechCoverage(t *testing.T, h *Harness) []speechCoverage {
@@ -200,4 +201,34 @@ func textRequests(h *Harness) int {
 		}
 	}
 	return n
+}
+
+// Fixtures: fixtures/speech-backfill-placeholder. Two speeches of the closing
+// protocol of riksmöte 2007/08 (GV09132, 2008-06-18), recorded 2026-11-14: the
+// ceremony speech of the acting oldest member, which data.riksdagen.se lists
+// with intressent_id "0000000000000" (no person; personlista has no hit), and
+// one speech by Anders Karlsson.
+func TestSpeechBackfillCountsPlaceholderSpeakerSeparatelyAndCompletes(t *testing.T) {
+	h := startChain(t, chainDir(t, "speech-backfill-placeholder"), "{2007/08}")
+	ctx := context.Background()
+	rep := h.SpeechBackfill(ctx, workers.SpeechBackfillOptions{Riksmoten: []string{"2007/08"}})
+	if len(rep.Rows) != 1 {
+		t.Fatalf("rows = %+v", rep.Rows)
+	}
+	r := rep.Rows[0]
+	if !r.Complete || r.Err != "" || len(r.Unresolved) != 0 || r.Speakerless != 1 || r.Expected != 1 || r.Stored != 1 {
+		t.Errorf("row = %+v", r)
+	}
+	cov := getSpeechCoverage(t, h)
+	if len(cov) != 1 || !cov[0].Complete || cov[0].Expected != 1 || cov[0].Stored != 1 || cov[0].SpeakerlessSpeeches != 1 {
+		t.Errorf("coverage = %+v", cov)
+	}
+	if n := countOf(t, h, `SELECT count(*) FROM politicians WHERE intressent_id = '0000000000000'`); n != 0 {
+		t.Errorf("placeholder became a politician")
+	}
+	// A rerun is skipped as complete, not failed forever.
+	rep = h.SpeechBackfill(ctx, workers.SpeechBackfillOptions{Riksmoten: []string{"2007/08"}})
+	if rep.Failed != 0 || !rep.Rows[0].Skipped {
+		t.Errorf("rerun = %+v", rep)
+	}
 }

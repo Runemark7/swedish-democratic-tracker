@@ -1,0 +1,25 @@
+{
+ "method": "GET",
+ "path": "/personlista/",
+ "query": {
+  "iid": "087735695612",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/personlista/?iid=087735695612&utformat=json",
+ "note": "Recorded 2026-11-14, reduced to the fields the politicians client reads.",
+ "body": {
+  "personlista": {
+   "@hits": "1",
+   "person": {
+    "intressent_id": "087735695612",
+    "tilltalsnamn": "Anders",
+    "efternamn": "Karlsson",
+    "parti": "S",
+    "valkrets": "Skåne läns västra",
+    "status": "Tidigare riksdagsledamot",
+    "bild_url_192": "https://data.riksdagen.se/filarkiv/bilder/ledamot/d7c3265c-83e4-11d4-ae60-0050040c9b55_192.jpg"
+   }
+  }
+ }
+}

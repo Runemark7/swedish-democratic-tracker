@@ -1,0 +1,21 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2007/08",
+  "parti": "SD",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforandelista/?rm=2007/08&parti=SD&iid=&sz=10000&anftyp=Akt&utformat=json",
+ "note": "Recorded 2026-11-14, reduced to two rows of protocol GV09132 (2008-06-18): the ceremony speech with intressent_id 0000000000000 and one by Anders Karlsson.",
+ "body": {
+  "anforandelista": {
+   "@antal": "0",
+   "anforande": []
+  }
+ }
+}

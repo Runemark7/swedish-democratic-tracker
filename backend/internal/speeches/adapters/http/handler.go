@@ -242,19 +242,20 @@ func jsonError(w http.ResponseWriter, msg string, status int) {
 }
 
 type backfillResponse struct {
-	Riksmote           string  `json:"riksmote"`
-	Expected           int     `json:"expected"`
-	Stored             int     `json:"stored"`
-	Linked             int     `json:"linked"`
-	Unlinked           int     `json:"unlinked"`
-	TextBytes          int64   `json:"textBytes"`
-	RowsAdded          int     `json:"rowsAdded"`
-	TableBytesAdded    int64   `json:"tableBytesAdded"`
-	IndexBytesAdded    int64   `json:"indexBytesAdded"`
-	PoliticiansCreated int     `json:"politiciansCreated"`
-	UnresolvedSpeakers int     `json:"unresolvedSpeakers"`
-	Complete           bool    `json:"complete"`
-	CompletedAt        *string `json:"completedAt"`
+	Riksmote            string  `json:"riksmote"`
+	Expected            int     `json:"expected"`
+	Stored              int     `json:"stored"`
+	Linked              int     `json:"linked"`
+	Unlinked            int     `json:"unlinked"`
+	TextBytes           int64   `json:"textBytes"`
+	RowsAdded           int     `json:"rowsAdded"`
+	TableBytesAdded     int64   `json:"tableBytesAdded"`
+	IndexBytesAdded     int64   `json:"indexBytesAdded"`
+	PoliticiansCreated  int     `json:"politiciansCreated"`
+	UnresolvedSpeakers  int     `json:"unresolvedSpeakers"`
+	SpeakerlessSpeeches int     `json:"speakerlessSpeeches"`
+	Complete            bool    `json:"complete"`
+	CompletedAt         *string `json:"completedAt"`
 }
 
 // backfill serves the coverage of the operator's speech backfill per riksmöte,
@@ -271,7 +272,7 @@ func (h *Handler) backfill(w http.ResponseWriter, r *http.Request) {
 		resp := backfillResponse{
 			Riksmote: b.Riksmote, Expected: b.Expected, Stored: b.Stored, Linked: b.Linked, Unlinked: b.Unlinked,
 			TextBytes: b.TextBytes, RowsAdded: b.RowsAdded, TableBytesAdded: b.TableBytesAdded,
-			IndexBytesAdded: b.IndexBytesAdded, PoliticiansCreated: b.PoliticiansCreated, UnresolvedSpeakers: b.Unresolved,
+			IndexBytesAdded: b.IndexBytesAdded, PoliticiansCreated: b.PoliticiansCreated, UnresolvedSpeakers: b.Unresolved, SpeakerlessSpeeches: b.Speakerless,
 		}
 		if b.CompletedAt != nil {
 			resp.Complete = true

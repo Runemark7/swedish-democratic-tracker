@@ -2101,7 +2101,7 @@ export interface components {
         SpeechBackfill: {
             /** @example 2017/18 */
             riksmote: string;
-            /** @description Speeches the lists report for the riksmöte */
+            /** @description Speeches with a speaker the lists report for the riksmöte (speakerlessSpeeches excluded) */
             expected: number;
             /** @description Speeches of the riksmöte we hold */
             stored: number;
@@ -2130,6 +2130,8 @@ export interface components {
             politiciansCreated: number;
             /** @description Speakers Riksdagen has no person for; their speeches are not stored */
             unresolvedSpeakers: number;
+            /** @description Speeches the lists give the placeholder speaker id 0000000000000 (no person); not stored and not counted in expected */
+            speakerlessSpeeches: number;
             complete: boolean;
             /** Format: date-time */
             completedAt: string | null;

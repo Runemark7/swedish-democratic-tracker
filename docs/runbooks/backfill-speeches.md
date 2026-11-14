@@ -35,6 +35,12 @@ in #148 (`-from 2002/03`), sized from the report below.
   expect about an hour per riksmöte. The text requests dominate.
 - Speakers Riksdagen has no person for are listed (`OKÄNDA TALARE`) and their
   speeches are not stored; the riksmöte stays incomplete until that is resolved.
+- Some speeches are listed with the placeholder speaker id `0000000000000` (no
+  person; e.g. the ceremony speech of the acting oldest member at the end of
+  2007/08). They cannot be stored (`speeches.politician_id` is required), so
+  they are reported as `utan talare N` and `speakerlessSpeeches` on
+  `/api/speeches/backfill`, and are not part of *förväntat*. They do not block
+  completion; any other unresolved speaker still does.
 - Run `link-speeches` (or wait for the daily run) after the motions backfill has
   read more betänkanden: the debate-date rule needs the betänkande stored.
 
