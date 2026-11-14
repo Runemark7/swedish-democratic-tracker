@@ -382,3 +382,110 @@ html:not([data-theme="light"]) .group:hover .group-hover\:text-primary {
 .mobile-scroll-pills::-webkit-scrollbar {
   display: none;
 }
+
+/* ── Print (issue #306) ──────────────────────────────────────────────
+   Browsers drop backgrounds when printing unless the reader opts in, so
+   anything that is light text on a fill vanishes on paper. Print therefore
+   always uses the light palette (the default theme is dark: near-white
+   text), hides the site chrome, and draws party badges as black text in a
+   black frame. Nothing here applies on screen.
+
+   The token list mirrors [data-theme="light"] above; only --color-bg
+   differs (white paper). scripts/__tests__/print-css.test.mjs fails if a
+   light token is added without its print twin. */
+@media print {
+  html:root {
+    color-scheme: light;
+    background: #ffffff;
+    --color-bg: #ffffff;
+    --color-sdt-surface: #ffffff;
+    --color-fg: #0e1620;
+    --color-fg-muted: #5a6470;
+    --color-border: rgb(14 22 32 / 0.14);
+    --color-track: rgb(14 22 32 / 0.06);
+    --color-accent: #0b3d7a;
+    --color-accent-2: #c8a13b;
+    --color-pulse: #d0533f;
+    --color-up: #2d7a4a;
+    --color-down: #b8391c;
+    --color-plane: rgb(14 22 32 / 0.04);
+    --color-surface: #f8f9fb;
+    --color-surface-low: #f2f4f6;
+    --color-surface-lowest: #ffffff;
+    --color-surface-high: #e6e8ea;
+    --color-surface-highest: #dddfe1;
+    --color-surface-variant: #dee3eb;
+    --color-primary-fixed: #d1e4ff;
+    --color-on-primary-fixed: #001d36;
+    --color-on-surface: #191c1e;
+    --color-on-surface-variant: #424750;
+    --color-outline-variant: #c2c7cf;
+    --color-aligned: #16a34a;
+    --color-aligned-bg: #f0fdf4;
+    --color-contradiction: #dc2626;
+    --color-contradiction-bg: #fef2f2;
+    --color-partial: #d97706;
+    --color-partial-bg: #fffbeb;
+    --color-absent: #d1d5db;
+    --color-link: #003461;
+    --color-on-accent: #ffffff;
+    --color-info-bg: #f0f9ff;
+    --color-info-fg: #0369a1;
+    --color-chip-ja-bg: #f0fdf4;
+    --color-chip-ja-fg: #16a34a;
+    --color-chip-nej-bg: #fef2f2;
+    --color-chip-nej-fg: #dc2626;
+    --color-chip-abs-bg: #fffbeb;
+    --color-chip-abs-fg: #d97706;
+    --color-chip-neutral-bg: #f9fafb;
+    --color-chip-neutral-fg: #9ca3af;
+    --color-party-s-soft: #fde8ea;
+    --color-party-m-soft: #e6f5fc;
+    --color-party-sd-soft: #fafae6;
+    --color-party-c-soft: #e6f5ed;
+    --color-party-v-soft: #fce8e6;
+    --color-party-kd-soft: #e6f0f8;
+    --color-party-l-soft: #e6f0f8;
+    --color-party-mp-soft: #f0fae6;
+    --color-party-s-ink: #E8192C;
+    --color-party-m-ink: #52BDEC;
+    --color-party-sd-ink: #DDDD00;
+    --color-party-c-ink: #009933;
+    --color-party-v-ink: #DA291C;
+    --color-party-kd-ink: #005EA1;
+    --color-party-l-ink: #006AB3;
+    --color-party-mp-ink: #83CF39;
+    --color-map-stroke: #ffffff;
+    --color-share-page: #f3f4f6;
+    --color-share-card: #ffffff;
+    --color-share-ink: #111827;
+    --color-share-muted: #6b7280;
+    --color-share-faint: #9ca3af;
+    --color-share-well: #f9fafb;
+    --color-share-line: #e5e7eb;
+    --color-share-brand: #374151;
+    --color-share-ja-bg: #f0fdf4;
+    --color-share-ja-border: #bbf7d0;
+    --color-share-ja-fg: #15803d;
+    --color-share-nej-bg: #fef2f2;
+    --color-share-nej-border: #fecaca;
+    --color-share-nej-fg: #dc2626;
+    --color-share-abs-bg: #fffbeb;
+    --color-share-abs-border: #fde68a;
+    --color-share-abs-fg: #b45309;
+    --color-share-pass: #16a34a;
+    --color-share-fail: #dc2626;
+  }
+
+  /* Site chrome and floating controls: menus, footer links, sticky bars. */
+  .no-print { display: none !important; }
+
+  /* Inline party colours are set per badge, hence !important. */
+  .party-badge {
+    background: transparent !important;
+    color: #000000 !important;
+    border: 1px solid #000000;
+  }
+
+  .sdt-page { min-height: 0; }
+}
