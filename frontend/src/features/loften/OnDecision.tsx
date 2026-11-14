@@ -5,6 +5,10 @@ import { PartyBadge } from "@/shared/components";
 import { partyShortToName } from "@/shared/design";
 import { MY_PARTY_RING, useMyParty } from "@/contexts/myParty";
 import { loftenApi, type LoefteRef, type LoftePartySummary } from "./api";
+import { MANDATPERIODER } from "./labels";
+
+/** The period the party summaries count; the 2022–2026 archive is never mixed in. */
+const CURRENT_PERIOD = MANDATPERIODER[0];
 
 const betankandeKey = (riksmote: string, beteckning: string) => `${riksmote}:${beteckning}`;
 
@@ -99,7 +103,7 @@ function CountsLine({ t }: { t: LoftePartySummary }) {
 
 /** A party's Löftesstatus counts, linking to its Löften. */
 export function PartyLoefteSummary({ party }: { party: string }) {
-  const { data } = useQuery({ queryKey: ["loften-summary"], queryFn: () => loftenApi.summary(), staleTime: 60_000 });
+  const { data } = useQuery({ queryKey: ["loften-summary", CURRENT_PERIOD], queryFn: () => loftenApi.summary(CURRENT_PERIOD), staleTime: 60_000 });
   const t = data?.find((x) => x.party === party);
   if (!t) return null;
   return (

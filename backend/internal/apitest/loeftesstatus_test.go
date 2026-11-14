@@ -166,13 +166,16 @@ func TestMixedAvstarAndArchiveStatus(t *testing.T) {
 		t.Fatalf("effects %v (Avstår is listed but not counted)", effects)
 	}
 
-	// An archived Löfte has no status, even with a Bekräftad koppling.
+	// An archived Löfte has no status without a Bekräftad koppling (#259) ...
 	arch := seedLoefte(t, s.h, "S", "Gammalt", "archived", "SkU")
+	if av := statusOf(t, s.h, arch); av.Status != nil {
+		t.Fatalf("archived without kopplingar has status %q", *av.Status)
+	}
+	// ... and the same status as any Löfte once it has one.
 	if _, err := s.h.DB.Exec(ctx, `UPDATE kopplingar SET loefte_id=$1 WHERE id=$2`, arch, k2); err != nil {
 		t.Fatal(err)
 	}
-	av := statusOf(t, s.h, arch)
-	if av.Status != nil {
-		t.Fatalf("archived has status %q", *av.Status)
+	if av := statusOf(t, s.h, arch); av.Status == nil || *av.Status != "Röstat emot" || len(av.Kopplingar) != 1 {
+		t.Fatalf("archived with a Bekräftad koppling: %+v", av)
 	}
 }

@@ -11,11 +11,16 @@ import (
 
 // Candidates is the bot's read: voteringar new since the last closed
 // Veckobatch, with the approved Löften they might test. limit 1..200.
-func (s *Service) Candidates(ctx context.Context, limit int, afterRef int64) (*domain.Candidates, error) {
+//
+// With a mandatePeriod (e.g. "2022-2026") the read is instead every decided
+// votering of that period, whenever ingested, paired with the Löften of that
+// period that may take a koppling: approved ones, and archived ones with a
+// quote and a source URL.
+func (s *Service) Candidates(ctx context.Context, limit int, afterRef int64, mandatePeriod string) (*domain.Candidates, error) {
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	return s.repo.Candidates(ctx, limit, afterRef)
+	return s.repo.Candidates(ctx, limit, afterRef, mandatePeriod)
 }
 
 // SubmitSuggestions stores every suggestion: at or above the threshold as
@@ -66,9 +71,10 @@ func (s *Service) SubmitSuggestions(ctx context.Context, key string, in domain.S
 			if err != nil {
 				return err
 			}
-			if l == nil || l.Visibility != domain.VisApproved {
+			if l == nil || !l.TakesKopplingar() {
 				// Same answer for unknown and non-public Löften: do not reveal proposed ones.
-				return &domain.ValidationError{Msg: fmt.Sprintf("%s: Löfte %d is not an approved Löfte", at, sg.LoefteID)}
+				return &domain.ValidationError{Msg: fmt.Sprintf(
+					"%s: Löfte %d is not an approved Löfte (or an archived one with a quote and a source URL)", at, sg.LoefteID)}
 			}
 			v, err := st.VoteringForLoefte(ctx, sg.VoteringID, l)
 			if err != nil {

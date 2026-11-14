@@ -23,6 +23,15 @@ and only **approved** Löften. Pairs already suggested (any state) are omitted.
 A Löfte with no `utskott` is never offered. Page with `after=<next>` until
 `next` is `null`.
 
+**Archive (2022–2026).** Archived Löften take kopplingar too, but only those
+with both a quote and a source URL. Read them with
+`?mandatePeriod=2022-2026`: that returns every decided votering of that period
+(riksmöten 2022/23–2025/26), whenever it was ingested (the Veckobatch cutoff
+does not apply), paired with the approved and the complete archived Löften of
+that period and a matching utskott. The default read never offers archived
+Löften. An archived Löfte gets a Löftesstatus once it has a Bekräftad koppling,
+computed like for a 2026 Löfte; without one it keeps showing no status.
+
 ## 2. Submit suggestions
 
 ```bash
@@ -42,8 +51,8 @@ curl -X POST -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: kopplingar-2
   `bortsorterad`. Both are stored with confidence and reasoning; bortsorterade
   are logged only so the pair is not suggested again.
 - The whole batch is rejected with **422** (nothing stored) if any item names a
-  Löfte that is not approved, an unknown votering, or a votering outside the
-  Löfte's mandate period (a 2026 Löfte only takes voteringar of 2026–2030).
+  Löfte that is neither approved nor archived with a quote and a source URL, an unknown votering, or a votering outside the
+  Löfte's mandate period (a 2026 Löfte only takes voteringar of 2026–2030, an archived one of 2022–2026).
 - A pair that already has a koppling comes back as `existing` and is not changed.
 - A retry with the same key and body returns the same answer
   (`Idempotent-Replayed: true`); same key with another body is 409.

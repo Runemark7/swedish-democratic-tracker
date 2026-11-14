@@ -11,6 +11,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -19,6 +20,9 @@ import (
 	"riksdagskollen/internal/curation"
 	"riksdagskollen/internal/curation/domain"
 )
+
+// periodPattern is the shape of mandate_periods.code, e.g. 2022-2026.
+var periodPattern = regexp.MustCompile(`^\d{4}-\d{4}$`)
 
 type Handler struct {
 	svc   *curation.Service
@@ -77,7 +81,12 @@ func (h *Handler) upsertValmanifest(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) candidates(w http.ResponseWriter, r *http.Request) {
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
 	after, _ := strconv.ParseInt(r.URL.Query().Get("after"), 10, 64)
-	c, err := h.svc.Candidates(r.Context(), limit, after)
+	period := r.URL.Query().Get("mandatePeriod")
+	if period != "" && !periodPattern.MatchString(period) {
+		fail(w, http.StatusBadRequest, "validation", "invalid mandatePeriod; write it 2022-2026")
+		return
+	}
+	c, err := h.svc.Candidates(r.Context(), limit, after, period)
 	if err != nil {
 		slog.Error("candidates", "error", err)
 		fail(w, http.StatusInternalServerError, "internal", "internal error")

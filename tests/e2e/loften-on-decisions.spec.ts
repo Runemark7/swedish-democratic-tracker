@@ -41,7 +41,7 @@ test.describe("Löften on a betänkande and a motion", () => {
   });
 
   test("the party page summarises its Löften and links to them", async ({ page }) => {
-    await page.route("**/api/loften/summary", (r) => r.fulfill({
+    await page.route("**/api/loften/summary*", (r) => r.fulfill({
       json: [{ party: "M", total: 3, for: 2, emot: 0, blandat: 0, inteProvat: 1, arkiv: 0 }],
     }));
     await page.route("**/api/parties/M/record", (r) => r.fulfill({ json: { party: "M", decisions: [], motions: [] } }));

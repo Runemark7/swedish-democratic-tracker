@@ -144,3 +144,16 @@ func (in *LoefteEdit) Normalize() error {
 	}
 	return in.Provenance.Validate()
 }
+
+// TakesKopplingar reports whether the bot may suggest kopplingar for the Löfte:
+// every approved Löfte, and an archived one only when it has both a quote and a
+// source URL, so that a Löftesstatus on it can always be checked against the source.
+func (l Loefte) TakesKopplingar() bool {
+	switch l.Visibility {
+	case VisApproved:
+		return true
+	case VisArchived:
+		return strings.TrimSpace(l.Quote) != "" && strings.TrimSpace(l.SourceURL) != ""
+	}
+	return false
+}
