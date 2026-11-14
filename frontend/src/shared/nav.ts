@@ -40,6 +40,13 @@ export const SECONDARY_NAV: NavItem[] = [
   { to: "/data", label: "Data", match: ["/data"] },
 ];
 
+/** Footer, on every page: the secondary links plus how we work and what changed. */
+export const FOOTER_NAV: NavItem[] = [
+  ...SECONDARY_NAV,
+  { to: "/metod", label: "Metod", match: ["/metod"] },
+  { to: "/andringslogg", label: "Ändringslogg", match: ["/andringslogg"] },
+];
+
 /** True when the pathname sits under the item. */
 export function isActive(item: NavItem, pathname: string): boolean {
   return item.match.some((m) =>
@@ -62,7 +69,7 @@ export function documentTitle(pathname: string): string {
   const primary = PRIMARY_NAV.find((item) => isActive(item, pathname));
   if (primary) return `Riksdagskollen – ${primary.label}`;
   if (isLokaltSection(pathname)) return "Riksdagskollen – Lokalt";
-  const secondary = SECONDARY_NAV.find((item) => isActive(item, pathname));
+  const secondary = FOOTER_NAV.find((item) => isActive(item, pathname));
   if (secondary) return `Riksdagskollen – ${secondary.label}`;
   return "Riksdagskollen";
 }

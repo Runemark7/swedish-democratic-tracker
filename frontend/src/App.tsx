@@ -35,6 +35,7 @@ import { MinisterDetailPage } from "./features/regering/MinisterDetailPage";
 import { SpeechDetailPage } from "./features/speeches/SpeechDetailPage";
 import { DebateDetailPage } from "./features/speeches/DebateDetailPage";
 import { DataIndexPage } from "./features/data/DataIndexPage";
+import { AendringsloggPage } from "./features/about/AendringsloggPage";
 import { OmSajtenPage } from "./features/about/OmSajtenPage";
 import { DataSourcePage } from "./features/data/DataSourcePage";
 import { useTheme } from "./contexts/theme";
@@ -44,7 +45,7 @@ import { swedishDate } from "./shared/dates";
 import { MobileNav } from "./components/MobileNav";
 import { Wordmark } from "./components/Wordmark";
 import { LokaltMenu } from "./components/LokaltMenu";
-import { PRIMARY_NAV, SECONDARY_NAV, documentTitle, isActive } from "./shared/nav";
+import { PRIMARY_NAV, SECONDARY_NAV, FOOTER_NAV, documentTitle, isActive } from "./shared/nav";
 import { regeringenRedirect } from "./shared/regeringen";
 
 // ── Nav pill ───────────────────────────────────────────────────────────────
@@ -340,6 +341,7 @@ export default function App() {
           <Route path="/anforanden/:id"                        element={<SpeechDetailPage />} />
           <Route path="/debatt/:dokId"                         element={<DebateDetailPage />} />
           <Route path="/om-sajten"                             element={<OmSajtenPage />} />
+          <Route path="/andringslogg"                          element={<AendringsloggPage />} />
           <Route path="/data"                                  element={<DataIndexPage />} />
           <Route path="/data/:id"                              element={<DataSourcePage />} />
           <Route path="*"                                      element={<NotFoundPage />} />
@@ -355,7 +357,7 @@ export default function App() {
         }}
       >
         <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
-          {SECONDARY_NAV.map((item) => (
+          {FOOTER_NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
