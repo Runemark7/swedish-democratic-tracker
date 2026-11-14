@@ -550,7 +550,7 @@ The Löfte decisions of 2026-10-27 are kept as they were, including the write AP
   - None, including when every Bekräftad koppling has Partilinje Avstår or Delad: **Inte prövat än**. Those votes are still listed on the Löfte page.
 - **Avvikare:** a member whose cast ballot differs from a Ja or Nej Partilinje. Avvikare are shown on the vote page and never affect Löftesstatus.
 - **Time window:** only voteringar inside the Löfte's mandate period count, which is 2026–2030 for 2026 Löften.
-- **Archive:** archived 2022 Löften are shown with their source but **without** a Löftesstatus, because they have no Bekräftade kopplingar. "Inte prövat än" would wrongly state our curation gap as a fact about the party.
+- **Archive:** archived 2022 Löften are shown with their source but **without** a Löftesstatus while they have no Bekräftade kopplingar. "Inte prövat än" would wrongly state our curation gap as a fact about the party. An archived Löfte with a quote and a source URL can be given kopplingar through the write API (voteringar of 2022–2026 only); once it has a Bekräftad koppling its status is computed exactly as for a 2026 Löfte. The archive is never counted in the 2026–2030 summaries.
 
 #### Public read API, Phase 2 (additions to the OpenAPI contract)
 
@@ -708,7 +708,7 @@ The Valmanifest catalogue becomes a registered data source with a data-source pa
 - Data files in the repo for Löften, kopplingar, motion links or Återkommande krav. All of it lives in Postgres.
 - Verdicts such as "hållet / brutet / uppfyllt", percentages, scores or rankings across parties.
 - Per-member promises extracted from speeches.
-- Backfilling Löftesstatus for the 2022 archive.
+- Backfilling Löftesstatus for the 2022 archive in bulk: an archived Löfte gets a status only through individually confirmed kopplingar.
 
 ### Both phases
 

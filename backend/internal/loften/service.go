@@ -38,6 +38,9 @@ var statusSlugs = map[string]domain.Status{
 	"blandat": domain.StatusBlandat, "inte-provat": domain.StatusInteProvat,
 }
 
+// CurrentPeriod is the mandate period the front page and party summaries count.
+const CurrentPeriod = "2026-2030"
+
 // ErrBadStatus is returned for an unknown status filter.
 var ErrBadStatus = errors.New("unknown status filter")
 
@@ -101,14 +104,6 @@ func (s *Service) views(ctx context.Context, ls []*domain.Loefte, withKopplingar
 		}
 		if withKopplingar {
 			v.Kopplingar = []domain.KopplingView{}
-			if l.Archived {
-				// No status for archived Löften: their votes (if any) are facts, listed unevaluated.
-				for _, c := range confirmed {
-					ev := domain.EvaluatedVote{VoteInput: c.VoteInput, Effect: domain.EffectNone,
-						Explanation: "Arkiverat Löfte: vi visar omröstningen men ingen Löftesstatus."}
-					v.Kopplingar = append(v.Kopplingar, domain.ToView(ev, c))
-				}
-			}
 			for _, ev := range res.Votes {
 				v.Kopplingar = append(v.Kopplingar, domain.ToView(ev, byID[ev.KopplingID]))
 			}
@@ -266,10 +261,11 @@ func (s *Service) ForBetankanden(ctx context.Context, keys []string) (map[string
 	return got, nil
 }
 
-// PartyTiles summarises Löftesstatus for all eight parties, always in
+// PartyTiles summarises Löftesstatus of the current mandate period
+// (CurrentPeriod; the 2022–2026 archive is never mixed in) for all eight parties, always in
 // alphabetical order of party code and with zeros for a party without Löften.
 func (s *Service) PartyTiles(ctx context.Context) ([]domain.PartySummary, error) {
-	sum, err := s.Summary(ctx, "")
+	sum, err := s.Summary(ctx, CurrentPeriod)
 	if err != nil {
 		return nil, err
 	}

@@ -269,7 +269,7 @@ export interface paths {
         };
         /**
          * Candidate voteringar new since the last Veckobatch, with the approved Löften they might test
-         * @description Behind the write token. Decided voteringar ingested after the creation of the last closed Veckobatch (all of them when none is closed), inside the mandate period of an approved Löfte whose utskott matches the votering's (the letters of its beteckning). Pairs already suggested, in any state, are left out. Each votering carries its betänkande, förslagspunkt and the motions and yrkanden decided there. Page by passing the response's `next` as `after`.
+         * @description Behind the write token. Decided voteringar ingested after the creation of the last closed Veckobatch (all of them when none is closed), inside the mandate period of an approved Löfte whose utskott matches the votering's (the letters of its beteckning). Pairs already suggested, in any state, are left out. Each votering carries its betänkande, förslagspunkt and the motions and yrkanden decided there. Page by passing the response's `next` as `after`. With `mandatePeriod` (for example `2022-2026`) the read is every decided votering of that period, whenever it was ingested (no Veckobatch cutoff), paired with the Löften of that period that take kopplingar: approved ones, and archived ones that have both a quote and a source URL. Without it the read is unchanged and never offers archived Löften.
          */
         get: operations["getKopplingCandidates"];
         put?: never;
@@ -291,7 +291,7 @@ export interface paths {
         put?: never;
         /**
          * Submit Föreslagna kopplingar (Löfte, votering, direction, confidence, reasoning)
-         * @description Suggestions at or above `threshold` (default 0.6) are stored as foreslagen; below it as bortsorterad, which is kept only so the pair is not suggested again. Neither is ever returned by a public endpoint or shown in the public Ändringslogg. All-or-nothing: an unknown votering, a Löfte that is not approved, or a votering outside the Löfte's mandate period (for a 2026 Löfte, 2026–2030) is 422 and stores nothing. A pair that already has a koppling is reported as `existing` and left unchanged.
+         * @description Suggestions at or above `threshold` (default 0.6) are stored as foreslagen; below it as bortsorterad, which is kept only so the pair is not suggested again. Neither is ever returned by a public endpoint or shown in the public Ändringslogg. All-or-nothing: an unknown votering, a Löfte that is neither approved nor archived with both a quote and a source URL, or a votering outside the Löfte's mandate period (for a 2026 Löfte, 2026–2030; for an archived 2022 Löfte, 2022–2026) is 422 and stores nothing. A pair that already has a koppling is reported as `existing` and left unchanged.
          */
         post: operations["submitKopplingSuggestions"];
         delete?: never;
@@ -483,7 +483,7 @@ export interface paths {
         };
         /**
          * Public Löften (approved and archived), optionally for one party
-         * @description Proposed and struck Löften are never returned. Each carries its Löftesstatus, computed on read from Bekräftade kopplingar and the party's Partilinje (ADR-002). Archived Löften have status null.
+         * @description Proposed and struck Löften are never returned. Each carries its Löftesstatus, computed on read from Bekräftade kopplingar and the party's Partilinje (ADR-002). Archived Löften have status null until they have a Bekräftad koppling, then a status like any Löfte.
          */
         get: operations["listLoften"];
         put?: never;
@@ -2589,7 +2589,7 @@ export interface components {
         };
         LoefteMedStatus: components["schemas"]["Loefte"] & {
             /**
-             * @description Löftesstatus. Null for archived Löften.
+             * @description Löftesstatus. Null for an archived Löfte without a Bekräftad koppling.
              * @enum {string|null}
              */
             status: "Röstat för" | "Röstat emot" | "Blandat" | "Inte prövat än" | null;
@@ -4069,6 +4069,8 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
+                /** @description Mandate period code, e.g. 2022-2026. Lifts the Veckobatch cutoff and adds archived Löften with quote and source URL. */
+                mandatePeriod?: string;
                 /** @description Cursor from the previous page's `next` */
                 after?: number;
             };

@@ -19,8 +19,9 @@ const (
 func (v Visibility) Public() bool { return v == Approved || v == Archived }
 
 // Loefte is one concrete, testable statement in a Valmanifest. It deliberately
-// has no status field: an archived 2022 Löfte has no Bekräftade kopplingar, so
-// a Löftesstatus would state our curation gap as a fact about the party.
+// has no stored status field: Löftesstatus is computed on read from Bekräftade
+// kopplingar. An archived 2022 Löfte without any gets none, since a status
+// would state our curation gap as a fact about the party.
 type Loefte struct {
 	ID            int        `json:"id"`
 	Party         string     `json:"party"`

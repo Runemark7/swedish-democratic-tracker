@@ -53,8 +53,10 @@ export function MandatperiodSelect({ value, onChange }: { value: string; onChang
 export function ArchiveNote() {
   return (
     <p data-testid="archive-note" className="text-xs text-on-surface-variant leading-relaxed">
-      Arkiv {MANDATE_LABEL["2022-2026"]}: löften från valet 2022. Vi visar källan men
-      ingen Löftesstatus, eftersom vi inte har kopplat dem till omröstningar.{" "}
+      Arkiv {MANDATE_LABEL["2022-2026"]}: löften från valet 2022. Ett arkivlöfte får en
+      Löftesstatus först när en omröstning från den perioden har bekräftats som prövning av det.
+      Utan sådan koppling visar vi källan men ingen status. Arkivet räknas aldrig in i
+      2026–2030.{" "}
       <SourceMarker sourceId="seed-party-goals" />
     </p>
   );

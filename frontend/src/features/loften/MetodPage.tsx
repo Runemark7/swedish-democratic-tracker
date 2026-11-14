@@ -29,8 +29,10 @@ export function MetodPage() {
           <li><strong>Inte prövat än</strong>: ingen omröstning har kunnat räknas för eller emot. Det gäller också när alla bekräftade omröstningar slutade i Avstår eller Delad. De visas ändå på Löftets sida.</li>
         </ul>
         <p>
-          Gamla löften från valet 2022 ligger i ett arkiv. De har ingen Löftesstatus, eftersom vi inte
-          kopplat dem till omröstningar och en status då skulle beskriva vår egen lucka, inte partiet.
+          Gamla löften från valet 2022 ligger i ett arkiv för 2022–2026. Ett arkivlöfte får en
+          Löftesstatus först när redaktören bekräftat minst en omröstning från den perioden som prövning av löftet,
+          och då räknas den som för 2026-löften. Utan bekräftad koppling har det ingen status, eftersom en status
+          då skulle beskriva vår egen lucka, inte partiet. Arkivet räknas aldrig in i siffrorna för 2026–2030.
         </p>
         <h2 className="font-display text-lg">Vad metoden inte kan säga</h2>
         <ul className="list-disc pl-5 space-y-1">

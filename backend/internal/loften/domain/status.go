@@ -13,7 +13,7 @@ import (
 type Status string
 
 const (
-	// StatusNone is no status at all: an archived Löfte has no Bekräftade
+	// StatusNone is no status at all: an archived Löfte without Bekräftade
 	// kopplingar, and a status would state our curation gap as a fact about
 	// the party.
 	StatusNone       Status = ""
@@ -122,12 +122,14 @@ func statusOfEvaluated(evs []EvaluatedVote) Status {
 	return StatusInteProvat
 }
 
-// StatusOf computes Löftesstatus on read. archived Löften get StatusNone.
+// StatusOf computes Löftesstatus on read. An archived Löfte with no Bekräftad
+// koppling gets StatusNone: "Inte prövat än" would state our curation gap as a
+// fact. Once it has one, it is computed exactly like any other Löfte.
 // window is the riksmöten of the Löfte's mandate period. Votes are listed in
 // the order they were confirmed; the status history is replayed in that order
 // to find the confirmation that last changed it.
 func StatusOf(archived bool, window []string, in []VoteInput) Result {
-	if archived {
+	if archived && len(in) == 0 {
 		return Result{Status: StatusNone, Votes: []EvaluatedVote{}}
 	}
 	sorted := append([]VoteInput(nil), in...)

@@ -87,7 +87,7 @@ test.describe("Front page", () => {
     await expect(page.locator('[data-party="C"][data-testid="party-tile"]')).toContainText("Inga löften publicerade ännu");
 
     await page.route("**/api/loften?**", (r) => r.fulfill({ json: [] }));
-    await page.route("**/api/loften/summary", (r) => r.fulfill({ json: [] }));
+    await page.route("**/api/loften/summary*", (r) => r.fulfill({ json: [] }));
     await page.route("**/api/valmanifest", (r) => r.fulfill({ json: [] }));
     await page.locator('[data-party="MP"][data-testid="party-tile"]').click();
     await expect(page).toHaveURL(/\/loften\?party=MP$/);
@@ -113,7 +113,7 @@ test.describe("Front page", () => {
 
     let asked = "";
     await page.route("**/api/loften?**", (r) => { asked = r.request().url(); return r.fulfill({ json: [] }); });
-    await page.route("**/api/loften/summary", (r) => r.fulfill({ json: [] }));
+    await page.route("**/api/loften/summary*", (r) => r.fulfill({ json: [] }));
     await page.route("**/api/valmanifest", (r) => r.fulfill({ json: [] }));
     await link.click();
     await expect(page).toHaveURL(/\/loften\?betankande=2025%2F26%3AUbU30$/);

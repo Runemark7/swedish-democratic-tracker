@@ -44,7 +44,7 @@ func TestStatusOf(t *testing.T) {
 		{"vote outside the window does not count", false, []VoteInput{vote(1, "Ja", "2022/23", ja, "2026-10-01")}, StatusInteProvat},
 		{"outside window ignored next to inside", false, []VoteInput{
 			vote(1, "Ja", "2022/23", nej, "2026-10-01"), vote(2, "Ja", "2026/27", ja, "2026-10-02")}, StatusFor},
-		{"archive gives no status", true, []VoteInput{vote(1, "Ja", "2026/27", ja, "2026-10-01")}, StatusNone},
+		{"archive with a Bekräftad koppling gets a status", true, []VoteInput{vote(1, "Ja", "2026/27", ja, "2026-10-01")}, StatusFor},
 		{"archive without kopplingar gives no status", true, nil, StatusNone},
 	}
 	for _, tc := range tests {

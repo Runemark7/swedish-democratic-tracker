@@ -41,7 +41,7 @@ type KopplingView struct {
 }
 
 // LoefteView is a Löfte with its Löftesstatus. Status is absent for archived
-// Löften. Kopplingar is only filled on the single-Löfte read.
+// Löften without a Bekräftad koppling. Kopplingar is only filled on the single-Löfte read.
 type LoefteView struct {
 	Loefte
 	Status          *Status        `json:"status"`

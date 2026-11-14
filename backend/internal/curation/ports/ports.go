@@ -85,6 +85,6 @@ type Repository interface {
 	InTx(ctx context.Context, fn func(Store) error) error
 	// Candidates lists decided voteringar new since the last closed Veckobatch,
 	// inside a mandate period, each with the approved Löften it might test.
-	Candidates(ctx context.Context, limit int, afterRef int64) (*domain.Candidates, error)
+	Candidates(ctx context.Context, limit int, afterRef int64, mandatePeriod string) (*domain.Candidates, error)
 	ListEntries(ctx context.Context, limit int, beforeID int64) ([]*domain.Entry, error)
 }

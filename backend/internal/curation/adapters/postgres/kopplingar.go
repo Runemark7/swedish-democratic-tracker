@@ -61,10 +61,15 @@ func (s *store) InsertKoppling(ctx context.Context, loefteID, ref int64, k domai
 // Löfte. Pairs already suggested, in any state, are left out so the bot never
 // re-judges them. A Löfte with no utskott is never a candidate: utskott is
 // what narrows the pairs.
-func (r *Repository) Candidates(ctx context.Context, limit int, afterRef int64) (*domain.Candidates, error) {
+func (r *Repository) Candidates(ctx context.Context, limit int, afterRef int64, mandatePeriod string) (*domain.Candidates, error) {
 	out := &domain.Candidates{Voteringar: []domain.Candidate{}}
+	// With a mandate period the "new since the last closed Veckobatch" cutoff is
+	// dropped (archive votes are old) and archived Löften with quote and URL join.
+	var period *string
 	var since *time.Time
-	if err := r.db.QueryRow(ctx, `SELECT max(created_at) FROM veckobatch WHERE closed_at IS NOT NULL`).Scan(&since); err != nil {
+	if mandatePeriod != "" {
+		period = &mandatePeriod
+	} else if err := r.db.QueryRow(ctx, `SELECT max(created_at) FROM veckobatch WHERE closed_at IS NOT NULL`).Scan(&since); err != nil {
 		return nil, err
 	}
 	if since != nil {
@@ -75,7 +80,11 @@ func (r *Repository) Candidates(ctx context.Context, limit int, afterRef int64) 
 		WITH pairs AS (
 		  SELECT v.id AS vref, l.id AS lid
 		    FROM voteringar v
-		    JOIN loften l ON l.visibility = 'approved'
+		    JOIN loften l ON ($4::text IS NULL AND l.visibility = 'approved'
+		                    OR $4::text IS NOT NULL AND l.mandate_period = $4
+		                       AND (l.visibility = 'approved'
+		                            OR l.visibility = 'archived'
+		                               AND btrim(coalesce(l.quote,'')) <> '' AND btrim(coalesce(l.source_url,'')) <> ''))
 		    JOIN mandate_periods mp ON mp.code = l.mandate_period
 		     AND v.session = ANY(mp.riksmoten)
 		     AND (v.system_datum IS NULL OR v.system_datum::date BETWEEN mp.start_date AND mp.end_date)
@@ -94,7 +103,7 @@ func (r *Repository) Candidates(ctx context.Context, limit int, afterRef int64) 
 		  JOIN pairs ON pairs.vref = p.vref
 		  JOIN voteringar v ON v.id = p.vref
 		  JOIN loften l ON l.id = pairs.lid
-		 ORDER BY v.id, l.id`, since, limit, afterRef)
+		 ORDER BY v.id, l.id`, since, limit, afterRef, period)
 	if err != nil {
 		return nil, err
 	}
