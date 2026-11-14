@@ -56,6 +56,45 @@ test.describe("canonical betänkande page", () => {
     await expect(pw.getByTestId("decision-status")).toContainText("25 november 2026");
   });
 
+  // Gap no-outcome-label-on-decision-page (#344): each förslagspunkt says in
+  // plain words which alternative won, from Riksdagen's vinnare.
+  test("each förslagspunkt states its outcome, and nothing when it is unknown", async ({ page: pw }) => {
+    const punkter = [
+      punkt({ number: "1" }),
+      punkt({ number: "2", vinnare: "reservation 12" }),
+      punkt({ number: "3", mode: "acklamation", modeLabel: "Avgjord utan omröstning", beslutstyp: "acklamation", alternativ: "", voteringId: "", voteringStored: false, parties: [], avvikare: [], votedReservation: null }),
+      punkt({ number: "4", mode: "annat", modeLabel: "Beslutssätt saknas", vinnare: "", alternativ: "", voteringId: "", voteringStored: false, parties: [], avvikare: [], votedReservation: null }),
+    ];
+    await pw.route("**/api/betankanden/**", (route) => route.fulfill({ json: page("2025/26", { punkter }) }));
+    await pw.route("**/api/speeches**", (route) => route.fulfill({ json: [] }));
+    await pw.goto("/beslut/2025/26/SkU16");
+
+    const won = pw.locator("#punkt-1").getByTestId("punkt-outcome");
+    await expect(won).toContainText("Riksdagen biföll utskottets förslag (8 ja, 8 nej)");
+    await expect(won.getByTestId("outcome-parties")).toContainText("det vinnande förslaget: S");
+    await expect(won.getByTestId("outcome-parties")).toContainText("det förlorande: M");
+
+    const lost = pw.locator("#punkt-2").getByTestId("punkt-outcome");
+    await expect(lost).toContainText("Riksdagen biföll reservation 12 – utskottets förslag avslogs");
+    await expect(lost.getByTestId("outcome-parties")).toContainText("det vinnande förslaget: M");
+
+    const acklamation = pw.locator("#punkt-3").getByTestId("punkt-outcome");
+    await expect(acklamation).toContainText("Riksdagen biföll utskottets förslag");
+    await expect(acklamation.getByTestId("outcome-parties")).toHaveCount(0);
+
+    await expect(pw.locator("#punkt-4")).toBeVisible();
+    await expect(pw.locator("#punkt-4").getByTestId("punkt-outcome")).toHaveCount(0);
+  });
+
+  test("a betänkande that is not decided shows no outcome on its punkter", async ({ page: pw }) => {
+    await pw.route("**/api/betankanden/**", (route) =>
+      route.fulfill({ json: page("2026/27", { decided: false, decisionDate: "2026-11-25", decisionText: "Ej avgjort än" }) }));
+    await pw.route("**/api/speeches**", (route) => route.fulfill({ json: [] }));
+    await pw.goto("/beslut/2026/27/SkU16");
+    await expect(pw.locator("#punkt-6")).toBeVisible();
+    await expect(pw.getByTestId("punkt-outcome")).toHaveCount(0);
+  });
+
   test("a vote detail URL redirects to the canonical page, anchored to the förslagspunkt", async ({ page: pw }) => {
     await pw.route("**/api/betankanden/resolve**", (route) =>
       route.fulfill({ json: { riksmote: "2021/22", beteckning: "SkU16", punkt: "6" } }));

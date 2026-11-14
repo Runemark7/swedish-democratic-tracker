@@ -10,6 +10,7 @@ import { motionPath } from "@/features/motions/api";
 import { Reasoning, Reservations, VotedAlternative } from "@/features/motions/DecisionParts";
 import { LoefteRefList } from "@/features/loften/OnDecision";
 import { Debate } from "@/features/motions/Debate";
+import { punktOutcome } from "./punktOutcome";
 
 function Notice({ children }: { children: React.ReactNode }) {
   return (
@@ -43,6 +44,28 @@ function DecisionStatus({ p }: { p: Page }) {
   );
 }
 
+/** Which alternative won, as Riksdagen states it. Nothing is shown when the
+ *  outcome is not known. */
+function Outcome({ page, k }: { page: Page; k: BetankandePunkt }) {
+  const o = punktOutcome(k, page.decided);
+  if (!o) return null;
+  return (
+    <div className="mt-1 text-sm" data-testid="punkt-outcome">
+      <p>
+        Utfall: <strong>{o.label}</strong>
+        {o.tally ? <span> ({o.tally})</span> : null}
+        <SourceMarker sourceId="betankanden" />
+      </p>
+      {o.winningParties.length > 0 ? (
+        <p className="text-xs text-on-surface-variant" data-testid="outcome-parties">
+          Partier vars Partilinje var det vinnande förslaget: {o.winningParties.join(", ")}
+          {o.losingParties.length > 0 ? <> · det förlorande: {o.losingParties.join(", ")}</> : null}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function PunktBlock({ page, k }: { page: Page; k: BetankandePunkt }) {
   const parts = { ...k, betankandeSourceUrl: page.sourceUrl };
   return (
@@ -54,6 +77,7 @@ function PunktBlock({ page, k }: { page: Page; k: BetankandePunkt }) {
         <strong>{page.decided === false ? "Ej avgjort än" : k.modeLabel}</strong>
         {k.alternativ ? <span> – {k.alternativ}</span> : null}
       </p>
+      <Outcome page={page} k={k} />
       {k.text ? <p className="mt-2 text-sm whitespace-pre-line">{k.text}</p> : null}
 
       {k.mode === "votering" && k.voteringStored && k.parties.length > 0 ? (
