@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { politiciansApi } from "./api";
 import { PartyBadge } from "@/shared/components";
@@ -13,61 +13,115 @@ import type { Speech } from "@/features/speeches/api";
 
 type Vote = components["schemas"]["Vote"];
 
-type ActivityEvent =
-  | { kind: "vote"; date: string; vote: Vote }
-  | { kind: "speech"; date: string; speech: Speech };
+const VOTES_PAGE_SIZE = 50;
+const SPEECHES_SHOWN = 50;
 
-function buildActivity(votes: Vote[], speeches: Speech[]): ActivityEvent[] {
-  const events: ActivityEvent[] = [];
-  for (const v of votes) {
-    // Votes carry no decision date — the record holds only system_datum (when
-    // Riksdagen last touched the row) and createdAt (our insert time), and
-    // neither says when the chamber decided. Sorting on either would invent a
-    // chronology, so votes sort with an empty key and land after the dated
-    // speeches rather than being interleaved on a made-up date.
-    events.push({ kind: "vote", date: "", vote: v });
-  }
-  for (const s of speeches) {
-    events.push({ kind: "speech", date: s.date, speech: s });
-  }
-  events.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-  return events.slice(0, 50);
-}
-
+// Votes and speeches are two lists, not one merged feed. Votes carry no
+// decision date — the record holds only system_datum (when Riksdagen last
+// touched the row) and createdAt (our insert time), and neither says when the
+// chamber decided — so they cannot be interleaved with the dated speeches
+// without inventing a chronology. Merged, the dated speeches filled the whole
+// feed and a member who had spoken 50 times showed no vote at all (#350).
 function ActivityFeed({
   votes,
+  totalVotes,
+  loadingVotes,
+  votesFailed,
+  hasMoreVotes,
+  loadingMoreVotes,
+  onMoreVotes,
   speeches,
-  loading,
+  loadingSpeeches,
 }: {
   votes: Vote[];
+  totalVotes: number;
+  loadingVotes: boolean;
+  votesFailed: boolean;
+  hasMoreVotes: boolean;
+  loadingMoreVotes: boolean;
+  onMoreVotes: () => void;
   speeches: Speech[];
-  loading: boolean;
+  loadingSpeeches: boolean;
 }) {
-  if (loading) {
-    return <div className="text-on-surface-variant text-sm py-6 text-center">Laddar...</div>;
-  }
-  const events = buildActivity(votes, speeches);
-  if (events.length === 0) {
-    return (
-      <p className="text-sm italic text-on-surface-variant py-4">
-        Ingen registrerad aktivitet ännu.
-      </p>
-    );
-  }
+  const shownSpeeches = [...speeches]
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .slice(0, SPEECHES_SHOWN);
+  const heading = "text-[10px] font-mono uppercase tracking-widest text-on-surface-variant";
   return (
-    <div className="rounded-xl p-4" style={{ background: "var(--color-surface-lowest)" }}>
-      <div className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant mb-3">
-        Senaste 50 händelser
-      </div>
-      <div>
-        {events.map((e, i) =>
-          e.kind === "speech" ? (
-            <SpeechRow key={`s-${e.speech.id}`} speech={e.speech} hidePolitician />
-          ) : (
-            <ActivityVoteRow key={`v-${i}`} vote={e.vote} />
-          ),
+    <div className="flex flex-col gap-4">
+      <section
+        data-testid="member-votes"
+        className="rounded-xl p-4"
+        style={{ background: "var(--color-surface-lowest)" }}
+      >
+        <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
+          <h3 className={`${heading} m-0`}>Röster</h3>
+          {votes.length > 0 && (
+            <span className={heading}>
+              Visar {votes.length} av {totalVotes}
+            </span>
+          )}
+        </div>
+        <p className="text-[11px] text-on-surface-variant mt-0 mb-2">
+          Så röstade ledamoten i varje förslagspunkt. Senast inlästa först – registret anger
+          riksmöte men inget beslutsdatum per röst. Varje rad länkar till beslutet.
+        </p>
+        {loadingVotes ? (
+          <div className="text-on-surface-variant text-sm py-6 text-center">Laddar...</div>
+        ) : votesFailed && votes.length === 0 ? (
+          <p className="text-sm italic text-on-surface-variant py-4">
+            Rösterna kunde inte hämtas just nu. Försök igen om en stund.
+          </p>
+        ) : votes.length === 0 ? (
+          <p className="text-sm italic text-on-surface-variant py-4">Inga registrerade röster.</p>
+        ) : (
+          <>
+            <div>
+              {votes.map((v) => (
+                <ActivityVoteRow key={`${v.voteringId}-${v.politicianId}`} vote={v} />
+              ))}
+            </div>
+            {hasMoreVotes && (
+              <button
+                type="button"
+                onClick={onMoreVotes}
+                disabled={loadingMoreVotes}
+                className="mt-3 px-4 py-2 text-sm font-medium rounded-lg cursor-pointer"
+                style={{
+                  border: "1px solid var(--color-border)",
+                  background: "transparent",
+                  color: "var(--color-fg)",
+                }}
+              >
+                {loadingMoreVotes ? "Laddar..." : "Visa fler röster"}
+              </button>
+            )}
+          </>
         )}
-      </div>
+      </section>
+
+      <section
+        data-testid="member-speeches"
+        className="rounded-xl p-4"
+        style={{ background: "var(--color-surface-lowest)" }}
+      >
+        <h3 className={`${heading} m-0 mb-3`}>
+          {shownSpeeches.length >= SPEECHES_SHOWN
+            ? `Senaste ${SPEECHES_SHOWN} anförandena`
+            : "Anföranden"}
+        </h3>
+        {loadingSpeeches ? (
+          <div className="text-on-surface-variant text-sm py-6 text-center">Laddar...</div>
+        ) : shownSpeeches.length === 0 ? (
+          <p className="text-sm italic text-on-surface-variant py-4">Inga registrerade anföranden.</p>
+        ) : (
+          <div>
+            {shownSpeeches.map((s) => (
+              <SpeechRow key={`s-${s.id}`} speech={s} hidePolitician />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
@@ -120,7 +174,10 @@ function ActivityVoteRow({ vote }: { vote: Vote }) {
         {/* No date: a vote row carries only system_datum, which is when
             Riksdagen last touched the record, not when the chamber decided. */}
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--color-fg-muted)" }}>
-          {vote.beteckning} punkt {vote.forslagspunkt} · {vote.voteResult}
+          {vote.session}:{vote.beteckning} punkt {vote.forslagspunkt} ·{" "}
+          <span data-testid="member-vote-result" style={{ fontWeight: 700, color: "var(--color-fg)" }}>
+            {vote.voteResult}
+          </span>
           {vote.avvikare && (
             <span
               data-testid="avvikare-mark"
@@ -339,9 +396,13 @@ export function PoliticianPage() {
     enabled: !!id,
   });
 
-  const { data: votesData, isLoading: loadingVotes } = useQuery({
+  const votesQuery = useInfiniteQuery({
     queryKey: ["politician-votes", id],
-    queryFn: () => politiciansApi.listVotes(id, { pageSize: 100 }),
+    queryFn: ({ pageParam }) =>
+      politiciansApi.listVotes(id, { page: pageParam, pageSize: VOTES_PAGE_SIZE }),
+    initialPageParam: 1,
+    getNextPageParam: (last) =>
+      last.page * last.pageSize < last.total ? last.page + 1 : undefined,
     enabled: !!id,
   });
 
@@ -358,11 +419,12 @@ export function PoliticianPage() {
   }
 
   const pc = PARTY_COLORS[politician.party];
-  const votes = votesData?.data ?? [];
+  const votePages = votesQuery.data?.pages ?? [];
+  const votes = votePages.flatMap((p) => p.data ?? []);
 
   // Counts come from the server's aggregate over the member's whole recorded
-  // history — the list above is capped at 100 rows and must not be counted.
-  const summary = votesData?.summary;
+  // history — the list below is paged and must not be counted.
+  const summary = votePages[0]?.summary;
   const ja = summary?.ja ?? 0;
   const nej = summary?.nej ?? 0;
   const avstar = summary?.avstar ?? 0;
@@ -438,7 +500,7 @@ export function PoliticianPage() {
             </div>
             <div className="text-[11px] text-on-surface-variant self-center">
               Gäller alla {totalVotes} röstningar i registret (hela ledamotens registrerade
-              historik), inte bara de senaste som listas nedan.
+              historik), inte bara de som visas i listan nedan.
             </div>
           </div>
         )}
@@ -473,7 +535,17 @@ export function PoliticianPage() {
 
       {/* ── Aktivitet ───────────────────────────────────────────────── */}
       {activeTab === "aktivitet" && (
-        <ActivityFeed votes={votes} speeches={speeches ?? []} loading={loadingVotes || loadingSpeeches} />
+        <ActivityFeed
+          votes={votes}
+          totalVotes={votePages[0]?.total ?? votes.length}
+          loadingVotes={votesQuery.isLoading}
+          votesFailed={votesQuery.isError}
+          hasMoreVotes={!!votesQuery.hasNextPage}
+          loadingMoreVotes={votesQuery.isFetchingNextPage}
+          onMoreVotes={() => void votesQuery.fetchNextPage()}
+          speeches={speeches ?? []}
+          loadingSpeeches={loadingSpeeches}
+        />
       )}
 
       {activeTab === "motioner" && <MemberMotions politicianId={id} />}
