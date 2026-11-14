@@ -18,7 +18,8 @@ test.describe("Löften under Partier", () => {
     await page.route("**/api/parties/M/loften", (r) => r.fulfill({ json: [ARCHIVED] }));
     await page.route("**/api/parties/M/valmanifest", (r) => r.fulfill({ json: VALMANIFEST }));
     await page.route("**/api/parties/M/record", (r) => r.fulfill({ json: { party: "M", decisions: [], motions: [] } }));
-    await page.route("**/api/loften", (r) => r.fulfill({ json: [ARCHIVED] }));
+    // With or without a query: the party tab asks for /api/loften?party=M.
+    await page.route(/\/api\/loften(\?.*)?$/, (r) => r.fulfill({ json: [ARCHIVED] }));
     await page.route("**/api/valmanifest", (r) => r.fulfill({ json: VALMANIFEST }));
     await page.route("**/api/loften/7", (r) => r.fulfill({ json: ARCHIVED }));
   });
