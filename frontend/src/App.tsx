@@ -160,7 +160,7 @@ export default function App() {
 
       {/* ── Desktop top nav (>640 px) ─────────────────────────────────── */}
       <header
-        className="desktop-only"
+        className="desktop-only no-print"
         style={{
           background: "var(--color-bg)",
           borderBottom: "1px solid var(--color-border)",
@@ -347,6 +347,7 @@ export default function App() {
       </main>
 
       <footer
+        className="no-print"
         style={{
           borderTop: "1px solid var(--color-border)",
           padding: "16px 14px",

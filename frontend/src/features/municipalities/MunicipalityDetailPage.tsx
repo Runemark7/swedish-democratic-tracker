@@ -380,7 +380,7 @@ export function MunicipalityDetailPage() {
       {/* Mobile floating BYT KOMMUN button + BottomSheet */}
       {isMobile && (
         <>
-          <div style={{ position: "fixed", bottom: 72, left: 14, right: 14, zIndex: 30 }}>
+          <div className="no-print" style={{ position: "fixed", bottom: 72, left: 14, right: 14, zIndex: 30 }}>
             <button
               onClick={() => setSheetOpen(true)}
               style={{

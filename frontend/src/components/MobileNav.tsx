@@ -18,7 +18,7 @@ export function MobileNav({ pathname, theme, toggleTheme }: MobileNavProps) {
 
   return (
     <header
-      className="mobile-only"
+      className="mobile-only no-print"
       style={{
         ...barStyle,
         position: "sticky",

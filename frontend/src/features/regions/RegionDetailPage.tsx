@@ -434,6 +434,7 @@ export function RegionDetailPage() {
       {isMobile && (
         <>
           <div
+            className="no-print"
             style={{
               position: "fixed",
               bottom: 72,
