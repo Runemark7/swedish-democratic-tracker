@@ -1,0 +1,423 @@
+{
+ "method": "GET",
+ "path": "/dokumentstatus/HE01KU9.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/dokumentstatus/HE01KU9.json",
+ "note": "Recorded 2026-11-14, unchanged.",
+ "body": {
+  "dokumentstatus": {
+   "dokument": {
+    "hangar_id": "5297906",
+    "dok_id": "HE01KU9",
+    "rm": "2026/27",
+    "beteckning": "KU9",
+    "typ": "bet",
+    "subtyp": "bet",
+    "doktyp": "bet",
+    "typrubrik": "Betänkande 2026/27:KU9",
+    "dokumentnamn": "Betänkande",
+    "debattnamn": "Debatt om förslag",
+    "tempbeteckning": "",
+    "organ": "KU",
+    "mottagare": "",
+    "nummer": "9",
+    "slutnummer": "0",
+    "datum": "2026-11-05 00:00:00",
+    "systemdatum": "2026-11-11 18:08:40",
+    "publicerad": "2026-11-05 15:49:43",
+    "titel": "En grundlagsskyddad aborträtt samt utökade möjligheter att begränsa föreningsfriheten och rätten till medborgarskap (vilande grundlagsförslag)",
+    "subtitel": "",
+    "status": "Webbpublicering",
+    "htmlformat": "html",
+    "relaterat_id": "",
+    "source": "RIM",
+    "sourceid": "d391e2a9-4041-43f5-844f-58d685ff31bd",
+    "dokument_url_text": "https://data.riksdagen.se/dokument/HE01KU9/text",
+    "dokument_url_html": "https://data.riksdagen.se/dokument/HE01KU9",
+    "dokumentstatus_url_xml": "https://data.riksdagen.se/dokumentstatus/HE01KU9",
+    "utskottsforslag_url_xml": "https://data.riksdagen.se/utskottsforslag/HE01KU9",
+    "html": "<style><!--\r\n .w600px{width: 600px;font-family:Verdana, Geneva, sans-serif}\r\nh2.dtyp{font-size:1.5em !important;} \r\n@page Section1 { size:467.8pt 686.05pt; margin:45.35pt 102.05pt 73.7pt 70.85pt }\r\ndiv.Section1 { page:Section1 }\r\nzbody { text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\nzh1, h2, h3, h4, h5, h6, p { margin:3.1pt 0pt 0pt }\r\nzli, table { margin-top:3.1pt; margin-bottom:0pt }\r\nzh1 { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-inside:auto; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt; font-weight:normal; color:#000000 }\r\nzh2 { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:13.5pt; font-weight:normal; color:#000000 }\r\nzh3 { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold; color:#000000 }\r\nzh4 { margin-top:15pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:normal; font-style:italic; color:#000000 }\r\nzh5 { margin-top:12pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold; color:#000000 }\r\nzh6 { margin-top:12pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:normal; font-style:italic; color:#000000 }\r\n.Heading7 { margin-top:2pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:normal; font-style:italic; color:#243f60; -aw-style-name:heading7 }\r\n.Heading8 { margin-top:2pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9pt; font-weight:normal; color:#272727; -aw-style-name:heading8 }\r\n.Heading9 { margin-top:2pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9pt; font-weight:normal; font-style:italic; color:#272727; -aw-style-name:heading9 }\r\n.Avsnittsrubrik { margin-top:0pt; margin-bottom:27.7pt; text-align:left; page-break-before:always; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:16pt }\r\n.Avvikandemeningrubrik { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }\r\n.BalloonText { margin-top:3.1pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:Tahoma; font-size:8pt }\r\n.Bilaga { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-before:always; page-break-after:avoid; line-height:normal; widows:0; orphans:0; font-family:'Verdana'; font-size:8pt; font-variant:small-caps; text-decoration:underline }\r\n.Bilagerubrik { margin-top:0pt; margin-bottom:17.7pt; text-align:left; page-break-after:auto; line-height:normal; widows:0; orphans:0; font-family:'Verdana'; font-size:16pt }\r\n.Bild-R { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }\r\n.Bild-Rubrik { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }\r\n.Bild-Underrubrik { margin-top:0pt; margin-bottom:1pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:8pt; font-family:'Verdana'; font-size:8pt; font-weight:normal; font-style:italic }\r\n.BodyText { margin-top:3.1pt; margin-bottom:0pt; text-align:left; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.BodyTextIndent2 { margin-top:3.1pt; margin-left:14.15pt; margin-bottom:6pt; text-align:justify; line-height:200%; font-family:'Verdana'; font-size:9.5pt }\r\n.Citatindrag { margin-top:0pt; margin-left:14.2pt; margin-bottom:6.1pt; text-indent:14.2pt; text-align:justify; line-height:10pt; font-family:'Verdana'; font-size:9.5pt }\r\n.CommentText { margin-top:3.1pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:10pt }\r\n.Deltagare { margin-top:0pt; margin-bottom:0pt; text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:9.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Diagram-R { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }\r\n.Diagram-Rubrik { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }\r\n.Diagram-Underrubrik { margin-top:0pt; margin-bottom:1pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:8pt; font-family:'Verdana'; font-size:8pt; font-weight:normal; font-style:italic }\r\n.DokumentRubrik { margin-top:6pt; margin-bottom:24pt; text-align:left; line-height:normal; border-bottom:0.75pt solid #000000; padding-bottom:4pt; font-family:'Verdana'; font-size:18pt; -aw-border-bottom:0.5pt single }\r\n.Dokumentbeteckning { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Fluglort { margin-top:0.1pt; margin-bottom:0pt; text-align:justify; line-height:0.7pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Footer { margin-top:3.1pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.FootnoteText { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:8pt; font-family:'Verdana'; font-size:8pt }\r\n.Fotnotstextindrag { margin-top:0pt; margin-left:5.65pt; margin-bottom:0pt; text-align:left; line-height:8pt; font-family:'Verdana'; font-size:8pt }\r\n.Frslagspunkt { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold }\r\n.Frslagstext { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Frteckningsrubrik { margin-top:9.6pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt; font-weight:normal; font-style:italic; color:#000000 }\r\n.Grupprubrik { margin-top:6pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\n.Grupprubrikindrag { margin-top:6pt; margin-left:22.1pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\n.Header { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:7.5pt; font-variant:small-caps }\r\n.Innehllsfrteckning { margin-top:0pt; margin-bottom:17.7pt; text-align:left; page-break-before:always; page-break-after:auto; line-height:normal; font-family:'Verdana'; font-size:16pt }\r\n.Kanslikommentar { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Kantrubrik { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:7.5pt }\r\n.ListBullet { margin-top:6.25pt; margin-left:17.85pt; margin-bottom:6.25pt; text-indent:-17.85pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.ListParagraph { margin-top:3.1pt; margin-left:28.35pt; margin-bottom:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Litentext { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:8pt }\r\n.Mellanrubrik { margin-top:11pt; margin-bottom:3.1pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\n.Mellanrubrikverst { margin-top:0pt; margin-bottom:3.1pt; text-align:left; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\n.Mellanrum { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-before:auto; page-break-after:auto; line-height:1pt; widows:0; orphans:0; font-family:'Verdana'; font-size:1pt; font-variant:small-caps; text-decoration:none; color:#ffffff }\r\n.MotionsTypMarkering { margin-top:0pt; margin-bottom:0pt; text-align:right; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold }\r\n.NormalIndent { margin-top:0pt; margin-bottom:0pt; text-indent:11.35pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Normalinskjuten { margin-top:0pt; margin-left:22.1pt; margin-bottom:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Normalinskjutenindrag { margin-top:0pt; margin-left:22.1pt; margin-bottom:0pt; text-indent:11.35pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Normalinskjutenkursiv { margin-top:6pt; margin-bottom:0pt; line-height:normal; font-family:'Verdana'; font-size:10pt; font-style:italic }\r\n.Normalkursiv { margin-top:3.1pt; margin-bottom:0pt; text-align:left; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\n.Normalruta { margin:3.1pt 5.65pt 0pt; text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; border:0.75pt solid #000000; padding:4pt; font-family:'Verdana'; font-size:10.5pt; -aw-border:0.5pt single }\r\n.Normalrutafet { margin:3.1pt 5.65pt 0pt; text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; border:0.75pt solid #000000; padding:4pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold; -aw-border:0.5pt single }\r\n.Normalrutaindrag { margin:0pt 5.65pt; text-indent:11.35pt; text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; border:0.75pt solid #000000; padding:4pt; font-family:'Verdana'; font-size:10.5pt; -aw-border:0.5pt single }\r\n.Normalutanluftfre { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.NormalLeft { margin-top:3.1pt; margin-bottom:0pt; text-align:left; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.NormalNoll { margin-top:0pt; margin-bottom:3.1pt; text-align:left; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }\r\n.NumlistaTOC { margin:3.1pt 28.35pt 0pt 0pt; text-indent:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.Ordfrande { margin-top:0pt; margin-bottom:22pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:11.5pt; font-style:italic }\r\n.Ordfranden { margin-top:3.1pt; margin-bottom:22pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\n.OrtochDatum { margin-top:18pt; margin-bottom:18pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.OrtOchDatum0 { margin-top:18pt; margin-bottom:18pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:11.5pt }\r\n.Punktlistabomb { margin-top:6.25pt; margin-left:14.2pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Punktlistagemener { margin-top:6.25pt; margin-left:14.2pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Punktlistalinje { margin-top:6.25pt; margin-left:14.2pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Punktlistalinjeindragen { margin-top:6.25pt; margin-left:28.4pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Punktlistasiffra { margin-top:6.25pt; margin-left:14.2pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.PVgnar { margin-top:3.1pt; margin-bottom:26pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.Quote { margin-top:6.1pt; margin-left:14.2pt; margin-bottom:0pt; text-align:justify; line-height:10pt; font-family:'Verdana'; font-size:9.5pt }\r\n.R1 { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.R1bilaga { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-after:auto; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.R2 { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:13.5pt }\r\n.R3 { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }\r\n.R4 { margin-top:15pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:normal; font-style:italic; color:#000000 }\r\n.R5 { margin-top:12pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold }\r\n.R6 { margin-top:12pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:normal; font-style:italic; color:#000000 }\r\n.Reservationshnvisning { margin-top:0pt; margin-bottom:8pt; text-align:right; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\n.Reservationsrubrik { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }\r\n.Rubrik1Dokumentinformation { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Rubrik1bilaga { margin-top:0pt; margin-bottom:27.7pt; text-align:left; page-break-after:auto; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Rubrik1medsidhuvud { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-before:always; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Rubrik1numrerat { margin-top:3.1pt; margin-left:0pt; margin-bottom:12pt; text-indent:0pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Rubrik1numreratmedsidhuvud { margin-top:0pt; margin-left:0pt; margin-bottom:16pt; text-indent:0pt; text-align:left; page-break-before:always; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:16pt }\r\n.Rubrik2bilaga { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:13.5pt }\r\n.Rubrik2numrerat { margin-top:20pt; margin-left:0pt; margin-bottom:0pt; text-indent:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:13.5pt }\r\n.Rubrik3numrerat { margin-top:20pt; margin-left:0pt; margin-bottom:0pt; text-indent:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }\r\n.Sammanfattning { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-after:auto; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Sidhuvudhgerstlld { margin-top:0pt; margin-bottom:0pt; text-align:right; line-height:normal; font-family:'Verdana'; font-size:7.5pt; font-variant:small-caps }\r\n.Sidhuvudvnsterstlld { margin-top:0pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:7.5pt; font-variant:small-caps }\r\n.Stdrubrik { margin-top:12pt; margin-bottom:0pt; line-height:12pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold }\r\n.Srskiltyttranderubrik { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }\r\n.TOC1 { margin-top:0pt; margin-right:28.35pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOC2 { margin:0pt 28.35pt 0pt 5.65pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOC3 { margin:0pt 28.35pt 0pt 11.35pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOC4 { margin:0pt 28.35pt 0pt 17pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOC5 { margin:0pt 28.35pt 0pt 22.7pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOC6 { margin-top:0pt; margin-left:47.65pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOC7 { margin-top:0pt; margin-right:28.35pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOC8 { margin-top:0pt; margin-right:28.35pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOC9 { margin-top:0pt; margin-left:8.5pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TOCHeading { margin-top:3.1pt; margin-bottom:9pt; text-align:left; page-break-before:always; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Tabell-Kolumnrubrik { margin-top:3pt; margin-bottom:0pt; line-height:10pt; font-family:'Verdana'; font-size:8pt; font-weight:bold }\r\n.Tabell-KolumnrubrikHger { margin-top:3pt; margin-bottom:0pt; text-align:right; line-height:10pt; font-family:'Verdana'; font-size:8pt; font-weight:bold }\r\n.Tabell-Klla { margin-top:2pt; margin-bottom:0pt; line-height:8pt; font-family:'Verdana'; font-size:7pt }\r\n.Tabell-R { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }\r\n.Tabell-Radrubrik { margin-top:3pt; margin-bottom:0pt; line-height:10pt; font-family:'Verdana'; font-size:8pt }\r\n.Tabell-Rubrik { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }\r\n.Tabell-Siffror { margin-top:3pt; margin-bottom:0pt; text-align:right; line-height:10pt; font-family:'Verdana'; font-size:8pt }\r\n.Tabell-Text { margin-top:3pt; margin-bottom:0pt; line-height:10pt; font-family:'Verdana'; font-size:8pt }\r\n.Tabell-Underrubrik { margin-top:0pt; margin-bottom:1pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:8pt; font-family:'Verdana'; font-size:8pt; font-weight:normal; font-style:italic }\r\n.TableofFigures { margin-top:3.1pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:9.5pt }\r\n.TillX-utskottet { margin-top:0pt; margin-bottom:12pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Title { margin-top:3.1pt; margin-bottom:1pt; text-align:left; line-height:12pt; font-family:'Verdana'; font-size:20pt; letter-spacing:-0.5pt }\r\n.Vapen { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }\r\n.Yrkandelista { margin-top:3.1pt; margin-left:28.35pt; margin-bottom:0pt; text-indent:-28.35pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\n.Yrkandelistakursiv { margin-top:3.1pt; margin-left:28.35pt; margin-bottom:0pt; text-indent:-28.35pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\n.YrkandelistaEtt { margin-top:3.1pt; margin-left:0pt; margin-bottom:0pt; text-indent:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }\r\nspan.BallongtextChar { font-family:Tahoma; font-size:8pt }\r\nspan.BilagaChar { font-family:'Verdana'; font-size:8pt; font-variant:small-caps; text-decoration:underline }\r\nspan.BrdtextChar { font-family:'Verdana'; font-size:9.5pt }\r\nspan.BrdtextChar1 { font-family:'Verdana'; font-size:9.5pt }\r\nspan.Brdtextmedindrag2Char { font-family:'Verdana'; font-size:9.5pt }\r\nspan.CitatChar { font-family:'Verdana'; font-size:9.5pt }\r\nspan.DokumentRubrikChar { font-family:'Verdana'; font-size:18pt }\r\nspan.FotnotstextChar { font-family:'Verdana'; font-size:8pt }\r\nspan.FotnotstextindragChar { font-family:'Verdana'; font-size:8pt }\r\nspan.FrslagspunktChar { font-family:'Verdana'; font-size:9.5pt; font-weight:bold; font-style:normal }\r\nspan.Hyperlink { text-decoration:none; color:#000000; -aw-style-name:hyperlink }\r\nspan.KommentarerChar { font-family:'Verdana'; font-size:10pt }\r\nspan.NormalkursivChar { font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\nspan.NormaltindragChar { font-family:'Verdana'; font-size:9.5pt }\r\nspan.OrdfrandeChar { font-family:'Verdana'; font-size:11.5pt; font-style:italic }\r\nspan.OrdfrandenChar { font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\nspan.OrtochDatumChar { font-family:'Verdana'; font-size:9.5pt }\r\nspan.OrtOchDatumChar0 { font-family:'Verdana'; font-size:11.5pt }\r\nspan.PlaceholderText { color:#808080 }\r\nspan.PVgnarChar { font-family:'Verdana'; font-size:9.5pt }\r\nspan.ReservationshnvisningChar { font-family:'Verdana'; font-size:9.5pt; font-style:italic }\r\nspan.Rubrik1Char { font-family:'Verdana'; font-size:16pt }\r\nspan.Rubrik1DokumentinformationChar { font-family:'Verdana'; font-size:16pt }\r\nspan.Rubrik2Char { font-family:'Verdana'; font-size:13.5pt }\r\nspan.Rubrik3Char { font-family:'Verdana'; font-size:10.5pt; font-weight:bold }\r\nspan.Rubrik4Char { font-family:'Verdana'; font-size:10.5pt; font-style:italic; color:#000000 }\r\nspan.Rubrik5Char { font-family:'Verdana'; font-size:9.5pt; font-weight:bold }\r\nspan.Rubrik6Char { font-family:'Verdana'; font-size:9.5pt; font-style:italic; color:#000000 }\r\nspan.Rubrik7Char { font-family:'Verdana'; font-size:9.5pt; font-style:italic; color:#243f60 }\r\nspan.Rubrik8Char { font-family:'Verdana'; font-size:9pt; color:#272727 }\r\nspan.Rubrik9Char { font-family:'Verdana'; font-size:9pt; font-style:italic; color:#272727 }\r\nspan.RubrikChar { font-family:'Verdana'; font-size:20pt; letter-spacing:-0.5pt }\r\nspan.SidfotChar { font-family:'Verdana'; font-size:9.5pt }\r\nspan.SidhuvudChar { font-family:'Verdana'; font-size:7.5pt; font-variant:small-caps }\r\nspan.Tabell-Upphjttecken { font-family:'Verdana'; font-variant:normal; text-decoration:none; text-transform:none; vertical-align:super; display:inline }\r\nspan.VapenChar { font-family:'Verdana'; font-size:16pt }\r\nspan.tBilagaJA { color:#000000 }\r\nspan.tSidrubrikJA { color:#000000 }\r\n.PlainTable1 {  }\r\n.TableGrid {  }\r\n--></style>\r\n\r\n\t\t<div class=\"Section1\">\r\n\t\t\t<table cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top:0pt; border-collapse:collapse\">\r\n\t\t\t\t<tr style=\"height:79.4pt; -aw-height-rule:exactly\">\r\n\t\t\t\t\t<td style=\"width:297.7pt; vertical-align:top\">\r\n\t\t\t\t\t\t<p class=\"Rubrik1Dokumentinformation\" style=\"line-height:16pt\">\r\n\t\t\t\t\t\t\t<span style=\"-aw-sdt-tag:'ccUtskott'; -aw-sdt-title:'utskottsnamn Dokumentegenskap'\"><span>Konstitutionsutskottet</span></span><span style=\"-aw-sdt-tag:'ccS'; -aw-sdt-title:'s'\"><span>s</span></span><span style=\"-aw-sdt-tag:'ccMellanslag'; -aw-sdt-title:'Mellanslag'\"><span style=\"-aw-import:spaces\">&#xa0;</span></span><a name=\"Utlatande\"></a><span>betänkande</span>\r\n\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t<p class=\"Dokumentbeteckning\" style=\"line-height:16pt\">\r\n\t\t\t\t\t\t\t<span style=\"-aw-sdt-tag:'ccRiksmote'; -aw-sdt-title:'riksmote Dokumentegenskap'\"><span>2026/27</span></span><span style=\"-aw-sdt-tag:'ccKolon'; -aw-sdt-title:'Kolon'\"><span>:</span></span><a name=\"Utskottebeteckning\"></a><span>KU9</span>\r\n\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t<p class=\"Rubrik1Dokumentinformation\" style=\"line-height:16pt\">\r\n\t\t\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t\t\t</p>\r\n\t\t\t\t\t</td>\r\n\t\t\t\t</tr>\r\n\t\t\t</table>\r\n\t\t\t<div style=\"-aw-sdt-tag:'ccDokumentrubrik'; -aw-sdt-title:'dokumentrubrik Dokumentegenskap'\">\r\n\t\t\t\t<p class=\"DokumentRubrik\">\r\n\t\t\t\t\t<span>En grundlagsskyddad aborträtt samt utökade möjligheter att begränsa föreningsfriheten och rätten till medborgarskap (vilande grundlagsförslag)</span>\r\n\t\t\t\t</p>\r\n\t\t\t</div>\r\n\t\t\t<p class=\"Sammanfattning\" style=\"line-height:16pt\">\r\n\t\t\t\t<span class=\"tSidrubrikJA\">Sammanfattning</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span>I betänkandet anmäls för slutligt beslut ett vilande förslag till lag om ändring i regeringsformen. Utskottet föreslår att riksdagen slutligt antar det vilande förslaget.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Förslaget innebär att rätten till abort införs i regeringsformen som en ny grundläggande fri- och rättighet. Förslaget innebär vidare att det ska bli möjligt att meddela föreskrifter om att det svenska medborgarskapet ska fråntas den som är medborgare i en annan stat och som har förvärvat medborgarskapet genom oriktiga eller vilseledande uppgifter eller genom annat otillbörligt handlande, eller som har dömts för brott som allvarligt skadar Sveriges vitala intressen. Förslaget innebär även att föreningsfriheten ska få begränsas när det gäller sammanslutningar som ägnar sig åt allvarlig brottslighet för att uppnå ekonomisk vinning eller annan otillbörlig fördel.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Lagändringarna föreslås träda i kraft den 1 januari 2027.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>I betänkandet finns en reservation (V, MP) och fyra särskilda yttranden (S,</span><span>&#xa0;</span><span>V, C, MP).</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"R4\">\r\n\t\t\t\t<span>Behandlade förslag</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Vilande förslag beslutat den 20 maj 2026 till lag om ändring i regeringsformen (bet. 2025/26:KU34, rskr. 2025/26:266).</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Innehllsfrteckning\">\r\n\t\t\t\t<a name=\"Innehållsförteckning\"></a><span class=\"tSidrubrikJA\">Innehållsförteckning</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC1\">\r\n\t\t\t\t<a href=\"#_Toc244767940\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Utskottets förslag till riksdagsbeslut</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC1\">\r\n\t\t\t\t<a href=\"#_Toc244767941\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Redogörelse för ärendet</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC1\">\r\n\t\t\t\t<a href=\"#_Toc244767942\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Utskottets överväganden</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC2\">\r\n\t\t\t\t<a href=\"#_Toc244767943\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Vilande förslag</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC3\">\r\n\t\t\t\t<a href=\"#_Toc244767944\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Utskottets anmälan och yttrande</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC1\">\r\n\t\t\t\t<a href=\"#_Toc244767945\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Reservation</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC6\" style=\"margin-right:17pt; margin-left:5.65pt\">\r\n\t\t\t\t<a href=\"#_Toc244767946\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Vilande förslag (V, MP)</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC1\">\r\n\t\t\t\t<a href=\"#_Toc244767947\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Särskilda yttranden</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC7\" style=\"margin-left:19.85pt; text-indent:-14.15pt\">\r\n\t\t\t\t<span class=\"Hyperlink\">1.</span><span style=\"width:7.02pt; text-indent:0pt; display:inline-block\">&#xa0;</span><a href=\"#_Toc244767948\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Vilande förslag (S)</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC7\" style=\"margin-left:19.85pt; text-indent:-14.15pt\">\r\n\t\t\t\t<span class=\"Hyperlink\">2.</span><span style=\"width:7.02pt; text-indent:0pt; display:inline-block\">&#xa0;</span><a href=\"#_Toc244767949\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Vilande förslag (V)</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC7\" style=\"margin-left:19.85pt; text-indent:-14.15pt\">\r\n\t\t\t\t<span class=\"Hyperlink\">3.</span><span style=\"width:7.02pt; text-indent:0pt; display:inline-block\">&#xa0;</span><a href=\"#_Toc244767950\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Vilande förslag (C)</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC7\" style=\"margin-left:19.85pt; text-indent:-14.15pt\">\r\n\t\t\t\t<span class=\"Hyperlink\">4.</span><span style=\"width:7.02pt; text-indent:0pt; display:inline-block\">&#xa0;</span><a href=\"#_Toc244767951\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Vilande förslag (MP)</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC8\">\r\n\t\t\t\t<span class=\"Hyperlink\" style=\"font-style:italic\">Bilaga 1</span><br><a href=\"#_Toc244767952\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Förteckning över behandlade förslag</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC2\">\r\n\t\t\t\t<a href=\"#_Toc244767953\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Vilande förslag</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"TOC8\">\r\n\t\t\t\t<span class=\"Hyperlink\" style=\"font-style:italic\">Bilaga 2</span><br><a href=\"#_Toc244767954\" style=\"text-decoration:none\"><span class=\"Hyperlink\">Vilande förslag</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Fluglort\">\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Fluglort\">\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Avsnittsrubrik\">\r\n\t\t\t\t<a name=\"StopCC\"></a><a name=\"_Toc244767940\"><span style=\"-aw-bookmark-end:StopCC\"></span><span class=\"tSidrubrikJA\">Utskottets förslag till riksdagsbeslut</span></a>\r\n\t\t\t</p>\r\n\t\t\t<div style=\"-aw-sdt-tag:'dokumentavsnitt/utskottets förslag till riksdagsbeslut/-42406081/1793870732637'; -aw-sdt-title:'utskottets förslag till riksdagsbeslut'\">\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:spaces\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:spaces\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:294.2pt; margin-top:0pt; border-collapse:collapse\">\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"NormalLeft\" style=\"page-break-inside:avoid; page-break-after:avoid\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:10.5pt; font-weight:bold\">Vilande förslag</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</table>\r\n\t\t\t\t<p class=\"Normalutanluftfre\">\r\n\t\t\t\t\t<span>Riksdagen antar slutligt det vilande förslaget i bilaga 2 till lag om ändring i regeringsformen.</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Reservationshnvisning\">\r\n\t\t\t\t\t<span>Reservation (V, MP)</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"OrtochDatum\">\r\n\t\t\t\t\t<span>Stockholm den 5 november 2026</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"PVgnar\">\r\n\t\t\t\t\t<span>På konstitutionsutskottets vägnar</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Ordfranden\">\r\n\t\t\t\t\t<span>Oscar Sjöstedt</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Deltagare\">\r\n\t\t\t\t\t<span>Följande ledamöter har deltagit i beslutet: Oscar Sjöstedt (SD), Jennie Nilsson (S), Mats Green (M), Mirja Räihä (S), Per-Arne Håkansson (S), Ulrik Nilsson (M), Caroline Täljeblad (V), Ludvig Aspling (SD), Magnus Haara (C), Mats Sander (M), Jan Riise (MP), Cecilia Engström (KD), Amalia Rud Stenlöf (S), Roger Hedlund (SD), Peter Hedberg (S), Erik Nygårds (L) och Talla Alkurdi (S).</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"font-size:9.5pt; -aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t</div>\r\n\t\t\t<p>\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Avsnittsrubrik\">\r\n\t\t\t\t<a name=\"SlutUtskottsForslag\"></a><a name=\"_Toc244767941\"><span style=\"-aw-bookmark-end:SlutUtskottsForslag\"></span><span class=\"tSidrubrikJA\">Redogörelse för ärendet</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"R2\" style=\"margin-top:0pt; line-height:13.5pt\">\r\n\t\t\t\t<span>Bakgrund</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Grundlagar stiftas genom två likalydande beslut (8 kap. 14 § regeringsformen). Genom det första beslutet antas grundlagsförslaget som vilande. Genom det andra beslutet antas grundlagsförslaget som slutligt. Det andra beslutet får inte fattas tidigare än att det efter det första beslutet har hållits val till riksdagen i hela riket och den nyvalda riksdagen har samlats.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Det är konstitutionsutskottets uppgift att anmäla vilande beslut i ärenden som rör grundlagar till kammaren för slutligt beslut (9 kap. 24 § riksdags-ordningen).</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"R2\" style=\"line-height:13.5pt\">\r\n\t\t\t\t<span>Vilande förslag</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Under riksmötet 2025/26 lade regeringen fram ett förslag till ändringar i regeringsformen (prop. 2025/26:78). Förslaget behandlades i konstitutions</span><span>&#xad;</span><span>utskottets betänkande 2025/26:KU34 En grundlagsskyddad aborträtt samt utökade möjligheter att begränsa föreningsfriheten och rätten till medborgar</span><span>&#xad;</span><span>skap.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Lagändringarna föreslås träda i kraft den 1 januari 2027. </span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Riksdagen beslutade den 20 maj 2026 att som vilande anta regeringens förslag till lag om ändring i regeringsformen (bet. 2025/26:KU34, rskr. 2025/26:266).</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Det vilande förslaget till lag om ändring i regeringsformen finns förtecknat i bilaga 1. Förslaget i sin helhet finns i bilaga 2.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Avsnittsrubrik\">\r\n\t\t\t\t<a name=\"_Toc244767942\"><span class=\"tSidrubrikJA\">Utskottets överväganden</span></a>\r\n\t\t\t</p>\r\n\t\t\t<div style=\"-aw-sdt-tag:'d03554bc-d945-47f9-afae-8ccf216ed6ef/förslagsrutor/-44149208/1787648876679'; -aw-sdt-title:'förslagsrutor'\">\r\n\t\t\t\t<h2 style=\"line-height:13.5pt\">\r\n\t\t\t\t\t<a name=\"_Toc244767943\"><span>Vilande förslag</span></a>\r\n\t\t\t\t</h2>\r\n\t\t\t</div>\r\n\t\t\t<span style=\"-aw-bookmark-end:_Toc244767943\">\r\n\t\t\t</span>\r\n\t\t\t<div style=\"margin-top:3.1pt; margin-right:0.9pt; margin-left:0.9pt; border:0.75pt solid #000000; -aw-border:0.5pt single; clear:both\">\r\n\t\t\t\t<p class=\"Normalrutafet\" style=\"margin-top:0pt; margin-right:0pt; margin-left:0pt; border-style:none; padding-bottom:0pt\">\r\n\t\t\t\t\t<span>Utskottets förslag i korthet</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Normalruta\" style=\"margin-top:0pt; margin-right:0pt; margin-left:0pt; border-style:none; padding-top:0pt; padding-bottom:0pt\">\r\n\t\t\t\t\t<span>Riksdagen antar slutligt det vilande förslaget i bilaga 2 till lag om ändring i regeringsformen.</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<div style=\"-aw-sdt-tag:'d03554bc-d945-47f9-afae-8ccf216ed6ef/förslagsrutor reservations text/203181990/1792657825748'; -aw-sdt-title:'förslagsrutor reservations text'\">\r\n\t\t\t\t\t<p class=\"Normalrutaindrag\" style=\"margin-right:0pt; margin-left:0pt; border-style:none; padding-top:0pt\">\r\n\t\t\t\t\t\t<span>Jämför reservationen (V, MP) och särskilt yttrande 1 (S), 2 (V), 3 (C) och 4 (MP).</span>\r\n\t\t\t\t\t</p>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<p class=\"R3\">\r\n\t\t\t\t<span>Förslagets innebörd i korthet</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Det vilande förslaget om ändringar i regeringsformen innebär att rätten till abort införs i regeringsformen som en ny grundläggande fri- och rättighet. Förslaget innebär vidare att det ska bli möjligt att meddela föreskrifter om att det svenska medborgarskapet ska fråntas den som är medborgare i en annan stat och som har förvärvat medborgarskapet genom oriktiga eller vilseledande uppgifter eller genom annat otillbörligt handlande, eller som har dömts för brott som allvarligt skadar Sveriges vitala intressen. Förslaget innebär även att föreningsfriheten ska få begränsas när det gäller sammanslutningar som ägnar sig åt allvarlig brottslighet för att uppnå ekonomisk vinning eller annan otillbörlig fördel.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Lagändringarna föreslås träda i kraft den 1 januari 2027.</span>\r\n\t\t\t</p>\r\n\t\t\t<h3>\r\n\t\t\t\t<a name=\"_Toc244767944\"><span>Utskottets anmälan och yttrande</span></a>\r\n\t\t\t</h3>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Under riksmötet 2025/26 antog riksdagen som vilande det förslag till lag om ändring i regeringsformen som har redovisats i det föregående. Genom detta betänkande anmäler utskottet nu beslutet till kammaren för slutligt beslut.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Med hänvisning till vad utskottet anförde vid ärendets första behandling föreslår utskottet att riksdagen slutligt antar förslaget.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Avsnittsrubrik\">\r\n\t\t\t\t<a name=\"_Toc244767945\"><span class=\"tSidrubrikJA\">Reservation</span></a>\r\n\t\t\t</p>\r\n\t\t\t<div style=\"-aw-sdt-tag:'3bd7023d-67fd-4b80-b17e-cb5b2a65f8a6/reservationer/1262965978/1793870733431'; -aw-sdt-title:'reservationer'\">\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:294.2pt; margin-top:0pt; border-collapse:collapse\">\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"Reservationsrubrik\">\r\n\t\t\t\t\t\t\t\t<a name=\"_Toc244767946\"><span>Vilande förslag (V, MP)</span></a>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</table>\r\n\t\t\t\t<p class=\"Normalutanluftfre\">\r\n\t\t\t\t\t<span>av Caroline Täljeblad (V) och Jan Riise (MP).</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"R4\">\r\n\t\t\t\t\t<span>Förslag till riksdagsbeslut</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p style=\"margin-bottom:3.1pt\">\r\n\t\t\t\t\t<span>Vi anser att förslaget till riksdagsbeslut borde ha följande lydelse:</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Normalutanluftfre\">\r\n\t\t\t\t\t<span>Riksdagen förkastar det vilande förslaget i bilaga 2 till lag om ändring i regeringsformen.</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t</div>\r\n\t\t\t<p class=\"R4\">\r\n\t\t\t\t<span>Ställningstagande</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Vi anser att det vilande förslaget bör förkastas.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Vi utvecklar våra skäl för detta i våra särskilda yttranden 2 respektive 4.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Avsnittsrubrik\">\r\n\t\t\t\t<a name=\"_Toc244767947\"><span class=\"tSidrubrikJA\">Särskilda yttranden</span></a>\r\n\t\t\t</p>\r\n\t\t\t<div style=\"-aw-sdt-tag:'b75352b0-de21-4c95-8ab6-1091f94592d3/särskilda yttranden/-928600283/1793870731045'; -aw-sdt-title:'särskilda yttranden'\">\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:spaces\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:294.2pt; margin-top:0pt; border-collapse:collapse\">\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"NormalNoll\" style=\"page-break-inside:avoid; page-break-after:avoid\">\r\n\t\t\t\t\t\t\t\t<span>1.</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td style=\"width:272.2pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"Srskiltyttranderubrik\">\r\n\t\t\t\t\t\t\t\t<a name=\"_Toc244767948\"><span>Vilande förslag (S)</span></a>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p style=\"text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:9.5pt; -aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td style=\"width:272.2pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p style=\"text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:9.5pt\">Jennie Nilsson (S), Mirja Räihä (S), Per-Arne Håkansson (S), Amalia Rud Stenlöf (S), Peter Hedberg (S) och Talla Alkurdi (S) anför:</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</table>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t</div>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Vi står bakom grundlagsförslaget och utskottets ställningstagande och vill därutöver tillägga följande.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>En avgörande förutsättning för vårt stöd till grundlagsändringen som möjliggör återkallande av medborgarskap har varit att statslöshet undviks och att internationella konventioner, bl.a. Europakonventionen, barnkonventionen och FN:s konvention om begränsning av statslöshet, beaktas fullt ut i den fortsatta lagstiftningsprocessen. Vi välkomnar att dessa krav kommer till uttryck i lagtexten. </span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>När det gäller förslaget till begränsningar av föreningsfriheten vill vi framhålla vikten av att den kommande lagstiftningen utformas så att det blir tydligt vilka som kan omfattas och på vilka grunder. Lagstiftningen måste bli tydlig, förutsebar och rättssäker. Vi hade gärna sett ett tydligt förbud mot nazistiska organisationer. Vi vill vidare framhålla att den grundlagsskyddade föreningsfriheten och strejkrätten är av avgörande betydelse för facklig organisering. En viktig utgångspunkt för oss har därför varit att fack</span><span>&#xad;</span><span>föreningarna inte kommer att omfattas av den kommande lagstiftningen. Vi kommer noga att följa utvecklingen och vid behov ta nödvändiga initiativ i andra sammanhang. </span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Avslutningsvis vill vi framhålla vikten av en fungerande sjukvård i hela landet så att aborter kan göras på jämlika grunder. Det är enligt oss även viktigt att sjukvårdspersonal inte ges möjlighet till samvetsfrihet och att tidsgränserna för när en person inte längre får genomföra abort inte sänks. Vi kommer noga att följa utvecklingen även när det gäller denna fråga.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<div style=\"-aw-sdt-tag:'462ccea5-b20c-40de-903e-1202c884d3fa/särskilda yttranden/-28115623/1793870731045'; -aw-sdt-title:'särskilda yttranden'\">\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:spaces\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:294.2pt; margin-top:0pt; border-collapse:collapse\">\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"NormalNoll\" style=\"page-break-inside:avoid; page-break-after:avoid\">\r\n\t\t\t\t\t\t\t\t<span>2.</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td style=\"width:272.2pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"Srskiltyttranderubrik\">\r\n\t\t\t\t\t\t\t\t<a name=\"_Toc244767949\"><span>Vilande förslag (V)</span></a>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p style=\"text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:9.5pt; -aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td style=\"width:272.2pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p style=\"text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:9.5pt\">Caroline Täljeblad (V) anför:</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</table>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t</div>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Jag vill utöver det som anförts i reservationen anföra följande.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Grundlagsförslaget innebär att det ska bli möjligt att återkalla medborgar</span><span>&#xad;</span><span>skap vid oriktiga eller vilseledande uppgifter eller annat otillbörligt handlande. Att frångå principen om att medborgarskapet är lika för alla skulle innebära genomgripande förändringar av den svenska medborgarskapsrätten. Vid den första anblicken kan det tyckas rimligt att kunna återkalla medborgarskapet för en person som lämnar avgörande felaktiga uppgifter eller som handlar på ett otillbörligt sätt, t.ex. genom mutor eller bedrägeri. Likaså är det inte helt orimligt att en person som dömts för brottslighet som allvarligt hotar säkerheten i landet kan fråntas sitt medborgarskap. Det finns även en viss inbyggd skyddsmekanism i förslaget eftersom medborgarskap enbart ska kunna fråntas den som har dubbelt medborgarskap, för att undvika statslöshet. Regeringens förslag öppnar dock upp för olika tolkningar och olika starka medborgarskap, vilket riskerar att dra isär samhället ytterligare. Förslaget är också långtgående i och med att det inte uppställs något krav på att de oriktiga eller vilseledande uppgifterna ska ha lämnats med uppsåt. Regeringen har inte lämnat några tungt vägande skäl för att motivera en så omfattande inskränkning i medborgarskapsskyddet. Det kan vidare ifrågasättas om förslaget om att barn ska kunna bli av med sitt medborgarskap på grund av uppgifter som föräldrarna lämnat är förenligt med barnkonventionen och Europakonventionen. Det kan vidare konstateras att det förslag som regeringen lade fram i sin proposition är mer omfattande än det förslag som 2023 års fri- och rättighetskommitté lade fram i sitt betänkande. Remiss</span><span>&#xad;</span><span>instanserna har därmed inte fått möjlighet att ta ställning till det slutliga förslaget i propositionen, vilket är anmärkningsvärt. Det finns även en risk för att regleringen öppnar upp för godtyckliga återkallanden av medborgarskap eftersom grundlagsbestämmelsen inte innehåller någon brottskatalog utan vad som omfattas av ”brott som allvarligt skadar Sveriges vitala intressen” kommer att definieras i vanlig lag. Skyddet för medborgarskap kan därmed komma att urholkas väsentligt, vilket riskerar att skada vår demokrati. Mot denna bakgrund står jag inte bakom de föreslagna ändringarna i regerings</span><span>&#xad;</span><span>formen som syftar till att göra det möjligt att återkalla medborgarskap. </span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Förslaget innebär vidare att rätten till abort ska införas som en grundläggande fri- och rättighet i regeringsformen, vilket jag står bakom. Skyddet bör omfatta alla kvinnor. Regeringen har dock valt att föreslå att begränsningar ska få göras genom vanlig lag i fråga om rätten att avbryta en graviditet för andra än svenska medborgare. Det finns visserligen redan i dag vissa möjligheter till begränsningar i regeringsformen som gäller utländska medborgare. Detta är dock inte ett tillräckligt skäl för att begränsa rätten till abort för utländska medborgare. Enligt min mening bör rätten att avbryta en graviditet vara lika för alla som befinner sig i Sverige, oavsett medborgarskap. Jag står således inte heller bakom förslaget om att införa en möjlighet att begränsa rätten till abort för andra än svenska medborgare.</span>\r\n\t\t\t</p>\r\n\t\t\t<p style=\"margin-top:0pt; text-indent:11.35pt\">\r\n\t\t\t\t<span>Den organiserade brottsligheten är av allvarlig och systemhotande natur. Eftersom situationen är allvarlig har Vänsterpartiet accepterat regeringens förslag om att möjliggöra begränsningar av föreningsfriheten för samman</span><span>&#xad;</span><span>slutningar som ägnar sig åt allvarlig brottslighet för att uppnå ekonomisk vinning eller annan otillbörlig fördel. Det finns dock en legitim oro för att lagändringen på sikt kan hota fackföreningsrörelsen och folkrörelserna. Jag kommer därför att noga följa utvecklingen och verka för att en grundlags</span><span>&#xad;</span><span>ändring och följdlagstiftning som innebär en begränsning av föreningsfriheten utvärderas efter fem år.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Mot bakgrund av den stora vikt jag lägger vid frågorna om medborgar</span><span>&#xad;</span><span>skapsskydd och skyddet av aborträtten och det förhållandet att det vilande förslaget endast kan antas eller förkastas i sin helhet anser jag att det vilande förslaget bör förkastas, även om jag står bakom övriga delar av förslaget.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<div style=\"-aw-sdt-tag:'e7fab20b-57a7-4c5f-9967-707e07d17837/särskilda yttranden/1648128021/1793870731046'; -aw-sdt-title:'särskilda yttranden'\">\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:spaces\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:294.2pt; margin-top:0pt; border-collapse:collapse\">\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"NormalNoll\" style=\"page-break-inside:avoid; page-break-after:avoid\">\r\n\t\t\t\t\t\t\t\t<span>3.</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td style=\"width:272.2pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"Srskiltyttranderubrik\">\r\n\t\t\t\t\t\t\t\t<a name=\"_Toc244767950\"><span>Vilande förslag (C)</span></a>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p style=\"text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:9.5pt; -aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td style=\"width:272.2pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p style=\"text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:9.5pt\">Magnus Haara (C) anför:</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</table>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t</div>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Jag står bakom intentionerna att få en ny lagstiftning på plats, men som framgår av riksdagens tidigare behandling av grundlagsärendet har Center</span><span>&#xad;</span><span>partiet invändningar mot regeringens bedömningar och förslag när det gäller begränsningarna av rätten till medborgarskap och skyddet av aborträtten.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Det fanns en bred enighet i 2023 års fri- och rättighetskommitté om förslaget att införa en möjlighet att under vissa förutsättningar kunna återkalla det svenska medborgarskapet för personer med dubbla medborgarskap som har gjort sig skyldiga till brott som allvarligt hotar rikets säkerhet eller som omfattas av Internationella brottmålsdomstolens jurisdiktion. Det är rimligt att de som har begått särskilt allvarliga brott mot vårt land inte kvarstår som svenska medborgare. Regeringen valde dock att i stället gå vidare med ett förslag som innebär att det svenska medborgarskapet ska kunna fråntas den som dömts för ”brott som allvarligt skadar Sveriges vitala intressen”. Detta uttryck är inte tillräckligt väl avgränsat och öppnar upp för en bredare tillämpning än vad som avses. Det är också anmärkningsvärt att förslaget inte remissbehandlades i egentlig mening. Jag kommer att följa utvecklingen och verka för att en utredning tillsätts för att komma fram till en mer rättssäker formulering som möjliggör återkallelse av medborgarskap vid viss allvarlig brottslighet som begås inom ramen för kriminella nätverk.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Förslaget innebär vidare att en ny bestämmelse om rätten till abort införs i regeringsformen. Jag välkomnar ansatsen men anser att den föreslagna bestämmelsen egentligen är otillräcklig. Den föreslagna grundlags</span><span>&#xad;</span><span>bestämmelsen hänvisar endast till bestämmelser i vanlig lag, dvs. abortlagen. I och med att abortlagen kan ändras med enkel majoritet och formerna för att ändra vanlig lag saknar de formella skyddsmekanismer som grundlags</span><span>&#xad;</span><span>ändringar är föremål för, blir konsekvensen att grundlagsregleringen inte uppställer något egentligt skydd för omfattande inskränkningar i aborträtten. Jag kommer därför att noga följa utvecklingen även av denna fråga och verka för att en utredning tillsätts för att se över hur aborträtten kan ges ett uttryckligt skydd i regeringsformen. Förslaget innebär vidare att kvinnor med utländska medborgarskap ska kunna undantas från det föreslagna grundlagsskyddet för rätten till abort. Enligt min mening saknas det skäl att göra ett sådant undantag, och jag kommer därför att verka för att alla i Sverige oavsett medborgarskap ska omfattas av aborträtten. </span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Det vilande förslaget till lag om ändring i regeringsformen kan endast antas eller förkastas i sin helhet. Trots de invändningar jag har mot vissa av förslagen är jag inte beredd att förkasta hela det vilande förslaget och avstår därför från att reservera mig.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<div style=\"-aw-sdt-tag:'690fe7c1-3d2e-4874-ba0f-2963db6a3d8e/särskilda yttranden/-2028734105/1793870731046'; -aw-sdt-title:'särskilda yttranden'\">\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:spaces\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t\t<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:294.2pt; margin-top:0pt; border-collapse:collapse\">\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"NormalNoll\" style=\"page-break-inside:avoid; page-break-after:avoid\">\r\n\t\t\t\t\t\t\t\t<span>4.</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td style=\"width:272.2pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p class=\"Srskiltyttranderubrik\">\r\n\t\t\t\t\t\t\t\t<a name=\"_Toc244767951\"><span>Vilande förslag (MP)</span></a>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr style=\"page-break-inside:avoid\">\r\n\t\t\t\t\t\t<td style=\"width:22pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p style=\"text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:9.5pt; -aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td style=\"width:272.2pt; vertical-align:top\">\r\n\t\t\t\t\t\t\t<p style=\"text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt\">\r\n\t\t\t\t\t\t\t\t<span style=\"font-size:9.5pt\">Jan Riise (MP) anför:</span>\r\n\t\t\t\t\t\t\t</p>\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</table>\r\n\t\t\t\t<p class=\"Mellanrum\">\r\n\t\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t\t</p>\r\n\t\t\t</div>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Jag vill utöver det som anförts i reservationen anföra följande.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Grundlagsförslaget innebär att det ska bli möjligt att meddela föreskrifter om att det svenska medborgarskapet ska kunna fråntas den som är medborgare i en annan stat och som har förvärvat medborgarskapet på felaktiga grunder och vid viss allvarlig brottslighet. Enligt min mening är förslaget alltför långtgående. Särskilt allvarligt är det att medborgarskap ska kunna återkallas vid brott som allvarligt skadar Sveriges vitala intressen, vilket är en formulering som saknar tydlig avgränsning. En sådan formulering riskerar att leda till en farlig normförskjutning där staten ges en möjlighet att omdefiniera medborgarskapets innebörd över tid. Jag står därför inte bakom grundlags</span><span>&#xad;</span><span>förslaget i denna del.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Förslaget innebär vidare att föreningsfriheten ska kunna begränsas i förhållande till sammanslutningar som ägnar sig åt allvarlig brottslighet för att uppnå ekonomisk eller annan otillbörlig vinning. Jag delar regeringens uppfattning att den organiserade brottsligheten är ett allvarligt samhälls</span><span>&#xad;</span><span>problem. Förslaget innebär dock ett principiellt skifte som inte är tillräckligt analyserat eller rättssäkert. Begreppen som regeringen har föreslagit ska införas i grundlagen – såsom allvarlig brottslighet – lämnar ett mycket stort tolkningsutrymme till lagstiftaren. Ett sådant tolkningsutrymme är särskilt problematiskt när det handlar om en reglering i grundlagen eftersom synen på vad som är allvarlig brottslighet kan förändras över tid. Förslaget riskerar att leda till en godtycklig tillämpning och till att legitima organisationer inom civilsamhället kan komma att omfattas av framtida inskränkningar. Jag står således inte heller bakom förslaget i denna del.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Jag välkomnar att aborträtten ges ett uttryckligt skydd i regeringsformen. Ett sådant skydd markerar tydligt att rätten till abort är en grundläggande fri- och rättighet som inte kan göras illusorisk genom politiska svängningar. Vid den första behandlingen lyfte jag dock en oro för att grundlagsskyddet för aborträtten riskerar att bli alltför tunt i praktiken om lagstiftaren ges alltför stort utrymme att inskränka rättigheten genom vanlig lag. Det är därför helt avgörande att regeringen i det fortsatta lagstiftningsarbetet säkerställer att aborträtten inte endast ges ett formellt utan ett reellt innehåll i enlighet med Sveriges internationella åtaganden om mänskliga rättigheter.</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"NormalIndent\">\r\n\t\t\t\t<span>Mot bakgrund av den stora vikt jag lägger vid frågorna om återkallande av medborgarskap och begränsningar av föreningsfriheten och det förhållandet att det vilande förslaget endast kan antas eller förkastas i sin helhet anser jag att det vilande förslaget bör förkastas, även om jag står bakom övriga delar av förslaget.</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Bilaga\">\r\n\t\t\t\t<span class=\"tBilagaJA\" style=\"text-decoration:underline\">Bilaga 1</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Bilagerubrik\">\r\n\t\t\t\t<a name=\"_Toc244767952\"><span class=\"tSidrubrikJA\">Förteckning över behandlade förslag</span></a>\r\n\t\t\t</p>\r\n\t\t\t<h2 style=\"line-height:13.5pt\">\r\n\t\t\t\t<a name=\"_Toc244767953\"><span>Vilande förslag</span></a>\r\n\t\t\t</h2>\r\n\t\t\t<p>\r\n\t\t\t\t<span>Den 20 maj 2026 beslutade riksdagen att som vilande anta det förslag till lag om ändring i regeringsformen som regeringen lagt fram i proposition 2025/26:78 (bet. 2025/26:KU34, rskr. 2025/26:266).</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<span style=\"-aw-import:ignore\">&#xa0;</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Bilaga\">\r\n\t\t\t\t<span class=\"tBilagaJA\" style=\"text-decoration:underline\">Bilaga 2</span>\r\n\t\t\t</p>\r\n\t\t\t<p class=\"Bilagerubrik\">\r\n\t\t\t\t<a name=\"_Toc244767954\"><span class=\"tSidrubrikJA\">Vilande förslag</span></a>\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<img src=\"https://data.riksdagen.se/fil/HE01KU9/Dokument.001.png\" width=\"390\" height=\"690\" alt=\"\" style=\"-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline\">\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<img src=\"https://data.riksdagen.se/fil/HE01KU9/Dokument.002.png\" width=\"391\" height=\"756\" alt=\"\" style=\"-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline\">\r\n\t\t\t</p>\r\n\t\t\t<p>\r\n\t\t\t\t<img src=\"https://data.riksdagen.se/fil/HE01KU9/Dokument.003.png\" width=\"394\" height=\"667\" alt=\"\" style=\"-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline\">\r\n\t\t\t</p>\r\n\t\t</div>\r\n\t"
+   },
+   "dokutskottsforslag": {
+    "utskottsforslag": {
+     "punkt": "1",
+     "rubrik": "Vilande förslag",
+     "forslag": "Riksdagen antar slutligt det vilande f&ouml;rslaget i bilaga 2 till lag om &auml;ndring i regeringsformen.<BR/><BR/><BR/>",
+     "beslutstyp": "röstning",
+     "motforslag_nummer": "1",
+     "motforslag_partier": "\"V\",\"MP\"",
+     "votering_id": "a4ffc05d-04b4-4139-a9eb-a0ed698b0443",
+     "votering_sammanfattning_html": {
+      "table": {
+       "caption": {
+        "b": "Omröstning i sakfrågan",
+        "br": null,
+        "#text": "Utskottets förslag mot reservation 1 (V, MP)"
+       },
+       "thead": {
+        "tr": {
+         "th": [
+          "Parti",
+          "Ja",
+          "Nej",
+          "Avstående",
+          "Frånvarande"
+         ]
+        }
+       },
+       "tbody": {
+        "tr": [
+         {
+          "th": "S",
+          "td": [
+           "99",
+           "0",
+           "0",
+           "0"
+          ]
+         },
+         {
+          "th": "M",
+          "td": [
+           "69",
+           "0",
+           "0",
+           "1"
+          ]
+         },
+         {
+          "th": "SD",
+          "td": [
+           "61",
+           "0",
+           "0",
+           "1"
+          ]
+         },
+         {
+          "th": "V",
+          "td": [
+           "0",
+           "30",
+           "0",
+           "0"
+          ]
+         },
+         {
+          "th": "C",
+          "td": [
+           "23",
+           "0",
+           "0",
+           "2"
+          ]
+         },
+         {
+          "th": "KD",
+          "td": [
+           "21",
+           "0",
+           "0",
+           "1"
+          ]
+         },
+         {
+          "th": "MP",
+          "td": [
+           "0",
+           "21",
+           "0",
+           "1"
+          ]
+         },
+         {
+          "th": "L",
+          "td": [
+           "19",
+           "0",
+           "0",
+           "0"
+          ]
+         }
+        ]
+       },
+       "tfoot": {
+        "tr": {
+         "th": "Totalt",
+         "td": [
+          "292",
+          "51",
+          "0",
+          "6"
+         ]
+        }
+       }
+      },
+      "br": null
+     },
+     "votering_url_xml": "http://data.riksdagen.se/votering/A4FFC05D-04B4-4139-A9EB-A0ED698B0443",
+     "rm": "2026/27",
+     "bet": "KU9",
+     "vinnare": "utskottet",
+     "voteringskrav": "Enkel majoritet",
+     "beslutsregelkvot": "",
+     "beslutsregelparagraf": "",
+     "punkttyp": ""
+    }
+   },
+   "dokmotforslag": {
+    "motforslag": {
+     "nummer": "1",
+     "rubrik": "",
+     "partier": "\"V\",\"MP\"",
+     "typ": "reservation",
+     "utskottsforslag_punkt": "1"
+    }
+   },
+   "dokaktivitet": {
+    "aktivitet": [
+     {
+      "kod": "UBE",
+      "namn": "Beredning",
+      "datum": "2026-10-08 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "UBE",
+      "namn": "Beredning",
+      "datum": "2026-10-22 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "UBE",
+      "namn": "Beredning",
+      "datum": "2026-11-03 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "JUS",
+      "namn": "Justering",
+      "datum": "2026-11-05 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "TRY",
+      "namn": "Trycklov",
+      "datum": "2026-11-05 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "B",
+      "namn": "Bordläggning",
+      "datum": "2026-11-10 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "BEH",
+      "namn": "Behandling",
+      "datum": "2026-11-11 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     },
+     {
+      "kod": "BES",
+      "namn": "Beslut",
+      "datum": "2026-11-11 00:00:00",
+      "status": "inträffat",
+      "ordning": "0",
+      "process": ""
+     }
+    ]
+   },
+   "dokuppgift": {
+    "uppgift": [
+     {
+      "kod": "arendestatuskammaren",
+      "namn": "Beslutat",
+      "text": "",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-11 16:14:32"
+     },
+     {
+      "kod": "beslutdatumtid",
+      "namn": "Datum och tid för beslutet",
+      "text": "2026-11-11 00:00:00",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-11 16:07:54"
+     },
+     {
+      "kod": "beslutssammanfattningusk",
+      "namn": "Utskottets förslag till beslut",
+      "text": "Antar slutligt det vilande förslaget till lag om ändring i regeringsformen.",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-06 11:06:24"
+     },
+     {
+      "kod": "debattdatumtid",
+      "namn": "Datum och tid för debatten",
+      "text": "2026-11-11 00:00:00",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-11 16:07:54"
+     },
+     {
+      "kod": "notis",
+      "namn": "Beslut i korthet",
+      "text": "<p>Riksdagen sa ja till grundlagsändringar i regeringsformen som bland annat handlar om att abort ska bli en grundlagsskyddad fri- och rättighet. Beslutet gäller ett så kallat vilande grundlagsförslag, vilket innebär att riksdagen har tagit ett beslut i frågan vid ett tidigare tillfälle. Det vilande förslaget om ändringar i regeringsformen innebär att</p>\n<ul>\n<li>rätten till abort införs i regeringsformen som en ny grundläggande fri- och rättighet</li>\n<li>det ska bli möjligt att genom lag ta det svenska medborgarskapet ifrån en person som har dubbla medborgarskap och som har fått medborgarskapet på felaktiga grunder eller som har dömts för brott som allvarligt skadar Sveriges vitala intressen</li>\n<li>föreningsfriheten, det vill säga friheten att bland annat starta föreningar, ska kunna begränsas genom lag när det gäller sammanslutningar som ägnar sig åt allvarlig brottslighet för ekonomisk vinning eller annan otillbörlig fördel.</li>\n</ul>\n<p>Lagändringarna börjar gälla den 1 januari 2027.</p>\n<p>Eftersom beslutet gäller ändringar i regeringsformen som är en grundlag krävs att riksdagen röstar likadant två gånger om förslaget och att det hålls ett riksdagsval mellan omröstningarna. Det första beslutet om förslaget togs den 20 maj 2026 och då röstade riksdagen ja. Därefter har det varit ett riksdagsval.</p>",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-11 16:07:54"
+     },
+     {
+      "kod": "notisrubrik",
+      "namn": "Beslut",
+      "text": "Ja till grundlagsändringar om abort, medborgarskap och föreningsfrihet (KU9)",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-11 16:07:54"
+     },
+     {
+      "kod": "rdbeslut",
+      "namn": "Riksdagens beslut",
+      "text": "Kammaren biföll utskottets förslag.",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-11 16:14:31"
+     },
+     {
+      "kod": "statustext",
+      "namn": "statustext",
+      "text": "Ärendet är avslutat",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-12 00:45:52"
+     },
+     {
+      "kod": "utsknotis",
+      "namn": "Utskottets förslag till beslut",
+      "text": "<p>Konstitutionsutskottet (KU) föreslår att riksdagen säger ja till grundlagsändringar i regeringsformen. Förslaget handlar bland annat om att abort ska bli en grundlagsskyddad fri- och rättighet. Förslaget är ett så kallat vilande grundlagsförslag, vilket innebär att riksdagen har tagit ett beslut i frågan vid ett tidigare tillfälle. Det vilande förslaget om ändringar i regeringsformen innebär att</p>\n<ul>\n<li>rätten till abort införs i regeringsformen som en ny grundläggande fri- och rättighet</li>\n<li>det ska bli möjligt att genom lag ta det svenska medborgarskapet ifrån en person som har dubbla medborgarskap och som har fått medborgarskapet på felaktiga grunder eller som har dömts för brott som allvarligt skadar Sveriges vitala intressen</li>\n<li>föreningsfriheten, det vill säga friheten att bland annat starta föreningar, ska kunna begränsas genom lag när det gäller sammanslutningar som ägnar sig åt allvarlig brottslighet för ekonomisk vinning eller annan otillbörlig fördel.</li>\n</ul>\n<p>Lagändringarna föreslås börja gälla den 1 januari 2027.</p>\n<p>Eftersom förslaget gäller ändringar i regeringsformen som är en grundlag krävs att riksdagen röstar likadant två gånger om förslaget och att det hålls ett riksdagsval mellan omröstningarna. Det första beslutet om förslaget togs den 20 maj 2026 och då röstade riksdagen ja. Därefter har det varit ett riksdagsval. </p>",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-11 16:07:54"
+     },
+     {
+      "kod": "utsknotisrubrik",
+      "namn": "Utskottets förslag",
+      "text": "Ja till grundlagsändringar om abort, medborgarskap och föreningsfrihet (KU9)",
+      "dok_id": "HE01KU9",
+      "systemdatum": "2026-11-11 16:07:54"
+     }
+    ]
+   },
+   "dokbilaga": {
+    "bilaga": [
+     {
+      "dok_id": "HE01KU9",
+      "subtitel": "",
+      "filnamn": "2026_27_KU9_20261105154932_Publicering.pdf",
+      "filstorlek": "690608",
+      "filtyp": "pdf",
+      "titel": "En grundlagsskyddad aborträtt samt utökade möjligheter att begränsa föreningsfriheten och rätten till medborgarskap (vilande grundlagsförslag)",
+      "fil_url": "https://data.riksdagen.se/fil/FED1DCA6-3F35-4659-84F1-463F5ACB3FA8"
+     }
+    ]
+   },
+   "dokreferens": {
+    "referens": [
+     {
+      "referenstyp": "beslut_id",
+      "uppgift": "Beslut 2026/27:KU9",
+      "ref_dok_id": "HEC320261111KU9",
+      "ref_dok_typ": "kammakt",
+      "ref_dok_rm": "2026/27",
+      "ref_dok_bet": "KU9",
+      "ref_dok_titel": "Beslut: En grundlagsskyddad aborträtt samt utökade möjligheter att begränsa föreningsfriheten och rätten till medborgarskap (vilande grundlagsförslag)",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "vo",
+      "ref_dok_dokumentnamn": "Votering"
+     },
+     {
+      "referenstyp": "föredragningslista",
+      "uppgift": "föredragningslista 2026/27:16 Onsdag den 11 november 2026",
+      "ref_dok_id": "HE0I16",
+      "ref_dok_typ": "f-lista",
+      "ref_dok_rm": "2026/27",
+      "ref_dok_bet": "16",
+      "ref_dok_titel": "Onsdag den 11 november 2026",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Kammarens föredragningslista"
+     },
+     {
+      "referenstyp": "protokollbeslut",
+      "uppgift": "2026-11-11",
+      "ref_dok_id": "HE0916",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2026/27",
+      "ref_dok_bet": "16",
+      "ref_dok_titel": "Protokoll 2026/27:16 Onsdagen den 11 november",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "protokolldebatt",
+      "uppgift": "2026-11-11",
+      "ref_dok_id": "HE0916",
+      "ref_dok_typ": "prot",
+      "ref_dok_rm": "2026/27",
+      "ref_dok_bet": "16",
+      "ref_dok_titel": "Protokoll 2026/27:16 Onsdagen den 11 november",
+      "ref_dok_subtitel": "En grundlagsskyddad aborträtt samt utökade möjligheter att begränsa föreningsfriheten och rätten till medborgarskap (vilande grundlagsförslag)",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Protokoll"
+     },
+     {
+      "referenstyp": "rskr",
+      "uppgift": "",
+      "ref_dok_id": "HE0K14",
+      "ref_dok_typ": "rskr",
+      "ref_dok_rm": "2026/27",
+      "ref_dok_bet": "14",
+      "ref_dok_titel": "Riksdagsskrivelse 2026/27:14",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "rskr",
+      "ref_dok_dokumentnamn": "Riksdagsskrivelse"
+     },
+     {
+      "referenstyp": "talarlista",
+      "uppgift": "talarlista 2026/27:16 Onsdag den 11 november 2026",
+      "ref_dok_id": "HE0J20261111",
+      "ref_dok_typ": "t-lista",
+      "ref_dok_rm": "2026/27",
+      "ref_dok_bet": "16",
+      "ref_dok_titel": "Onsdag den 11 november 2026",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "",
+      "ref_dok_dokumentnamn": "Talarlista"
+     },
+     {
+      "referenstyp": "teckenspråk",
+      "uppgift": "Teckenspråkstolkat beslut: 2026/27:KU9",
+      "ref_dok_id": "HEC5UXGBBJULRSNFJCECtt",
+      "ref_dok_typ": "kammakt",
+      "ref_dok_rm": "2026/27",
+      "ref_dok_bet": "KU9",
+      "ref_dok_titel": "Teckenspråkstolkat beslut: Ja till grundlagsändringar om abort, medborgarskap och föreningsfrihet",
+      "ref_dok_subtitel": "",
+      "ref_dok_subtyp": "vo",
+      "ref_dok_dokumentnamn": "Votering"
+     }
+    ]
+   }
+  }
+ }
+}

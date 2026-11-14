@@ -1,0 +1,677 @@
+<style><!--
+ .w600px{width: 600px;font-family:Verdana, Geneva, sans-serif}
+h2.dtyp{font-size:1.5em !important;} 
+@page Section1 { size:467.8pt 686.05pt; margin:45.35pt 102.05pt 73.7pt 70.85pt }
+div.Section1 { page:Section1 }
+zbody { text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+zh1, h2, h3, h4, h5, h6, p { margin:3.1pt 0pt 0pt }
+zli, table { margin-top:3.1pt; margin-bottom:0pt }
+zh1 { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-inside:auto; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt; font-weight:normal; color:#000000 }
+zh2 { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:13.5pt; font-weight:normal; color:#000000 }
+zh3 { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold; color:#000000 }
+zh4 { margin-top:15pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:normal; font-style:italic; color:#000000 }
+zh5 { margin-top:12pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold; color:#000000 }
+zh6 { margin-top:12pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:normal; font-style:italic; color:#000000 }
+.Heading7 { margin-top:2pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:normal; font-style:italic; color:#243f60; -aw-style-name:heading7 }
+.Heading8 { margin-top:2pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9pt; font-weight:normal; color:#272727; -aw-style-name:heading8 }
+.Heading9 { margin-top:2pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9pt; font-weight:normal; font-style:italic; color:#272727; -aw-style-name:heading9 }
+.Avsnittsrubrik { margin-top:0pt; margin-bottom:27.7pt; text-align:left; page-break-before:always; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:16pt }
+.Avvikandemeningrubrik { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }
+.BalloonText { margin-top:3.1pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:Tahoma; font-size:8pt }
+.Bilaga { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-before:always; page-break-after:avoid; line-height:normal; widows:0; orphans:0; font-family:'Verdana'; font-size:8pt; font-variant:small-caps; text-decoration:underline }
+.Bilagerubrik { margin-top:0pt; margin-bottom:17.7pt; text-align:left; page-break-after:auto; line-height:normal; widows:0; orphans:0; font-family:'Verdana'; font-size:16pt }
+.Bild-R { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }
+.Bild-Rubrik { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }
+.Bild-Underrubrik { margin-top:0pt; margin-bottom:1pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:8pt; font-family:'Verdana'; font-size:8pt; font-weight:normal; font-style:italic }
+.BodyText { margin-top:3.1pt; margin-bottom:0pt; text-align:left; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.BodyTextIndent2 { margin-top:3.1pt; margin-left:14.15pt; margin-bottom:6pt; text-align:justify; line-height:200%; font-family:'Verdana'; font-size:9.5pt }
+.Citatindrag { margin-top:0pt; margin-left:14.2pt; margin-bottom:6.1pt; text-indent:14.2pt; text-align:justify; line-height:10pt; font-family:'Verdana'; font-size:9.5pt }
+.CommentText { margin-top:3.1pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:10pt }
+.Deltagare { margin-top:0pt; margin-bottom:0pt; text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:9.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Diagram-R { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }
+.Diagram-Rubrik { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }
+.Diagram-Underrubrik { margin-top:0pt; margin-bottom:1pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:8pt; font-family:'Verdana'; font-size:8pt; font-weight:normal; font-style:italic }
+.DokumentRubrik { margin-top:6pt; margin-bottom:24pt; text-align:left; line-height:normal; border-bottom:0.75pt solid #000000; padding-bottom:4pt; font-family:'Verdana'; font-size:18pt; -aw-border-bottom:0.5pt single }
+.Dokumentbeteckning { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Fluglort { margin-top:0.1pt; margin-bottom:0pt; text-align:justify; line-height:0.7pt; font-family:'Verdana'; font-size:9.5pt }
+.Footer { margin-top:3.1pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.FootnoteText { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:8pt; font-family:'Verdana'; font-size:8pt }
+.Fotnotstextindrag { margin-top:0pt; margin-left:5.65pt; margin-bottom:0pt; text-align:left; line-height:8pt; font-family:'Verdana'; font-size:8pt }
+.Frslagspunkt { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold }
+.Frslagstext { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Frteckningsrubrik { margin-top:9.6pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt; font-weight:normal; font-style:italic; color:#000000 }
+.Grupprubrik { margin-top:6pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+.Grupprubrikindrag { margin-top:6pt; margin-left:22.1pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+.Header { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:7.5pt; font-variant:small-caps }
+.Innehllsfrteckning { margin-top:0pt; margin-bottom:17.7pt; text-align:left; page-break-before:always; page-break-after:auto; line-height:normal; font-family:'Verdana'; font-size:16pt }
+.Kanslikommentar { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Kantrubrik { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:7.5pt }
+.ListBullet { margin-top:6.25pt; margin-left:17.85pt; margin-bottom:6.25pt; text-indent:-17.85pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.ListParagraph { margin-top:3.1pt; margin-left:28.35pt; margin-bottom:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Litentext { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:8pt }
+.Mellanrubrik { margin-top:11pt; margin-bottom:3.1pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+.Mellanrubrikverst { margin-top:0pt; margin-bottom:3.1pt; text-align:left; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+.Mellanrum { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-before:auto; page-break-after:auto; line-height:1pt; widows:0; orphans:0; font-family:'Verdana'; font-size:1pt; font-variant:small-caps; text-decoration:none; color:#ffffff }
+.MotionsTypMarkering { margin-top:0pt; margin-bottom:0pt; text-align:right; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold }
+.NormalIndent { margin-top:0pt; margin-bottom:0pt; text-indent:11.35pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Normalinskjuten { margin-top:0pt; margin-left:22.1pt; margin-bottom:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Normalinskjutenindrag { margin-top:0pt; margin-left:22.1pt; margin-bottom:0pt; text-indent:11.35pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Normalinskjutenkursiv { margin-top:6pt; margin-bottom:0pt; line-height:normal; font-family:'Verdana'; font-size:10pt; font-style:italic }
+.Normalkursiv { margin-top:3.1pt; margin-bottom:0pt; text-align:left; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+.Normalruta { margin:3.1pt 5.65pt 0pt; text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; border:0.75pt solid #000000; padding:4pt; font-family:'Verdana'; font-size:10.5pt; -aw-border:0.5pt single }
+.Normalrutafet { margin:3.1pt 5.65pt 0pt; text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; border:0.75pt solid #000000; padding:4pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold; -aw-border:0.5pt single }
+.Normalrutaindrag { margin:0pt 5.65pt; text-indent:11.35pt; text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; border:0.75pt solid #000000; padding:4pt; font-family:'Verdana'; font-size:10.5pt; -aw-border:0.5pt single }
+.Normalutanluftfre { margin-top:0pt; margin-bottom:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.NormalLeft { margin-top:3.1pt; margin-bottom:0pt; text-align:left; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.NormalNoll { margin-top:0pt; margin-bottom:3.1pt; text-align:left; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }
+.NumlistaTOC { margin:3.1pt 28.35pt 0pt 0pt; text-indent:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.Ordfrande { margin-top:0pt; margin-bottom:22pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:11.5pt; font-style:italic }
+.Ordfranden { margin-top:3.1pt; margin-bottom:22pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+.OrtochDatum { margin-top:18pt; margin-bottom:18pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.OrtOchDatum0 { margin-top:18pt; margin-bottom:18pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:11.5pt }
+.Punktlistabomb { margin-top:6.25pt; margin-left:14.2pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Punktlistagemener { margin-top:6.25pt; margin-left:14.2pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Punktlistalinje { margin-top:6.25pt; margin-left:14.2pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Punktlistalinjeindragen { margin-top:6.25pt; margin-left:28.4pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Punktlistasiffra { margin-top:6.25pt; margin-left:14.2pt; margin-bottom:6.25pt; text-indent:-14.2pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.PVgnar { margin-top:3.1pt; margin-bottom:26pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.Quote { margin-top:6.1pt; margin-left:14.2pt; margin-bottom:0pt; text-align:justify; line-height:10pt; font-family:'Verdana'; font-size:9.5pt }
+.R1 { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.R1bilaga { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-after:auto; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.R2 { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:13.5pt }
+.R3 { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }
+.R4 { margin-top:15pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:normal; font-style:italic; color:#000000 }
+.R5 { margin-top:12pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold }
+.R6 { margin-top:12pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-weight:normal; font-style:italic; color:#000000 }
+.Reservationshnvisning { margin-top:0pt; margin-bottom:8pt; text-align:right; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+.Reservationsrubrik { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }
+.Rubrik1Dokumentinformation { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Rubrik1bilaga { margin-top:0pt; margin-bottom:27.7pt; text-align:left; page-break-after:auto; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Rubrik1medsidhuvud { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-before:always; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Rubrik1numrerat { margin-top:3.1pt; margin-left:0pt; margin-bottom:12pt; text-indent:0pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Rubrik1numreratmedsidhuvud { margin-top:0pt; margin-left:0pt; margin-bottom:16pt; text-indent:0pt; text-align:left; page-break-before:always; page-break-after:avoid; line-height:normal; font-family:'Verdana'; font-size:16pt }
+.Rubrik2bilaga { margin-top:20pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:13.5pt }
+.Rubrik2numrerat { margin-top:20pt; margin-left:0pt; margin-bottom:0pt; text-indent:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:13.5pt }
+.Rubrik3numrerat { margin-top:20pt; margin-left:0pt; margin-bottom:0pt; text-indent:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }
+.Sammanfattning { margin-top:3.1pt; margin-bottom:12pt; text-align:left; page-break-after:auto; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Sidhuvudhgerstlld { margin-top:0pt; margin-bottom:0pt; text-align:right; line-height:normal; font-family:'Verdana'; font-size:7.5pt; font-variant:small-caps }
+.Sidhuvudvnsterstlld { margin-top:0pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:7.5pt; font-variant:small-caps }
+.Stdrubrik { margin-top:12pt; margin-bottom:0pt; line-height:12pt; font-family:'Verdana'; font-size:9.5pt; font-weight:bold }
+.Srskiltyttranderubrik { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:10.5pt; font-weight:bold }
+.TOC1 { margin-top:0pt; margin-right:28.35pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOC2 { margin:0pt 28.35pt 0pt 5.65pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOC3 { margin:0pt 28.35pt 0pt 11.35pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOC4 { margin:0pt 28.35pt 0pt 17pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOC5 { margin:0pt 28.35pt 0pt 22.7pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOC6 { margin-top:0pt; margin-left:47.65pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOC7 { margin-top:0pt; margin-right:28.35pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOC8 { margin-top:0pt; margin-right:28.35pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOC9 { margin-top:0pt; margin-left:8.5pt; margin-bottom:0pt; text-align:left; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TOCHeading { margin-top:3.1pt; margin-bottom:9pt; text-align:left; page-break-before:always; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Tabell-Kolumnrubrik { margin-top:3pt; margin-bottom:0pt; line-height:10pt; font-family:'Verdana'; font-size:8pt; font-weight:bold }
+.Tabell-KolumnrubrikHger { margin-top:3pt; margin-bottom:0pt; text-align:right; line-height:10pt; font-family:'Verdana'; font-size:8pt; font-weight:bold }
+.Tabell-Klla { margin-top:2pt; margin-bottom:0pt; line-height:8pt; font-family:'Verdana'; font-size:7pt }
+.Tabell-R { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }
+.Tabell-Radrubrik { margin-top:3pt; margin-bottom:0pt; line-height:10pt; font-family:'Verdana'; font-size:8pt }
+.Tabell-Rubrik { margin-top:12pt; margin-bottom:3pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:10pt; font-family:'Verdana'; font-size:9pt; font-weight:bold }
+.Tabell-Siffror { margin-top:3pt; margin-bottom:0pt; text-align:right; line-height:10pt; font-family:'Verdana'; font-size:8pt }
+.Tabell-Text { margin-top:3pt; margin-bottom:0pt; line-height:10pt; font-family:'Verdana'; font-size:8pt }
+.Tabell-Underrubrik { margin-top:0pt; margin-bottom:1pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:8pt; font-family:'Verdana'; font-size:8pt; font-weight:normal; font-style:italic }
+.TableofFigures { margin-top:3.1pt; margin-bottom:0pt; text-align:justify; line-height:normal; font-family:'Verdana'; font-size:9.5pt }
+.TillX-utskottet { margin-top:0pt; margin-bottom:12pt; text-align:left; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Title { margin-top:3.1pt; margin-bottom:1pt; text-align:left; line-height:12pt; font-family:'Verdana'; font-size:20pt; letter-spacing:-0.5pt }
+.Vapen { margin-top:0pt; margin-bottom:0pt; text-align:left; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt; font-family:'Verdana'; font-size:16pt }
+.Yrkandelista { margin-top:3.1pt; margin-left:28.35pt; margin-bottom:0pt; text-indent:-28.35pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+.Yrkandelistakursiv { margin-top:3.1pt; margin-left:28.35pt; margin-bottom:0pt; text-indent:-28.35pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+.YrkandelistaEtt { margin-top:3.1pt; margin-left:0pt; margin-bottom:0pt; text-indent:0pt; text-align:justify; line-height:12.5pt; font-family:'Verdana'; font-size:9.5pt }
+span.BallongtextChar { font-family:Tahoma; font-size:8pt }
+span.BilagaChar { font-family:'Verdana'; font-size:8pt; font-variant:small-caps; text-decoration:underline }
+span.BrdtextChar { font-family:'Verdana'; font-size:9.5pt }
+span.BrdtextChar1 { font-family:'Verdana'; font-size:9.5pt }
+span.Brdtextmedindrag2Char { font-family:'Verdana'; font-size:9.5pt }
+span.CitatChar { font-family:'Verdana'; font-size:9.5pt }
+span.DokumentRubrikChar { font-family:'Verdana'; font-size:18pt }
+span.FotnotstextChar { font-family:'Verdana'; font-size:8pt }
+span.FotnotstextindragChar { font-family:'Verdana'; font-size:8pt }
+span.FrslagspunktChar { font-family:'Verdana'; font-size:9.5pt; font-weight:bold; font-style:normal }
+span.Hyperlink { text-decoration:none; color:#000000; -aw-style-name:hyperlink }
+span.KommentarerChar { font-family:'Verdana'; font-size:10pt }
+span.NormalkursivChar { font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+span.NormaltindragChar { font-family:'Verdana'; font-size:9.5pt }
+span.OrdfrandeChar { font-family:'Verdana'; font-size:11.5pt; font-style:italic }
+span.OrdfrandenChar { font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+span.OrtochDatumChar { font-family:'Verdana'; font-size:9.5pt }
+span.OrtOchDatumChar0 { font-family:'Verdana'; font-size:11.5pt }
+span.PlaceholderText { color:#808080 }
+span.PVgnarChar { font-family:'Verdana'; font-size:9.5pt }
+span.ReservationshnvisningChar { font-family:'Verdana'; font-size:9.5pt; font-style:italic }
+span.Rubrik1Char { font-family:'Verdana'; font-size:16pt }
+span.Rubrik1DokumentinformationChar { font-family:'Verdana'; font-size:16pt }
+span.Rubrik2Char { font-family:'Verdana'; font-size:13.5pt }
+span.Rubrik3Char { font-family:'Verdana'; font-size:10.5pt; font-weight:bold }
+span.Rubrik4Char { font-family:'Verdana'; font-size:10.5pt; font-style:italic; color:#000000 }
+span.Rubrik5Char { font-family:'Verdana'; font-size:9.5pt; font-weight:bold }
+span.Rubrik6Char { font-family:'Verdana'; font-size:9.5pt; font-style:italic; color:#000000 }
+span.Rubrik7Char { font-family:'Verdana'; font-size:9.5pt; font-style:italic; color:#243f60 }
+span.Rubrik8Char { font-family:'Verdana'; font-size:9pt; color:#272727 }
+span.Rubrik9Char { font-family:'Verdana'; font-size:9pt; font-style:italic; color:#272727 }
+span.RubrikChar { font-family:'Verdana'; font-size:20pt; letter-spacing:-0.5pt }
+span.SidfotChar { font-family:'Verdana'; font-size:9.5pt }
+span.SidhuvudChar { font-family:'Verdana'; font-size:7.5pt; font-variant:small-caps }
+span.Tabell-Upphjttecken { font-family:'Verdana'; font-variant:normal; text-decoration:none; text-transform:none; vertical-align:super; display:inline }
+span.VapenChar { font-family:'Verdana'; font-size:16pt }
+span.tBilagaJA { color:#000000 }
+span.tSidrubrikJA { color:#000000 }
+.PlainTable1 {  }
+.TableGrid {  }
+--></style>
+
+		<div class="Section1">
+			<table cellspacing="0" cellpadding="0" style="margin-top:0pt; border-collapse:collapse">
+				<tr style="height:79.4pt; -aw-height-rule:exactly">
+					<td style="width:297.7pt; vertical-align:top">
+						<p class="Rubrik1Dokumentinformation" style="line-height:16pt">
+							<span style="-aw-sdt-tag:'ccUtskott'; -aw-sdt-title:'utskottsnamn Dokumentegenskap'"><span>Konstitutionsutskottet</span></span><span style="-aw-sdt-tag:'ccS'; -aw-sdt-title:'s'"><span>s</span></span><span style="-aw-sdt-tag:'ccMellanslag'; -aw-sdt-title:'Mellanslag'"><span style="-aw-import:spaces">&#xa0;</span></span><a name="Utlatande"></a><span>betänkande</span>
+						</p>
+						<p class="Dokumentbeteckning" style="line-height:16pt">
+							<span style="-aw-sdt-tag:'ccRiksmote'; -aw-sdt-title:'riksmote Dokumentegenskap'"><span>2026/27</span></span><span style="-aw-sdt-tag:'ccKolon'; -aw-sdt-title:'Kolon'"><span>:</span></span><a name="Utskottebeteckning"></a><span>KU9</span>
+						</p>
+						<p class="Rubrik1Dokumentinformation" style="line-height:16pt">
+							<span style="-aw-import:ignore">&#xa0;</span>
+						</p>
+					</td>
+				</tr>
+			</table>
+			<div style="-aw-sdt-tag:'ccDokumentrubrik'; -aw-sdt-title:'dokumentrubrik Dokumentegenskap'">
+				<p class="DokumentRubrik">
+					<span>En grundlagsskyddad aborträtt samt utökade möjligheter att begränsa föreningsfriheten och rätten till medborgarskap (vilande grundlagsförslag)</span>
+				</p>
+			</div>
+			<p class="Sammanfattning" style="line-height:16pt">
+				<span class="tSidrubrikJA">Sammanfattning</span>
+			</p>
+			<p>
+				<span>I betänkandet anmäls för slutligt beslut ett vilande förslag till lag om ändring i regeringsformen. Utskottet föreslår att riksdagen slutligt antar det vilande förslaget.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Förslaget innebär att rätten till abort införs i regeringsformen som en ny grundläggande fri- och rättighet. Förslaget innebär vidare att det ska bli möjligt att meddela föreskrifter om att det svenska medborgarskapet ska fråntas den som är medborgare i en annan stat och som har förvärvat medborgarskapet genom oriktiga eller vilseledande uppgifter eller genom annat otillbörligt handlande, eller som har dömts för brott som allvarligt skadar Sveriges vitala intressen. Förslaget innebär även att föreningsfriheten ska få begränsas när det gäller sammanslutningar som ägnar sig åt allvarlig brottslighet för att uppnå ekonomisk vinning eller annan otillbörlig fördel.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Lagändringarna föreslås träda i kraft den 1 januari 2027.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>I betänkandet finns en reservation (V, MP) och fyra särskilda yttranden (S,</span><span>&#xa0;</span><span>V, C, MP).</span>
+			</p>
+			<p class="R4">
+				<span>Behandlade förslag</span>
+			</p>
+			<p>
+				<span>Vilande förslag beslutat den 20 maj 2026 till lag om ändring i regeringsformen (bet. 2025/26:KU34, rskr. 2025/26:266).</span>
+			</p>
+			<p>
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p class="Innehllsfrteckning">
+				<a name="Innehållsförteckning"></a><span class="tSidrubrikJA">Innehållsförteckning</span>
+			</p>
+			<p class="TOC1">
+				<a href="#_Toc244767940" style="text-decoration:none"><span class="Hyperlink">Utskottets förslag till riksdagsbeslut</span></a>
+			</p>
+			<p class="TOC1">
+				<a href="#_Toc244767941" style="text-decoration:none"><span class="Hyperlink">Redogörelse för ärendet</span></a>
+			</p>
+			<p class="TOC1">
+				<a href="#_Toc244767942" style="text-decoration:none"><span class="Hyperlink">Utskottets överväganden</span></a>
+			</p>
+			<p class="TOC2">
+				<a href="#_Toc244767943" style="text-decoration:none"><span class="Hyperlink">Vilande förslag</span></a>
+			</p>
+			<p class="TOC3">
+				<a href="#_Toc244767944" style="text-decoration:none"><span class="Hyperlink">Utskottets anmälan och yttrande</span></a>
+			</p>
+			<p class="TOC1">
+				<a href="#_Toc244767945" style="text-decoration:none"><span class="Hyperlink">Reservation</span></a>
+			</p>
+			<p class="TOC6" style="margin-right:17pt; margin-left:5.65pt">
+				<a href="#_Toc244767946" style="text-decoration:none"><span class="Hyperlink">Vilande förslag (V, MP)</span></a>
+			</p>
+			<p class="TOC1">
+				<a href="#_Toc244767947" style="text-decoration:none"><span class="Hyperlink">Särskilda yttranden</span></a>
+			</p>
+			<p class="TOC7" style="margin-left:19.85pt; text-indent:-14.15pt">
+				<span class="Hyperlink">1.</span><span style="width:7.02pt; text-indent:0pt; display:inline-block">&#xa0;</span><a href="#_Toc244767948" style="text-decoration:none"><span class="Hyperlink">Vilande förslag (S)</span></a>
+			</p>
+			<p class="TOC7" style="margin-left:19.85pt; text-indent:-14.15pt">
+				<span class="Hyperlink">2.</span><span style="width:7.02pt; text-indent:0pt; display:inline-block">&#xa0;</span><a href="#_Toc244767949" style="text-decoration:none"><span class="Hyperlink">Vilande förslag (V)</span></a>
+			</p>
+			<p class="TOC7" style="margin-left:19.85pt; text-indent:-14.15pt">
+				<span class="Hyperlink">3.</span><span style="width:7.02pt; text-indent:0pt; display:inline-block">&#xa0;</span><a href="#_Toc244767950" style="text-decoration:none"><span class="Hyperlink">Vilande förslag (C)</span></a>
+			</p>
+			<p class="TOC7" style="margin-left:19.85pt; text-indent:-14.15pt">
+				<span class="Hyperlink">4.</span><span style="width:7.02pt; text-indent:0pt; display:inline-block">&#xa0;</span><a href="#_Toc244767951" style="text-decoration:none"><span class="Hyperlink">Vilande förslag (MP)</span></a>
+			</p>
+			<p class="TOC8">
+				<span class="Hyperlink" style="font-style:italic">Bilaga 1</span><br><a href="#_Toc244767952" style="text-decoration:none"><span class="Hyperlink">Förteckning över behandlade förslag</span></a>
+			</p>
+			<p class="TOC2">
+				<a href="#_Toc244767953" style="text-decoration:none"><span class="Hyperlink">Vilande förslag</span></a>
+			</p>
+			<p class="TOC8">
+				<span class="Hyperlink" style="font-style:italic">Bilaga 2</span><br><a href="#_Toc244767954" style="text-decoration:none"><span class="Hyperlink">Vilande förslag</span></a>
+			</p>
+			<p class="Fluglort">
+			</p>
+			<p class="Fluglort">
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p class="Avsnittsrubrik">
+				<a name="StopCC"></a><a name="_Toc244767940"><span style="-aw-bookmark-end:StopCC"></span><span class="tSidrubrikJA">Utskottets förslag till riksdagsbeslut</span></a>
+			</p>
+			<div style="-aw-sdt-tag:'dokumentavsnitt/utskottets förslag till riksdagsbeslut/-42406081/1793870732637'; -aw-sdt-title:'utskottets förslag till riksdagsbeslut'">
+				<p class="Mellanrum">
+					<span style="-aw-import:spaces">&#xa0;</span>
+				</p>
+				<p class="Mellanrum">
+					<span style="-aw-import:spaces">&#xa0;</span>
+				</p>
+				<table cellspacing="0" cellpadding="0" style="width:294.2pt; margin-top:0pt; border-collapse:collapse">
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p class="NormalLeft" style="page-break-inside:avoid; page-break-after:avoid">
+								<span style="font-size:10.5pt; font-weight:bold">Vilande förslag</span>
+							</p>
+						</td>
+					</tr>
+				</table>
+				<p class="Normalutanluftfre">
+					<span>Riksdagen antar slutligt det vilande förslaget i bilaga 2 till lag om ändring i regeringsformen.</span>
+				</p>
+				<p class="Reservationshnvisning">
+					<span>Reservation (V, MP)</span>
+				</p>
+				<p class="OrtochDatum">
+					<span>Stockholm den 5 november 2026</span>
+				</p>
+				<p class="PVgnar">
+					<span>På konstitutionsutskottets vägnar</span>
+				</p>
+				<p class="Ordfranden">
+					<span>Oscar Sjöstedt</span>
+				</p>
+				<p class="Deltagare">
+					<span>Följande ledamöter har deltagit i beslutet: Oscar Sjöstedt (SD), Jennie Nilsson (S), Mats Green (M), Mirja Räihä (S), Per-Arne Håkansson (S), Ulrik Nilsson (M), Caroline Täljeblad (V), Ludvig Aspling (SD), Magnus Haara (C), Mats Sander (M), Jan Riise (MP), Cecilia Engström (KD), Amalia Rud Stenlöf (S), Roger Hedlund (SD), Peter Hedberg (S), Erik Nygårds (L) och Talla Alkurdi (S).</span>
+				</p>
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+				<p class="Mellanrum">
+					<span style="font-size:9.5pt; -aw-import:ignore">&#xa0;</span>
+				</p>
+			</div>
+			<p>
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p class="Avsnittsrubrik">
+				<a name="SlutUtskottsForslag"></a><a name="_Toc244767941"><span style="-aw-bookmark-end:SlutUtskottsForslag"></span><span class="tSidrubrikJA">Redogörelse för ärendet</span></a>
+			</p>
+			<p class="R2" style="margin-top:0pt; line-height:13.5pt">
+				<span>Bakgrund</span>
+			</p>
+			<p>
+				<span>Grundlagar stiftas genom två likalydande beslut (8 kap. 14 § regeringsformen). Genom det första beslutet antas grundlagsförslaget som vilande. Genom det andra beslutet antas grundlagsförslaget som slutligt. Det andra beslutet får inte fattas tidigare än att det efter det första beslutet har hållits val till riksdagen i hela riket och den nyvalda riksdagen har samlats.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Det är konstitutionsutskottets uppgift att anmäla vilande beslut i ärenden som rör grundlagar till kammaren för slutligt beslut (9 kap. 24 § riksdags-ordningen).</span>
+			</p>
+			<p class="R2" style="line-height:13.5pt">
+				<span>Vilande förslag</span>
+			</p>
+			<p>
+				<span>Under riksmötet 2025/26 lade regeringen fram ett förslag till ändringar i regeringsformen (prop. 2025/26:78). Förslaget behandlades i konstitutions</span><span>&#xad;</span><span>utskottets betänkande 2025/26:KU34 En grundlagsskyddad aborträtt samt utökade möjligheter att begränsa föreningsfriheten och rätten till medborgar</span><span>&#xad;</span><span>skap.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Lagändringarna föreslås träda i kraft den 1 januari 2027. </span>
+			</p>
+			<p class="NormalIndent">
+				<span>Riksdagen beslutade den 20 maj 2026 att som vilande anta regeringens förslag till lag om ändring i regeringsformen (bet. 2025/26:KU34, rskr. 2025/26:266).</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Det vilande förslaget till lag om ändring i regeringsformen finns förtecknat i bilaga 1. Förslaget i sin helhet finns i bilaga 2.</span>
+			</p>
+			<p class="Avsnittsrubrik">
+				<a name="_Toc244767942"><span class="tSidrubrikJA">Utskottets överväganden</span></a>
+			</p>
+			<div style="-aw-sdt-tag:'d03554bc-d945-47f9-afae-8ccf216ed6ef/förslagsrutor/-44149208/1787648876679'; -aw-sdt-title:'förslagsrutor'">
+				<h2 style="line-height:13.5pt">
+					<a name="_Toc244767943"><span>Vilande förslag</span></a>
+				</h2>
+			</div>
+			<span style="-aw-bookmark-end:_Toc244767943">
+			</span>
+			<div style="margin-top:3.1pt; margin-right:0.9pt; margin-left:0.9pt; border:0.75pt solid #000000; -aw-border:0.5pt single; clear:both">
+				<p class="Normalrutafet" style="margin-top:0pt; margin-right:0pt; margin-left:0pt; border-style:none; padding-bottom:0pt">
+					<span>Utskottets förslag i korthet</span>
+				</p>
+				<p class="Normalruta" style="margin-top:0pt; margin-right:0pt; margin-left:0pt; border-style:none; padding-top:0pt; padding-bottom:0pt">
+					<span>Riksdagen antar slutligt det vilande förslaget i bilaga 2 till lag om ändring i regeringsformen.</span>
+				</p>
+				<div style="-aw-sdt-tag:'d03554bc-d945-47f9-afae-8ccf216ed6ef/förslagsrutor reservations text/203181990/1792657825748'; -aw-sdt-title:'förslagsrutor reservations text'">
+					<p class="Normalrutaindrag" style="margin-right:0pt; margin-left:0pt; border-style:none; padding-top:0pt">
+						<span>Jämför reservationen (V, MP) och särskilt yttrande 1 (S), 2 (V), 3 (C) och 4 (MP).</span>
+					</p>
+				</div>
+			</div>
+			<p class="R3">
+				<span>Förslagets innebörd i korthet</span>
+			</p>
+			<p>
+				<span>Det vilande förslaget om ändringar i regeringsformen innebär att rätten till abort införs i regeringsformen som en ny grundläggande fri- och rättighet. Förslaget innebär vidare att det ska bli möjligt att meddela föreskrifter om att det svenska medborgarskapet ska fråntas den som är medborgare i en annan stat och som har förvärvat medborgarskapet genom oriktiga eller vilseledande uppgifter eller genom annat otillbörligt handlande, eller som har dömts för brott som allvarligt skadar Sveriges vitala intressen. Förslaget innebär även att föreningsfriheten ska få begränsas när det gäller sammanslutningar som ägnar sig åt allvarlig brottslighet för att uppnå ekonomisk vinning eller annan otillbörlig fördel.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Lagändringarna föreslås träda i kraft den 1 januari 2027.</span>
+			</p>
+			<h3>
+				<a name="_Toc244767944"><span>Utskottets anmälan och yttrande</span></a>
+			</h3>
+			<p>
+				<span>Under riksmötet 2025/26 antog riksdagen som vilande det förslag till lag om ändring i regeringsformen som har redovisats i det föregående. Genom detta betänkande anmäler utskottet nu beslutet till kammaren för slutligt beslut.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Med hänvisning till vad utskottet anförde vid ärendets första behandling föreslår utskottet att riksdagen slutligt antar förslaget.</span>
+			</p>
+			<p class="NormalIndent">
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p class="Avsnittsrubrik">
+				<a name="_Toc244767945"><span class="tSidrubrikJA">Reservation</span></a>
+			</p>
+			<div style="-aw-sdt-tag:'3bd7023d-67fd-4b80-b17e-cb5b2a65f8a6/reservationer/1262965978/1793870733431'; -aw-sdt-title:'reservationer'">
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+				<table cellspacing="0" cellpadding="0" style="width:294.2pt; margin-top:0pt; border-collapse:collapse">
+					<tr style="page-break-inside:avoid">
+						<td style="vertical-align:top">
+							<p class="Reservationsrubrik">
+								<a name="_Toc244767946"><span>Vilande förslag (V, MP)</span></a>
+							</p>
+						</td>
+					</tr>
+				</table>
+				<p class="Normalutanluftfre">
+					<span>av Caroline Täljeblad (V) och Jan Riise (MP).</span>
+				</p>
+				<p class="R4">
+					<span>Förslag till riksdagsbeslut</span>
+				</p>
+				<p style="margin-bottom:3.1pt">
+					<span>Vi anser att förslaget till riksdagsbeslut borde ha följande lydelse:</span>
+				</p>
+				<p class="Normalutanluftfre">
+					<span>Riksdagen förkastar det vilande förslaget i bilaga 2 till lag om ändring i regeringsformen.</span>
+				</p>
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+			</div>
+			<p class="R4">
+				<span>Ställningstagande</span>
+			</p>
+			<p>
+				<span>Vi anser att det vilande förslaget bör förkastas.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Vi utvecklar våra skäl för detta i våra särskilda yttranden 2 respektive 4.</span>
+			</p>
+			<p class="Avsnittsrubrik">
+				<a name="_Toc244767947"><span class="tSidrubrikJA">Särskilda yttranden</span></a>
+			</p>
+			<div style="-aw-sdt-tag:'b75352b0-de21-4c95-8ab6-1091f94592d3/särskilda yttranden/-928600283/1793870731045'; -aw-sdt-title:'särskilda yttranden'">
+				<p class="Mellanrum">
+					<span style="-aw-import:spaces">&#xa0;</span>
+				</p>
+				<table cellspacing="0" cellpadding="0" style="width:294.2pt; margin-top:0pt; border-collapse:collapse">
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p class="NormalNoll" style="page-break-inside:avoid; page-break-after:avoid">
+								<span>1.</span>
+							</p>
+						</td>
+						<td style="width:272.2pt; vertical-align:top">
+							<p class="Srskiltyttranderubrik">
+								<a name="_Toc244767948"><span>Vilande förslag (S)</span></a>
+							</p>
+						</td>
+					</tr>
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p style="text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt">
+								<span style="font-size:9.5pt; -aw-import:ignore">&#xa0;</span>
+							</p>
+						</td>
+						<td style="width:272.2pt; vertical-align:top">
+							<p style="text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt">
+								<span style="font-size:9.5pt">Jennie Nilsson (S), Mirja Räihä (S), Per-Arne Håkansson (S), Amalia Rud Stenlöf (S), Peter Hedberg (S) och Talla Alkurdi (S) anför:</span>
+							</p>
+						</td>
+					</tr>
+				</table>
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+			</div>
+			<p>
+				<span>Vi står bakom grundlagsförslaget och utskottets ställningstagande och vill därutöver tillägga följande.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>En avgörande förutsättning för vårt stöd till grundlagsändringen som möjliggör återkallande av medborgarskap har varit att statslöshet undviks och att internationella konventioner, bl.a. Europakonventionen, barnkonventionen och FN:s konvention om begränsning av statslöshet, beaktas fullt ut i den fortsatta lagstiftningsprocessen. Vi välkomnar att dessa krav kommer till uttryck i lagtexten. </span>
+			</p>
+			<p class="NormalIndent">
+				<span>När det gäller förslaget till begränsningar av föreningsfriheten vill vi framhålla vikten av att den kommande lagstiftningen utformas så att det blir tydligt vilka som kan omfattas och på vilka grunder. Lagstiftningen måste bli tydlig, förutsebar och rättssäker. Vi hade gärna sett ett tydligt förbud mot nazistiska organisationer. Vi vill vidare framhålla att den grundlagsskyddade föreningsfriheten och strejkrätten är av avgörande betydelse för facklig organisering. En viktig utgångspunkt för oss har därför varit att fack</span><span>&#xad;</span><span>föreningarna inte kommer att omfattas av den kommande lagstiftningen. Vi kommer noga att följa utvecklingen och vid behov ta nödvändiga initiativ i andra sammanhang. </span>
+			</p>
+			<p class="NormalIndent">
+				<span>Avslutningsvis vill vi framhålla vikten av en fungerande sjukvård i hela landet så att aborter kan göras på jämlika grunder. Det är enligt oss även viktigt att sjukvårdspersonal inte ges möjlighet till samvetsfrihet och att tidsgränserna för när en person inte längre får genomföra abort inte sänks. Vi kommer noga att följa utvecklingen även när det gäller denna fråga.</span>
+			</p>
+			<p class="NormalIndent">
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<div style="-aw-sdt-tag:'462ccea5-b20c-40de-903e-1202c884d3fa/särskilda yttranden/-28115623/1793870731045'; -aw-sdt-title:'särskilda yttranden'">
+				<p class="Mellanrum">
+					<span style="-aw-import:spaces">&#xa0;</span>
+				</p>
+				<table cellspacing="0" cellpadding="0" style="width:294.2pt; margin-top:0pt; border-collapse:collapse">
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p class="NormalNoll" style="page-break-inside:avoid; page-break-after:avoid">
+								<span>2.</span>
+							</p>
+						</td>
+						<td style="width:272.2pt; vertical-align:top">
+							<p class="Srskiltyttranderubrik">
+								<a name="_Toc244767949"><span>Vilande förslag (V)</span></a>
+							</p>
+						</td>
+					</tr>
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p style="text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt">
+								<span style="font-size:9.5pt; -aw-import:ignore">&#xa0;</span>
+							</p>
+						</td>
+						<td style="width:272.2pt; vertical-align:top">
+							<p style="text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt">
+								<span style="font-size:9.5pt">Caroline Täljeblad (V) anför:</span>
+							</p>
+						</td>
+					</tr>
+				</table>
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+			</div>
+			<p>
+				<span>Jag vill utöver det som anförts i reservationen anföra följande.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Grundlagsförslaget innebär att det ska bli möjligt att återkalla medborgar</span><span>&#xad;</span><span>skap vid oriktiga eller vilseledande uppgifter eller annat otillbörligt handlande. Att frångå principen om att medborgarskapet är lika för alla skulle innebära genomgripande förändringar av den svenska medborgarskapsrätten. Vid den första anblicken kan det tyckas rimligt att kunna återkalla medborgarskapet för en person som lämnar avgörande felaktiga uppgifter eller som handlar på ett otillbörligt sätt, t.ex. genom mutor eller bedrägeri. Likaså är det inte helt orimligt att en person som dömts för brottslighet som allvarligt hotar säkerheten i landet kan fråntas sitt medborgarskap. Det finns även en viss inbyggd skyddsmekanism i förslaget eftersom medborgarskap enbart ska kunna fråntas den som har dubbelt medborgarskap, för att undvika statslöshet. Regeringens förslag öppnar dock upp för olika tolkningar och olika starka medborgarskap, vilket riskerar att dra isär samhället ytterligare. Förslaget är också långtgående i och med att det inte uppställs något krav på att de oriktiga eller vilseledande uppgifterna ska ha lämnats med uppsåt. Regeringen har inte lämnat några tungt vägande skäl för att motivera en så omfattande inskränkning i medborgarskapsskyddet. Det kan vidare ifrågasättas om förslaget om att barn ska kunna bli av med sitt medborgarskap på grund av uppgifter som föräldrarna lämnat är förenligt med barnkonventionen och Europakonventionen. Det kan vidare konstateras att det förslag som regeringen lade fram i sin proposition är mer omfattande än det förslag som 2023 års fri- och rättighetskommitté lade fram i sitt betänkande. Remiss</span><span>&#xad;</span><span>instanserna har därmed inte fått möjlighet att ta ställning till det slutliga förslaget i propositionen, vilket är anmärkningsvärt. Det finns även en risk för att regleringen öppnar upp för godtyckliga återkallanden av medborgarskap eftersom grundlagsbestämmelsen inte innehåller någon brottskatalog utan vad som omfattas av ”brott som allvarligt skadar Sveriges vitala intressen” kommer att definieras i vanlig lag. Skyddet för medborgarskap kan därmed komma att urholkas väsentligt, vilket riskerar att skada vår demokrati. Mot denna bakgrund står jag inte bakom de föreslagna ändringarna i regerings</span><span>&#xad;</span><span>formen som syftar till att göra det möjligt att återkalla medborgarskap. </span>
+			</p>
+			<p class="NormalIndent">
+				<span>Förslaget innebär vidare att rätten till abort ska införas som en grundläggande fri- och rättighet i regeringsformen, vilket jag står bakom. Skyddet bör omfatta alla kvinnor. Regeringen har dock valt att föreslå att begränsningar ska få göras genom vanlig lag i fråga om rätten att avbryta en graviditet för andra än svenska medborgare. Det finns visserligen redan i dag vissa möjligheter till begränsningar i regeringsformen som gäller utländska medborgare. Detta är dock inte ett tillräckligt skäl för att begränsa rätten till abort för utländska medborgare. Enligt min mening bör rätten att avbryta en graviditet vara lika för alla som befinner sig i Sverige, oavsett medborgarskap. Jag står således inte heller bakom förslaget om att införa en möjlighet att begränsa rätten till abort för andra än svenska medborgare.</span>
+			</p>
+			<p style="margin-top:0pt; text-indent:11.35pt">
+				<span>Den organiserade brottsligheten är av allvarlig och systemhotande natur. Eftersom situationen är allvarlig har Vänsterpartiet accepterat regeringens förslag om att möjliggöra begränsningar av föreningsfriheten för samman</span><span>&#xad;</span><span>slutningar som ägnar sig åt allvarlig brottslighet för att uppnå ekonomisk vinning eller annan otillbörlig fördel. Det finns dock en legitim oro för att lagändringen på sikt kan hota fackföreningsrörelsen och folkrörelserna. Jag kommer därför att noga följa utvecklingen och verka för att en grundlags</span><span>&#xad;</span><span>ändring och följdlagstiftning som innebär en begränsning av föreningsfriheten utvärderas efter fem år.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Mot bakgrund av den stora vikt jag lägger vid frågorna om medborgar</span><span>&#xad;</span><span>skapsskydd och skyddet av aborträtten och det förhållandet att det vilande förslaget endast kan antas eller förkastas i sin helhet anser jag att det vilande förslaget bör förkastas, även om jag står bakom övriga delar av förslaget.</span>
+			</p>
+			<p class="NormalIndent">
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<div style="-aw-sdt-tag:'e7fab20b-57a7-4c5f-9967-707e07d17837/särskilda yttranden/1648128021/1793870731046'; -aw-sdt-title:'särskilda yttranden'">
+				<p class="Mellanrum">
+					<span style="-aw-import:spaces">&#xa0;</span>
+				</p>
+				<table cellspacing="0" cellpadding="0" style="width:294.2pt; margin-top:0pt; border-collapse:collapse">
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p class="NormalNoll" style="page-break-inside:avoid; page-break-after:avoid">
+								<span>3.</span>
+							</p>
+						</td>
+						<td style="width:272.2pt; vertical-align:top">
+							<p class="Srskiltyttranderubrik">
+								<a name="_Toc244767950"><span>Vilande förslag (C)</span></a>
+							</p>
+						</td>
+					</tr>
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p style="text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt">
+								<span style="font-size:9.5pt; -aw-import:ignore">&#xa0;</span>
+							</p>
+						</td>
+						<td style="width:272.2pt; vertical-align:top">
+							<p style="text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt">
+								<span style="font-size:9.5pt">Magnus Haara (C) anför:</span>
+							</p>
+						</td>
+					</tr>
+				</table>
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+			</div>
+			<p>
+				<span>Jag står bakom intentionerna att få en ny lagstiftning på plats, men som framgår av riksdagens tidigare behandling av grundlagsärendet har Center</span><span>&#xad;</span><span>partiet invändningar mot regeringens bedömningar och förslag när det gäller begränsningarna av rätten till medborgarskap och skyddet av aborträtten.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Det fanns en bred enighet i 2023 års fri- och rättighetskommitté om förslaget att införa en möjlighet att under vissa förutsättningar kunna återkalla det svenska medborgarskapet för personer med dubbla medborgarskap som har gjort sig skyldiga till brott som allvarligt hotar rikets säkerhet eller som omfattas av Internationella brottmålsdomstolens jurisdiktion. Det är rimligt att de som har begått särskilt allvarliga brott mot vårt land inte kvarstår som svenska medborgare. Regeringen valde dock att i stället gå vidare med ett förslag som innebär att det svenska medborgarskapet ska kunna fråntas den som dömts för ”brott som allvarligt skadar Sveriges vitala intressen”. Detta uttryck är inte tillräckligt väl avgränsat och öppnar upp för en bredare tillämpning än vad som avses. Det är också anmärkningsvärt att förslaget inte remissbehandlades i egentlig mening. Jag kommer att följa utvecklingen och verka för att en utredning tillsätts för att komma fram till en mer rättssäker formulering som möjliggör återkallelse av medborgarskap vid viss allvarlig brottslighet som begås inom ramen för kriminella nätverk.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Förslaget innebär vidare att en ny bestämmelse om rätten till abort införs i regeringsformen. Jag välkomnar ansatsen men anser att den föreslagna bestämmelsen egentligen är otillräcklig. Den föreslagna grundlags</span><span>&#xad;</span><span>bestämmelsen hänvisar endast till bestämmelser i vanlig lag, dvs. abortlagen. I och med att abortlagen kan ändras med enkel majoritet och formerna för att ändra vanlig lag saknar de formella skyddsmekanismer som grundlags</span><span>&#xad;</span><span>ändringar är föremål för, blir konsekvensen att grundlagsregleringen inte uppställer något egentligt skydd för omfattande inskränkningar i aborträtten. Jag kommer därför att noga följa utvecklingen även av denna fråga och verka för att en utredning tillsätts för att se över hur aborträtten kan ges ett uttryckligt skydd i regeringsformen. Förslaget innebär vidare att kvinnor med utländska medborgarskap ska kunna undantas från det föreslagna grundlagsskyddet för rätten till abort. Enligt min mening saknas det skäl att göra ett sådant undantag, och jag kommer därför att verka för att alla i Sverige oavsett medborgarskap ska omfattas av aborträtten. </span>
+			</p>
+			<p class="NormalIndent">
+				<span>Det vilande förslaget till lag om ändring i regeringsformen kan endast antas eller förkastas i sin helhet. Trots de invändningar jag har mot vissa av förslagen är jag inte beredd att förkasta hela det vilande förslaget och avstår därför från att reservera mig.</span>
+			</p>
+			<p class="NormalIndent">
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<div style="-aw-sdt-tag:'690fe7c1-3d2e-4874-ba0f-2963db6a3d8e/särskilda yttranden/-2028734105/1793870731046'; -aw-sdt-title:'särskilda yttranden'">
+				<p class="Mellanrum">
+					<span style="-aw-import:spaces">&#xa0;</span>
+				</p>
+				<table cellspacing="0" cellpadding="0" style="width:294.2pt; margin-top:0pt; border-collapse:collapse">
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p class="NormalNoll" style="page-break-inside:avoid; page-break-after:avoid">
+								<span>4.</span>
+							</p>
+						</td>
+						<td style="width:272.2pt; vertical-align:top">
+							<p class="Srskiltyttranderubrik">
+								<a name="_Toc244767951"><span>Vilande förslag (MP)</span></a>
+							</p>
+						</td>
+					</tr>
+					<tr style="page-break-inside:avoid">
+						<td style="width:22pt; vertical-align:top">
+							<p style="text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt">
+								<span style="font-size:9.5pt; -aw-import:ignore">&#xa0;</span>
+							</p>
+						</td>
+						<td style="width:272.2pt; vertical-align:top">
+							<p style="text-align:justify; page-break-inside:avoid; page-break-after:avoid; line-height:12.5pt">
+								<span style="font-size:9.5pt">Jan Riise (MP) anför:</span>
+							</p>
+						</td>
+					</tr>
+				</table>
+				<p class="Mellanrum">
+					<span style="-aw-import:ignore">&#xa0;</span>
+				</p>
+			</div>
+			<p>
+				<span>Jag vill utöver det som anförts i reservationen anföra följande.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Grundlagsförslaget innebär att det ska bli möjligt att meddela föreskrifter om att det svenska medborgarskapet ska kunna fråntas den som är medborgare i en annan stat och som har förvärvat medborgarskapet på felaktiga grunder och vid viss allvarlig brottslighet. Enligt min mening är förslaget alltför långtgående. Särskilt allvarligt är det att medborgarskap ska kunna återkallas vid brott som allvarligt skadar Sveriges vitala intressen, vilket är en formulering som saknar tydlig avgränsning. En sådan formulering riskerar att leda till en farlig normförskjutning där staten ges en möjlighet att omdefiniera medborgarskapets innebörd över tid. Jag står därför inte bakom grundlags</span><span>&#xad;</span><span>förslaget i denna del.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Förslaget innebär vidare att föreningsfriheten ska kunna begränsas i förhållande till sammanslutningar som ägnar sig åt allvarlig brottslighet för att uppnå ekonomisk eller annan otillbörlig vinning. Jag delar regeringens uppfattning att den organiserade brottsligheten är ett allvarligt samhälls</span><span>&#xad;</span><span>problem. Förslaget innebär dock ett principiellt skifte som inte är tillräckligt analyserat eller rättssäkert. Begreppen som regeringen har föreslagit ska införas i grundlagen – såsom allvarlig brottslighet – lämnar ett mycket stort tolkningsutrymme till lagstiftaren. Ett sådant tolkningsutrymme är särskilt problematiskt när det handlar om en reglering i grundlagen eftersom synen på vad som är allvarlig brottslighet kan förändras över tid. Förslaget riskerar att leda till en godtycklig tillämpning och till att legitima organisationer inom civilsamhället kan komma att omfattas av framtida inskränkningar. Jag står således inte heller bakom förslaget i denna del.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Jag välkomnar att aborträtten ges ett uttryckligt skydd i regeringsformen. Ett sådant skydd markerar tydligt att rätten till abort är en grundläggande fri- och rättighet som inte kan göras illusorisk genom politiska svängningar. Vid den första behandlingen lyfte jag dock en oro för att grundlagsskyddet för aborträtten riskerar att bli alltför tunt i praktiken om lagstiftaren ges alltför stort utrymme att inskränka rättigheten genom vanlig lag. Det är därför helt avgörande att regeringen i det fortsatta lagstiftningsarbetet säkerställer att aborträtten inte endast ges ett formellt utan ett reellt innehåll i enlighet med Sveriges internationella åtaganden om mänskliga rättigheter.</span>
+			</p>
+			<p class="NormalIndent">
+				<span>Mot bakgrund av den stora vikt jag lägger vid frågorna om återkallande av medborgarskap och begränsningar av föreningsfriheten och det förhållandet att det vilande förslaget endast kan antas eller förkastas i sin helhet anser jag att det vilande förslaget bör förkastas, även om jag står bakom övriga delar av förslaget.</span>
+			</p>
+			<p>
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p>
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p>
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p class="Bilaga">
+				<span class="tBilagaJA" style="text-decoration:underline">Bilaga 1</span>
+			</p>
+			<p class="Bilagerubrik">
+				<a name="_Toc244767952"><span class="tSidrubrikJA">Förteckning över behandlade förslag</span></a>
+			</p>
+			<h2 style="line-height:13.5pt">
+				<a name="_Toc244767953"><span>Vilande förslag</span></a>
+			</h2>
+			<p>
+				<span>Den 20 maj 2026 beslutade riksdagen att som vilande anta det förslag till lag om ändring i regeringsformen som regeringen lagt fram i proposition 2025/26:78 (bet. 2025/26:KU34, rskr. 2025/26:266).</span>
+			</p>
+			<p>
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p>
+				<span style="-aw-import:ignore">&#xa0;</span>
+			</p>
+			<p class="Bilaga">
+				<span class="tBilagaJA" style="text-decoration:underline">Bilaga 2</span>
+			</p>
+			<p class="Bilagerubrik">
+				<a name="_Toc244767954"><span class="tSidrubrikJA">Vilande förslag</span></a>
+			</p>
+			<p>
+				<img src="https://data.riksdagen.se/fil/HE01KU9/Dokument.001.png" width="390" height="690" alt="" style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline">
+			</p>
+			<p>
+				<img src="https://data.riksdagen.se/fil/HE01KU9/Dokument.002.png" width="391" height="756" alt="" style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline">
+			</p>
+			<p>
+				<img src="https://data.riksdagen.se/fil/HE01KU9/Dokument.003.png" width="394" height="667" alt="" style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline">
+			</p>
+		</div>
+	

@@ -15,9 +15,13 @@ const BetankandenBudget = 25
 
 // BetankandenWorker reads the betänkanden that stored motions are handled in,
 // with their förslagspunkter, and links each yrkande to the punkt(er) that
-// decided it. Run daily it reads only those the current riksmöte's motions point
-// at; older riksmöten are the operator's backfill (cmd/backfill-motions). It is idempotent: a betänkande is read again only when a motion
-// pointing at it was read after it, and links are replaced, not appended.
+// decided it. It also reads the decided betänkanden of the stored listing that
+// no motion points at (a vilande grundlagsförslag, say). Run daily it reads
+// only those the current riksmöte's motions point at and that riksmöte's
+// listed ones; older riksmöten are the operator's backfill
+// (cmd/backfill-motions). It is idempotent: a betänkande is read again only
+// when a motion pointing at it was read after it or it was read before its
+// beslutsdag was over, and links are replaced, not appended.
 type BetankandenWorker struct {
 	svc    *motions.Service
 	budget int

@@ -57,8 +57,10 @@ func cleanText(s string) string {
 
 var (
 	headingRe = regexp.MustCompile(`^(.*?),\s*punkt\s+(\d+[a-z]?)\s*\(([^)]*)\)\s*$`)
-	numberRe  = regexp.MustCompile(`^(\d+)\.$`)
-	splitRe   = regexp.MustCompile(`,\s+|\s+och\s+`)
+	// A betänkande with one förslagspunkt names no punkt: "Vilande förslag (V, MP)".
+	soleHeadingRe = regexp.MustCompile(`^(.*?)\s*\(((?:\p{Lu}{1,3})(?:,\s*\p{Lu}{1,3})*)\)\s*$`)
+	numberRe      = regexp.MustCompile(`^(\d+)\.$`)
+	splitRe       = regexp.MustCompile(`,\s+|\s+och\s+`)
 )
 
 // ParseBetankandeHTML reads reservations, särskilda yttranden and the
@@ -146,16 +148,21 @@ func ParseBetankandeHTML(r io.Reader) (*domain.BetankandeHTML, error) {
 			case b.class == "Reservationsrubrik" || b.class == "Srskiltyttranderubrik":
 				flushStatement()
 				cur = &domain.Statement{Kind: curKind, Number: pendingNumber}
+				parties := ""
 				if m := headingRe.FindStringSubmatch(b.text); m != nil {
-					cur.Rubrik, cur.Punkt = m[1], m[2]
-					for _, p := range strings.Split(m[3], ",") {
-						if p = strings.TrimSpace(p); p != "" {
-							cur.Parties = append(cur.Parties, p)
-						}
-					}
+					cur.Rubrik, cur.Punkt, parties = m[1], m[2], m[3]
+				} else if m := soleHeadingRe.FindStringSubmatch(b.text); m != nil {
+					cur.Rubrik, parties = m[1], m[2]
 				} else {
 					cur.Rubrik = b.text
 				}
+				for _, p := range strings.Split(parties, ",") {
+					if p = strings.TrimSpace(p); p != "" {
+						cur.Parties = append(cur.Parties, p)
+					}
+				}
+				// The number belongs to this statement only.
+				pendingNumber = 0
 				stage = "signers"
 			case cur == nil || b.text == "" || b.class == "Mellanrum":
 			case b.class == "R4" && strings.EqualFold(b.text, "Förslag till riksdagsbeslut"):
@@ -185,7 +192,23 @@ func ParseBetankandeHTML(r io.Reader) (*domain.BetankandeHTML, error) {
 	}
 	flushReasoning()
 	flushStatement()
+	numberSole(out.Statements)
 	return out, nil
+}
+
+// numberSole gives number 1 to a statement that is the only one of its kind
+// and printed without a number ("Reservation", not "Reservationer"), as
+// Riksdagen's own data does ("Utskottets förslag mot reservation 1").
+func numberSole(ss []domain.Statement) {
+	count := map[string]int{}
+	for _, s := range ss {
+		count[s.Kind]++
+	}
+	for i := range ss {
+		if ss[i].Number == 0 && count[ss[i].Kind] == 1 {
+			ss[i].Number = 1
+		}
+	}
 }
 
 func splitSigners(s string) []string {

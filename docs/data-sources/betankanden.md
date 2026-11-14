@@ -66,7 +66,7 @@ Reservationer, särskilda yttranden och "Utskottets ställningstagande" finns ba
 Samma jobb läser även betänkandets HTML (en begäran till). Misslyckas den läsningen försöker jobbet igen efter ett dygn; redan inlästa betänkanden utan HTML läses om i jobbets vanliga takt (högst 25 per körning).
 
 Varje natt läser ett jobb högst 25 betänkanden som sparade motioner från det pågående riksmötet pekar på och som inte är
-inlästa (eller är äldre än motionen som pekar på dem). Det går vidare nästa natt där det slutade. Betänkanden för äldre riksmöten läses in av operatörens kommando `backfill-motions` (se `docs/runbooks/backfill-motions.md`).
+inlästa (eller är äldre än motionen som pekar på dem). Det läser också det pågående riksmötets avgjorda betänkanden som ingen motion pekar på, till exempel ett vilande grundlagsförslag eller en proposition utan följdmotioner; vilka som är avgjorda står i listan över beslut. Ett betänkande som lästes innan beslutsdagen var över läses en gång till, så att utfallet kommer med. Det går vidare nästa natt där det slutade. Betänkanden för äldre riksmöten läses in av operatörens kommando `backfill-motions` (se `docs/runbooks/backfill-motions.md`).
 För varje betänkande sparas förslagspunkterna och varje yrkande kopplas till den eller de
 punkter som avgjorde det. Att köra om jobbet ändrar inget. Vid votering visas Partilinje per
 parti enligt sajtens gemensamma definition; vid acklamation visas "Avgjord utan omröstning".
@@ -80,4 +80,6 @@ Jobbet `sync-beslut-list` (dagligen) läser betänkandelistan för det pågåend
 - **Identisk ordalydelse** används inte för att koppla ett yrkande till en punkt, bara för att gruppera återkommande krav (se Motioner).
 
 ## Täckning
-Betänkanden räknas som inlästa för ett riksmöte när inget betänkande som riksmötets motioner pekar på återstår att läsa. Status och senaste uppdatering per riksmöte står under Data (`/data`, API: `/api/data/coverage`).
+Betänkanden räknas som inlästa för ett riksmöte när inget betänkande som riksmötets motioner pekar på, och inget avgjort betänkande i riksmötets lista över beslut, återstår att läsa.
+
+Har ett betänkande bara en förslagspunkt skriver Riksdagen reservationer och särskilda yttranden utan punktnummer ("Vilande förslag (V, MP)"), och en ensam reservation utan nummer. Sajten lägger dem då på den enda punkten och kallar den ensamma reservationen nummer 1, som Riksdagens egen voteringsrad gör. Status och senaste uppdatering per riksmöte står under Data (`/data`, API: `/api/data/coverage`).

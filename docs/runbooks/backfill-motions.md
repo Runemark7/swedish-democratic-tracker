@@ -19,12 +19,17 @@ In the image the binary is `/backfill-motions`.
 
 - One riksmöte at a time, newest first. For each, motions first, then the
   betänkanden the riksmöte's motions point at (förslagspunkter, reservations,
-  yrkande links).
+  yrkande links) and the riksmöte's decided betänkanden no motion points at
+  (#267). The second kind comes from the stored listing (`beslut_listing`,
+  filled by `sync-beslut-list`); a riksmöte not listed yet has none.
 - Progress is written to `motion_backfill` per riksmöte and source. A riksmöte
   × source is **complete** when every motion Riksdagen's listing reports is
-  held (motioner), or no betänkande its motions point at is left to read
-  (betankanden). A restart skips complete rows; an interrupted or failed one is
+  held (motioner), or no betänkande its motions point at, and no decided one
+  in its listing, is left to read (betankanden). A restart skips complete rows; an interrupted or failed one is
   redone, skipping every motion already stored. `-force` redoes complete rows.
+- Riksmöten completed before #267 lack the decided betänkanden no motion
+  points at. Fill them with `-sources betankanden -force` (add `-rm` to take
+  some): only what is missing is fetched.
 - Idempotent: every write is the daily worker's own upsert.
 - Polite: `-delay` (default 200 ms) between requests, as the workers.
 - Ctrl-C stops cleanly; the exit code is non-zero when the run was interrupted

@@ -154,3 +154,33 @@ func TestParseUnrecognisedDocumentYieldsNothing(t *testing.T) {
 		t.Errorf("invented content: %+v", h)
 	}
 }
+
+// Gap recent-decisions-missing-proposal-text (#267). 2026/27:KU9 has one
+// förslagspunkt, so its headings carry no ", punkt N" ("Vilande förslag
+// (V, MP)") and its only reservation carries no number. Riksdagen's own
+// dokumentstatus calls it reservation 1.
+func TestParseKU9_2026_27_SingleReservationWithoutPunktOrNumber(t *testing.T) {
+	h := recordedHTML(t, "HE01KU9.html")
+	if !h.HasReservations {
+		t.Fatal("the Reservation section was not recognised")
+	}
+	r := findStatement(h, domain.KindReservation, 1)
+	if r == nil {
+		t.Fatalf("no reservation 1 in %+v", h.Statements)
+	}
+	if r.Rubrik != "Vilande förslag" || r.Punkt != "" || strings.Join(r.Parties, ",") != "V,MP" {
+		t.Errorf("rubrik %q punkt %q parties %v", r.Rubrik, r.Punkt, r.Parties)
+	}
+	if strings.Join(r.Signers, "|") != "Caroline Täljeblad (V)|Jan Riise (MP)" {
+		t.Errorf("signers = %v", r.Signers)
+	}
+	if !strings.Contains(r.Proposal, "Riksdagen förkastar det vilande förslaget") {
+		t.Errorf("proposal = %q", r.Proposal)
+	}
+	for n, party := range map[int]string{1: "S", 2: "V", 3: "C", 4: "MP"} {
+		y := findStatement(h, domain.KindSarskiltYttrande, n)
+		if y == nil || y.Rubrik != "Vilande förslag" || strings.Join(y.Parties, ",") != party {
+			t.Errorf("särskilt yttrande %d = %+v, want %s", n, y, party)
+		}
+	}
+}
