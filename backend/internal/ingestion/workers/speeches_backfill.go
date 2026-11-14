@@ -66,6 +66,10 @@ func (b *SpeechesBackfill) at() time.Time {
 	return time.Now().UTC()
 }
 
+// PlaceholderSpeakerID is the intressent_id data.riksdagen.se gives speeches
+// that have no person (e.g. a ceremony speech by an acting oldest member).
+const PlaceholderSpeakerID = "0000000000000"
+
 // SpeechBackfillRow is one riksmöte of a run.
 type SpeechBackfillRow struct {
 	Riksmote string
@@ -81,9 +85,12 @@ type SpeechBackfillRow struct {
 	IndexBytesAdded    int64
 	PoliticiansCreated int
 	Unresolved         []string // speakers Riksdagen has no person for
-	Complete           bool
-	Skipped            bool // already complete from an earlier run
-	Err                string
+	// Speakerless counts speeches listed with the placeholder speaker id
+	// (PlaceholderSpeakerID). They are not stored and not part of Expected.
+	Speakerless int
+	Complete    bool
+	Skipped     bool // already complete from an earlier run
+	Err         string
 }
 
 // SpeechReport is what a run found.
@@ -210,6 +217,17 @@ func (b *SpeechesBackfill) doRiksmote(ctx context.Context, rm string) SpeechBack
 		}
 		time.Sleep(FetchDelay)
 	}
+	// The placeholder id means "no person", not an unresolved real speaker:
+	// count those speeches apart and leave them out of what is expected.
+	real := listed[:0:0]
+	for _, s := range listed {
+		if s.PoliticianID == PlaceholderSpeakerID {
+			row.Speakerless++
+		} else {
+			real = append(real, s)
+		}
+	}
+	listed = real
 	row.Expected = len(listed)
 
 	// 2. Every speaker gets a politicians row before a speech is stored.
@@ -278,7 +296,7 @@ func (b *SpeechesBackfill) doRiksmote(ctx context.Context, rm string) SpeechBack
 	if err := b.speeches.SaveBackfill(wctx, domain.BackfillRun{
 		Riksmote: rm, Expected: row.Expected, TextBytes: row.TextBytes, RowsAdded: row.RowsAdded,
 		TableBytesAdded: row.TableBytesAdded, IndexBytesAdded: row.IndexBytesAdded,
-		PoliticiansCreated: row.PoliticiansCreated, Unresolved: len(unresolved), Complete: row.Complete,
+		PoliticiansCreated: row.PoliticiansCreated, Unresolved: len(unresolved), Speakerless: row.Speakerless, Complete: row.Complete,
 	}); err != nil {
 		fail(err)
 		row.Complete = false
@@ -343,6 +361,9 @@ func (r *SpeechReport) Write(w io.Writer) {
 			row.Riksmote, row.Expected, row.Stored, row.Linked, row.Unlinked, row.MissingText, state)
 		if row.PoliticiansCreated > 0 {
 			fmt.Fprintf(w, "  nya ledamöter %d", row.PoliticiansCreated)
+		}
+		if row.Speakerless > 0 {
+			fmt.Fprintf(w, "  utan talare %d", row.Speakerless)
 		}
 		if len(row.Unresolved) > 0 {
 			fmt.Fprintf(w, "  OKÄNDA TALARE %v", row.Unresolved)

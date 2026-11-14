@@ -2872,10 +2872,10 @@ components:
 
     SpeechBackfill:
       type: object
-      required: [riksmote, expected, stored, linked, unlinked, textBytes, rowsAdded, tableBytesAdded, indexBytesAdded, politiciansCreated, unresolvedSpeakers, complete, completedAt]
+      required: [riksmote, expected, stored, linked, unlinked, textBytes, rowsAdded, tableBytesAdded, indexBytesAdded, politiciansCreated, unresolvedSpeakers, speakerlessSpeeches, complete, completedAt]
       properties:
         riksmote: { type: string, example: "2017/18" }
-        expected: { type: integer, description: "Speeches the lists report for the riksmöte" }
+        expected: { type: integer, description: "Speeches with a speaker the lists report for the riksmöte (speakerlessSpeeches excluded)" }
         stored: { type: integer, description: "Speeches of the riksmöte we hold" }
         linked: { type: integer, description: "Stored speeches linked to a betänkande" }
         unlinked: { type: integer, description: "Stored speeches no betänkande could be named for" }
@@ -2885,6 +2885,7 @@ components:
         indexBytesAdded: { type: integer, format: int64, description: "Growth of the speeches indexes while the riksmöte was read in" }
         politiciansCreated: { type: integer, description: "Speakers created from Riksdagen's person data" }
         unresolvedSpeakers: { type: integer, description: "Speakers Riksdagen has no person for; their speeches are not stored" }
+        speakerlessSpeeches: { type: integer, description: "Speeches the lists give the placeholder speaker id 0000000000000 (no person); not stored and not counted in expected" }
         complete: { type: boolean }
         completedAt: { type: string, format: date-time, nullable: true }
 

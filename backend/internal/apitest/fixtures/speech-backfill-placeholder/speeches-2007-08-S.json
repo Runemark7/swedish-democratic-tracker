@@ -1,0 +1,50 @@
+{
+ "method": "GET",
+ "path": "/anforandelista/",
+ "query": {
+  "rm": "2007/08",
+  "parti": "S",
+  "iid": "",
+  "sz": "10000",
+  "anftyp": "Akt",
+  "utformat": "json"
+ },
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforandelista/?rm=2007/08&parti=S&iid=&sz=10000&anftyp=Akt&utformat=json",
+ "note": "Recorded 2026-11-14, reduced to two rows of protocol GV09132 (2008-06-18): the ceremony speech with intressent_id 0000000000000 and one by Anders Karlsson.",
+ "body": {
+  "anforandelista": {
+   "@antal": "2",
+   "anforande": [
+    {
+     "dok_id": "GV09132",
+     "dok_rm": "2007/08",
+     "dok_datum": "2008-06-18",
+     "avsnittsrubrik": "Avslutning",
+     "kammaraktivitet": "ceremoni",
+     "anforande_nummer": "41",
+     "talare": "Tjänstgörande ålderspresidenten MARGARETA ISRAELSSON (s)",
+     "parti": "s",
+     "anforandetext": "",
+     "intressent_id": "0000000000000",
+     "rel_dok_id": "",
+     "replik": "N"
+    },
+    {
+     "dok_id": "GV09132",
+     "dok_rm": "2007/08",
+     "dok_datum": "2008-06-18",
+     "avsnittsrubrik": "Lag om signalspaning m.m. (förnyad behandling)",
+     "kammaraktivitet": "föredragning av utskottsärende med eventuell debatt",
+     "anforande_nummer": "3",
+     "talare": "ANDERS KARLSSON (s)",
+     "parti": "s",
+     "anforandetext": "",
+     "intressent_id": "087735695612",
+     "rel_dok_id": "GU0363",
+     "replik": "N"
+    }
+   ]
+  }
+ }
+}

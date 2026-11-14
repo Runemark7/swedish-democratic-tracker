@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/anforande/GV09132-41.json",
+ "query": {},
+ "status": 200,
+ "recordedFrom": "https://data.riksdagen.se/anforande/GV09132-41.json",
+ "note": "Recorded 2026-11-14, reduced to the fields the speeches client reads.",
+ "body": {
+  "anforande": {
+   "dok_id": "GV09132",
+   "anforande_nummer": "41",
+   "anforandetext": "\r\nHerr talman! Så stundar sessionsfri sommar. Såga ned sammanträdet vid sommarstugan, slappna av, slöa. \r\nEn spindel spinner. Spyflugan surrar. Svävande svala och skuttande sädesärla. Sysslolösa sjusovare. Snart stor släktsammankomst - svärmor, svärfar, syster och svåger. Skynda! Staket ska spikas. Terrass ska skapas, allt till självkostnadspris. Stress, svett, straffarbete.\r\nSå trädgården. Slit med sekatör, spade och skottkärra. Sticklingar och sättpotatis. Stenparti och spaljé. Spirea, stormhatt, solros och syren. Sonen surar, sysslolös. Spela Skattkammarön eller sten, sax och påse - stenålder! Lite sightseeing kanske, se Skokloster, Sofiero eller Skansen - sällan!\r\nSolens strålar steker. Stranden uppsökes. Sandaler och shorts. Sarong och solglasögon. Sandslott, parasoll, surfare och skvalmusik. Småflickor skrattar, skuttar och studsar. Skrubbsår, Salubrin och solskyddsfaktor.\r\nSkärgården svalkar. Segelbåt och skuta. Skvimp och skvalp och spejande styrman. Sätt stockankare! Spisning serveras i sittbrunnen.\r\nSill, sardin, strömming och en sejdel. Smör, Svecia och snaps, sädesbrännvin.\r\nSallad, selleri och sandwich. Småvarmt, spett och starka korvar.\r\nSmultron, smulpaj, strutglass med strössel. Stopp! Servett, spyr. \r\nSkogen ska besökas för att söka svamp. Storstövlar och ryggsäck på. Men inte minsta sopp till supén. I stället samlas skarorna vid storbildsskärmen. Sveriges Television sänder sommar-OS. Cyklister, simmare och stavhoppare. Heja Sverige! säger supportern.\r\nSedan är sommaren slut. Somliga har språkstudier och studieresor. Sammanträdestiderna stundar i september.\r\nTill dess säger jag bara till talmannen, till vice talmännen, till riksdagsdirektören, till kammar-, utskotts- och partikanslierna samt till all övrig personal här i riksdagen: Farväl, farväl, vi komma väl snart igen. Från oss alla till er alla en riktigt skön sommar!\r\n(Applåder)\r\n"
+  }
+ }
+}

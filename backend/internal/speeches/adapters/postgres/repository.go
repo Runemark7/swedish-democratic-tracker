@@ -282,8 +282,8 @@ func (r *Repository) SaveBackfill(ctx context.Context, run domain.BackfillRun) e
 	_, err := r.db.Exec(ctx, `
 		INSERT INTO speech_backfill
 			(riksmote, expected, text_bytes, rows_added, table_bytes_added, index_bytes_added,
-			 politicians_created, unresolved_speakers, completed_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CASE WHEN $9 THEN now() END, now())
+			 politicians_created, unresolved_speakers, speakerless_speeches, completed_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $10, CASE WHEN $9 THEN now() END, now())
 		ON CONFLICT (riksmote) DO UPDATE SET
 			expected            = EXCLUDED.expected,
 			text_bytes          = EXCLUDED.text_bytes,
@@ -292,10 +292,11 @@ func (r *Repository) SaveBackfill(ctx context.Context, run domain.BackfillRun) e
 			index_bytes_added   = speech_backfill.index_bytes_added + EXCLUDED.index_bytes_added,
 			politicians_created = speech_backfill.politicians_created + EXCLUDED.politicians_created,
 			unresolved_speakers = EXCLUDED.unresolved_speakers,
+			speakerless_speeches = EXCLUDED.speakerless_speeches,
 			completed_at        = CASE WHEN $9 THEN coalesce(speech_backfill.completed_at, now()) END,
 			updated_at          = now()`,
 		run.Riksmote, run.Expected, run.TextBytes, run.RowsAdded, run.TableBytesAdded, run.IndexBytesAdded,
-		run.PoliticiansCreated, run.Unresolved, run.Complete)
+		run.PoliticiansCreated, run.Unresolved, run.Complete, run.Speakerless)
 	return err
 }
 
@@ -303,7 +304,7 @@ func (r *Repository) ListBackfill(ctx context.Context) ([]domain.Backfill, error
 	rows, err := r.db.Query(ctx, `
 		SELECT b.riksmote, b.expected, coalesce(c.stored, 0), coalesce(c.linked, 0),
 		       b.text_bytes, b.rows_added, b.table_bytes_added, b.index_bytes_added,
-		       b.politicians_created, b.unresolved_speakers, b.completed_at
+		       b.politicians_created, b.unresolved_speakers, b.speakerless_speeches, b.completed_at
 		FROM speech_backfill b
 		LEFT JOIN (
 			SELECT riksmote, count(*) AS stored, count(betankande_dok_id) AS linked
@@ -318,7 +319,7 @@ func (r *Repository) ListBackfill(ctx context.Context) ([]domain.Backfill, error
 	for rows.Next() {
 		var b domain.Backfill
 		if err := rows.Scan(&b.Riksmote, &b.Expected, &b.Stored, &b.Linked, &b.TextBytes, &b.RowsAdded,
-			&b.TableBytesAdded, &b.IndexBytesAdded, &b.PoliticiansCreated, &b.Unresolved, &b.CompletedAt); err != nil {
+			&b.TableBytesAdded, &b.IndexBytesAdded, &b.PoliticiansCreated, &b.Unresolved, &b.Speakerless, &b.CompletedAt); err != nil {
 			return nil, err
 		}
 		b.Unlinked = b.Stored - b.Linked
