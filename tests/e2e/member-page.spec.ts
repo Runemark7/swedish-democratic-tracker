@@ -49,4 +49,71 @@ test.describe("Member page", () => {
     await page.getByRole("button", { name: "Frågor och debatter" }).click();
     await expect(page.getByTestId("questions-section").getByRole("link").first()).toHaveAttribute("href", "x");
   });
+
+  // Gap member-page-no-individual-votes (#350): dated speeches used to sort
+  // ahead of the undated votes and fill the whole 50-row feed, so a member who
+  // had spoken 50 times showed no vote at all.
+  test.describe("a member with many speeches and many votes", () => {
+    const BUSY = "0203877548421";
+    const TOTAL = 120;
+    const vote = (n: number) => ({
+      voteringId: `V${n}`, politicianId: BUSY, party: "S", voteResult: n === 1 ? "Frånvarande" : "Ja",
+      beteckning: `KU${n}`, forslagspunkt: "1", session: "2026/27", dokId: `HE01KU${n}`,
+      proposalOrigin: { documentTitle: `Betänkande nummer ${n}` }, createdAt: "2026-11-11T00:00:00Z", partilinje: "Ja",
+    });
+    const speech = (n: number) => ({
+      id: n, dokId: `HE09${n}`, politicianId: BUSY, politicianName: "Malin Larsson", party: "S",
+      date: "2026-10-01T00:00:00Z", topicHeading: `Anförande ${n}`, snippet: `Anförande ${n}`,
+    });
+    const pagesAsked: string[] = [];
+
+    test.beforeEach(async ({ page }) => {
+      pagesAsked.length = 0;
+      await page.route(`**/api/politicians/${BUSY}`, (r) =>
+        r.fulfill({ json: { id: BUSY, firstName: "Malin", lastName: "Larsson", party: "S", constituency: "Västernorrlands län", imageUrl: "", isActive: true } }),
+      );
+      await page.route(`**/api/politicians/${BUSY}/votes**`, (r) => {
+        const q = new URL(r.request().url()).searchParams;
+        const pageNo = Number(q.get("page") ?? "1");
+        const size = Number(q.get("pageSize") ?? "50");
+        pagesAsked.push(String(pageNo));
+        const from = (pageNo - 1) * size;
+        const data = Array.from({ length: Math.max(0, Math.min(size, TOTAL - from)) }, (_, i) => vote(from + i + 1));
+        return r.fulfill({
+          json: { data, total: TOTAL, page: pageNo, pageSize: size, summary: { ja: 119, nej: 0, avstar: 0, franvarande: 1, total: TOTAL } },
+        });
+      });
+      await page.route(`**/api/speeches**`, (r) =>
+        r.fulfill({ json: Array.from({ length: 60 }, (_, i) => speech(i + 1)) }),
+      );
+      await page.goto(`/politicians/${BUSY}`);
+    });
+
+    test("lists individual votes with result, linked to the decision", async ({ page }) => {
+      const votes = page.getByTestId("member-votes");
+      const rows = votes.getByTestId("member-vote-row");
+      await expect(rows).toHaveCount(50);
+      await expect(rows.first()).toContainText("Betänkande nummer 1");
+      await expect(rows.first()).toContainText("KU1 punkt 1");
+      await expect(rows.first()).toContainText("2026/27");
+      await expect(rows.first()).toContainText("Frånvarande");
+      await expect(rows.first()).toHaveAttribute("href", /\/votes\/KU1\/1\?session=2026%2F27/);
+      await expect(votes).toContainText("Visar 50 av 120");
+      // The speeches are still there, in their own list.
+      await expect(page.getByTestId("member-speeches")).toContainText("Anförande 1");
+      await expect(page.getByTestId("member-speeches").getByTestId("member-vote-row")).toHaveCount(0);
+    });
+
+    test("Visa fler loads the next page until every vote is listed", async ({ page }) => {
+      const votes = page.getByTestId("member-votes");
+      const more = votes.getByRole("button", { name: "Visa fler röster" });
+      await more.click();
+      await expect(votes.getByTestId("member-vote-row")).toHaveCount(100);
+      await more.click();
+      await expect(votes.getByTestId("member-vote-row")).toHaveCount(120);
+      await expect(votes).toContainText("Visar 120 av 120");
+      await expect(more).toHaveCount(0);
+      expect(pagesAsked).toEqual(["1", "2", "3"]);
+    });
+  });
 });
