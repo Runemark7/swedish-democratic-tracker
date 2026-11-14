@@ -121,13 +121,35 @@ func notEditable(l domain.Loefte) error {
 	return fmt.Errorf("%w: Löfte %d is %s and cannot be changed", domain.ErrConflict, l.ID, l.Visibility)
 }
 
-// EditLoefte replaces the editable fields of a proposed or approved Löfte.
+func sameStrings(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// EditLoefte replaces the editable fields of a proposed or approved Löfte;
+// on an archived one only quote, locator and sourceUrl may differ.
 // The party, Valmanifest and visibility stay as they are.
 func (s *Service) EditLoefte(ctx context.Context, key string, id int64, in domain.LoefteEdit) (*domain.Result, error) {
 	if err := in.Normalize(); err != nil {
 		return nil, err
 	}
 	return s.changeLoefte(ctx, key, "edit-loefte", id, in, in.Provenance, func(cur domain.Loefte) (domain.Loefte, error) {
+		if cur.Visibility == domain.VisArchived {
+			// Archived Löften: only quote, locator (källdokument) and sourceUrl may change.
+			if in.Text != cur.Text || in.Topic != cur.Topic || in.Specificity != cur.Specificity ||
+				!sameStrings(in.Utskott, cur.Utskott) {
+				return cur, fmt.Errorf("%w: Löfte %d is archived; only quote, locator and sourceUrl can be changed", domain.ErrConflict, cur.ID)
+			}
+			cur.Quote, cur.Locator, cur.SourceURL = in.Quote, in.Locator, in.SourceURL
+			return cur, nil
+		}
 		if cur.Visibility != domain.VisProposed && cur.Visibility != domain.VisApproved {
 			return cur, notEditable(cur)
 		}

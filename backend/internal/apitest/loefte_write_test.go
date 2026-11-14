@@ -252,3 +252,66 @@ func TestLoefteUndoAndIdempotency(t *testing.T) {
 		t.Fatal("proposal not removed")
 	}
 }
+
+// Archived Löften: only quote, locator (källdokument) and sourceUrl may change.
+func TestArchivedLoefteEditsQuoteAndSourceOnly(t *testing.T) {
+	h := startWrite(t)
+	vm := vmID(t, h, "S")
+	rec := writeReq(h, "POST", "/api/write/loften", testWriteToken, "a1", proposeBody(vm, "Gammalt citat", "https://example.org/v"))
+	if rec.Code != 200 {
+		t.Fatalf("propose: %d %s", rec.Code, rec.Body)
+	}
+	id := decode[writeResult](t, rec).Entry.EntityID
+	path := "/api/write/loften/" + itoa(int(id))
+	writeReq(h, "POST", path+"/approve", testWriteToken, "a2", prov("c#1"))
+	if _, err := h.DB.Exec(context.Background(), `UPDATE loften SET visibility='archived' WHERE id=$1`, id); err != nil {
+		t.Fatal(err)
+	}
+	edit := func(key, text, quote, locator, url string) int {
+		return writeReq(h, "POST", path, testWriteToken, key, fmt.Sprintf(
+			`{"text":%q,"quote":%q,"locator":%q,"sourceUrl":%q,"topic":"test","specificity":"concrete","utskott":["SkU"],"chatRef":"c#2","onBehalfOf":"redaktor"}`,
+			text, quote, locator, url)).Code
+	}
+	before := len(decode[struct{ Entries []logEntry }](t, writeReq(h, "GET", "/api/aendringslogg", "", "", "")).Entries)
+
+	if c := edit("a3", "Regeln införs", "Nytt citat", "s. 99", "https://example.org/ny"); c != 200 {
+		t.Fatalf("archived edit of quote/source: %d", c)
+	}
+	var quote, loc, url, vis string
+	if err := h.DB.QueryRow(context.Background(), `SELECT quote, coalesce(locator,''), source_url, visibility FROM loften WHERE id=$1`, id).
+		Scan(&quote, &loc, &url, &vis); err != nil {
+		t.Fatal(err)
+	}
+	if quote != "Nytt citat" || loc != "s. 99" || url != "https://example.org/ny" || vis != "archived" {
+		t.Fatalf("row: %q %q %q %q", quote, loc, url, vis)
+	}
+	after := decode[struct{ Entries []logEntry }](t, writeReq(h, "GET", "/api/aendringslogg", "", "", "")).Entries
+	if len(after) != before+1 {
+		t.Fatalf("public log: %d -> %d", before, len(after))
+	}
+
+	// Validation as for other edits.
+	if c := edit("a4", "Regeln införs", "", "s. 99", "https://example.org/ny"); c != 422 {
+		t.Fatalf("empty quote: %d", c)
+	}
+	if c := edit("a5", "Regeln införs", "Q", "s. 99", "not-a-url"); c != 422 {
+		t.Fatalf("bad url: %d", c)
+	}
+	// Text stays locked.
+	if c := edit("a6", "Annan text", "Nytt citat", "s. 99", "https://example.org/ny"); c != 409 {
+		t.Fatalf("archived text edit: %d", c)
+	}
+	// Party/status are not editable fields; visibility is only moved by approve/strike.
+	for _, p := range []string{"/approve", "/strike"} {
+		if c := writeReq(h, "POST", path+p, testWriteToken, "a7"+p, prov("c")).Code; c != 409 {
+			t.Fatalf("archived %s: %d", p, c)
+		}
+	}
+	// Non-archived Löften keep full edit.
+	rec = writeReq(h, "POST", "/api/write/loften", testWriteToken, "a8", proposeBody(vm, "Annat citat", "https://example.org/v"))
+	id2 := decode[writeResult](t, rec).Entry.EntityID
+	if c := writeReq(h, "POST", "/api/write/loften/"+itoa(int(id2)), testWriteToken, "a9",
+		`{"text":"Ny text","quote":"Annat citat","sourceUrl":"https://example.org/v","chatRef":"c","onBehalfOf":"r"}`).Code; c != 200 {
+		t.Fatalf("proposed edit: %d", c)
+	}
+}
