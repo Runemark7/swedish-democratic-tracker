@@ -179,9 +179,13 @@ func (r *Repository) Coverage(ctx context.Context) ([]domain.Coverage, error) {
 	return out, rows.Err()
 }
 
-func (r *Repository) PendingBetankanden(ctx context.Context, rm string, limit int) ([]ports.BetRef, error) {
-	rows, err := r.db.Query(ctx, `
-		WITH refs AS (
+// betRefsCTE lists the betänkanden to hold: those that yrkanden point at, and
+// those Riksdagen's listing gives as decided that no motion points at (a
+// vilande grundlagsförslag, a proposition nobody moved against). $1 is today,
+// $2 the riksmöte: of the motion for the first kind, of the betänkande for the
+// second. An empty riksmöte takes them all.
+const betRefsCTE = `
+		motion_refs AS (
 			SELECT split_part(h, ':', 1) AS rm, split_part(h, ':', 2) AS bet, max(fetched_at) AS motion_fetched
 			FROM (
 				SELECT coalesce(nullif(y.behandlas_i, ''), m.behandlas_i) AS h, m.fetched_at, m.riksmote AS mrm
@@ -189,18 +193,33 @@ func (r *Repository) PendingBetankanden(ctx context.Context, rm string, limit in
 			) x
 			WHERE h ~ '^[0-9]{4}/[0-9]{2}:.+' AND ($2 = '' OR mrm = $2)
 			GROUP BY 1, 2
-		)
+		),
+		refs AS (
+			SELECT rm, bet, motion_fetched FROM motion_refs
+			UNION ALL
+			SELECT l.riksmote, l.beteckning, NULL::timestamptz
+			FROM beslut_listing l
+			WHERE ($2 = '' OR l.riksmote = $2) AND ` + decidedSQL + `
+			  AND NOT EXISTS (
+				SELECT 1 FROM motion_refs m WHERE m.rm = l.riksmote AND lower(m.bet) = lower(l.beteckning))
+		)`
+
+func (r *Repository) PendingBetankanden(ctx context.Context, rm string, today time.Time, limit int) ([]ports.BetRef, error) {
+	rows, err := r.db.Query(ctx, `
+		WITH `+betRefsCTE+`
 		SELECT r.rm, r.bet
 		FROM refs r
 		LEFT JOIN betankanden b ON b.riksmote = r.rm AND b.beteckning = r.bet
+		LEFT JOIN beslut_listing l ON l.riksmote = r.rm AND l.beteckning = r.bet
 		WHERE b.riksmote IS NULL
 		   OR (b.found AND b.fetched_at < r.motion_fetched)
+		   OR (b.found AND `+decidedSQL+` AND b.fetched_at < l.beslutsdag + interval '1 day')
 		   OR (b.found AND b.html_fetched_at IS NULL
 		       AND (b.html_attempted_at IS NULL OR b.html_attempted_at < now() - interval '1 day'))
 		   OR (b.found AND b.debate_checked_at IS NULL)
 		   OR (NOT b.found AND b.fetched_at < now() - interval '1 day')
 		ORDER BY r.rm DESC, r.bet
-		LIMIT $1`, limit, rm)
+		LIMIT $3`, today.Format("2006-01-02"), rm, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -781,20 +800,13 @@ func (r *Repository) SaveBackfillProgress(ctx context.Context, p domain.Backfill
 	return err
 }
 
-func (r *Repository) BetankandeCounts(ctx context.Context, rm string) (int, int, error) {
+func (r *Repository) BetankandeCounts(ctx context.Context, rm string, today time.Time) (int, int, error) {
 	var expected, held int
 	err := r.db.QueryRow(ctx, `
-		WITH refs AS (
-			SELECT DISTINCT split_part(h, ':', 1) AS rm, split_part(h, ':', 2) AS bet
-			FROM (
-				SELECT coalesce(nullif(y.behandlas_i, ''), m.behandlas_i) AS h
-				FROM motion_yrkanden y JOIN motions m ON m.dok_id = y.dok_id
-				WHERE m.riksmote = $1
-			) x
-			WHERE h ~ '^[0-9]{4}/[0-9]{2}:.+'
-		)
+		WITH `+betRefsCTE+`
 		SELECT count(*), count(b.riksmote) FILTER (WHERE b.found)
-		FROM refs r LEFT JOIN betankanden b ON b.riksmote = r.rm AND b.beteckning = r.bet`, rm).Scan(&expected, &held)
+		FROM refs r LEFT JOIN betankanden b ON b.riksmote = r.rm AND b.beteckning = r.bet`,
+		today.Format("2006-01-02"), rm).Scan(&expected, &held)
 	return expected, held, err
 }
 

@@ -65,9 +65,10 @@ func (s *Service) RecordExpected(ctx context.Context, rm string, expected int) e
 }
 
 // Pending lists betänkanden to read, at most limit. A non-empty rm keeps only
-// those that motions of that riksmöte point at.
+// those that motions of that riksmöte point at, and the decided betänkanden of
+// that riksmöte that no motion points at.
 func (s *Service) Pending(ctx context.Context, rm string, limit int) ([]ports.BetRef, error) {
-	return s.repo.PendingBetankanden(ctx, rm, limit)
+	return s.repo.PendingBetankanden(ctx, rm, s.clock(), limit)
 }
 
 // SyncBetankande reads one betänkande, stores it with its förslagspunkter and
@@ -105,7 +106,15 @@ func (s *Service) syncHTML(ctx context.Context, ref ports.BetRef, dokID string) 
 		h, err = &domain.BetankandeHTML{}, nil
 	}
 	if err == nil {
-		err = s.repo.SaveBetankandeHTML(ctx, ref.Riksmote, ref.Beteckning, h)
+		var pts []domain.Forslagspunkt
+		if pts, err = s.repo.Punkter(ctx, ref.Riksmote, ref.Beteckning); err == nil {
+			nums := make([]string, 0, len(pts))
+			for _, p := range pts {
+				nums = append(nums, p.Number)
+			}
+			h.PlaceUnpointed(nums)
+			err = s.repo.SaveBetankandeHTML(ctx, ref.Riksmote, ref.Beteckning, h)
+		}
 	}
 	if err != nil {
 		slog.Warn("betankanden: html not stored", "rm", ref.Riksmote, "bet", ref.Beteckning, "error", err)
@@ -340,7 +349,7 @@ func (s *Service) MotionCount(ctx context.Context, rm string) (int, error) {
 // BetankandeCounts counts the betänkanden a riksmöte's motions point at, and
 // how many of them are held.
 func (s *Service) BetankandeCounts(ctx context.Context, rm string) (expected, held int, err error) {
-	return s.repo.BetankandeCounts(ctx, rm)
+	return s.repo.BetankandeCounts(ctx, rm, s.clock())
 }
 
 // DecisionVocabulary counts every distinct decision value stored.

@@ -74,6 +74,20 @@ func (h *BetankandeHTML) ReasoningFor(rubrik string) string {
 	return out
 }
 
+// PlaceUnpointed puts every statement whose heading names no punkt on the
+// betänkande's only förslagspunkt. With no punkt or several, nothing is
+// guessed and such statements stay unplaced.
+func (h *BetankandeHTML) PlaceUnpointed(punkter []string) {
+	if len(punkter) != 1 {
+		return
+	}
+	for i := range h.Statements {
+		if h.Statements[i].Punkt == "" {
+			h.Statements[i].Punkt = punkter[0]
+		}
+	}
+}
+
 var votedAltRe = regexp.MustCompile(`(?i)mot reservation (\d+)(?:\s*\(([^)]*)\))?`)
 
 // VotedReservation reads the reservation named in the alternative put to the

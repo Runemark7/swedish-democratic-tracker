@@ -6,7 +6,8 @@
 // or the scheduler runs it, and it must not be run on deploy.
 //
 // It works one riksmöte at a time, motions first and then the betänkanden the
-// riksmöte's motions point at, and records coverage per riksmöte and source in
+// riksmöte's motions point at plus its decided betänkanden no motion points
+// at, and records coverage per riksmöte and source in
 // motion_backfill. Start it again after an interruption (Ctrl-C, a reset
 // connection, a failed riksmöte) and it skips what is complete and carries on;
 // every write is an upsert, so repeating work changes nothing. It pauses

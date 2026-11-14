@@ -93,11 +93,14 @@ type Repository interface {
 	// Coverage lists every recorded riksmöte × source with the held count.
 	Coverage(ctx context.Context) ([]domain.Coverage, error)
 
-	// PendingBetankanden lists, at most limit, betänkanden that yrkanden point
-	// at and that are not held, were not found a day ago, or are older than the
-	// newest motion pointing at them. A non-empty rm keeps only betänkanden
-	// that motions of that riksmöte point at.
-	PendingBetankanden(ctx context.Context, rm string, limit int) ([]BetRef, error)
+	// PendingBetankanden lists, at most limit, the betänkanden to read: those
+	// that yrkanden point at, and those the stored listing gives as decided on
+	// today that no motion points at. One is pending when it is not held, was
+	// not found a day ago, is older than the newest motion pointing at it, or
+	// was read before its beslutsdag was over. A non-empty rm keeps only
+	// betänkanden that motions of that riksmöte point at, and listed ones of
+	// that riksmöte.
+	PendingBetankanden(ctx context.Context, rm string, today time.Time, limit int) ([]BetRef, error)
 	// SaveBetankande upserts the betänkande and its punkter.
 	SaveBetankande(ctx context.Context, b *domain.Betankande) error
 	// SaveBetankandeHTML replaces the stored statements of a betänkande and
@@ -178,9 +181,10 @@ type Repository interface {
 	// SaveBackfillProgress upserts one row. A zero CompletedAt keeps the row
 	// open; it never clears a completion already recorded.
 	SaveBackfillProgress(ctx context.Context, p domain.BackfillProgress) error
-	// BetankandeCounts counts the distinct betänkanden the motions of rm point
-	// at and how many of them are held.
-	BetankandeCounts(ctx context.Context, rm string) (expected, held int, err error)
+	// BetankandeCounts counts the betänkanden PendingBetankanden looks at for
+	// rm (pointed at by its motions, or listed as decided in it) and how many
+	// of them are held.
+	BetankandeCounts(ctx context.Context, rm string, today time.Time) (expected, held int, err error)
 	// MotionCount counts the motions held for rm.
 	MotionCount(ctx context.Context, rm string) (int, error)
 	// BackfillRiksmoten lists, newest first, the riksmöten the voteringar and
