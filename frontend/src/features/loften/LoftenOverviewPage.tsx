@@ -4,6 +4,7 @@ import { loftenApi } from "./api";
 import { ArchiveNote, LoefteCard, MandatperiodSelect, ValmanifestList } from "./components";
 import { loftenHitCount } from "./hitCount";
 import { MANDATE_LABEL, STATUS_FILTERS, mandatperiodFromQuery } from "./labels";
+import { loftenCsvHref } from "./query";
 import { betankandePath } from "@/features/votes/betankandeApi";
 import { SourceMarker } from "@/components/sources/SourceMarker";
 import { TemporaryError } from "@/shared/components";
@@ -119,6 +120,19 @@ export function LoftenOverviewPage() {
       {loften.data && (
         <p data-testid="loften-hit-count" aria-live="polite" className="text-sm font-medium mb-2">
           {loftenHitCount(loften.data.length, party, mandatperiod)}
+        </p>
+      )}
+      {loften.data && loften.data.length > 0 && (
+        <p className="text-sm mb-2">
+          <a
+            data-testid="loften-csv"
+            href={loftenCsvHref({ party, utskott, status, betankande, mandatperiod })}
+            download
+            className="text-link underline"
+          >
+            Ladda ner urvalet (CSV)
+          </a>{" "}
+          <span className="text-on-surface-variant">Öppnas i Excel och andra kalkylprogram.</span>
         </p>
       )}
 

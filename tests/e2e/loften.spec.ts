@@ -18,7 +18,8 @@ test.describe("Löften under Partier", () => {
     await page.route("**/api/parties/M/loften", (r) => r.fulfill({ json: [ARCHIVED] }));
     await page.route("**/api/parties/M/valmanifest", (r) => r.fulfill({ json: VALMANIFEST }));
     await page.route("**/api/parties/M/record", (r) => r.fulfill({ json: { party: "M", decisions: [], motions: [] } }));
-    await page.route("**/api/loften", (r) => r.fulfill({ json: [ARCHIVED] }));
+    // With or without a query: the party tab asks for /api/loften?party=M.
+    await page.route(/\/api\/loften(\?.*)?$/, (r) => r.fulfill({ json: [ARCHIVED] }));
     await page.route("**/api/valmanifest", (r) => r.fulfill({ json: VALMANIFEST }));
     await page.route("**/api/loften/7", (r) => r.fulfill({ json: ARCHIVED }));
   });
@@ -132,6 +133,26 @@ test.describe("Mandatperiod filter on Löften", () => {
     await select.selectOption({ label: "2022–2026" });
     await expect(page.getByTestId("loften-hit-count")).toHaveText("Inga löften, mandatperiod 2022–2026");
     await expect(page.getByTestId("loefte-card")).toHaveCount(0);
+  });
+
+  // Gap no-data-export-csv: the download is the visible selection, so its
+  // link carries every active filter, Mandatperiod included.
+  test("the CSV download link follows the active filters", async ({ page }) => {
+    await page.goto("/loften");
+    const csv = page.getByTestId("loften-csv");
+    await expect(csv).toHaveText("Ladda ner urvalet (CSV)");
+    await expect(csv).toHaveAttribute("href", "/api/loften.csv");
+
+    await page.getByTestId("mandatperiod-select").selectOption({ label: "2026–2030" });
+    await expect(csv).toHaveAttribute("href", "/api/loften.csv?mandatperiod=2026-2030");
+
+    await page.getByTestId("loften-filters").getByRole("combobox", { name: "Löftesstatus" }).selectOption("inte-provat");
+    await expect(csv).toHaveAttribute("href", "/api/loften.csv?status=inte-provat&mandatperiod=2026-2030");
+
+    // Nothing to download when the selection is empty.
+    await page.getByTestId("mandatperiod-select").selectOption({ label: "2022–2026" });
+    await expect(page.getByTestId("loefte-card")).toHaveCount(0);
+    await expect(csv).toHaveCount(0);
   });
 
   test("a link with ?mandatperiod= opens with that period chosen", async ({ page }) => {
