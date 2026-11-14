@@ -287,6 +287,31 @@ export function OmSajtenPage() {
             lämnas till tredje part.
           </p>
         </Section>
+
+        <Section eyebrow="Kontakt" title="Kontakt och rättelser">
+          <p style={{ margin: "0 0 10px" }} data-testid="kontakt">
+            Hör av dig genom att öppna ett ärende på{" "}
+            <a
+              href="https://github.com/Runemark7/swedish-democratic-tracker/issues/new"
+              style={{ color: "var(--color-accent)" }}
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+            . Där kan du också anmäla fel.
+          </p>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--color-fg-muted)" }}>
+            Hur fel hanteras och vem som bedömer står under{" "}
+            <Link to="/metod#rattelser" style={{ color: "var(--color-accent)" }}>
+              Metod
+            </Link>
+            . Alla bekräftade ändringar finns i{" "}
+            <Link to="/andringslogg" style={{ color: "var(--color-accent)" }}>
+              Ändringsloggen
+            </Link>
+            .
+          </p>
+        </Section>
       </main>
     </div>
   );

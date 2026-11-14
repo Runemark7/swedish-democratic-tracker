@@ -39,6 +39,32 @@ export function MetodPage() {
           <li>Partilinjen är en majoritet. Ledamöter som röstat annorlunda, Avvikare, visas men ändrar aldrig partiets status.</li>
           <li>Ett parti kan ha goda skäl till en röst som inte syns i omröstningen. Tolkningen är din.</li>
         </ul>
+        <h2 className="font-display text-lg" id="vem-bedomer">Vem bedömer</h2>
+        <p data-testid="vem-bedomer">
+          Boten föreslår Löften och kopplingar. En människa, Redaktören, bekräftar eller avvisar dem i
+          chatten. Först då blir de offentliga. Varje beslut loggas med en referens i den öppna{" "}
+          <Link to="/andringslogg" className="text-link underline">Ändringslogg</Link>.
+          Den här sidan säger inte om fler än en person granskar bedömningarna.
+        </p>
+        <h2 className="font-display text-lg" id="rattelser">Rättelser</h2>
+        <div data-testid="rattelser" className="space-y-2">
+          <p>
+            Har du hittat ett fel eller en föråldrad uppgift? Rapportera det som ett ärende på{" "}
+            <a
+              href="https://github.com/Runemark7/swedish-democratic-tracker/issues/new"
+              className="text-link underline"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+            . Ange vilken sida det gäller och gärna en länk till källan. Ärendet är öppet för alla att läsa.
+          </p>
+          <p>
+            Beslutar Redaktören att ändra, stryka eller ångra något registreras ändringen i{" "}
+            <Link to="/andringslogg" className="text-link underline">Ändringsloggen</Link>.
+            Ett ångrat beslut tas inte bort ur loggen. Ångrandet blir en egen post som pekar på det ursprungliga.
+          </p>
+        </div>
         <p>
           Varje omröstning på ett Löfte har en länk till Riksdagens egen uppgift, så att du kan kontrollera
           den själv. <SourceMarker sourceId="loften-valmanifest" /> Läs mer under{" "}
